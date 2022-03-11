@@ -1,7 +1,15 @@
 
 # essttp-backend
 
-This is a placeholder README.md for a new repository
+
+## Dictionary
+Acronyms used in a codebase. To speed up writing and reading. 
+
+| Phrase | Description|
+| --------- | ------- |
+|Sp | Start Journey |
+|Bta | Business Tax Account - client app|
+|Epaye | Employers' Pay as you earn - tax type|
 
 ### License
 
