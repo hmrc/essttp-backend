@@ -33,13 +33,13 @@ final class JourneyRepo @Inject() (
                                     config: AppConfig)(implicit ec: ExecutionContext)
   extends Repo[Journey, JourneyId]("journey", reactiveMongoComponent) {
 
+
   override def indexes: Seq[Index] = Seq(
     Index(
       key = Seq("lastUpdated1" -> IndexType.Ascending),
       name = Some("lastUpdatedIdx1"),
-      options = BSONDocument("expireAfterSeconds" -> journeyTtl.toSeconds)
+      options = BSONDocument("expireAfterSeconds" ->  90.days.toSeconds)
     )
   )
 
-  private val journeyTtl: FiniteDuration = 90.days
 }
