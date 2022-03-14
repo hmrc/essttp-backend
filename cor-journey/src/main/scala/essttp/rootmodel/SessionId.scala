@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package journey
+package essttp.rootmodel
 
-import essttp.journey.model.JourneyId
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Format
 
-import java.util.UUID
-import javax.inject.Singleton
+final case class SessionId(value: String)
 
-@Singleton
-class JourneyIdProvider {
-  def nextJourneyId(): JourneyId = JourneyId(UUID.randomUUID().toString)
+object SessionId {
+  implicit val format: Format[SessionId] = implicitly[Format[String]].inmap(SessionId(_), _.value)
 }

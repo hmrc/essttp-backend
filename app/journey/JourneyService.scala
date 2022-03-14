@@ -16,7 +16,7 @@
 
 package journey
 
-import journey.model.{Journey, JourneyId}
+import essttp.journey.model.{Journey, JourneyId}
 import play.api.mvc.Request
 import repository.RepoResultChecker._
 

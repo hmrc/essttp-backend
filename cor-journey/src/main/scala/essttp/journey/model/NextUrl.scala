@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package journey
+package essttp.journey.model
 
-import essttp.journey.model.JourneyId
+import play.api.libs.json.{Format, Json}
 
-import java.util.UUID
-import javax.inject.Singleton
+final case class NextUrl(nextUrl: String)
 
-@Singleton
-class JourneyIdProvider {
-  def nextJourneyId(): JourneyId = JourneyId(UUID.randomUUID().toString)
+object NextUrl {
+  implicit val format: Format[NextUrl] = Json.format[NextUrl]
 }
+

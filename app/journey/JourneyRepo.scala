@@ -17,7 +17,7 @@
 package journey
 
 import config.AppConfig
-import journey.model.{Journey, JourneyId}
+import essttp.journey.model.{Journey, JourneyId}
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.indexes._
 import reactivemongo.bson.BSONDocument
@@ -25,7 +25,7 @@ import repository.Repo
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
-import scala.concurrent.duration.{DurationInt, FiniteDuration}
+import scala.concurrent.duration.DurationInt
 
 @Singleton
 final class JourneyRepo @Inject() (

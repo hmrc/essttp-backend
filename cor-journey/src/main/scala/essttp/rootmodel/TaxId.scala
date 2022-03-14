@@ -14,14 +14,29 @@
  * limitations under the License.
  */
 
-package journey
+package essttp.rootmodel
 
-import essttp.journey.model.JourneyId
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Format
 
-import java.util.UUID
-import javax.inject.Singleton
+sealed trait TaxId
 
-@Singleton
-class JourneyIdProvider {
-  def nextJourneyId(): JourneyId = JourneyId(UUID.randomUUID().toString)
+/**
+ * Accounts Office Reference (Aor)
+ * Tax Id for Epaye.
+ */
+final case class Aor(value: String) extends TaxId
+
+object Aor {
+  implicit val format: Format[Aor] = implicitly[Format[String]].inmap(Aor(_), _.value)
+}
+
+/**
+ * Vat Reference Number (Vrn)
+ * Tax Id for Vat.
+ */
+final case class Vrn(value: String) extends TaxId
+
+object Vrn {
+  implicit val format: Format[Vrn] = implicitly[Format[String]].inmap(Vrn(_), _.value)
 }

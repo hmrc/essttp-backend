@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package journey
+package essttp.rootmodel
 
-import essttp.journey.model.JourneyId
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Format
 
-import java.util.UUID
-import javax.inject.Singleton
+final case class BackUrl(value: String)
 
-@Singleton
-class JourneyIdProvider {
-  def nextJourneyId(): JourneyId = JourneyId(UUID.randomUUID().toString)
+object BackUrl {
+  implicit val format: Format[BackUrl] = implicitly[Format[String]].inmap(BackUrl(_), _.value)
+}
+
+final case class ReturnUrl(value: String)
+
+object ReturnUrl {
+  implicit val format: Format[ReturnUrl] = implicitly[Format[String]].inmap(ReturnUrl(_), _.value)
 }

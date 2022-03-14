@@ -16,8 +16,8 @@
 
 package journey
 
-import _root_.rootmodel.SessionId
-import model.{Journey, OriginatedSjRequest, Stage}
+import essttp.journey.model.{Journey, OriginatedSjRequest, Stage}
+import essttp.rootmodel.SessionId
 
 import java.time.{Clock, LocalDateTime}
 import javax.inject.{Inject, Singleton}

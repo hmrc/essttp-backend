@@ -16,7 +16,7 @@
 
 package action.model
 
-import journey.model.Journey
+import essttp.journey.model.Journey
 import play.api.mvc.{Request, WrappedRequest}
 import uk.gov.hmrc.auth.core.Enrolments
 

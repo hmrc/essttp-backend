@@ -17,14 +17,14 @@
 package journey
 
 import com.google.inject.Inject
-import journey.model.Origin.Vat
-import journey.model._
+import essttp.journey.model.Origin.Vat
+import essttp.journey.model._
+import essttp.rootmodel.SessionId
+import essttp.utils.Errors
 import play.api.libs.json.{Json, Reads}
 import play.api.mvc.{Action, ControllerComponents, Request, Result}
 import requests.RequestSupport
-import rootmodel.SessionId
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import utils.Errors
 
 import scala.concurrent.{ExecutionContext, Future}
 

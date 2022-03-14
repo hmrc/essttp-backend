@@ -14,14 +14,25 @@
  * limitations under the License.
  */
 
-package journey
+package essttp.rootmodel
 
-import essttp.journey.model.JourneyId
+import enumeratum._
 
-import java.util.UUID
-import javax.inject.Singleton
+import scala.collection.immutable
 
-@Singleton
-class JourneyIdProvider {
-  def nextJourneyId(): JourneyId = JourneyId(UUID.randomUUID().toString)
+sealed trait TaxRegime extends EnumEntry
+
+object TaxRegime extends Enum[TaxRegime] {
+
+  /**
+   * Tax regime for Employers' Pay as you earn (Epaye)
+   */
+  case object Epaye extends TaxRegime
+
+  /**
+   * Tax regime for Value Added Tax (Vat)
+   */
+  case object Vat extends TaxRegime
+
+  override val values: immutable.IndexedSeq[TaxRegime] = findValues
 }

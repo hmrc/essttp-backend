@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-package journey
+package essttp.journey.model
 
-import essttp.journey.model.JourneyId
+/**
+ * A temporary structure which binds both [[Origin]] and [[SjRequest]] of the same "type"
+ * (Vat to Vat, Sdil to Sdil, Cds to Cds, etc)
+ */
+sealed trait OriginatedSjRequest {
+  def origin: Origin
+  def sjRequest: SjRequest
+}
 
-import java.util.UUID
-import javax.inject.Singleton
+object OriginatedSjRequest {
 
-@Singleton
-class JourneyIdProvider {
-  def nextJourneyId(): JourneyId = JourneyId(UUID.randomUUID().toString)
+  final case class Epaye(
+      override val origin:    Origin.Epaye,
+      override val sjRequest: SjRequest.Epaye
+  ) extends OriginatedSjRequest
+
 }

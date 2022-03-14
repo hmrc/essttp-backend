@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package journey
+package essttp.journey.model
 
-import essttp.journey.model.JourneyId
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Format
+import play.api.mvc.PathBindable
 
-import java.util.UUID
-import javax.inject.Singleton
+object JourneyId {
+  implicit val format: Format[JourneyId] = implicitly[Format[String]].inmap(JourneyId(_), _.value)
 
-@Singleton
-class JourneyIdProvider {
-  def nextJourneyId(): JourneyId = JourneyId(UUID.randomUUID().toString)
+  /**
+   * Allows JourneyId final case class to be used as a query parameter in controllers
+   */
+  implicit val journeyIdBinder: PathBindable[JourneyId] = essttp.utils.ValueClassBinder.valueClassBinder(_.value)
 }
+
+final case class JourneyId(value: String)

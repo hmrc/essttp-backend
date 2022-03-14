@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package journey
+package essttp.rootmodel
 
-import essttp.journey.model.JourneyId
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
+import essttp.utils.Errors
 
-import java.util.UUID
-import javax.inject.Singleton
-
-@Singleton
-class JourneyIdProvider {
-  def nextJourneyId(): JourneyId = JourneyId(UUID.randomUUID().toString)
+final case class DayOfMonth(value: Int) {
+  Errors.require(DayOfMonth.isValid(value), "Day of month has to be between 1 and 28")
 }
+
+object DayOfMonth {
+  implicit val format: Format[DayOfMonth] = implicitly[Format[Int]].inmap(DayOfMonth(_), _.value)
+
+  def isValid(dayOfMonth: Int): Boolean = dayOfMonth >= 1 && dayOfMonth <= 28
+}
+

@@ -16,11 +16,11 @@
 
 package requests
 
+import essttp.rootmodel.SessionId
 import play.api.i18n._
 import play.api.mvc.{Request, RequestHeader}
-import rootmodel.SessionId
 import uk.gov.hmrc.http.HeaderCarrier
-import utils.Errors
+import essttp.utils.Errors
 
 import javax.inject.Inject
 import scala.concurrent.Future

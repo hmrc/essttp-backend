@@ -17,11 +17,11 @@
 package journey
 
 import essttp.journey.model.JourneyId
+import reactivemongo.bson.BSONObjectID
 
-import java.util.UUID
 import javax.inject.Singleton
 
 @Singleton
-class JourneyIdProvider {
-  def nextJourneyId(): JourneyId = JourneyId(UUID.randomUUID().toString)
+class JourneyIdGenerator {
+  def nextJourneyId(): JourneyId = JourneyId(BSONObjectID.generate.stringify)
 }

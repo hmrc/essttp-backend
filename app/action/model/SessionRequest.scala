@@ -16,8 +16,8 @@
 
 package action.model
 
+import essttp.rootmodel.SessionId
 import play.api.mvc.{Request, WrappedRequest}
-import rootmodel.SessionId
 
 final case class SessionRequest[A](
     request:   Request[A],

@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package journey
+package essttp.rootmodel.epaye
 
-import essttp.journey.model.JourneyId
+import play.api.libs.functional.syntax._
+import play.api.libs.json.Format
 
-import java.util.UUID
-import javax.inject.Singleton
+final case class TaxOfficeReference(value: String)
 
-@Singleton
-class JourneyIdProvider {
-  def nextJourneyId(): JourneyId = JourneyId(UUID.randomUUID().toString)
+object TaxOfficeReference {
+  implicit val format: Format[TaxOfficeReference] = implicitly[Format[String]].inmap(TaxOfficeReference(_), _.value)
 }

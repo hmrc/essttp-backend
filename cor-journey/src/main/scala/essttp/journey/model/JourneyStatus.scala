@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-package journey
+package essttp.journey.model
 
-import essttp.journey.model.JourneyId
+import enumeratum.{Enum, _}
+import play.api.libs.json.Format
 
-import java.util.UUID
-import javax.inject.Singleton
+import scala.collection.immutable
 
-@Singleton
-class JourneyIdProvider {
-  def nextJourneyId(): JourneyId = JourneyId(UUID.randomUUID().toString)
+sealed trait JourneyStatus extends EnumEntry
+
+object JourneyStatus {
+  implicit val format: Format[JourneyStatus] = essttp.utils.EnumFormat(JourneyStatuses)
+}
+
+object JourneyStatuses extends Enum[JourneyStatus] {
+  case object Created extends JourneyStatus
+  case object InProgress extends JourneyStatus
+  case object Finished extends JourneyStatus
+
+  override def values: immutable.IndexedSeq[JourneyStatus] = findValues
 }
