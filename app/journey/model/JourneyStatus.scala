@@ -16,7 +16,6 @@
 
 package journey.model
 
-
 import enumeratum.Enum
 import enumeratum._
 import play.api.libs.json.Format

@@ -46,7 +46,7 @@ object RequestSupport {
     // nicely failed result
     hc
       .sessionId
-      .map(s=>SessionId(s.value))
+      .map(s => SessionId(s.value))
       .getOrElse(
         Errors.throwBadRequestException("Session id must be provided")
       )

@@ -24,11 +24,11 @@ object ValueClassBinder {
 
   def valueClassBinder[A: Reads](fromAtoString: A => String)(implicit stringBinder: PathBindable[String]): PathBindable[A] = {
 
-    def parseString(str: String) =
-      JsString(str).validate[A] match {
-        case JsSuccess(a, _) => Right(a)
-        case JsError(error) => Left(s"No valid value in path: $str. Error: $error")
-      }
+      def parseString(str: String) =
+        JsString(str).validate[A] match {
+          case JsSuccess(a, _) => Right(a)
+          case JsError(error)  => Left(s"No valid value in path: $str. Error: $error")
+        }
 
     new PathBindable[A] {
       override def bind(key: String, value: String): Either[String, A] =
@@ -39,7 +39,7 @@ object ValueClassBinder {
     }
   }
 
-  def bindableA[A: TypeTag : Reads](fromAtoString: A => String): QueryStringBindable[A] = new QueryStringBindable.Parsing[A](
+  def bindableA[A: TypeTag: Reads](fromAtoString: A => String): QueryStringBindable[A] = new QueryStringBindable.Parsing[A](
     parse = JsString(_).as[A],
     fromAtoString,
     {

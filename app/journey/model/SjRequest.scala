@@ -33,7 +33,6 @@ object SjRequest {
 
   def isAbsoluteUrl(urlStr: String): Boolean = Try(java.net.URI.create(urlStr).isAbsolute).getOrElse(false)
 
-
   /**
    * Marking trait aggregating all Epaye [[SjRequest]]s
    */
@@ -105,6 +104,4 @@ object SjRequest {
   }
 
 }
-
-
 

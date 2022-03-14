@@ -140,6 +140,7 @@ object Journey {
 
     override val (backUrl: BackUrl, returnUrl: ReturnUrl) = sjRequest match {
       case r: SjRequest.Epaye.Simple => (r.backUrl, r.returnUrl)
+      case _ => Errors.notImplemented("PAWEL TODO")
     }
   }
 

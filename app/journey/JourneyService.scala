@@ -25,9 +25,10 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class JourneyService @Inject()(
-                      journeyRepo: JourneyRepo,
-                      clock: Clock)(implicit ec: ExecutionContext) {
+class JourneyService @Inject() (
+    journeyRepo: JourneyRepo,
+    clock:       Clock
+)(implicit ec: ExecutionContext) {
 
   def get()(implicit request: Request[_]): Future[Journey] = {
     find().map { maybeJourney =>

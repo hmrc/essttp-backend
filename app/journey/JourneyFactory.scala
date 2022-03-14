@@ -23,24 +23,24 @@ import java.time.{Clock, LocalDateTime}
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class JourneyFactory @Inject()(
+class JourneyFactory @Inject() (
     journeyIdProvider: JourneyIdProvider,
     clock:             Clock
 ) {
 
   def makeJourney(
       originatedSjRequest: OriginatedSjRequest,
-      sessionId:             SessionId
+      sessionId:           SessionId
   ): Journey = originatedSjRequest match {
 
     case OriginatedSjRequest.Epaye(origin, sjRequest) =>
       Journey.Epaye.AfterStarted(
-        _id         = journeyIdProvider.nextJourneyId(),
-        origin      = origin,
+        _id       = journeyIdProvider.nextJourneyId(),
+        origin    = origin,
         sjRequest = sjRequest,
-        createdAt   = LocalDateTime.now(clock),
-        sessionId   = sessionId,
-        stage       = Stage.AfterStarted.New
+        createdAt = LocalDateTime.now(clock),
+        sessionId = sessionId,
+        stage     = Stage.AfterStarted.New
       )
   }
 }

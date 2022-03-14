@@ -16,7 +16,6 @@
 
 package journey.model
 
-
 /**
  * A temporary structure which binds both [[Origin]] and [[SjRequest]] of the same "type"
  * (Vat to Vat, Sdil to Sdil, Cds to Cds, etc)
@@ -29,7 +28,7 @@ sealed trait OriginatedSjRequest {
 object OriginatedSjRequest {
 
   final case class Epaye(
-      override val origin:      Origin.Epaye,
+      override val origin:    Origin.Epaye,
       override val sjRequest: SjRequest.Epaye
   ) extends OriginatedSjRequest
 

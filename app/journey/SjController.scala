@@ -31,13 +31,12 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
  * Start Journey (Sj) Controller
  */
-class SjController @Inject()(
-                              journeyService: JourneyService,
-                              journeyConfig: JourneyConfig,
-                              journeyFactory: JourneyFactory,
-                              cc:                     ControllerComponents
-                                      )(implicit exec: ExecutionContext) extends  BackendController(cc) {
-
+class SjController @Inject() (
+    journeyService: JourneyService,
+    journeyConfig:  JourneyConfig,
+    journeyFactory: JourneyFactory,
+    cc:             ControllerComponents
+)(implicit exec: ExecutionContext) extends BackendController(cc) {
 
   def startJourneyEpayeFromBta(): Action[SjRequest.Epaye.Simple] = startDdJourneyEpaye[SjRequest.Epaye.Simple](Origin.Epaye.Bta)
   def startJourneyEpayeFromGovUk(): Action[SjRequest.Epaye.Empty] = startDdJourneyEpaye[SjRequest.Epaye.Empty](Origin.Epaye.GovUk)
@@ -49,8 +48,8 @@ class SjController @Inject()(
   }
 
   private def doJourneyStart(
-                              originatedRequest: OriginatedSjRequest
-                            )(implicit request: Request[_]): Future[Result] = {
+      originatedRequest: OriginatedSjRequest
+  )(implicit request: Request[_]): Future[Result] = {
 
     for {
       sessionId: SessionId <- RequestSupport.getSessionId()
@@ -67,8 +66,8 @@ class SjController @Inject()(
 
   private def journeyDescription(origin: Origin): String = origin match {
     case o: Origin.Epaye => o match {
-      case Origin.Epaye.Bta => s"Journey for Epaye from BTA"
-      case Origin.Epaye.GovUk => s"Journey for Epaye from GovUk"
+      case Origin.Epaye.Bta         => s"Journey for Epaye from BTA"
+      case Origin.Epaye.GovUk       => s"Journey for Epaye from GovUk"
       case Origin.Epaye.DetachedUrl => s"Journey for Epaye from DetachedUrl"
     }
     case o: Origin.Vat => o match {

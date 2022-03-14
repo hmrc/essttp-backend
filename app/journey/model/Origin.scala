@@ -54,6 +54,4 @@ object Origin {
     case object Bta extends Origin with Vat { def show = "Origin.Vat.Bta" }
   }
 
-
-
 }
