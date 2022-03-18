@@ -1,5 +1,6 @@
 import _root_.play.sbt.routes.RoutesKeys._
 import com.typesafe.sbt.SbtScalariform.ScalariformKeys
+import play.core.PlayVersion
 import play.sbt.PlayImport.PlayKeys
 import sbt.Keys._
 import sbt.Tests.{Group, SubProcess}
@@ -10,7 +11,7 @@ import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
 import uk.gov.hmrc.versioning.SbtGitVersioning
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
-import wartremover.{Wart}
+import wartremover.Wart
 import wartremover.WartRemover.autoImport.{wartremoverErrors, wartremoverExcluded, wartremoverWarnings}
 import uk.gov.hmrc.ShellPrompt
 
@@ -169,7 +170,7 @@ lazy val microservice = Project(appName, file("."))
     wartremoverExcluded ++= (Compile / routes).value,
     routesImport ++= Seq(
 //      "essttp.corjourney.util.ValueClassBinder._",
-//      "essttp.corjourney.model.journey._",
+      "essttp.journey.model._",
     )
   )
   .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)
@@ -230,6 +231,9 @@ lazy val corTestData = Project(appName + "-cor-test-data", file("cor-test-data")
   .settings(
     scalaVersion := appScalaVersion,
     libraryDependencies ++= List(
-      "com.typesafe.play" %% "play" % play.core.PlayVersion.current % Provided
+      "com.typesafe.play" %% "play"      % play.core.PlayVersion.current % Provided,
+      "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % Provided,
     )
   )
+  .dependsOn(corJourney)
+  .aggregate(corJourney)

@@ -24,8 +24,8 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton
 class JourneyFactory @Inject() (
-    journeyIdProvider: JourneyIdProvider,
-    clock:             Clock
+    journeyIdGenerator: JourneyIdGenerator,
+    clock:              Clock
 ) {
 
   def makeJourney(
@@ -35,10 +35,10 @@ class JourneyFactory @Inject() (
 
     case OriginatedSjRequest.Epaye(origin, sjRequest) =>
       Journey.Epaye.AfterStarted(
-        _id       = journeyIdProvider.nextJourneyId(),
+        _id       = journeyIdGenerator.nextJourneyId(),
         origin    = origin,
         sjRequest = sjRequest,
-        createdAt = LocalDateTime.now(clock),
+        createdOn = LocalDateTime.now(clock),
         sessionId = sessionId,
         stage     = Stage.AfterStarted.New
       )

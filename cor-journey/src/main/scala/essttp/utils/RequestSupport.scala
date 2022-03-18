@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package requests
+package essttp.utils
 
 import essttp.rootmodel.SessionId
 import play.api.i18n._
 import play.api.mvc.{Request, RequestHeader}
 import uk.gov.hmrc.http.HeaderCarrier
-import essttp.utils.Errors
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.Inject
 import scala.concurrent.Future
@@ -39,7 +39,7 @@ class RequestSupport @Inject() (override val messagesApi: MessagesApi) extends I
 
 object RequestSupport {
 
-  implicit def hc(implicit request: RequestHeader): HeaderCarrier = HcProvider.headerCarrier
+  implicit def hc(implicit request: RequestHeader): HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
   def getSessionId()(implicit request: Request[_]): Future[SessionId] = Future.successful{
     //HINT: We wrapp it into future so it can throw exception inside for comprehension and propagate
@@ -50,13 +50,5 @@ object RequestSupport {
       .getOrElse(
         Errors.throwBadRequestException("Session id must be provided")
       )
-  }
-
-  /**
-   * This is because we want to give responsibility of creation of [[HeaderCarrier]] to the platform code.
-   * If they refactor how hc is created our code will pick it up automatically.
-   */
-  private object HcProvider extends uk.gov.hmrc.play.bootstrap.backend.controller.BackendHeaderCarrierProvider {
-    def headerCarrier(implicit request: RequestHeader): HeaderCarrier = hc(request)
   }
 }

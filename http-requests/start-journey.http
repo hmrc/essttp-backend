@@ -5,8 +5,8 @@ Content-Type: Application/Json
 X-Session-ID: sialalala
 
 {
-  "returnUrl": "http://localhost:9000/return",
-  "backUrl":   "http://localhost:9000/back"
+  "returnUrl": "http://localhost:9066/return",
+  "backUrl":   "http://localhost:9066/back"
 }
 
 ###

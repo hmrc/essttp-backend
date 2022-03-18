@@ -18,13 +18,16 @@ package journey
 
 import config.AppConfig
 import essttp.journey.model.{Journey, JourneyId}
+import essttp.rootmodel.SessionId
+import play.api.libs.json.Json
 import play.modules.reactivemongo.ReactiveMongoComponent
+import reactivemongo.api.ReadPreference
 import reactivemongo.api.indexes._
 import reactivemongo.bson.BSONDocument
 import repository.Repo
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.DurationInt
 
 @Singleton
@@ -33,6 +36,16 @@ final class JourneyRepo @Inject() (
     config:                 AppConfig
 )(implicit ec: ExecutionContext)
   extends Repo[Journey, JourneyId]("journey", reactiveMongoComponent) {
+
+  /**
+   * Find the latest journey for given sessionId.
+   */
+  def findLatestJourney(sessionId: SessionId): Future[Option[Journey]] = {
+    collection
+      .find(Json.obj("sessionId" -> sessionId), None)
+      .sort(Json.obj("createdOn" -> -1))
+      .one(ReadPreference.primaryPreferred)(domainFormatImplicit, implicitly)
+  }
 
   override def indexes: Seq[Index] = Seq(
     Index(

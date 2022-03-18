@@ -66,7 +66,7 @@ object SjRequest {
      * for Epaye (Employers' Pay as you earn)
      * It is used by origins which doesn't provide any data
      */
-    case class Empty()
+    final case class Empty()
       extends SjRequest
       with Epaye
 

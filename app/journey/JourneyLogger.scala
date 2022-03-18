@@ -22,7 +22,7 @@ import action.model._
 import play.api.Logger
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.CookieNames
-import requests.RequestSupport._
+import essttp.utils.RequestSupport._
 
 /**
  * Journey Logger is a contextual logger. It will append to the message some extra bits of infomration

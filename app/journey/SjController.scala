@@ -20,10 +20,9 @@ import com.google.inject.Inject
 import essttp.journey.model.Origin.Vat
 import essttp.journey.model._
 import essttp.rootmodel.SessionId
-import essttp.utils.Errors
+import essttp.utils.{Errors, RequestSupport}
 import play.api.libs.json.{Json, Reads}
 import play.api.mvc.{Action, ControllerComponents, Request, Result}
-import requests.RequestSupport
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -58,7 +57,8 @@ class SjController @Inject() (
     } yield {
       val description = journeyDescription(originatedRequest.origin)
       val nextUrl = NextUrl(s"${journeyConfig.nextUrlHost}/start")
-      val response = Created(Json.toJson(nextUrl))
+      val sjResponse = SjResponse(nextUrl, journey.journeyId)
+      val response = Created(Json.toJson(sjResponse))
       JourneyLogger.info(s"Started $description [journeyId:${journey.id}]")
       response
     }

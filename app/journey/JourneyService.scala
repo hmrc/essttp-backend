@@ -17,8 +17,10 @@
 package journey
 
 import essttp.journey.model.{Journey, JourneyId}
+import essttp.rootmodel.SessionId
 import play.api.mvc.Request
 import repository.RepoResultChecker._
+import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.Clock
 import javax.inject.{Inject, Singleton}
@@ -26,25 +28,20 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class JourneyService @Inject() (
-    journeyRepo: JourneyRepo,
-    clock:       Clock
+    journeyRepo: JourneyRepo
 )(implicit ec: ExecutionContext) {
 
-  def get()(implicit request: Request[_]): Future[Journey] = {
-    find().map { maybeJourney =>
+  def findLatestJourney(sessionId: SessionId)(implicit hc: HeaderCarrier): Future[Option[Journey]] = {
+    journeyRepo.findLatestJourney(sessionId)
+  }
+
+  def get(journeyId: JourneyId)(implicit request: Request[_]): Future[Journey] = {
+    find(journeyId).map { maybeJourney =>
       maybeJourney.getOrElse(throw new RuntimeException(s"Expected journey to be found ${request.path}"))
     }
   }
 
-  private def find()(implicit request: Request[_]): Future[Option[Journey]] = {
-    val journeyId: JourneyId =
-      request
-        .session
-        .data
-        .get("JourneyId")
-        .map(JourneyId.apply)
-        .getOrElse(throw new RuntimeException(s"JourneyId not present in request session ${request.path}"))
-
+  private def find(journeyId: JourneyId)(implicit request: Request[_]): Future[Option[Journey]] = {
     journeyRepo.findById(journeyId)
   }
 

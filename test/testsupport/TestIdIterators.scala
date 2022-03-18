@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-package journey
+package testsupport
 
-import essttp.journey.model.JourneyId
-
-import java.util.UUID
-import javax.inject.Singleton
-
-@Singleton
-class JourneyIdProvider {
-  def nextJourneyId(): JourneyId = JourneyId(UUID.randomUUID().toString)
+object TestIdIterators {
+  def ids(prefix: String = "id"): Iterator[String] = Stream.from(0).map(i => s"$prefix$i").iterator
 }

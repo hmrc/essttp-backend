@@ -16,6 +16,7 @@
 
 package essttp.journey.model
 
+import essttp.journey.model.Journey.HasTaxId
 import essttp.rootmodel._
 import essttp.utils.Errors
 import julienrf.json.derived
@@ -26,7 +27,7 @@ import java.time.LocalDateTime
 sealed trait Journey {
   def _id: JourneyId
   def origin: Origin
-  def createdAt: LocalDateTime
+  def createdOn: LocalDateTime
   def sjRequest: SjRequest
   def sessionId: SessionId
   def taxRegime: TaxRegime
@@ -45,8 +46,8 @@ sealed trait Journey {
       .replaceAllLiterally("$", ".")
   }
 
-  def backUrl: BackUrl
-  def returnUrl: ReturnUrl
+  def backUrl: Option[BackUrl]
+  def returnUrl: Option[ReturnUrl]
 }
 object Journey {
 
@@ -59,7 +60,7 @@ object Journey {
     val customWrites = OWrites[Journey](j =>
       defaultFormat.writes(j) ++ Json.obj(
         "sessionId" -> j.sessionId,
-        "createdAt" -> j.createdAt
+        "createdAt" -> j.createdOn
       ))
     OFormat(
       defaultFormat,
@@ -79,6 +80,9 @@ object Journey {
     def amount: AmountInPence
   }
 
+  sealed trait HasSelectedPlan extends Journey { self: Journey =>
+    def selectedPlan: SelectedPlan
+  }
 
   /**
    * Journey extractors extracting journeys in particular stage.
@@ -86,15 +90,21 @@ object Journey {
    */
   object Stages {
 
+    /**
+     * Marking trait for selecting journey in stage
+     */
+    sealed trait JourneyStage extends Journey {self: Journey =>}
+
     private val sanityMessage = "Sanity check just in case if you messed journey traits up"
 
-    sealed trait AfterStarted extends Journey { self: Journey =>
+    sealed trait AfterStarted extends Journey with JourneyStage { self: Journey =>
       Errors.sanityCheck(Stage.AfterStarted.values.contains(stage), sanityMessage)
       def stage: Stage.AfterStarted
     }
 
     sealed trait AfterEligibilityCheck
       extends Journey
+        with JourneyStage
         with HasTaxId { self: Journey =>
       Errors.sanityCheck(Stage.AfterEligibilityCheck.values.contains(stage), sanityMessage)
       def stage: Stage.AfterEligibilityCheck
@@ -102,6 +112,7 @@ object Journey {
 
     sealed trait AfterEnteredDayOfMonth
       extends Journey
+        with JourneyStage
       with HasTaxId
       with HasDayOfMonth
       { self: Journey =>
@@ -111,6 +122,7 @@ object Journey {
 
     sealed trait AfterEnteredAmount
       extends Journey
+        with JourneyStage
         with HasTaxId
         with HasDayOfMonth
         with HasAmount
@@ -121,12 +133,14 @@ object Journey {
 
     sealed trait AfterSelectedPlan
       extends Journey
+        with JourneyStage
         with HasTaxId
         with HasDayOfMonth
-        with HasAmount { self: Journey =>
+        with HasAmount
+        with HasSelectedPlan { self: Journey =>
       Errors.sanityCheck(Stage.AfterSelectedPlan.values.contains(stage), sanityMessage)
       def stage: Stage.AfterSelectedPlan
-      def selectedPlan: SelectedPlan
+
     }
   }
 
@@ -138,9 +152,9 @@ object Journey {
     override def sjRequest: SjRequest.Epaye
     override def origin: Origin.Epaye
 
-    override val (backUrl: BackUrl, returnUrl: ReturnUrl) = sjRequest match {
-      case r: SjRequest.Epaye.Simple => (r.backUrl, r.returnUrl)
-      case _ => Errors.notImplemented("PAWEL TODO")
+    override val (backUrl, returnUrl) = sjRequest match {
+      case r: SjRequest.Epaye.Simple => (Some(r.backUrl), Some(r.returnUrl))
+      case _ => (None, None)
     }
   }
 
@@ -153,7 +167,7 @@ object Journey {
     final case class AfterStarted(
                                    override val _id:         JourneyId,
                                    override val origin:      Origin.Epaye,
-                                   override val createdAt:   LocalDateTime,
+                                   override val createdOn:   LocalDateTime,
                                    override val sjRequest: SjRequest.Epaye,
                                    override val sessionId:   SessionId,
                                    override val stage:       Stage.AfterStarted
@@ -167,13 +181,13 @@ object Journey {
      * Epaye
      */
     final case class AfterEligibilityCheck(
-                                          override val _id:         JourneyId,
-                                          override val origin:      Origin.Epaye,
-                                          override val createdAt:   LocalDateTime,
-                                          override val sjRequest:   SjRequest.Epaye,
-                                          override val sessionId:   SessionId,
-                                          override val stage:       Stage.AfterEligibilityCheck,
-                                          override val taxId:       Aor
+                                            override val _id:         JourneyId,
+                                            override val origin:      Origin.Epaye,
+                                            override val createdOn:   LocalDateTime,
+                                            override val sjRequest:   SjRequest.Epaye,
+                                            override val sessionId:   SessionId,
+                                            override val stage:       Stage.AfterEligibilityCheck,
+                                            override val taxId:       Aor
                                         )
       extends Journey
         with Journey.Stages.AfterEligibilityCheck
@@ -184,14 +198,14 @@ object Journey {
      * Epaye
      */
     final case class EnteredDayOfMonth(
-                                          override val _id:         JourneyId,
-                                          override val origin:      Origin.Epaye,
-                                          override val createdAt:   LocalDateTime,
-                                          override val sjRequest:   SjRequest.Epaye,
-                                          override val sessionId:   SessionId,
-                                          override val stage:       Stage.AfterEnteredDayOfMonth,
-                                          override val taxId:       Aor,
-                                          override val dayOfMonth: DayOfMonth,
+                                        override val _id:         JourneyId,
+                                        override val origin:      Origin.Epaye,
+                                        override val createdOn:   LocalDateTime,
+                                        override val sjRequest:   SjRequest.Epaye,
+                                        override val sessionId:   SessionId,
+                                        override val stage:       Stage.AfterEnteredDayOfMonth,
+                                        override val taxId:       Aor,
+                                        override val dayOfMonth: DayOfMonth,
                                         )
       extends Journey
         with Journey.Stages.AfterEnteredDayOfMonth
@@ -202,15 +216,15 @@ object Journey {
      * Epaye
      */
     final case class AfterEnteredAmount(
-                                          override val _id:         JourneyId,
-                                          override val origin:      Origin.Epaye,
-                                          override val createdAt:   LocalDateTime,
-                                          override val sjRequest: SjRequest.Epaye,
-                                          override val sessionId:   SessionId,
-                                          override val stage:       Stage.AfterEnteredAmount,
-                                          override val taxId:       Aor,
-                                          override val dayOfMonth: DayOfMonth,
-                                          override val amount: AmountInPence,
+                                         override val _id:         JourneyId,
+                                         override val origin:      Origin.Epaye,
+                                         override val createdOn:   LocalDateTime,
+                                         override val sjRequest: SjRequest.Epaye,
+                                         override val sessionId:   SessionId,
+                                         override val stage:       Stage.AfterEnteredAmount,
+                                         override val taxId:       Aor,
+                                         override val dayOfMonth: DayOfMonth,
+                                         override val amount: AmountInPence,
                                         )
       extends Journey
         with Journey.Stages.AfterEnteredAmount
@@ -221,16 +235,16 @@ object Journey {
      * Epaye
      */
     final case class AfterSelectedPlan(
-                                          override val _id:         JourneyId,
-                                          override val origin:      Origin.Epaye,
-                                          override val createdAt:   LocalDateTime,
-                                          override val sjRequest: SjRequest.Epaye,
-                                          override val sessionId:   SessionId,
-                                          override val stage:       Stage.AfterSelectedPlan,
-                                          override val taxId:       Aor,
-                                          override val dayOfMonth: DayOfMonth,
-                                          override val amount: AmountInPence,
-                                          override val selectedPlan: SelectedPlan,
+                                        override val _id:         JourneyId,
+                                        override val origin:      Origin.Epaye,
+                                        override val createdOn:   LocalDateTime,
+                                        override val sjRequest: SjRequest.Epaye,
+                                        override val sessionId:   SessionId,
+                                        override val stage:       Stage.AfterSelectedPlan,
+                                        override val taxId:       Aor,
+                                        override val dayOfMonth: DayOfMonth,
+                                        override val amount: AmountInPence,
+                                        override val selectedPlan: SelectedPlan,
                                         )
       extends Journey
         with Journey.Stages.AfterSelectedPlan
