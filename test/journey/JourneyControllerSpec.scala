@@ -23,7 +23,7 @@ import testsupport.ItSpec
 
 class JourneyControllerSpec extends ItSpec {
 
-  lazy val journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
+  def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
   "start journey EpayeBta" in {
     val tdAll = new TdAll {
