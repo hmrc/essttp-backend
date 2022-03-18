@@ -209,9 +209,8 @@ lazy val corJourney = Project(appName + "-cor-journey", file("cor-journey"))
       //run `essttp-backend/dependencyTree::toFile deps.txt -f` and look for that line:
       // +-uk.gov.hmrc:auth-client_2.12:3.0.0-play-27 (evicted by: 5.1.0-play-27)
       //the correct version in this time was `3.0.0`
-      //gives Enrolments which are used in EnrolmentDef
-      "uk.gov.hmrc" %% "auth-client" % "4.0.0-play-28",
-      "uk.gov.hmrc" %% "bootstrap-common-play-27" % "4.0.0" % Provided,
+      "uk.gov.hmrc" %% "auth-client" % "5.10.0-play-28",
+      "uk.gov.hmrc" %% "bootstrap-common-play-28" % AppDependencies.bootstrapVersion % Provided,
 
       "org.julienrf" %% "play-json-derived-codecs" % "6.0.0", //choose carefully
       "com.github.kxbmap" %% "configs" % "0.4.4",
