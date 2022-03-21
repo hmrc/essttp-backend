@@ -161,7 +161,7 @@ lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin, SbtAutoBuildPlugin, SbtGitVersioning)
   .settings(commonSettings)
   .settings(playSettings : _*)
-  .settings(PlayKeys.playDefaultPort := 9066)
+  .settings(PlayKeys.playDefaultPort := 9216)
   .settings(
     scalaVersion := appScalaVersion,
     libraryDependencies ++= appDependencies,

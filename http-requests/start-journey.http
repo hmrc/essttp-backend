@@ -1,4 +1,4 @@
-POST http://localhost:9000/essttp-backend/epaye/bta/journey/start
+POST http://localhost:9216/essttp-backend/epaye/bta/journey/start
 Accept: */*
 Cache-Control: no-cache
 Content-Type: Application/Json
@@ -11,7 +11,7 @@ X-Session-ID: sialalala
 
 ###
 
-POST http://localhost:9000/essttp-backend/epaye/gov-uk/journey/start
+POST http://localhost:9216/essttp-backend/epaye/gov-uk/journey/start
 Accept: */*
 Cache-Control: no-cache
 Content-Type: Application/Json
@@ -22,7 +22,7 @@ X-Session-ID: sialalala
 
 ###
 
-POST http://localhost:9000/essttp-backend/epaye/detached-url/journey/start
+POST http://localhost:9216/essttp-backend/epaye/detached-url/journey/start
 Accept: */*
 Cache-Control: no-cache
 Content-Type: Application/Json
@@ -30,3 +30,16 @@ X-Session-ID: sialalala
 
 {
 }
+
+###
+
+GET http://localhost:9216/essttp-backend/journey/$JOURNEY_ID
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:9216/essttp-backend/journey/find-latest-by-session-id
+Accept: */*
+Cache-Control: no-cache
+X-Session-ID: sialalala
