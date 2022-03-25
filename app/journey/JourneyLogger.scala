@@ -86,7 +86,7 @@ object JourneyLogger {
   private def makeRichMessage(message: String)(implicit request: RequestHeader): String = {
     request match {
       case r: JourneyRequest[_] =>
-        implicit val req = r
+        implicit val req: JourneyRequest[_] = r
         s"$message $taxRegime $origin $journeyName $stage $journeyId $context"
       case _ =>
         s"$message $context "

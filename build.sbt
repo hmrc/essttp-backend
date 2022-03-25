@@ -134,7 +134,6 @@ lazy val wartRemoverSettings = {
     Test / compile / wartremoverErrors --= Seq(Wart.Any, Wart.Equals, Wart.Null, Wart.NonUnitStatements, Wart.PublicInference),
     wartremoverExcluded ++= (baseDirectory.value / "test").get
   )
-  Seq()
 }
 
 lazy val scalaCompilerOptions = Seq(
