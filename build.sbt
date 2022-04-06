@@ -170,7 +170,8 @@ lazy val microservice = Project(appName, file("."))
     wartremoverExcluded ++= (Compile / routes).value,
     routesImport ++= Seq(
 //      "essttp.corjourney.util.ValueClassBinder._",
-      "essttp.journey.model._",
+      "model._",
+      "essttp.journey.model._"
     )
   )
   .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)

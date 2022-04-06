@@ -15,6 +15,8 @@
  */
 
 import com.google.inject.{AbstractModule, Provides, Singleton}
+import connectors.EligibilityConnector
+import services.{EligibilityService, TTPStubEligibilityService}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 
 import java.time.Clock
@@ -30,4 +32,9 @@ class Module extends AbstractModule {
   def authorisedFunctions(ac: AuthConnector): AuthorisedFunctions = new AuthorisedFunctions {
     override def authConnector: AuthConnector = ac
   }
+
+  @Provides
+  @Singleton
+  def eligibilityService(ac: EligibilityConnector): EligibilityService = new TTPStubEligibilityService(ac)
+
 }

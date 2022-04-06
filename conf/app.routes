@@ -6,3 +6,5 @@ GET        /journey/:journeyId                  journey.JourneyController.getJou
 POST       /epaye/bta/journey/start             journey.SjController.startJourneyEpayeFromBta()
 POST       /epaye/gov-uk/journey/start          journey.SjController.startJourneyEpayeFromGovUk()
 POST       /epaye/detached-url/journey/start    journey.SjController.startJourneyEpayeFromDetachedUrl()
+
+GET       /eligibility/:regime/:idtype/:id/financials  controllers.EligibilityController.eligibilityData(regime: TaxRegime, idtype: IdType, id)
