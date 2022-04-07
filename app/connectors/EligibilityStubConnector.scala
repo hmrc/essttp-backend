@@ -46,7 +46,7 @@ class EligibilityStubConnector @Inject() (httpClient: HttpClient, appConfig: App
   }
 
   def url(regime: TaxRegime, id: TaxId): String =
-    s"${appConfig.ttpUrl}/eligibility/${regime.entryName}/${id.value}/financials"
+    s"${appConfig.ttpBaseUrl}/essttp-stubs/eligibility/${regime.entryName}/${id.value}/financials"
 
 }
 
