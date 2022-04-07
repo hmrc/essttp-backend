@@ -20,7 +20,7 @@ import cats.data.EitherT
 import config.AppConfig
 import connectors.EligibilityStubConnector.StubTaxRegime.EPaye
 import connectors.EligibilityStubConnector.TaxID.EmpRef
-import connectors.EligibilityStubConnector.{ServerError, ServiceError, asStubTaxRegime, url}
+import connectors.EligibilityStubConnector.{ServerError, ServiceError, StubTaxRegime, asStubTaxRegime}
 import essttp.rootmodel.TaxRegime._
 import essttp.rootmodel.{TaxId, TaxRegime}
 import model.OverduePayments
@@ -43,11 +43,14 @@ class EligibilityStubConnector @Inject() (httpClient: HttpClient, appConfig: App
     val response = httpClient
       .GET[Either[UpstreamErrorResponse, OverduePayments]](
         url = url(asStubTaxRegime(regime), id)
-      // url = appConfig.barsPersonalAssessUrl,
       )
 
     EitherT(response).leftMap(handleUpstreamError)
   }
+
+  def url(regime: StubTaxRegime, id: TaxId): String =
+    s"${appConfig.ttpUrl}/eligibility/${regime.name}/${id.value}/financials"
+
 
 }
 
@@ -57,8 +60,6 @@ object EligibilityStubConnector {
   }
 
   case class ServerError(message: String, code: Int) extends ServiceError
-
-  def url(regime: StubTaxRegime, id: TaxId): String = s"http://localhost:9218/essttp-stubs/eligibility/${regime.name}/${id.value}/financials"
 
   sealed trait TaxID {
     def value: String

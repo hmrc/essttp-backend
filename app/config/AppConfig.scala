@@ -24,5 +24,6 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 class AppConfig @Inject() (
     config: Configuration, servicesConfig: ServicesConfig
 ) {
+  def ttpUrl: String = s"${servicesConfig.baseUrl("ttp")}${servicesConfig.getConfString("ttp.path", "")}"
 
 }
