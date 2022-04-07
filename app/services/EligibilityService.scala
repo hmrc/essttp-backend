@@ -17,7 +17,8 @@
 package services
 
 import cats.data.EitherT
-import model.{IdType, OverduePayments, TaxID, TaxRegime}
+import essttp.rootmodel.{TaxId, TaxRegime}
+import model.OverduePayments
 import services.EligibilityService.ServiceError
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -25,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 abstract class EligibilityService {
 
-  def eligibilityData(regime: TaxRegime, idType: IdType, id: TaxID)(implicit hc: HeaderCarrier, ec: ExecutionContext): EitherT[Future, ServiceError, OverduePayments]
+  def eligibilityData(regime: TaxRegime, id: TaxId)(implicit hc: HeaderCarrier, ec: ExecutionContext): EitherT[Future, ServiceError, OverduePayments]
 
 }
 

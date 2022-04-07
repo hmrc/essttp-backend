@@ -20,19 +20,31 @@ import enumeratum._
 
 import scala.collection.immutable
 
-sealed trait TaxRegime extends EnumEntry
+sealed trait TaxRegime extends EnumEntry {
+  def taxIdOf(value: String): TaxId
+}
 
 object TaxRegime extends Enum[TaxRegime] {
 
   /**
    * Tax regime for Employers' Pay as you earn (Epaye)
    */
-  case object Epaye extends TaxRegime
+  case object Epaye extends TaxRegime {
+
+    override val entryName: String = "EPaye"
+
+    override def taxIdOf(value: String): TaxId = EmpRef(value)
+  }
 
   /**
    * Tax regime for Value Added Tax (Vat)
    */
-  case object Vat extends TaxRegime
+  case object Vat extends TaxRegime {
+
+    override val entryName: String = "Vat"
+
+    override def taxIdOf(value: String): TaxId = Vrn(value)
+  }
 
   override val values: immutable.IndexedSeq[TaxRegime] = findValues
 }

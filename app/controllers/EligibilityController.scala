@@ -16,7 +16,7 @@
 
 package controllers
 
-import model.{IdType, TaxRegime}
+import essttp.rootmodel.TaxRegime
 import play.api.libs.json.Json
 import play.api.mvc.ControllerComponents
 import services.EligibilityService
@@ -28,9 +28,9 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class EligibilityController @Inject() (cc: ControllerComponents, es: EligibilityService)(implicit ec: ExecutionContext) extends BackendController(cc) {
 
-  def eligibilityData(regime: TaxRegime, idType: IdType, id: String) = Action.async { implicit request =>
+  def eligibilityData(regime: TaxRegime, id: String) = Action.async { implicit request =>
     val result = for {
-      d <- es.eligibilityData(regime, idType, regime.taxIdOf(idType, id))
+      d <- es.eligibilityData(regime, regime.taxIdOf(id))
     } yield Ok(Json.toJson(d))
     result.getOrElse(throw new Exception("failed to retrieve eligibility data"))
   }

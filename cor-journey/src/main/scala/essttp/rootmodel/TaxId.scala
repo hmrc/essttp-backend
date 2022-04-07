@@ -19,7 +19,9 @@ package essttp.rootmodel
 import play.api.libs.functional.syntax._
 import play.api.libs.json.Format
 
-sealed trait TaxId
+sealed trait TaxId {
+  def value: String
+}
 
 /**
  * Accounts Office Reference (Aor)
@@ -39,4 +41,10 @@ final case class Vrn(value: String) extends TaxId
 
 object Vrn {
   implicit val format: Format[Vrn] = implicitly[Format[String]].inmap(Vrn(_), _.value)
+}
+
+final case class EmpRef(value: String) extends TaxId
+
+object EmpRef {
+  implicit val format: Format[EmpRef] = implicitly[Format[String]].inmap(EmpRef(_), _.value)
 }

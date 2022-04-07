@@ -17,8 +17,9 @@
 package services
 
 import cats.data.EitherT
-import connectors.EligibilityConnector
-import model.{IdType, OverduePayments, TaxID, TaxRegime}
+import connectors.EligibilityStubConnector
+import essttp.rootmodel._
+import model.OverduePayments
 import services.EligibilityService.{GenericError, ServiceError}
 import services.TTPStubEligibilityService.liftError
 import uk.gov.hmrc.http.HeaderCarrier
@@ -27,14 +28,14 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TTPStubEligibilityService @Inject() (connector: EligibilityConnector) extends EligibilityService {
+class TTPStubEligibilityService @Inject() (connector: EligibilityStubConnector) extends EligibilityService {
 
-  override def eligibilityData(regime: TaxRegime, idType: IdType, id: TaxID)(implicit hc: HeaderCarrier, ec: ExecutionContext): EitherT[Future, ServiceError, OverduePayments] = for {
-    d <- connector.eligibilityData(regime, idType, id).leftMap(liftError)
+  override def eligibilityData(regime: TaxRegime, id: TaxId)(implicit hc: HeaderCarrier, ec: ExecutionContext): EitherT[Future, ServiceError, OverduePayments] = for {
+    d <- connector.eligibilityData(regime, id).leftMap(liftError)
   } yield d
 
 }
 
 object TTPStubEligibilityService {
-  def liftError(e: EligibilityConnector.ServiceError): EligibilityService.ServiceError = GenericError(e.message)
+  def liftError(e: EligibilityStubConnector.ServiceError): EligibilityService.ServiceError = GenericError(e.message)
 }

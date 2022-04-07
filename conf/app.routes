@@ -7,4 +7,4 @@ POST       /epaye/bta/journey/start             journey.SjController.startJourne
 POST       /epaye/gov-uk/journey/start          journey.SjController.startJourneyEpayeFromGovUk()
 POST       /epaye/detached-url/journey/start    journey.SjController.startJourneyEpayeFromDetachedUrl()
 
-GET       /eligibility/:regime/:idtype/:id/financials  controllers.EligibilityController.eligibilityData(regime: TaxRegime, idtype: IdType, id)
+GET       /eligibility/:regime/:id/financials  controllers.EligibilityController.eligibilityData(regime: TaxRegime, id)

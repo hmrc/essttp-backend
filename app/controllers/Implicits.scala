@@ -14,42 +14,21 @@
  * limitations under the License.
  */
 
-package model
+package controllers
 
-import model.TaxID.EmpRef
+import essttp.rootmodel.TaxRegime
 import play.api.mvc.PathBindable
 
-sealed trait TaxRegime {
-  def name: String
+object Implicits {
 
-  def taxIdOf(idType: IdType, value: String): TaxID
-
-}
-
-object TaxRegime {
-
-  implicit def pathBinder(implicit stringBinder: PathBindable[String]): PathBindable[TaxRegime] = new PathBindable[TaxRegime] {
+  implicit def taxRegimePB(implicit stringBinder: PathBindable[String]): PathBindable[TaxRegime] = new PathBindable[TaxRegime] {
     override def bind(key: String, value: String): Either[String, TaxRegime] = {
       for {
         regime <- stringBinder.bind(key, value).right
-      } yield regimeOf(regime)
+      } yield TaxRegime.withNameLowercaseOnly(regime.toLowerCase())
     }
     override def unbind(key: String, regime: TaxRegime): String = {
-      regime.name.toLowerCase()
-    }
-  }
-
-  def regimeOf(name: String): TaxRegime = name.toLowerCase() match {
-    case "epaye" => EPaye
-    case n       => throw new IllegalArgumentException(s"$n is not the name of a tax regime")
-  }
-
-  object EPaye extends TaxRegime {
-    override def name: String = "EPaye"
-
-    def taxIdOf(idType: IdType, value: String): TaxID = idType match {
-      case IdType.EmployeeRef => EmpRef(value)
-      case _                  => throw new IllegalArgumentException("not a valid id")
+      regime.entryName.toLowerCase()
     }
   }
 

@@ -1,3 +1,3 @@
 ### Send GET request
-GET http://localhost:9216/essttp-backend/eligibility/epaye/empref/1234/financials
+GET http://localhost:9216/essttp-backend/eligibility/epaye/1234/financials
 Accept: application/json

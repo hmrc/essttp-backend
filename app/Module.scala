@@ -15,7 +15,7 @@
  */
 
 import com.google.inject.{AbstractModule, Provides, Singleton}
-import connectors.EligibilityConnector
+import connectors.EligibilityStubConnector
 import services.{EligibilityService, TTPStubEligibilityService}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 
@@ -35,6 +35,6 @@ class Module extends AbstractModule {
 
   @Provides
   @Singleton
-  def eligibilityService(ac: EligibilityConnector): EligibilityService = new TTPStubEligibilityService(ac)
+  def eligibilityService(ac: EligibilityStubConnector): EligibilityService = new TTPStubEligibilityService(ac)
 
 }
