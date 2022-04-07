@@ -18,10 +18,7 @@ package connectors
 
 import cats.data.EitherT
 import config.AppConfig
-import connectors.EligibilityStubConnector.StubTaxRegime.EPaye
-import connectors.EligibilityStubConnector.TaxID.EmpRef
-import connectors.EligibilityStubConnector.{ServerError, ServiceError, StubTaxRegime, asStubTaxRegime}
-import essttp.rootmodel.TaxRegime._
+import connectors.EligibilityStubConnector.{ServerError, ServiceError}
 import essttp.rootmodel.{TaxId, TaxRegime}
 import model.OverduePayments
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -42,15 +39,14 @@ class EligibilityStubConnector @Inject() (httpClient: HttpClient, appConfig: App
 
     val response = httpClient
       .GET[Either[UpstreamErrorResponse, OverduePayments]](
-        url = url(asStubTaxRegime(regime), id)
+        url = url(regime, id)
       )
 
     EitherT(response).leftMap(handleUpstreamError)
   }
 
-  def url(regime: StubTaxRegime, id: TaxId): String =
-    s"${appConfig.ttpUrl}/eligibility/${regime.name}/${id.value}/financials"
-
+  def url(regime: TaxRegime, id: TaxId): String =
+    s"${appConfig.ttpUrl}/eligibility/${regime.entryName}/${id.value}/financials"
 
 }
 
@@ -58,43 +54,7 @@ object EligibilityStubConnector {
   sealed trait ServiceError {
     def message: String
   }
-
   case class ServerError(message: String, code: Int) extends ServiceError
-
-  sealed trait TaxID {
-    def value: String
-  }
-
-  object TaxID {
-    case class EmpRef(value: String) extends TaxID
-  }
-
-  sealed trait StubTaxRegime {
-    def name: String
-
-    def taxIdOf(value: String): TaxID
-  }
-
-  object StubTaxRegime {
-
-    def regimeOf(name: String): StubTaxRegime = name.toLowerCase() match {
-      case "epaye" => EPaye
-      case n       => throw new IllegalArgumentException(s"$n is not the name of a tax regime")
-    }
-
-    object EPaye extends StubTaxRegime {
-      override def name: String = "EPaye"
-
-      def taxIdOf(value: String): TaxID = EmpRef(value)
-    }
-
-  }
-
-  def asStubTaxRegime(regime: TaxRegime): StubTaxRegime = regime match {
-    case Epaye => EPaye
-
-    case Vat   => throw new IllegalArgumentException("not defined yet")
-  }
 
 }
 
