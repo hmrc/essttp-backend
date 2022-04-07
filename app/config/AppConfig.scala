@@ -24,6 +24,6 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 class AppConfig @Inject() (
     config: Configuration, servicesConfig: ServicesConfig
 ) {
-  def ttpBaseUrl: String = s"${servicesConfig.baseUrl("ttp")}"
+  val ttpBaseUrl: String = s"${servicesConfig.baseUrl("ttp")}"
 
 }
