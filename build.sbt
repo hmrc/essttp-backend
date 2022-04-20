@@ -132,7 +132,8 @@ lazy val wartRemoverSettings = {
     wartRemoverError,
     wartRemoverWarning,
     Test / compile / wartremoverErrors --= Seq(Wart.Any, Wart.Equals, Wart.Null, Wart.NonUnitStatements, Wart.PublicInference),
-    wartremoverExcluded ++= (baseDirectory.value / "test").get
+    wartremoverExcluded ++= (baseDirectory.value / "test").get,
+    wartremoverExcluded ++= (Compile / routes).value
   )
   Seq()
 }
@@ -186,7 +187,7 @@ lazy val microservice = Project(appName, file("."))
   .dependsOn(corJourney, corTestData)
   .aggregate(corJourney, corTestData)
   .settings(
-    majorVersion                     := 0,
+    majorVersion                     := 1,
     scalaVersion                     := appScalaVersion,
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test
   )
