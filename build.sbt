@@ -135,6 +135,7 @@ lazy val wartRemoverSettings = {
     wartremoverExcluded ++= (baseDirectory.value / "test").get,
     wartremoverExcluded ++= (Compile / routes).value
   )
+  Seq()
 }
 
 lazy val scalaCompilerOptions = Seq(
