@@ -16,7 +16,7 @@ import wartremover.WartRemover.autoImport.{wartremoverErrors, wartremoverExclude
 import uk.gov.hmrc.ShellPrompt
 
 val appName = "essttp-backend"
-
+val majorVer = 1
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
@@ -26,7 +26,7 @@ lazy val appDependencies : Seq[ModuleID] = AppDependencies()
 lazy val playSettings : Seq[Setting[_]] = Seq.empty
 
 lazy val commonSettings = Seq(
-  majorVersion := 1,
+  majorVersion := majorVer,
   scalacOptions ++= scalaCompilerOptions,
   resolvers ++= Seq(Resolver.bintrayRepo("hmrc", "releases"), Resolver.jcenterRepo),
   update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
@@ -187,7 +187,7 @@ lazy val microservice = Project(appName, file("."))
   .dependsOn(corJourney, corTestData)
   .aggregate(corJourney, corTestData)
   .settings(
-    majorVersion                     := 1,
+    majorVersion                     := majorVer,
     scalaVersion                     := appScalaVersion,
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test
   )
@@ -202,6 +202,7 @@ lazy val corJourney = Project(appName + "-cor-journey", file("cor-journey"))
   .settings(commonSettings)
   .settings(
     scalaVersion := appScalaVersion,
+    majorVersion                     := majorVer,
     libraryDependencies ++= List(
 
       //WARN! - The version of `auth-client` has to be exact!
@@ -230,6 +231,7 @@ lazy val corTestData = Project(appName + "-cor-test-data", file("cor-test-data")
   .settings(commonSettings)
   .settings(
     scalaVersion := appScalaVersion,
+    majorVersion                     := majorVer,
     libraryDependencies ++= List(
       "com.typesafe.play" %% "play"      % play.core.PlayVersion.current % Provided,
       "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % Provided,
