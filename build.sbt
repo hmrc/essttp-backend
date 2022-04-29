@@ -2,7 +2,6 @@ import _root_.play.sbt.routes.RoutesKeys._
 import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 import play.core.PlayVersion
 import play.sbt.PlayImport.PlayKeys
-import sbt.Def
 import sbt.Keys._
 import sbt.Tests.{Group, SubProcess}
 import scalariform.formatter.preferences._
@@ -23,8 +22,8 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 
 val appScalaVersion = "2.12.12"
 
-lazy val appDependencies: Seq[ModuleID] = AppDependencies()
-lazy val playSettings: Seq[Setting[_]] = Seq.empty
+lazy val appDependencies : Seq[ModuleID] = AppDependencies()
+lazy val playSettings : Seq[Setting[_]] = Seq.empty
 
 lazy val commonSettings = Seq(
   majorVersion := majorVer,
@@ -126,7 +125,7 @@ lazy val wartRemoverSettings = {
       Wart.Var,
       Wart.While)
 
-    Compile / compile / wartremoverErrors ++= errorWarts
+    Compile / compile / wartremoverErrors  ++= errorWarts
   }
 
   Seq(
@@ -159,8 +158,8 @@ def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = {
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin, SbtAutoBuildPlugin, SbtGitVersioning)
-  .settings(commonSettings.++(Seq(wartremoverExcluded ++= (Compile / routes).value)))
-  .settings(playSettings: _*)
+  .settings(commonSettings)
+  .settings(playSettings : _*)
   .settings(PlayKeys.playDefaultPort := 9216)
   .settings(
     scalaVersion := appScalaVersion,
@@ -169,7 +168,7 @@ lazy val microservice = Project(appName, file("."))
     Test / fork := false,
     wartremoverExcluded ++= (Compile / routes).value,
     routesImport ++= Seq(
-      //      "essttp.corjourney.util.ValueClassBinder._",
+//      "essttp.corjourney.util.ValueClassBinder._",
       "essttp.journey.model._",
     )
   )
@@ -186,9 +185,10 @@ lazy val microservice = Project(appName, file("."))
   .dependsOn(corJourney, corTestData)
   .aggregate(corJourney, corTestData)
   .settings(
-    majorVersion := majorVer,
-    scalaVersion := appScalaVersion,
-    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test
+    majorVersion                     := majorVer,
+    scalaVersion                     := appScalaVersion,
+    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
+    wartremoverExcluded ++= (Compile / routes).value
   )
   .settings(publishingSettings: _*)
   .settings(resolvers += Resolver.jcenterRepo)
