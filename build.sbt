@@ -22,8 +22,8 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 
 val appScalaVersion = "2.12.12"
 
-lazy val appDependencies : Seq[ModuleID] = AppDependencies()
-lazy val playSettings : Seq[Setting[_]] = Seq.empty
+lazy val appDependencies: Seq[ModuleID] = AppDependencies()
+lazy val playSettings: Seq[Setting[_]] = Seq.empty
 
 lazy val commonSettings = Seq(
   majorVersion := majorVer,
@@ -125,15 +125,14 @@ lazy val wartRemoverSettings = {
       Wart.Var,
       Wart.While)
 
-    Compile / compile / wartremoverErrors  ++= errorWarts
+    Compile / compile / wartremoverErrors ++= errorWarts
   }
 
   Seq(
     wartRemoverError,
     wartRemoverWarning,
     Test / compile / wartremoverErrors --= Seq(Wart.Any, Wart.Equals, Wart.Null, Wart.NonUnitStatements, Wart.PublicInference),
-    wartremoverExcluded ++= (baseDirectory.value / "test").get,
-    wartremoverExcluded ++= (Compile / routes).value
+    wartremoverExcluded ++= (baseDirectory.value / "test").get
   )
 }
 
@@ -160,7 +159,7 @@ def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = {
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin, SbtAutoBuildPlugin, SbtGitVersioning)
   .settings(commonSettings)
-  .settings(playSettings : _*)
+  .settings(playSettings: _*)
   .settings(PlayKeys.playDefaultPort := 9216)
   .settings(
     scalaVersion := appScalaVersion,
@@ -169,7 +168,7 @@ lazy val microservice = Project(appName, file("."))
     Test / fork := false,
     wartremoverExcluded ++= (Compile / routes).value,
     routesImport ++= Seq(
-//      "essttp.corjourney.util.ValueClassBinder._",
+      //      "essttp.corjourney.util.ValueClassBinder._",
       "essttp.journey.model._",
     )
   )
@@ -186,9 +185,9 @@ lazy val microservice = Project(appName, file("."))
   .dependsOn(corJourney, corTestData)
   .aggregate(corJourney, corTestData)
   .settings(
-    majorVersion                     := majorVer,
-    scalaVersion                     := appScalaVersion,
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test
+    majorVersion := majorVer,
+    scalaVersion := appScalaVersion,
+    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test
   )
   .settings(publishingSettings: _*)
   .settings(resolvers += Resolver.jcenterRepo)
@@ -201,7 +200,7 @@ lazy val corJourney = Project(appName + "-cor-journey", file("cor-journey"))
   .settings(commonSettings)
   .settings(
     scalaVersion := appScalaVersion,
-    majorVersion                     := majorVer,
+    majorVersion := majorVer,
     libraryDependencies ++= List(
 
       //WARN! - The version of `auth-client` has to be exact!
@@ -230,7 +229,7 @@ lazy val corTestData = Project(appName + "-cor-test-data", file("cor-test-data")
   .settings(commonSettings)
   .settings(
     scalaVersion := appScalaVersion,
-    majorVersion                     := majorVer,
+    majorVersion := majorVer,
     libraryDependencies ++= List(
       "com.typesafe.play" %% "play"      % play.core.PlayVersion.current % Provided,
       "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % Provided,
