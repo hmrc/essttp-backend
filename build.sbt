@@ -2,6 +2,7 @@ import _root_.play.sbt.routes.RoutesKeys._
 import com.typesafe.sbt.SbtScalariform.ScalariformKeys
 import play.core.PlayVersion
 import play.sbt.PlayImport.PlayKeys
+import sbt.Def
 import sbt.Keys._
 import sbt.Tests.{Group, SubProcess}
 import scalariform.formatter.preferences._
@@ -158,7 +159,7 @@ def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = {
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin, SbtAutoBuildPlugin, SbtGitVersioning)
-  .settings(commonSettings)
+  .settings(commonSettings.++(Seq(wartremoverExcluded ++= (Compile / routes).value)))
   .settings(playSettings: _*)
   .settings(PlayKeys.playDefaultPort := 9216)
   .settings(
