@@ -132,8 +132,7 @@ lazy val wartRemoverSettings = {
     wartRemoverError,
     wartRemoverWarning,
     Test / compile / wartremoverErrors --= Seq(Wart.Any, Wart.Equals, Wart.Null, Wart.NonUnitStatements, Wart.PublicInference),
-    wartremoverExcluded ++= (baseDirectory.value / "test").get,
-    wartremoverExcluded ++= (Compile / routes).value
+    wartremoverExcluded ++= (baseDirectory.value / "test").get
   )
 }
 
@@ -188,7 +187,8 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     majorVersion                     := majorVer,
     scalaVersion                     := appScalaVersion,
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test
+    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
+    wartremoverExcluded ++= (Compile / routes).value
   )
   .settings(publishingSettings: _*)
   .settings(resolvers += Resolver.jcenterRepo)
@@ -201,7 +201,7 @@ lazy val corJourney = Project(appName + "-cor-journey", file("cor-journey"))
   .settings(commonSettings)
   .settings(
     scalaVersion := appScalaVersion,
-    majorVersion                     := majorVer,
+    majorVersion := majorVer,
     libraryDependencies ++= List(
 
       //WARN! - The version of `auth-client` has to be exact!
@@ -230,7 +230,7 @@ lazy val corTestData = Project(appName + "-cor-test-data", file("cor-test-data")
   .settings(commonSettings)
   .settings(
     scalaVersion := appScalaVersion,
-    majorVersion                     := majorVer,
+    majorVersion := majorVer,
     libraryDependencies ++= List(
       "com.typesafe.play" %% "play"      % play.core.PlayVersion.current % Provided,
       "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % Provided,
