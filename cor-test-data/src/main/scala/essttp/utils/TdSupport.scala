@@ -16,10 +16,7 @@
 
 package essttp.utils
 
-import essttp.journey.model.JourneyId
 import essttp.testdata.TdAll
-import play.api.libs.json.Json
-import play.api.mvc.Cookie
 import play.api.test.FakeRequest
 import uk.gov.hmrc.http.{HeaderNames, SessionKeys}
 
