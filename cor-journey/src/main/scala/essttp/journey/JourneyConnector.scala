@@ -18,7 +18,7 @@ package essttp.journey
 
 import essttp.journey.model.{Journey, JourneyId, SjRequest, SjResponse}
 import play.api.mvc.RequestHeader
-import uk.gov.hmrc.http.HttpClient
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
@@ -31,6 +31,13 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
 
   def getJourney(journeyId: JourneyId)(implicit request: RequestHeader): Future[Journey] = {
     httpClient.GET[Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}")
+  }
+
+  def findLatestJourneyBySessionId()(implicit hc: HeaderCarrier): Future[Option[Journey]] = {
+    for {
+      _ <- Future(require(hc.sessionId.isDefined, "Missing required 'SessionId'"))
+      result <- httpClient.GET[Option[Journey]](s"$baseUrl/essttp-backend/journey/find-latest-by-session-id")
+    } yield result
   }
 
   object Epaye {
