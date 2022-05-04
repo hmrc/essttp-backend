@@ -37,11 +37,11 @@ class SjController @Inject() (
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
 
-  def startJourneyEpayeFromBta(): Action[SjRequest.Epaye.Simple] = startDdJourneyEpaye[SjRequest.Epaye.Simple](Origin.Epaye.Bta)
-  def startJourneyEpayeFromGovUk(): Action[SjRequest.Epaye.Empty] = startDdJourneyEpaye[SjRequest.Epaye.Empty](Origin.Epaye.GovUk)
-  def startJourneyEpayeFromDetachedUrl(): Action[SjRequest.Epaye.Empty] = startDdJourneyEpaye[SjRequest.Epaye.Empty](Origin.Epaye.DetachedUrl)
+  def startJourneyEpayeFromBta(): Action[SjRequest.Epaye.Simple] = startEssttpJourneyEpaye[SjRequest.Epaye.Simple](Origin.Epaye.Bta)
+  def startJourneyEpayeFromGovUk(): Action[SjRequest.Epaye.Empty] = startEssttpJourneyEpaye[SjRequest.Epaye.Empty](Origin.Epaye.GovUk)
+  def startJourneyEpayeFromDetachedUrl(): Action[SjRequest.Epaye.Empty] = startEssttpJourneyEpaye[SjRequest.Epaye.Empty](Origin.Epaye.DetachedUrl)
 
-  private def startDdJourneyEpaye[StartRequest <: SjRequest.Epaye: Reads](origin: Origin.Epaye): Action[StartRequest] = Action.async(parse.json[StartRequest]) { implicit request =>
+  private def startEssttpJourneyEpaye[StartRequest <: SjRequest.Epaye: Reads](origin: Origin.Epaye): Action[StartRequest] = Action.async(parse.json[StartRequest]) { implicit request =>
     val originatedSddjRequest = OriginatedSjRequest.Epaye(origin, request.body)
     doJourneyStart(originatedSddjRequest)
   }
@@ -55,10 +55,10 @@ class SjController @Inject() (
       journey: Journey = journeyFactory.makeJourney(originatedRequest, sessionId)
       _ <- journeyService.upsert(journey)
     } yield {
-      val description = journeyDescription(originatedRequest.origin)
-      val nextUrl = NextUrl(s"${journeyConfig.nextUrlHost}/start")
-      val sjResponse = SjResponse(nextUrl, journey.journeyId)
-      val response = Created(Json.toJson(sjResponse))
+      val description: String = journeyDescription(originatedRequest.origin)
+      val nextUrl: NextUrl = NextUrl(s"${journeyConfig.nextUrlHost}/start")
+      val sjResponse: SjResponse = SjResponse(nextUrl, journey.journeyId)
+      val response: Result = Created(Json.toJson(sjResponse))
       JourneyLogger.info(s"Started $description [journeyId:${journey.id}]")
       response
     }
@@ -71,7 +71,7 @@ class SjController @Inject() (
       case Origin.Epaye.DetachedUrl => s"Journey for Epaye from DetachedUrl"
     }
     case o: Origin.Vat => o match {
-      case Vat.Bta => Errors.notImplemented("Vat not implemented yet")
+      case Origin.Vat.Bta => Errors.notImplemented("Vat not implemented yet")
     }
   }
 
