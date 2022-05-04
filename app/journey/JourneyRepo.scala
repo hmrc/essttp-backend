@@ -43,7 +43,7 @@ final class JourneyRepo @Inject() (
   def findLatestJourney(sessionId: SessionId): Future[Option[Journey]] = {
     collection
       .find(Json.obj("sessionId" -> sessionId), None)
-      .sort(Json.obj("createdOn" -> -1))
+      .sort(Json.obj("createdAt" -> -1))
       .one(ReadPreference.primaryPreferred)(domainFormatImplicit, implicitly)
   }
 

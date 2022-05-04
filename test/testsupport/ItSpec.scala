@@ -29,6 +29,7 @@ import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.test.{DefaultTestServerFactory, RunningServer}
 import play.core.server.ServerConfig
 import reactivemongo.bson.BSONObjectID
+import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.{Clock, LocalDateTime, ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
@@ -39,9 +40,9 @@ import scala.util.Random
 trait ItSpec
   extends AnyFreeSpecLike
   with RichMatchers
-  with GuiceOneServerPerTest {
+  with GuiceOneServerPerTest { self =>
 
-  override implicit val patienceConfig = PatienceConfig(
+  override implicit val patienceConfig: PatienceConfig = PatienceConfig(
     timeout  = scaled(Span(20, Seconds)),
     interval = scaled(Span(300, Millis))
   )
@@ -52,12 +53,14 @@ trait ItSpec
     LocalDateTime.parse("2057-11-02T16:28:55.185", formatter).atZone(ZoneId.of("Europe/London"))
   }
 
-  lazy val overridingsModule = new AbstractModule {
+  val clock: Clock = Clock.fixed(frozenZonedDateTime.toInstant, ZoneId.of("UTC"))
+
+  lazy val overridingsModule: AbstractModule = new AbstractModule {
     override def configure(): Unit = ()
 
     @Provides
     @Singleton
-    def clock: Clock = Clock.fixed(frozenZonedDateTime.toInstant, ZoneId.of("UTC"))
+    def clock: Clock = self.clock
 
     /**
      * This one is randomised every time new test application is spawned. Thanks to that there will be no
@@ -76,12 +79,16 @@ trait ItSpec
     }
   }
 
-
   def journeyIdGenerator: TestJourneyIdGenerator = app.injector.instanceOf[TestJourneyIdGenerator]
+
+  implicit def hc: HeaderCarrier = HeaderCarrier()
+
   val testServerPort = 19001
+  val baseUrl: String = s"http://localhost:$testServerPort"
+  val databaseName: String = "essttp-backend-it"
 
   def conf: Map[String, Any] = Map(
-    "mongodb.uri" -> "mongodb://localhost:27017/essttp-backend-it",
+    "mongodb.uri" -> s"mongodb://localhost:27017/$databaseName",
     "microservice.services.essttp-backend.protocol" -> "http",
     "microservice.services.essttp-backend.host" -> "localhost",
     "microservice.services.essttp-backend.port" -> testServerPort,
