@@ -40,7 +40,6 @@ sealed trait Origin extends EnumEntry {
 }
 
 object Origin {
-  //  implicit val format: OFormat[Origin] = derived.oformat[Origin]()
   implicit val format: Format[Origin] = EnumFormat(Origins)
 
 }
@@ -52,7 +51,6 @@ object Origins extends Enum[Origin] {
   sealed trait Epaye extends Origin { self: Origin => }
 
   object Epaye extends Enum[Epaye] {
-    //    implicit val format: OFormat[Origins.Epaye] = derived.oformat[Origins.Epaye]()
     implicit val format: Format[Epaye] = EnumFormat(Epaye)
 
     case object Bta extends Origin with Epaye with BetterName { def show = "Origin.Epaye.Bta" }
@@ -73,7 +71,6 @@ object Origins extends Enum[Origin] {
   sealed trait Vat extends Origin { self: Origin => }
 
   object Vat extends Enum[Vat] {
-    //    implicit val format: OFormat[Origins.Vat] = derived.oformat[Origins.Vat]()
     implicit val format: Format[Vat] = EnumFormat(Vat)
     case object Bta extends Origin with Vat with BetterName { def show = "Origin.Vat.Bta" }
     override def values = findValues
