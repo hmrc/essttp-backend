@@ -17,7 +17,6 @@
 package journey
 
 import com.google.inject.Inject
-import essttp.journey.model.Origin.Vat
 import essttp.journey.model._
 import essttp.rootmodel.SessionId
 import essttp.utils.{Errors, RequestSupport}

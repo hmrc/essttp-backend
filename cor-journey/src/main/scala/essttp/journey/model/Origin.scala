@@ -16,25 +16,44 @@
 
 package essttp.journey.model
 
+import enumeratum.EnumEntry.Uppercase
+import enumeratum.{Enum, EnumEntry}
+import essttp.utils.EnumFormat
 import julienrf.json.derived
-import play.api.libs.json.OFormat
+import play.api.libs.json.{Format, OFormat}
 
-sealed trait Origin {
-  def show: String
+import scala.collection.immutable
+
+sealed trait Origin extends EnumEntry {
+
+  /**
+   * Better toString which shows portion of a package
+   */
+  override def toString(): String = {
+    val packageName: String = this.getClass.getPackage.getName
+    val className: String = this.getClass.getName
+    className
+      .replaceFirst(packageName + ".", "")
+      .replaceAllLiterally("$", ".")
+      .dropRight(1)
+  }
 }
 
 object Origin {
+  implicit val format: Format[Origin] = EnumFormat(Origins)
 
-  implicit val format: OFormat[Origin] = derived.oformat[Origin]()
+}
 
+object Origins extends Enum[Origin] {
   /**
    * Marking trait aggregating all Epaye [[Origin]]s
    */
   sealed trait Epaye extends Origin { self: Origin => }
 
-  object Epaye {
-    implicit val format: OFormat[Origin.Epaye] = derived.oformat[Origin.Epaye]()
-    case object Bta extends Origin with Epaye { def show = "Origin.Epaye.Bta" }
+  object Epaye extends Enum[Epaye] {
+    implicit val format: Format[Epaye] = EnumFormat(Epaye)
+
+    case object Bta extends Origin with Epaye with BetterName { def show = "Origin.Epaye.Bta" }
     case object GovUk extends Origin with Epaye { def show = "Origin.Epaye.GovUk" }
 
     /**
@@ -42,6 +61,8 @@ object Origin {
      * where the journey actually started from.
      */
     case object DetachedUrl extends Origin with Epaye { def show = "Origin.Epaye.DetachedUrl" }
+
+    override def values = findValues
   }
 
   /**
@@ -49,9 +70,19 @@ object Origin {
    */
   sealed trait Vat extends Origin { self: Origin => }
 
-  object Vat {
-    implicit val format: OFormat[Origin.Vat] = derived.oformat[Origin.Vat]()
-    case object Bta extends Origin with Vat { def show = "Origin.Vat.Bta" }
+  object Vat extends Enum[Vat] {
+    implicit val format: Format[Vat] = EnumFormat(Vat)
+    case object Bta extends Origin with Vat with BetterName { def show = "Origin.Vat.Bta" }
+    override def values = findValues
   }
 
+  override def values: immutable.IndexedSeq[Origin] = Epaye.values ++ Vat.values
+}
+
+/**
+ * Mixin to provide a better name for origins
+ */
+trait BetterName extends EnumEntry { self: Origin =>
+  override def entryName: String = stableEntryName
+  private[this] lazy val stableEntryName: String = self.toString
 }

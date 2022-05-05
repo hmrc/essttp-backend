@@ -18,6 +18,9 @@ package essttp.journey.model
 
 import play.api.libs.json.{Json, OFormat}
 
+/**
+ * Start Journey Response
+ */
 final case class SjResponse(nextUrl: NextUrl, journeyId: JourneyId)
 
 object SjResponse {

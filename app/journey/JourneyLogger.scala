@@ -73,7 +73,7 @@ object JourneyLogger {
 
   private def deviceId(implicit r: RequestHeader) = s"[deviceId: ${r.cookies.find(_.name == CookieNames.deviceID).map(_.value).getOrElse("")}]"
 
-  private def origin(implicit r: JourneyRequest[_]) = s"[${r.journey.origin.show}]"
+  private def origin(implicit r: JourneyRequest[_]) = s"[${r.journey.origin}]"
 
   private def journeyId(implicit r: JourneyRequest[_]) = s"[${r.journey.id}]"
 

@@ -39,7 +39,7 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
 
     def journeyAfterStarted: Journey.Epaye.AfterStarted = Journey.Epaye.AfterStarted(
       _id       = dependencies.journeyId,
-      origin    = Origin.Epaye.DetachedUrl,
+      origin    = Origins.Epaye.DetachedUrl,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
