@@ -50,13 +50,13 @@ class FindLatestJourneyBySessionIdSpec extends ItSpec {
 
   "find a single journey" in {
 
-    def startJourney(sessionId: SessionId): JourneyId = {
-      implicit val hc: HeaderCarrier = makeHeaderCarrier(sessionId)
-      implicit val request: FakeRequest[AnyContentAsEmpty.type] = TdAll.request
-      val sjRequest = TdAll.EpayeBta.sjRequest
-      val journeyId = journeyConnector.Epaye.startJourneyBta(sjRequest).futureValue.journeyId
-      journeyId
-    }
+      def startJourney(sessionId: SessionId): JourneyId = {
+        implicit val hc: HeaderCarrier = makeHeaderCarrier(sessionId)
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] = TdAll.request
+        val sjRequest = TdAll.EpayeBta.sjRequest
+        val journeyId = journeyConnector.Epaye.startJourneyBta(sjRequest).futureValue.journeyId
+        journeyId
+      }
 
     val sessionId = SessionId("session-2082fcd4-70f6-49cc-a4bf-845917981cd7")
     val previousJourneyId = startJourney(sessionId) //there is only 1 journey in mongo with the sessionId
