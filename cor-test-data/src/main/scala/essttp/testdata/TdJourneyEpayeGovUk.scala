@@ -30,7 +30,7 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
     def sjRequest = SjRequest.Epaye.Empty()
 
     def sjResponse = SjResponse(
-      nextUrl   = NextUrl("http://localhost:9215/essttp-frontend/start"),
+      nextUrl   = NextUrl("http://localhost:9215/set-up-a-payment-plan/start"),
       journeyId = dependencies.journeyId
     )
 
