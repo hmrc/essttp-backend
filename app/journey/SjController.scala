@@ -17,7 +17,6 @@
 package journey
 
 import com.google.inject.Inject
-import essttp.journey.model.Origin.Vat
 import essttp.journey.model._
 import essttp.rootmodel.SessionId
 import essttp.utils.{Errors, RequestSupport}
@@ -37,11 +36,11 @@ class SjController @Inject() (
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
 
-  def startJourneyEpayeFromBta(): Action[SjRequest.Epaye.Simple] = startEssttpJourneyEpaye[SjRequest.Epaye.Simple](Origin.Epaye.Bta)
-  def startJourneyEpayeFromGovUk(): Action[SjRequest.Epaye.Empty] = startEssttpJourneyEpaye[SjRequest.Epaye.Empty](Origin.Epaye.GovUk)
-  def startJourneyEpayeFromDetachedUrl(): Action[SjRequest.Epaye.Empty] = startEssttpJourneyEpaye[SjRequest.Epaye.Empty](Origin.Epaye.DetachedUrl)
+  def startJourneyEpayeFromBta(): Action[SjRequest.Epaye.Simple] = startDdJourneyEpaye[SjRequest.Epaye.Simple](Origins.Epaye.Bta)
+  def startJourneyEpayeFromGovUk(): Action[SjRequest.Epaye.Empty] = startDdJourneyEpaye[SjRequest.Epaye.Empty](Origins.Epaye.GovUk)
+  def startJourneyEpayeFromDetachedUrl(): Action[SjRequest.Epaye.Empty] = startDdJourneyEpaye[SjRequest.Epaye.Empty](Origins.Epaye.DetachedUrl)
 
-  private def startEssttpJourneyEpaye[StartRequest <: SjRequest.Epaye: Reads](origin: Origin.Epaye): Action[StartRequest] = Action.async(parse.json[StartRequest]) { implicit request =>
+  private def startDdJourneyEpaye[StartRequest <: SjRequest.Epaye: Reads](origin: Origins.Epaye): Action[StartRequest] = Action.async(parse.json[StartRequest]) { implicit request =>
     val originatedSddjRequest = OriginatedSjRequest.Epaye(origin, request.body)
     doJourneyStart(originatedSddjRequest)
   }
@@ -65,13 +64,13 @@ class SjController @Inject() (
   }
 
   private def journeyDescription(origin: Origin): String = origin match {
-    case o: Origin.Epaye => o match {
-      case Origin.Epaye.Bta         => s"Journey for Epaye from BTA"
-      case Origin.Epaye.GovUk       => s"Journey for Epaye from GovUk"
-      case Origin.Epaye.DetachedUrl => s"Journey for Epaye from DetachedUrl"
+    case o: Origins.Epaye => o match {
+      case Origins.Epaye.Bta         => s"Journey for Epaye from BTA"
+      case Origins.Epaye.GovUk       => s"Journey for Epaye from GovUk"
+      case Origins.Epaye.DetachedUrl => s"Journey for Epaye from DetachedUrl"
     }
-    case o: Origin.Vat => o match {
-      case Origin.Vat.Bta => Errors.notImplemented("Vat not implemented yet")
+    case o: Origins.Vat => o match {
+      case Origins.Vat.Bta => Errors.notImplemented("Vat not implemented yet")
     }
   }
 

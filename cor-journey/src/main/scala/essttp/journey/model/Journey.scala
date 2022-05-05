@@ -150,7 +150,7 @@ object Journey {
   sealed trait Epaye extends Journey { self: Journey =>
     override def taxRegime: TaxRegime.Epaye.type = TaxRegime.Epaye
     override def sjRequest: SjRequest.Epaye
-    override def origin: Origin.Epaye
+    override def origin: Origins.Epaye
 
     override val (backUrl, returnUrl) = sjRequest match {
       case r: SjRequest.Epaye.Simple => (Some(r.backUrl), Some(r.returnUrl))
@@ -166,7 +166,7 @@ object Journey {
      */
     final case class AfterStarted(
                                    override val _id:         JourneyId,
-                                   override val origin:      Origin.Epaye,
+                                   override val origin:      Origins.Epaye,
                                    override val createdOn:   LocalDateTime,
                                    override val sjRequest: SjRequest.Epaye,
                                    override val sessionId:   SessionId,
@@ -182,7 +182,7 @@ object Journey {
      */
     final case class AfterEligibilityCheck(
                                             override val _id:         JourneyId,
-                                            override val origin:      Origin.Epaye,
+                                            override val origin:      Origins.Epaye,
                                             override val createdOn:   LocalDateTime,
                                             override val sjRequest:   SjRequest.Epaye,
                                             override val sessionId:   SessionId,
@@ -199,7 +199,7 @@ object Journey {
      */
     final case class EnteredDayOfMonth(
                                         override val _id:         JourneyId,
-                                        override val origin:      Origin.Epaye,
+                                        override val origin:      Origins.Epaye,
                                         override val createdOn:   LocalDateTime,
                                         override val sjRequest:   SjRequest.Epaye,
                                         override val sessionId:   SessionId,
@@ -217,7 +217,7 @@ object Journey {
      */
     final case class AfterEnteredAmount(
                                          override val _id:         JourneyId,
-                                         override val origin:      Origin.Epaye,
+                                         override val origin:      Origins.Epaye,
                                          override val createdOn:   LocalDateTime,
                                          override val sjRequest: SjRequest.Epaye,
                                          override val sessionId:   SessionId,
@@ -236,7 +236,7 @@ object Journey {
      */
     final case class AfterSelectedPlan(
                                         override val _id:         JourneyId,
-                                        override val origin:      Origin.Epaye,
+                                        override val origin:      Origins.Epaye,
                                         override val createdOn:   LocalDateTime,
                                         override val sjRequest: SjRequest.Epaye,
                                         override val sessionId:   SessionId,

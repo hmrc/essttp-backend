@@ -28,7 +28,7 @@ sealed trait OriginatedSjRequest {
 object OriginatedSjRequest {
 
   final case class Epaye(
-      override val origin:    Origin.Epaye,
+      override val origin:    Origins.Epaye,
       override val sjRequest: SjRequest.Epaye
   ) extends OriginatedSjRequest
 

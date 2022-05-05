@@ -17,7 +17,7 @@
 package essttp.testdata
 
 import scala.language.reflectiveCalls
-import essttp.journey.model.{Journey, NextUrl, Origin, SjRequest, SjResponse, Stage}
+import essttp.journey.model.{Journey, NextUrl, Origin, Origins, SjRequest, SjResponse, Stage}
 import essttp.rootmodel._
 import essttp.rootmodel.epaye._
 import essttp.utils.ResourceReader._
@@ -42,7 +42,7 @@ trait TdJourneyEpayeBta { dependencies: TdBase with TdEpaye =>
 
     def journeyAfterStarted: Journey.Epaye.AfterStarted = Journey.Epaye.AfterStarted(
       _id = dependencies.journeyId,
-      origin = Origin.Epaye.Bta,
+      origin = Origins.Epaye.Bta,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,

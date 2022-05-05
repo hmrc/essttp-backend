@@ -39,7 +39,7 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
 
     def journeyAfterStarted: Journey.Epaye.AfterStarted = Journey.Epaye.AfterStarted(
       _id       = dependencies.journeyId,
-      origin    = Origin.Epaye.GovUk,
+      origin    = Origins.Epaye.GovUk,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
