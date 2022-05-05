@@ -22,7 +22,10 @@ import essttp.rootmodel._
 import essttp.rootmodel.epaye._
 import essttp.utils.ResourceReader._
 import essttp.utils.JsonSyntax._
+import essttp.utils.ResourceReader._
 import play.api.libs.json.JsObject
+
+import scala.language.reflectiveCalls
 
 trait TdJourneyEpayeBta { dependencies: TdBase with TdEpaye =>
 
@@ -34,7 +37,7 @@ trait TdJourneyEpayeBta { dependencies: TdBase with TdEpaye =>
     )
 
     def sjResponse = SjResponse(
-      nextUrl = NextUrl("http://localhost:9215/essttp-frontend/start"),
+      nextUrl = NextUrl("http://localhost:9215/set-up-a-payment-plan/start"),
       journeyId = dependencies.journeyId
     )
     def postPath: String = "/epaye/bta/journey/start"
