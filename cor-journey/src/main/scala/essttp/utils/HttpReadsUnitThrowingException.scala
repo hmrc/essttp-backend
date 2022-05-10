@@ -32,7 +32,7 @@ object HttpReadsUnitThrowingException {
    * Example:
    * {{{
    *   import uk.gov.hmrc.http.HttpReads.Implicits.{readUnit =>_, _} //this imports all but readUnit
-   *   import directdebit.corjourney.util.HttpReadsUnitThrowingException.readUnit
+   *   import essttp.utils.HttpReadsUnitThrowingException.readUnit
    * }}}
    *
    */

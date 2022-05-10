@@ -4,7 +4,7 @@ POST        /epaye/gov-uk/journey/start                          journey.SjContr
 POST        /epaye/detached-url/journey/start                    journey.SjController.startJourneyEpayeFromDetachedUrl()
 
 GET         /journey/find-latest-by-session-id                   journey.JourneyController.findLatestJourneyBySessionId()
-GET         /journey/:journeyId                                  journey.JourneyController.getJourney(journeyId: JourneyId)
 
-POST        /journey/:journeyId/update-tax-id/epaye              journey.UpdateTaxIdController.updateTaxId(journeyId: JourneyId)
+GET         /journey/:journeyId                                  journey.JourneyController.getJourney(journeyId: JourneyId)
+POST        /journey/:journeyId/update-tax-id                    journey.UpdateTaxIdController.updateTaxId(journeyId: JourneyId)
 POST        /journey/:journeyId/update-eligibility-result        journey.UpdateEligibilityCheckResultController.updateEligibilityResult(journeyId: JourneyId)

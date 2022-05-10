@@ -16,9 +16,8 @@
 
 package essttp.rootmodel
 
-import essttp.journey.model.Journey
 import julienrf.json.derived
-import play.api.libs.json.{Format, Json, OFormat}
+import play.api.libs.json.OFormat
 
 sealed trait TaxId
 
