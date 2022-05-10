@@ -17,50 +17,32 @@
 package journey
 
 import com.google.inject.Inject
-import essttp.journey.model.Journey.Epaye
 import essttp.journey.model._
-import essttp.rootmodel.{Aor, SessionId, TaxId}
-import essttp.rootmodel.epaye.{TaxOfficeNumber, TaxOfficeReference}
+import essttp.journey.model.ttp.EligibilityCheckResult
+import essttp.rootmodel.{Aor, TaxId, Vrn}
 import essttp.utils.Errors
-import play.api.libs.json.{Json, OFormat}
+import io.scalaland.chimney.dsl._
 import play.api.mvc._
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import uk.gov.hmrc.play.bootstrap.backend.http.ErrorResponse
 
 import scala.concurrent.{ExecutionContext, Future}
-import io.scalaland.chimney.dsl._
 
-final case class UpdateTaxIdRequest(
-    taxId: TaxId
-)
-
-object UpdateTaxIdRequest {
-  implicit val format: OFormat[UpdateTaxIdRequest] = Json.format[UpdateTaxIdRequest]
-}
-
-/**
- * Start Journey (Sj) Controller
- */
-class JourneyUpdatesController @Inject() (
+class UpdateTaxIdController @Inject() (
     journeyService: JourneyService,
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
 
-  def updateTaxId(journeyId: JourneyId): Action[UpdateTaxIdRequest] = Action.async(parse.json[UpdateTaxIdRequest]) { implicit request =>
+  def updateTaxId(journeyId: JourneyId): Action[TaxId] = Action.async(parse.json[TaxId]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
-      _ <- journey match {
-        case j: Journey.Epaye => updateAor(j, request.body)
+      _ <- (request.body, journey) match {
+        case (aor: Aor, journey: Journey.Epaye)     => updateJourney(journey, aor)
+        case (vrn: Vrn, journey: Journey /*.Vat*/ ) => Errors.throwBadRequestExceptionF("Vat not supported yet")
       }
     } yield Ok
   }
 
-  private def updateAor(journey: Journey.Epaye, updateTaxIdRequest: UpdateTaxIdRequest)(implicit request: Request[_]): Future[Unit] = {
-    val aor = updateTaxIdRequest.taxId match {
-      case aor: Aor => aor
-      case _        => Errors.throwBadRequestException("TaxId for Epaye must be Aor")
-    }
+  private def updateJourney(journey: Journey.Epaye, aor: Aor)(implicit request: Request[_]): Future[Unit] = {
     journey match {
       case j: Journey.Epaye.AfterStarted =>
         val newJourney: Journey.Epaye.AfterComputedTaxIds = j
@@ -72,15 +54,8 @@ class JourneyUpdatesController @Inject() (
       case j: Journey.HasTaxId if j.taxId == aor =>
         JourneyLogger.info("Nothing to update, journey has already updated tax id.")
         Future.successful(())
-      case j: Journey.HasTaxId if j.taxId != updateTaxIdRequest.taxId =>
-        val m = "Journey already has a tax id with a different value."
-        JourneyLogger.error(m)
-        Future.failed(new UnsupportedOperationException(m))
+      case j: Journey.HasTaxId if j.taxId != aor =>
+        Errors.notImplemented("Incorrect taxId type. For Epaye it must be Aor")
     }
   }
-
-  def updateEligibilityResult(journeyId: JourneyId): Action[AnyContent] = Action.async { implicit request =>
-    Future.failed(new NotImplementedError("TODO pawel"))
-  }
-
 }

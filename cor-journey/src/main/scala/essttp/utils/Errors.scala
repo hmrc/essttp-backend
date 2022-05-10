@@ -63,12 +63,12 @@ object Errors {
    * Call this to ensure that we don't do stupid things,
    * like make illegal transitions (eg. from Finished to New)
    */
-  def sanityCheck(requirement: Boolean, message: => String) = {
+  def sanityCheck(requirement: Boolean, message: => String): Unit = {
     if (!requirement) throw UpstreamErrorResponse(message, play.mvc.Http.Status.INTERNAL_SERVER_ERROR)
     else ()
   }
 
-  def notImplemented(message: => String = "") = {
+  def notImplemented(message: => String = ""): Nothing = {
     throw UpstreamErrorResponse(s"Unimplemented: $message", play.mvc.Http.Status.NOT_IMPLEMENTED)
 
   }
