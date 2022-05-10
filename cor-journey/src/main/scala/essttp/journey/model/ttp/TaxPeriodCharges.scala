@@ -14,12 +14,25 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel
+package essttp.journey.model.ttp
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Format, Json, OFormat}
 
-final case class SessionId(value: String)
+final case class TaxPeriodCharges(
+    chargeId:              String,
+    mainTrans:             String,
+    mainTransDesc:         String,
+    subTrans:              String,
+    subTransDesc:          String,
+    outstandingDebtAmount: Int,
+    interestStartDate:     String,
+    accruedInterestToDate: Double,
+    disallowedCharge:      Boolean,
+    chargeLocks:           ChargeLocks
+)
 
-object SessionId {
-  implicit val format: Format[SessionId] = Json.valueFormat
+object TaxPeriodCharges {
+  implicit val format: OFormat[TaxPeriodCharges] = Json.format[TaxPeriodCharges]
+
 }
+

@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel
+package essttp.journey.model.ttp
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Format, Json, OFormat}
 
-final case class SessionId(value: String)
+final case class CustomerDetails(
+    country:  String,
+    postCode: String
+)
 
-object SessionId {
-  implicit val format: Format[SessionId] = Json.valueFormat
+object CustomerDetails {
+  implicit val format: OFormat[CustomerDetails] = Json.format[CustomerDetails]
+
 }
+

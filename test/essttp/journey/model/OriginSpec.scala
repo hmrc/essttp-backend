@@ -27,7 +27,8 @@ class OriginSpec extends UnitSpec {
       Json.toJson[Origin](Origins.Epaye.Bta) shouldBe JsString("Origins.Epaye.Bta")
     }
     "Vat" in {
-      Json.toJson[Origin](Origins.Vat.Bta) shouldBe JsString("Origins.Vat.Bta")
+      //TODO: Uncomment once Vat is enabled
+      //      Json.toJson[Origin](Origins.Vat.Bta) shouldBe JsString("Origins.Vat.Bta")
     }
   }
 
@@ -38,7 +39,8 @@ class OriginSpec extends UnitSpec {
       Json.toJson[Origins.Epaye](Origins.Epaye.Bta) shouldBe JsString("Origins.Epaye.Bta")
     }
     "Vat" in {
-      Json.toJson[Origins.Vat](Origins.Vat.Bta) shouldBe JsString("Origins.Vat.Bta")
+      //TODO: Uncomment once Vat is enabled
+      //      Json.toJson[Origins.Vat](Origins.Vat.Bta) shouldBe JsString("Origins.Vat.Bta")
     }
   }
 
@@ -50,7 +52,8 @@ class OriginSpec extends UnitSpec {
     }
 
     "Vat" in {
-      JsString("Origins.Vat.Bta").as[Origin] shouldBe Origins.Vat.Bta
+      //TODO: Uncomment once Vat is enabled
+      //      JsString("Origins.Vat.Bta").as[Origin] shouldBe Origins.Vat.Bta
     }
   }
 
@@ -62,15 +65,17 @@ class OriginSpec extends UnitSpec {
     }
 
     "Vat" in {
-      JsString("Origins.Vat.Bta").as[Origins.Vat] shouldBe Origins.Vat.Bta
+      //TODO: Uncomment once Vat is enabled
+      //      JsString("Origins.Vat.Bta").as[Origins.Vat] shouldBe Origins.Vat.Bta
     }
   }
 
   "toString" in {
     withClue("it has better name then just 'Bta' so it's easier to distinguish between Bta in Epaye and Bta in Vat") {
       //just few examples
-      Origins.Vat.Bta.toString() shouldBe "Origins.Vat.Bta"
-      Origins.Epaye.Bta.toString() shouldBe "Origins.Epaye.Bta"
+      // TODO: Uncomment once Vat is enabled
+      //      Origins.Vat.Bta.toString() shouldBe "Origins.Vat.Bta"
+      //      Origins.Epaye.Bta.toString() shouldBe "Origins.Epaye.Bta"
     }
   }
 

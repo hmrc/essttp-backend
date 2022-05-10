@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel
+package essttp.rootmodel.bank
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Format, Json, OFormat}
 
-final case class SessionId(value: String)
+final case class SortCode(value: String)
 
-object SessionId {
-  implicit val format: Format[SessionId] = Json.valueFormat
+object SortCode {
+  implicit val format: Format[SortCode] = Json.valueFormat
 }

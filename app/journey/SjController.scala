@@ -55,7 +55,7 @@ class SjController @Inject() (
       _ <- journeyService.upsert(journey)
     } yield {
       val description: String = journeyDescription(originatedRequest.origin)
-      val nextUrl: NextUrl = NextUrl(s"${journeyConfig.nextUrlHost}/start")
+      val nextUrl: NextUrl = NextUrl(s"${journeyConfig.nextUrlHost}")
       val sjResponse: SjResponse = SjResponse(nextUrl, journey.journeyId)
       val response: Result = Created(Json.toJson(sjResponse))
       JourneyLogger.info(s"Started $description [journeyId:${journey.id}]")
@@ -68,9 +68,6 @@ class SjController @Inject() (
       case Origins.Epaye.Bta         => s"Journey for Epaye from BTA"
       case Origins.Epaye.GovUk       => s"Journey for Epaye from GovUk"
       case Origins.Epaye.DetachedUrl => s"Journey for Epaye from DetachedUrl"
-    }
-    case o: Origins.Vat => o match {
-      case Origins.Vat.Bta => Errors.notImplemented("Vat not implemented yet")
     }
   }
 

@@ -17,6 +17,7 @@
 package essttp.journey.model
 
 import essttp.journey.model.Journey.HasTaxId
+import essttp.journey.model.ttp.EligibilityCheckResult
 import essttp.rootmodel._
 import essttp.utils.Errors
 import julienrf.json.derived
@@ -37,6 +38,7 @@ sealed trait Journey {
 
   def id: JourneyId = _id
   def journeyId: JourneyId = _id
+  val traceId: TraceId = TraceId(journeyId)
 
   def name: String = {
     val className = getClass.getName
@@ -72,6 +74,10 @@ object Journey {
     def taxId: TaxId
   }
 
+  sealed trait HasEligibilityCheckResult extends Journey { self: Journey =>
+    def eligibilityCheckResult: EligibilityCheckResult
+  }
+
   sealed trait HasDayOfMonth extends Journey { self: Journey =>
     def dayOfMonth: DayOfMonth
   }
@@ -102,10 +108,21 @@ object Journey {
       def stage: Stage.AfterStarted
     }
 
+    sealed trait AfterComputedTaxId
+      extends Journey
+        with JourneyStage
+        with HasTaxId
+        { self: Journey =>
+      Errors.sanityCheck(Stage.AfterComputedTaxId.values.contains(stage), sanityMessage)
+      def stage: Stage.AfterComputedTaxId
+    }
+
     sealed trait AfterEligibilityCheck
       extends Journey
         with JourneyStage
-        with HasTaxId { self: Journey =>
+        with HasTaxId
+        with HasEligibilityCheckResult
+        { self: Journey =>
       Errors.sanityCheck(Stage.AfterEligibilityCheck.values.contains(stage), sanityMessage)
       def stage: Stage.AfterEligibilityCheck
     }
@@ -114,6 +131,7 @@ object Journey {
       extends Journey
         with JourneyStage
       with HasTaxId
+      with HasEligibilityCheckResult
       with HasDayOfMonth
       { self: Journey =>
       Errors.sanityCheck(Stage.AfterEnteredDayOfMonth.values.contains(stage), sanityMessage)
@@ -124,6 +142,7 @@ object Journey {
       extends Journey
         with JourneyStage
         with HasTaxId
+        with HasEligibilityCheckResult
         with HasDayOfMonth
         with HasAmount
           { self: Journey =>
@@ -135,6 +154,7 @@ object Journey {
       extends Journey
         with JourneyStage
         with HasTaxId
+        with HasEligibilityCheckResult
         with HasDayOfMonth
         with HasAmount
         with HasSelectedPlan { self: Journey =>
@@ -177,6 +197,23 @@ object Journey {
         with Journey.Epaye
 
     /**
+     * [[Journey]] after computed TaxIds
+     * Epaye
+     */
+    final case class AfterComputedTaxIds(
+                                   override val _id:         JourneyId,
+                                   override val origin:      Origins.Epaye,
+                                   override val createdOn:   LocalDateTime,
+                                   override val sjRequest:   SjRequest.Epaye,
+                                   override val sessionId:   SessionId,
+                                   override val stage:       Stage.AfterComputedTaxId,
+                                   override val taxId:       Aor
+      )
+      extends Journey
+        with Journey.Stages.AfterComputedTaxId
+        with Journey.Epaye
+
+    /**
      * [[Journey]] after EligibilityCheck
      * Epaye
      */
@@ -187,7 +224,8 @@ object Journey {
                                             override val sjRequest:   SjRequest.Epaye,
                                             override val sessionId:   SessionId,
                                             override val stage:       Stage.AfterEligibilityCheck,
-                                            override val taxId:       Aor
+                                            override val taxId:       Aor,
+                                            override val eligibilityCheckResult: EligibilityCheckResult
                                         )
       extends Journey
         with Journey.Stages.AfterEligibilityCheck
@@ -205,6 +243,7 @@ object Journey {
                                         override val sessionId:   SessionId,
                                         override val stage:       Stage.AfterEnteredDayOfMonth,
                                         override val taxId:       Aor,
+                                        override val eligibilityCheckResult: EligibilityCheckResult,
                                         override val dayOfMonth: DayOfMonth,
                                         )
       extends Journey
@@ -223,6 +262,7 @@ object Journey {
                                          override val sessionId:   SessionId,
                                          override val stage:       Stage.AfterEnteredAmount,
                                          override val taxId:       Aor,
+                                         override val eligibilityCheckResult: EligibilityCheckResult,
                                          override val dayOfMonth: DayOfMonth,
                                          override val amount: AmountInPence,
                                         )
@@ -242,6 +282,7 @@ object Journey {
                                         override val sessionId:   SessionId,
                                         override val stage:       Stage.AfterSelectedPlan,
                                         override val taxId:       Aor,
+                                        override val eligibilityCheckResult: EligibilityCheckResult,
                                         override val dayOfMonth: DayOfMonth,
                                         override val amount: AmountInPence,
                                         override val selectedPlan: SelectedPlan,

@@ -37,7 +37,7 @@ trait TdJourneyEpayeBta { dependencies: TdBase with TdEpaye =>
     )
 
     def sjResponse = SjResponse(
-      nextUrl = NextUrl("http://localhost:9215/set-up-a-payment-plan/start"),
+      nextUrl = NextUrl("http://localhost:9215/set-up-a-payment-plan"),
       journeyId = dependencies.journeyId
     )
     def postPath: String = "/epaye/bta/journey/start"
@@ -49,7 +49,7 @@ trait TdJourneyEpayeBta { dependencies: TdBase with TdEpaye =>
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
-      stage = Stage.AfterStarted.New
+      stage = Stage.AfterStarted.Started
     )
 
     def journeyAfterStartedJson: JsObject =  read("testdata/epaye/bta/JourneyAfterStarted.json").asJson

@@ -168,7 +168,6 @@ lazy val microservice = Project(appName, file("."))
     Test / fork := false,
     wartremoverExcluded ++= (Compile / routes).value,
     routesImport ++= Seq(
-//      "essttp.corjourney.util.ValueClassBinder._",
       "essttp.journey.model._",
     )
   )

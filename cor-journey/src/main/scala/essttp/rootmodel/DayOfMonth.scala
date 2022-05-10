@@ -16,7 +16,6 @@
 
 package essttp.rootmodel
 
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import essttp.utils.Errors
 
@@ -25,7 +24,7 @@ final case class DayOfMonth(value: Int) {
 }
 
 object DayOfMonth {
-  implicit val format: Format[DayOfMonth] = implicitly[Format[Int]].inmap(DayOfMonth(_), _.value)
+  implicit val format: Format[DayOfMonth] = Json.valueFormat
 
   def isValid(dayOfMonth: Int): Boolean = dayOfMonth >= 1 && dayOfMonth <= 28
 }

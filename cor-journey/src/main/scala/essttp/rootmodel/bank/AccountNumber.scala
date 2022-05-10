@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel
+package essttp.rootmodel.bank
 
 import play.api.libs.json.{Format, Json}
 
-final case class SessionId(value: String)
+final case class AccountNumber(value: String)
 
-object SessionId {
-  implicit val format: Format[SessionId] = Json.valueFormat
+object AccountNumber {
+  implicit val format: Format[AccountNumber] = Json.valueFormat
 }

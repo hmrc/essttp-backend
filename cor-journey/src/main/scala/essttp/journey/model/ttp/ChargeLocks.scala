@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel
+package essttp.journey.model.ttp
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Format, Json, OFormat}
 
-final case class SessionId(value: String)
+final case class ChargeLocks(
+    paymentLock:    PaymentLock,
+    clearingLock:   PaymentLock,
+    interestLock:   PaymentLock,
+    dunningLock:    PaymentLock,
+    disallowedLock: PaymentLock
+)
 
-object SessionId {
-  implicit val format: Format[SessionId] = Json.valueFormat
+object ChargeLocks {
+  implicit val format: OFormat[ChargeLocks] = Json.format[ChargeLocks]
 }

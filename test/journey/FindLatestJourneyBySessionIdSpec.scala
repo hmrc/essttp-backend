@@ -60,7 +60,7 @@ class FindLatestJourneyBySessionIdSpec extends ItSpec {
 
     val sessionId = SessionId("session-2082fcd4-70f6-49cc-a4bf-845917981cd7")
     val previousJourneyId = startJourney(sessionId) //there is only 1 journey in mongo with the sessionId
-    Thread.sleep(100)
+    Thread.sleep(300)
     val latterJourneyId = startJourney(sessionId) //now there are 2 journeys with the same sessionId
     //end of test setup
 

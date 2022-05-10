@@ -40,7 +40,7 @@ class JourneyFactory @Inject() (
         sjRequest = sjRequest,
         createdOn = LocalDateTime.now(clock),
         sessionId = sessionId,
-        stage     = Stage.AfterStarted.New
+        stage     = Stage.AfterStarted.Started
       )
   }
 }

@@ -30,7 +30,7 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
     def sjRequest = SjRequest.Epaye.Empty()
 
     def sjResponse = SjResponse(
-      nextUrl   = NextUrl("http://localhost:9215/set-up-a-payment-plan/start"),
+      nextUrl   = NextUrl("http://localhost:9215/set-up-a-payment-plan"),
       journeyId = dependencies.journeyId
     )
 
@@ -43,7 +43,7 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
-      stage     = Stage.AfterStarted.New
+      stage     = Stage.AfterStarted.Started
     )
 
     def journeyAfterStartedJson: JsObject = read("testdata/epaye/detachedurl/JourneyAfterStarted.json").asJson

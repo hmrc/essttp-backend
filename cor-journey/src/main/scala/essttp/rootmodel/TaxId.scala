@@ -16,10 +16,15 @@
 
 package essttp.rootmodel
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Format
+import essttp.journey.model.Journey
+import julienrf.json.derived
+import play.api.libs.json.{Format, Json}
 
 sealed trait TaxId
+
+object TaxId {
+  implicit val format = derived.oformat[TaxId]()
+}
 
 /**
  * Accounts Office Reference (Aor)
@@ -28,15 +33,16 @@ sealed trait TaxId
 final case class Aor(value: String) extends TaxId
 
 object Aor {
-  implicit val format: Format[Aor] = implicitly[Format[String]].inmap(Aor(_), _.value)
+  implicit val format: Format[Aor] = Json.valueFormat
 }
 
 /**
  * Vat Reference Number (Vrn)
  * Tax Id for Vat.
+ * Regex https://github.com/hmrc/service-enrolment-config/blob/master/conf/SEC1_with_enrolment_rules_json/prod/HMRC-MTD-VAT.json
  */
 final case class Vrn(value: String) extends TaxId
 
 object Vrn {
-  implicit val format: Format[Vrn] = implicitly[Format[String]].inmap(Vrn(_), _.value)
+  implicit val format: Format[Vrn] = Json.valueFormat
 }

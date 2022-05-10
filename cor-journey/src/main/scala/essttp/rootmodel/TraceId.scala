@@ -17,10 +17,12 @@
 package essttp.rootmodel
 
 import essttp.journey.model.JourneyId
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Format
+import play.api.libs.json.{Format, Json}
 import play.api.mvc.{PathBindable, QueryStringBindable}
 
+/**
+ * Prediction from journeyId which we can use in urls and in logging to log in kibana what happened during particular journey
+ */
 final case class TraceId(value: String)
 
 object TraceId {
@@ -31,7 +33,7 @@ object TraceId {
     f"$absoluteMod%08d"
   }
 
-  implicit val format: Format[TraceId] = implicitly[Format[String]].inmap(TraceId(_), _.value)
+  implicit val format: Format[TraceId] = Json.valueFormat
   implicit val traceIdPathBinder: PathBindable[TraceId] = essttp.utils.ValueClassBinder.valueClassBinder(_.value)
   implicit val traceIdQueryStringBinder: QueryStringBindable[TraceId] = essttp.utils.ValueClassBinder.queryStringValueBinder(_.value)
 }

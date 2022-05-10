@@ -16,11 +16,10 @@
 
 package essttp.rootmodel
 
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 final case class Email(value: String)
 
 object Email {
-  implicit val format: Format[Email] = implicitly[Format[String]].inmap(Email(_), _.value)
+  implicit val format: Format[Email] = Json.valueFormat
 }
