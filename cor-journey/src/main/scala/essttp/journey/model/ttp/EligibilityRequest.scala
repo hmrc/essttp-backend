@@ -16,13 +16,10 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json}
 
-final case class EligibilityStatus(
-    overallEligibilityStatus: OverallEligibilityStatus
-)
+final case class EligibilityRequest(idType: String, idNumber: String, regimeType: String, returnFinancials: Boolean)
 
-object EligibilityStatus {
-  implicit val format: OFormat[EligibilityStatus] = Json.format[EligibilityStatus]
+object EligibilityRequest {
+  implicit val fmt: Format[EligibilityRequest] = Json.format[EligibilityRequest]
 }
-

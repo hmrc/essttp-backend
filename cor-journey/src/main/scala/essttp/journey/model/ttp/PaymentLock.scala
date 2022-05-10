@@ -16,7 +16,7 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Format, Json, OFormat}
+import play.api.libs.json.{Json, OFormat}
 
 final case class PaymentLock(
     status: Boolean,
@@ -25,5 +25,4 @@ final case class PaymentLock(
 
 object PaymentLock {
   implicit val format: OFormat[PaymentLock] = Json.format[PaymentLock]
-
 }

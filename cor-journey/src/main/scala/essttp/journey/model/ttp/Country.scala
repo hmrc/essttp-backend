@@ -16,13 +16,11 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
-final case class EligibilityStatus(
-    overallEligibilityStatus: OverallEligibilityStatus
-)
+final case class Country(value: String)
 
-object EligibilityStatus {
-  implicit val format: OFormat[EligibilityStatus] = Json.format[EligibilityStatus]
+object Country {
+  implicit val format: Format[Country] = implicitly[Format[String]].inmap(Country(_), _.value)
 }
-

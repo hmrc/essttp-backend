@@ -16,13 +16,11 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
-final case class EligibilityStatus(
-    overallEligibilityStatus: OverallEligibilityStatus
-)
+final case class ProcessingDate(value: String)
 
-object EligibilityStatus {
-  implicit val format: OFormat[EligibilityStatus] = Json.format[EligibilityStatus]
+object ProcessingDate {
+  implicit val format: Format[ProcessingDate] = implicitly[Format[String]].inmap(ProcessingDate(_), _.value)
 }
-

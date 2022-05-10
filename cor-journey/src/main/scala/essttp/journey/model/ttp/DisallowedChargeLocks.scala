@@ -16,15 +16,20 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Format, Json, OFormat}
+import play.api.libs.json.{Json, OFormat}
 
-final case class FinancialLimitBreached(
-    status:           Boolean,
-    calculatedAmount: Int
+final case class DisallowedChargeLocks(
+    chargeId:              ChargeId,
+    mainTrans:             MainTrans,
+    mainTransDesc:         MainTransDesc,
+    subTrans:              SubTrans,
+    subTransDesc:          SubTransDesc,
+    outstandingDebtAmount: OutstandingDebtAmount,
+    interestStartDate:     InterestStartDate,
+    accruedInterestToDate: AccruedInterestToDate,
+    chargeLocks:           ChargeLocks
 )
 
-object FinancialLimitBreached {
-  implicit val format: OFormat[FinancialLimitBreached] = Json.format[FinancialLimitBreached]
-
+object DisallowedChargeLocks {
+  implicit val format: OFormat[DisallowedChargeLocks] = Json.format[DisallowedChargeLocks]
 }
-

@@ -16,13 +16,11 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
-final case class EligibilityStatus(
-    overallEligibilityStatus: OverallEligibilityStatus
-)
+final case class SubTransDesc(value: String)
 
-object EligibilityStatus {
-  implicit val format: OFormat[EligibilityStatus] = Json.format[EligibilityStatus]
+object SubTransDesc {
+  implicit val format: Format[SubTransDesc] = implicitly[Format[String]].inmap(SubTransDesc(_), _.value)
 }
-

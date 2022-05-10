@@ -16,14 +16,13 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Format, Json, OFormat}
+import play.api.libs.json.{Json, OFormat}
 
 final case class ChargeLocks(
-    paymentLock:    PaymentLock,
-    clearingLock:   PaymentLock,
-    interestLock:   PaymentLock,
-    dunningLock:    PaymentLock,
-    disallowedLock: PaymentLock
+    paymentLock:  PaymentLock,
+    clearingLock: PaymentLock,
+    interestLock: PaymentLock,
+    dunningLock:  PaymentLock
 )
 
 object ChargeLocks {

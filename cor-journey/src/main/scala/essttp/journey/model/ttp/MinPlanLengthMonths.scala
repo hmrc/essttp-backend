@@ -16,13 +16,11 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
-final case class EligibilityStatus(
-    overallEligibilityStatus: OverallEligibilityStatus
-)
+final case class MinPlanLengthMonths(value: Int)
 
-object EligibilityStatus {
-  implicit val format: OFormat[EligibilityStatus] = Json.format[EligibilityStatus]
+object MinPlanLengthMonths {
+  implicit val format: Format[MinPlanLengthMonths] = implicitly[Format[Int]].inmap(MinPlanLengthMonths(_), _.value)
 }
-

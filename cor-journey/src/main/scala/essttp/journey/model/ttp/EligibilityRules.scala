@@ -16,22 +16,23 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Format, Json, OFormat}
+import play.api.libs.json.{Json, OFormat}
 
 final case class EligibilityRules(
-    rlsOnAddress:         Boolean,
-    rlsReason:            String,
-    markedAsInsolvent:    Boolean,
-    minimumDebtAllowance: Boolean,
-    maxDebtAllowance:     Boolean,
-    disallowedChargeLock: Boolean,
-    existingTTP:          Boolean,
-    minInstalmentAmount:  Int,
-    maxInstalmentAmount:  Int,
-    maxDebtAge:           Boolean,
-    eligibleChargeType:   Boolean,
-    returnsFiled:         Boolean
-)
+    hasRlsOnAddress:            Boolean,
+    markedAsInsolvent:          Boolean,
+    isLessThanMinDebtAllowance: Boolean,
+    isMoreThanMaxDebtAllowance: Boolean,
+    disallowedChargeLocks:      Boolean,
+    existingTTP:                Boolean,
+    exceedsMaxDebtAge:          Boolean,
+    eligibleChargeType:         Boolean,
+    missingFiledReturns:        Boolean
+) {
+  val moreThanOneReasonForIneligibility: Boolean =
+    hasRlsOnAddress && markedAsInsolvent && isLessThanMinDebtAllowance && isMoreThanMaxDebtAllowance &&
+      disallowedChargeLocks && existingTTP && exceedsMaxDebtAge && eligibleChargeType && missingFiledReturns
+}
 
 object EligibilityRules {
   implicit val format: OFormat[EligibilityRules] = Json.format[EligibilityRules]

@@ -16,23 +16,11 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Format, Json, OFormat}
+import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
-final case class TaxPeriodCharges(
-    chargeId:              String,
-    mainTrans:             String,
-    mainTransDesc:         String,
-    subTrans:              String,
-    subTransDesc:          String,
-    outstandingDebtAmount: Int,
-    interestStartDate:     String,
-    accruedInterestToDate: Double,
-    disallowedCharge:      Boolean,
-    chargeLocks:           ChargeLocks
-)
+final case class OutstandingDebtAmount(value: Int)
 
-object TaxPeriodCharges {
-  implicit val format: OFormat[TaxPeriodCharges] = Json.format[TaxPeriodCharges]
-
+object OutstandingDebtAmount {
+  implicit val format: Format[OutstandingDebtAmount] = implicitly[Format[Int]].inmap(OutstandingDebtAmount(_), _.value)
 }
-

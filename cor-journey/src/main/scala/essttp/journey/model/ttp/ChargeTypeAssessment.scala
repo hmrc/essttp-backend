@@ -16,16 +16,15 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Format, Json, OFormat}
+import play.api.libs.json.{Json, OFormat}
 
 final case class ChargeTypeAssessment(
-    taxPeriodFrom:    String,
-    taxPeriodTo:      String,
-    debtTotalAmount:  Int,
-    taxPeriodCharges: List[TaxPeriodCharges]
+    taxPeriodFrom:         TaxPeriodFrom,
+    taxPeriodTo:           TaxPeriodTo,
+    debtTotalAmount:       DebtTotalAmount,
+    disallowedChargeLocks: List[DisallowedChargeLocks]
 )
 
 object ChargeTypeAssessment {
   implicit val format: OFormat[ChargeTypeAssessment] = Json.format[ChargeTypeAssessment]
 }
-
