@@ -18,7 +18,7 @@ package essttp.rootmodel
 
 import essttp.journey.model.Journey
 import julienrf.json.derived
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Format, Json, OFormat}
 
 sealed trait TaxId
 
@@ -33,7 +33,7 @@ object TaxId {
 final case class Aor(value: String) extends TaxId
 
 object Aor {
-  implicit val format: Format[Aor] = Json.valueFormat
+  implicit val format: OFormat[Aor] = derived.oformat[Aor]()
 }
 
 /**
@@ -44,5 +44,5 @@ object Aor {
 final case class Vrn(value: String) extends TaxId
 
 object Vrn {
-  implicit val format: Format[Vrn] = Json.valueFormat
+  implicit val format: OFormat[Vrn] = derived.oformat[Vrn]()
 }

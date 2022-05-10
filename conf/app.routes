@@ -1,10 +1,10 @@
 
-POST       /epaye/bta/journey/start             journey.SjController.startJourneyEpayeFromBta()
-POST       /epaye/gov-uk/journey/start          journey.SjController.startJourneyEpayeFromGovUk()
-POST       /epaye/detached-url/journey/start    journey.SjController.startJourneyEpayeFromDetachedUrl()
+POST        /epaye/bta/journey/start                             journey.SjController.startJourneyEpayeFromBta()
+POST        /epaye/gov-uk/journey/start                          journey.SjController.startJourneyEpayeFromGovUk()
+POST        /epaye/detached-url/journey/start                    journey.SjController.startJourneyEpayeFromDetachedUrl()
 
-GET        /journey/find-latest-by-session-id   journey.JourneyController.findLatestJourneyBySessionId()
-GET        /journey/:journeyId                  journey.JourneyController.getJourney(journeyId: JourneyId)
+GET         /journey/find-latest-by-session-id                   journey.JourneyController.findLatestJourneyBySessionId()
+GET         /journey/:journeyId                                  journey.JourneyController.getJourney(journeyId: JourneyId)
 
-POST       /journey/:journeyId/update-tax-id-epaye    journey.JourneyUpdatesController.updateTaxId(journeyId: JourneyId)
-POST       /journey/:journeyId/update-eligibility-result   journey.JourneyUpdatesController.updateEligibilityResult(journeyId: JourneyId)
+POST        /journey/:journeyId/update-tax-id/epaye              journey.UpdateTaxIdController.updateTaxId(journeyId: JourneyId)
+POST        /journey/:journeyId/update-eligibility-result        journey.UpdateEligibilityCheckResultController.updateEligibilityResult(journeyId: JourneyId)
