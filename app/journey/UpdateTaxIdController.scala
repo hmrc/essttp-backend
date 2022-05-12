@@ -18,8 +18,7 @@ package journey
 
 import com.google.inject.Inject
 import essttp.journey.model._
-import essttp.journey.model.ttp.EligibilityCheckResult
-import essttp.rootmodel.{Aor, TaxId, Vrn}
+import essttp.rootmodel.{EmpRef, TaxId, Vrn}
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl._
 import play.api.mvc._
@@ -36,25 +35,25 @@ class UpdateTaxIdController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       _ <- (request.body, journey) match {
-        case (aor: Aor, journey: Journey.Epaye)     => updateJourney(journey, aor)
-        case (vrn: Vrn, journey: Journey /*.Vat*/ ) => Errors.throwBadRequestExceptionF("Vat not supported yet")
+        case (empRef: EmpRef, journey: Journey.Epaye) => updateJourney(journey, empRef)
+        case (vrn: Vrn, journey: Journey /*.Vat*/ )   => Errors.throwBadRequestExceptionF("Vat not supported yet")
       }
     } yield Ok
   }
 
-  private def updateJourney(journey: Journey.Epaye, aor: Aor)(implicit request: Request[_]): Future[Unit] = {
+  private def updateJourney(journey: Journey.Epaye, empRef: EmpRef)(implicit request: Request[_]): Future[Unit] = {
     journey match {
       case j: Journey.Epaye.AfterStarted =>
         val newJourney: Journey.Epaye.AfterComputedTaxIds = j
           .into[Journey.Epaye.AfterComputedTaxIds]
           .withFieldConst(_.stage, Stage.AfterComputedTaxId.ComputedTaxId)
-          .withFieldConst(_.taxId, aor)
+          .withFieldConst(_.taxId, empRef)
           .transform
         journeyService.upsert(newJourney)
-      case j: Journey.HasTaxId if j.taxId == aor =>
+      case j: Journey.HasTaxId if j.taxId == empRef =>
         JourneyLogger.info("Nothing to update, journey has already updated tax id.")
         Future.successful(())
-      case j: Journey.HasTaxId if j.taxId != aor =>
+      case j: Journey.HasTaxId if j.taxId != empRef =>
         Errors.notImplemented("Incorrect taxId type. For Epaye it must be Aor")
     }
   }
