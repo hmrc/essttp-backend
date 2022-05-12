@@ -207,7 +207,7 @@ object Journey {
                                    override val sjRequest:   SjRequest.Epaye,
                                    override val sessionId:   SessionId,
                                    override val stage:       Stage.AfterComputedTaxId,
-                                   override val taxId:       Aor
+                                   override val taxId:       EmpRef
       )
       extends Journey
         with Journey.Stages.AfterComputedTaxId
@@ -224,7 +224,7 @@ object Journey {
                                             override val sjRequest:   SjRequest.Epaye,
                                             override val sessionId:   SessionId,
                                             override val stage:       Stage.AfterEligibilityCheck,
-                                            override val taxId:       Aor,
+                                            override val taxId:       EmpRef,
                                             override val eligibilityCheckResult: EligibilityCheckResult
                                         )
       extends Journey
@@ -242,7 +242,7 @@ object Journey {
                                         override val sjRequest:   SjRequest.Epaye,
                                         override val sessionId:   SessionId,
                                         override val stage:       Stage.AfterEnteredDayOfMonth,
-                                        override val taxId:       Aor,
+                                        override val taxId:       EmpRef,
                                         override val eligibilityCheckResult: EligibilityCheckResult,
                                         override val dayOfMonth: DayOfMonth,
                                         )
@@ -261,7 +261,7 @@ object Journey {
                                          override val sjRequest: SjRequest.Epaye,
                                          override val sessionId:   SessionId,
                                          override val stage:       Stage.AfterEnteredAmount,
-                                         override val taxId:       Aor,
+                                         override val taxId:       EmpRef,
                                          override val eligibilityCheckResult: EligibilityCheckResult,
                                          override val dayOfMonth: DayOfMonth,
                                          override val amount: AmountInPence,
@@ -281,7 +281,7 @@ object Journey {
                                         override val sjRequest: SjRequest.Epaye,
                                         override val sessionId:   SessionId,
                                         override val stage:       Stage.AfterSelectedPlan,
-                                        override val taxId:       Aor,
+                                        override val taxId:       EmpRef,
                                         override val eligibilityCheckResult: EligibilityCheckResult,
                                         override val dayOfMonth: DayOfMonth,
                                         override val amount: AmountInPence,

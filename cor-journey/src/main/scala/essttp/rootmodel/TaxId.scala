@@ -16,6 +16,7 @@
 
 package essttp.rootmodel
 
+import essttp.rootmodel.epaye.{TaxOfficeNumber, TaxOfficeReference}
 import julienrf.json.derived
 import play.api.libs.json.OFormat
 
@@ -25,14 +26,18 @@ object TaxId {
   implicit val format = derived.oformat[TaxId]()
 }
 
+final case class EmpRef(value: String) extends TaxId
+
 /**
- * Accounts Office Reference (Aor)
+ * Employer Reference
  * Tax Id for Epaye.
  */
-final case class Aor(value: String) extends TaxId
+object EmpRef {
+  implicit val format: OFormat[EmpRef] = derived.oformat[EmpRef]()
 
-object Aor {
-  implicit val format: OFormat[Aor] = derived.oformat[Aor]()
+  def makeEmpRef(taxOfficeNumber: TaxOfficeNumber, taxOfficeReference: TaxOfficeReference): EmpRef = EmpRef(
+    s"${taxOfficeNumber.value}/${taxOfficeReference.value}"
+  )
 }
 
 /**
