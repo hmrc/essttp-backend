@@ -16,13 +16,11 @@
 
 package essttp.rootmodel
 
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
 
 //TODO we dont know how the plan can be selected because we didn't agreed on the APIs with TTP yet
 final case class SelectedPlan(value: String)
 
 object SelectedPlan {
-  implicit val format: Format[SelectedPlan] = implicitly[Format[String]].inmap(SelectedPlan(_), _.value)
-
+  implicit val format: Format[SelectedPlan] = Json.valueFormat
 }

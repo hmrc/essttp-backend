@@ -16,27 +16,37 @@
 
 package essttp.rootmodel
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Format
+import essttp.rootmodel.epaye.{TaxOfficeNumber, TaxOfficeReference}
+import julienrf.json.derived
+import play.api.libs.json.OFormat
 
 sealed trait TaxId
 
+object TaxId {
+  implicit val format = derived.oformat[TaxId]()
+}
+
+final case class EmpRef(value: String) extends TaxId
+
 /**
- * Accounts Office Reference (Aor)
+ * Employer Reference
  * Tax Id for Epaye.
  */
-final case class Aor(value: String) extends TaxId
+object EmpRef {
+  implicit val format: OFormat[EmpRef] = derived.oformat[EmpRef]()
 
-object Aor {
-  implicit val format: Format[Aor] = implicitly[Format[String]].inmap(Aor(_), _.value)
+  def makeEmpRef(taxOfficeNumber: TaxOfficeNumber, taxOfficeReference: TaxOfficeReference): EmpRef = EmpRef(
+    s"${taxOfficeNumber.value}/${taxOfficeReference.value}"
+  )
 }
 
 /**
  * Vat Reference Number (Vrn)
  * Tax Id for Vat.
+ * Regex https://github.com/hmrc/service-enrolment-config/blob/master/conf/SEC1_with_enrolment_rules_json/prod/HMRC-MTD-VAT.json
  */
 final case class Vrn(value: String) extends TaxId
 
 object Vrn {
-  implicit val format: Format[Vrn] = implicitly[Format[String]].inmap(Vrn(_), _.value)
+  implicit val format: OFormat[Vrn] = derived.oformat[Vrn]()
 }

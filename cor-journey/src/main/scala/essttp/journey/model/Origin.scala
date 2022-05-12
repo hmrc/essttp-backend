@@ -72,7 +72,8 @@ object Origins extends Enum[Origin] {
 
   object Vat extends Enum[Vat] {
     implicit val format: Format[Vat] = EnumFormat(Vat)
-    case object Bta extends Origin with Vat with BetterName { def show = "Origin.Vat.Bta" }
+    //TODO: Uncomment once Vat is enabled
+    //    case object Bta extends Origin with Vat with BetterName { def show = "Origin.Vat.Bta" }
     override def values = findValues
   }
 

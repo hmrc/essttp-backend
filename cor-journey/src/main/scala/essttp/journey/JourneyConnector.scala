@@ -16,7 +16,9 @@
 
 package essttp.journey
 
+import essttp.journey.model.ttp.EligibilityCheckResult
 import essttp.journey.model.{Journey, JourneyId, SjRequest, SjResponse}
+import essttp.rootmodel.TaxId
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -24,7 +26,8 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import essttp.utils.RequestSupport._
-import essttp.utils.HttpReadsInstances._
+import uk.gov.hmrc.http.HttpReads.Implicits.{readUnit => _, _}
+import essttp.utils.HttpReadsUnitThrowingException.readUnit
 
 @Singleton
 class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: ExecutionContext) {
@@ -38,6 +41,14 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
       _ <- Future(require(hc.sessionId.isDefined, "Missing required 'SessionId'"))
       result <- httpClient.GET[Option[Journey]](s"$baseUrl/essttp-backend/journey/find-latest-by-session-id")
     } yield result
+  }
+
+  def updateTaxId(journeyId: JourneyId, taxId: TaxId)(implicit request: RequestHeader): Future[Unit] = {
+    httpClient.POST[TaxId, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-tax-id", taxId)
+  }
+
+  def updateEligibilityCheckResult(journeyId: JourneyId, eligibilityCheckResult: EligibilityCheckResult)(implicit request: RequestHeader): Future[Unit] = {
+    httpClient.POST[EligibilityCheckResult, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-eligibility-result", eligibilityCheckResult)
   }
 
   object Epaye {

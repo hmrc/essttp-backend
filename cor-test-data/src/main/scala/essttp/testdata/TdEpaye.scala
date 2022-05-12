@@ -16,13 +16,14 @@
 
 package essttp.testdata
 
-import essttp.rootmodel.Aor
-import essttp.rootmodel.epaye.{TaxOfficeNumber, TaxOfficeReference}
+import essttp.rootmodel.EmpRef
+import essttp.rootmodel.epaye.{Aor, TaxOfficeNumber, TaxOfficeReference}
 
 trait TdEpaye { dependencies: TdBase =>
 
-  def aor: Aor = Aor("840PZ00002232")
   def taxOfficeNumber: TaxOfficeNumber = TaxOfficeNumber("840")
   def taxOfficeReference: TaxOfficeReference = TaxOfficeReference("GZ00064")
+  def empRef: EmpRef = EmpRef("840/GZ00064")
+  def aor: Aor = Aor("840PZ00002232")
 
 }

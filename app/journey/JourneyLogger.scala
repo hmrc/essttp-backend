@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.CookieNames
 import essttp.utils.RequestSupport._
 
 /**
- * Journey Logger is a contextual logger. It will append to the message some extra bits of infomration
+ * Journey Logger is a contextual logger. It will append to the message some extra bits of information
  * like journeyId origin, path method, etc.
  * Use it everywhere
  */

@@ -16,11 +16,10 @@
 
 package essttp.rootmodel
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Format
+import play.api.libs.json.{Format, Json}
 
 final case class SessionId(value: String)
 
 object SessionId {
-  implicit val format: Format[SessionId] = implicitly[Format[String]].inmap(SessionId(_), _.value)
+  implicit val format: Format[SessionId] = Json.valueFormat
 }

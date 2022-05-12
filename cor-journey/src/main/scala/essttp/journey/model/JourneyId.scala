@@ -16,12 +16,11 @@
 
 package essttp.journey.model
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Format
+import play.api.libs.json.{Format, Json}
 import play.api.mvc.PathBindable
 
 object JourneyId {
-  implicit val format: Format[JourneyId] = implicitly[Format[String]].inmap(JourneyId(_), _.value)
+  implicit val format: Format[JourneyId] = Json.valueFormat
 
   /**
    * Allows JourneyId final case class to be used as a query parameter in controllers

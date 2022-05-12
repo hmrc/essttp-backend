@@ -45,8 +45,10 @@ class JourneyService @Inject() (
     journeyRepo.findById(journeyId)
   }
 
-  def upsert(journey: Journey)(implicit request: Request[_]): Future[Unit] =
+  def upsert(journey: Journey)(implicit request: Request[_]): Future[Unit] = {
+    JourneyLogger.debug("Upserting new journey")
     journeyRepo
       .upsert(journey._id, journey)
       .checkResult
+  }
 }

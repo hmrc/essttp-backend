@@ -6,10 +6,10 @@
 Acronyms used in a codebase. To speed up writing and reading. 
 
 | Phrase | Description|
-| --------- | ------- |
-|Sp | Start Journey |
-|Bta | Business Tax Account - client app|
-|Epaye | Employers' Pay as you earn - tax type|
+|--------| ------- |
+| Sj     | Start Journey |
+| Bta    | Business Tax Account - client app|
+| Epaye  | Employers' Pay as you earn - tax type|
 
 ### License
 

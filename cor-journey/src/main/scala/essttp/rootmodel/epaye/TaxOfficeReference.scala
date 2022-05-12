@@ -16,11 +16,10 @@
 
 package essttp.rootmodel.epaye
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Format
+import play.api.libs.json.{Format, Json}
 
 final case class TaxOfficeReference(value: String)
 
 object TaxOfficeReference {
-  implicit val format: Format[TaxOfficeReference] = implicitly[Format[String]].inmap(TaxOfficeReference(_), _.value)
+  implicit val format: Format[TaxOfficeReference] = Json.valueFormat
 }

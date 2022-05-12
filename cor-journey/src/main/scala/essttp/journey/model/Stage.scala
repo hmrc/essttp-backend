@@ -41,14 +41,25 @@ object Stage {
      * It's new bare bone journey having nothing but origin,
      * tax regime and [[SjRequest]] which caused it.
      */
-    case object New extends AfterStarted
+    case object Started extends AfterStarted
+  }
+
+  sealed trait AfterComputedTaxId extends Stage with EnumEntry
+
+  object AfterComputedTaxId extends Enum[AfterComputedTaxId] {
+    implicit val format: OFormat[AfterComputedTaxId] = derived.oformat[AfterComputedTaxId]()
+    val values = findValues
+
+    /**
+     * [[Journey]] has been orchestrated with tax identifiers from Enrolments.
+     */
+    case object ComputedTaxId extends AfterComputedTaxId
   }
 
   sealed trait AfterEligibilityCheck extends Stage with EnumEntry
 
   /**
-   * [[Journey]] has been orchestrated with tax identifiers from Enrolments
-   * and eligibility check has been made.
+   * [[Journey]] has been orchestrated with eligibility check result.
    */
   object AfterEligibilityCheck extends Enum[AfterEligibilityCheck] {
     implicit val format: OFormat[AfterEligibilityCheck] = derived.oformat[AfterEligibilityCheck]()

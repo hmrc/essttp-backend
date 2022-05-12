@@ -16,12 +16,11 @@
 
 package essttp.journey.model
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json.Format
+import play.api.libs.json.{Format, Json}
 
 final case class NextUrl(value: String)
 
 object NextUrl {
-  implicit val format: Format[NextUrl] = implicitly[Format[String]].inmap(NextUrl(_), _.value)
+  implicit val format: Format[NextUrl] = Json.valueFormat
 }
 
