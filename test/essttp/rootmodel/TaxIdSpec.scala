@@ -23,22 +23,22 @@ import testsupport.UnitSpec
 class TaxIdSpec extends UnitSpec {
 
   "serialize from TaxId" in {
-    Json.toJson[TaxId](Aor("sialala")) shouldBe Json.parse("""{"Aor":{"value":"sialala"}}""")
+    Json.toJson[TaxId](EmpRef("sialala")) shouldBe Json.parse("""{"EmpRef":{"value":"sialala"}}""")
     Json.toJson[TaxId](Vrn("sialala")) shouldBe Json.parse("""{"Vrn":{"value":"sialala"}}""")
   }
 
   "deserialise as TaxId" in {
-    Json.parse("""{"Aor":{"value":"sialala"}}""").as[TaxId] shouldBe Aor("sialala")
+    Json.parse("""{"EmpRef":{"value":"sialala"}}""").as[TaxId] shouldBe EmpRef("sialala")
     Json.parse("""{"Vrn":{"value":"sialala"}}""").as[TaxId] shouldBe Vrn("sialala")
   }
 
   "serialise from specific TaxId" in {
-    Json.toJson[Aor](Aor("sialala")) shouldBe Json.parse("""{"value":"sialala"}""")
+    Json.toJson[EmpRef](EmpRef("sialala")) shouldBe Json.parse("""{"value":"sialala"}""")
     Json.toJson[Vrn](Vrn("sialala")) shouldBe Json.parse("""{"value":"sialala"}""")
   }
 
   "deserialise as specific TaxId" in {
-    Json.parse("""{"value":"sialala"}""").as[Aor] shouldBe Aor("sialala")
+    Json.parse("""{"value":"sialala"}""").as[EmpRef] shouldBe EmpRef("sialala")
     Json.parse("""{"value":"sialala"}""").as[Vrn] shouldBe Vrn("sialala")
   }
 

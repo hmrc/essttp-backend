@@ -29,9 +29,35 @@ final case class EligibilityRules(
     eligibleChargeType:         Boolean,
     missingFiledReturns:        Boolean
 ) {
-  val moreThanOneReasonForIneligibility: Boolean =
-    hasRlsOnAddress && markedAsInsolvent && isLessThanMinDebtAllowance && isMoreThanMaxDebtAllowance &&
-      disallowedChargeLocks && existingTTP && exceedsMaxDebtAge && eligibleChargeType && missingFiledReturns
+
+  val moreThanOneReasonForIneligibility: Boolean = {
+    List(
+      hasRlsOnAddress,
+      markedAsInsolvent,
+      isLessThanMinDebtAllowance,
+      isMoreThanMaxDebtAllowance,
+      disallowedChargeLocks,
+      existingTTP,
+      exceedsMaxDebtAge,
+      eligibleChargeType,
+      missingFiledReturns
+    ).map{ if (_) 1 else 0 }.sum > 1
+  }
+
+  @SuppressWarnings(Array("org.wartremover.warts.TraversableOps"))
+  val isEligible: Boolean = {
+    List(
+      hasRlsOnAddress,
+      markedAsInsolvent,
+      isLessThanMinDebtAllowance,
+      isMoreThanMaxDebtAllowance,
+      disallowedChargeLocks,
+      existingTTP,
+      exceedsMaxDebtAge,
+      eligibleChargeType,
+      missingFiledReturns
+    ).forall(flag => !flag) //if all flags are false then isEligible is true
+  }
 }
 
 object EligibilityRules {
