@@ -30,7 +30,7 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
     def sjRequest = SjRequest.Epaye.Empty()
 
     def sjResponse = SjResponse(
-      nextUrl   = NextUrl("http://localhost:9215/set-up-a-payment-plan"),
+      nextUrl   = NextUrl(s"http://localhost:9215/set-up-a-payment-plan?traceId=${dependencies.traceId.value}"),
       journeyId = dependencies.journeyId
     )
 

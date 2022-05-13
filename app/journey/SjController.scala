@@ -18,7 +18,7 @@ package journey
 
 import com.google.inject.Inject
 import essttp.journey.model._
-import essttp.rootmodel.SessionId
+import essttp.rootmodel.{SessionId, TraceId}
 import essttp.utils.{Errors, RequestSupport}
 import play.api.libs.json.{Json, Reads}
 import play.api.mvc.{Action, ControllerComponents, Request, Result}
@@ -55,7 +55,7 @@ class SjController @Inject() (
       _ <- journeyService.upsert(journey)
     } yield {
       val description: String = journeyDescription(originatedRequest.origin)
-      val nextUrl: NextUrl = NextUrl(s"${journeyConfig.nextUrlHost}")
+      val nextUrl: NextUrl = NextUrl(s"${journeyConfig.nextUrlHost}/set-up-a-payment-plan?traceId=${journey.traceId.value}")
       val sjResponse: SjResponse = SjResponse(nextUrl, journey.journeyId)
       val response: Result = Created(Json.toJson(sjResponse))
       JourneyLogger.info(s"Started $description [journeyId:${journey.id}]")
