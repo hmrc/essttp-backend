@@ -1,7 +1,7 @@
 {
-  "AfterStarted": {
+  "AfterComputedTaxIds": {
     "stage": {
-      "Started": {}
+      "ComputedTaxId": {}
     },
     "createdOn": "2022-05-17T13:28:52.261",
     "_id": "6283a314430100e2eae927bf",
@@ -12,7 +12,10 @@
         "backUrl": "http://localhost:9066/back"
       }
     },
-    "sessionId": "sialalalabta"
+    "sessionId": "sialalalabta",
+    "taxId": {
+      "value": "016/GZ91926"
+    }
   },
   "sessionId": "sialalalabta",
   "createdAt": "2022-05-17T13:28:52.261"

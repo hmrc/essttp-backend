@@ -1,0 +1,69 @@
+POST http://localhost:9216/essttp-backend/journey/6283a6f14f01006f33b859b8/update-eligibility-result
+Accept: */*
+Cache-Control: no-cache
+Content-Type: Application/Json
+X-Session-ID: sialalaladetachedurl
+
+{
+  "idType": "SSTTP",
+  "idNumber": "016/GZ91926",
+  "regimeType": "PAYE",
+  "processingDate": "2022-05-17",
+  "customerDetails": {
+    "country": "Narnia",
+    "postCode": "AA11AA"
+  },
+  "minPlanLengthMonths": 1,
+  "maxPlanLengthMonths": 3,
+  "eligibilityStatus": {
+    "overallEligibilityStatus": true
+  },
+  "eligibilityRules": {
+    "hasRlsOnAddress": false,
+    "markedAsInsolvent": false,
+    "isLessThanMinDebtAllowance": false,
+    "isMoreThanMaxDebtAllowance": false,
+    "disallowedChargeLocks": false,
+    "existingTTP": false,
+    "exceedsMaxDebtAge": false,
+    "eligibleChargeType": false,
+    "missingFiledReturns": false
+  },
+  "chargeTypeAssessment": [
+    {
+      "taxPeriodFrom": "2020-08-13",
+      "taxPeriodTo": "2020-08-14",
+      "debtTotalAmount": 300000,
+      "disallowedChargeLocks": [
+        {
+          "chargeId": "A00000000001",
+          "mainTrans": "mainTrans",
+          "mainTransDesc": "mainTransDesc",
+          "subTrans": "subTrans",
+          "subTransDesc": "subTransDesc",
+          "outstandingDebtAmount": 100000,
+          "interestStartDate": "2017-03-07",
+          "accruedInterestToDate": 15.97,
+          "chargeLocks": {
+            "paymentLock": {
+              "status": false,
+              "reason": ""
+            },
+            "clearingLock": {
+              "status": false,
+              "reason": ""
+            },
+            "interestLock": {
+              "status": false,
+              "reason": ""
+            },
+            "dunningLock": {
+              "status": false,
+              "reason": ""
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
