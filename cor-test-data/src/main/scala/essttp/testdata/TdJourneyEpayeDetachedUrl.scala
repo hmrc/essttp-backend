@@ -17,6 +17,8 @@
 package essttp.testdata
 
 import essttp.journey.model._
+import essttp.journey.model.ttp.EligibilityCheckResult
+import essttp.rootmodel.TaxId
 import essttp.utils.JsonSyntax._
 import essttp.utils.ResourceReader._
 import play.api.libs.json.JsObject
@@ -47,5 +49,51 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
     )
 
     def journeyAfterStartedJson: JsObject = read("testdata/epaye/detachedurl/JourneyAfterStarted.json").asJson
+
+    def updateTaxIdRequest(): TaxId = empRef
+
+    def updateTaxIdRequestJson(): JsObject = read("testdata/epaye/detachedurl/UpdateTaxIdRequest.json").asJson
+
+    def journeyAfterDetermineTaxIds: Journey.Epaye.AfterComputedTaxIds = Journey.Epaye.AfterComputedTaxIds(
+      _id       = dependencies.journeyId,
+      origin    = Origins.Epaye.DetachedUrl,
+      createdOn = dependencies.createdOn,
+      sjRequest = sjRequest,
+      sessionId = dependencies.sessionId,
+      stage     = Stage.AfterComputedTaxId.ComputedTaxId,
+      taxId     = empRef
+    )
+
+    def journeyAfterDetermineTaxIdsJson: JsObject = read("testdata/epaye/detachedurl/JourneyAfterComputedTaxIds.json").asJson
+
+    def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResult
+
+    def updateEligibilityCheckRequestJson(): JsObject = read("testdata/epaye/detachedurl/UpdateEligibilityCheckRequest.json").asJson
+
+    def journeyAfterEligibilityCheckEligible: Journey.Epaye.AfterEligibilityCheck = Journey.Epaye.AfterEligibilityCheck(
+      _id       = dependencies.journeyId,
+      origin    = Origins.Epaye.DetachedUrl,
+      createdOn = dependencies.createdOn,
+      sjRequest = sjRequest,
+      sessionId = dependencies.sessionId,
+      stage     = Stage.AfterEligibilityCheck.Eligible,
+      taxId     = empRef,
+      eligibilityCheckResult = eligibleEligibilityCheckResult
+    )
+
+    def journeyAfterEligibilityCheckEligibleJson: JsObject = read("testdata/epaye/detachedurl/JourneyAfterEligibilityCheck.json").asJson
+
+    def journeyAfterEligibilityCheckNotEligible: Journey.Epaye.AfterEligibilityCheck = Journey.Epaye.AfterEligibilityCheck(
+      _id       = dependencies.journeyId,
+      origin    = Origins.Epaye.DetachedUrl,
+      createdOn = dependencies.createdOn,
+      sjRequest = sjRequest,
+      sessionId = dependencies.sessionId,
+      stage     = Stage.AfterEligibilityCheck.Ineligible,
+      taxId     = empRef,
+      eligibilityCheckResult = ineligibleEligibilityCheckResult
+    )
+
+    def journeyAfterEligibilityCheckNotEligibleJson: JsObject = read("testdata/epaye/detachedurl/JourneyAfterEligibilityCheckNotEligible.json").asJson
   }
 }
