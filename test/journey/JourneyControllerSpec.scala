@@ -26,7 +26,6 @@ class JourneyControllerSpec extends ItSpec {
 
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
-  //todo rename this test name, Pawel any ideas?
   "[Epaye.Bta][start journey, update tax id, update eligibility]" in {
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
@@ -43,6 +42,9 @@ class JourneyControllerSpec extends ItSpec {
     /** Update eligibility result **/
     journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
+    /** Update CanPayUpfront **/
+    journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfront
   }
 
   "[Epaye.GovUk][start journey, update tax id, update eligibility]" in {

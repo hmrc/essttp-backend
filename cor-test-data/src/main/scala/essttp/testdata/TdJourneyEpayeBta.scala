@@ -77,26 +77,26 @@ trait TdJourneyEpayeBta { dependencies: TdBase with TdEpaye =>
     def updateEligibilityCheckRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateEligibilityCheckRequest.json").asJson
 
     def journeyAfterEligibilityCheckEligible: Journey.Epaye.AfterEligibilityCheck = Journey.Epaye.AfterEligibilityCheck(
-      _id       = dependencies.journeyId,
-      origin    = Origins.Epaye.Bta,
-      createdOn = dependencies.createdOn,
-      sjRequest = sjRequest,
-      sessionId = dependencies.sessionId,
-      stage     = Stage.AfterEligibilityCheck.Eligible,
-      taxId     = empRef,
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Epaye.Bta,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterEligibilityCheck.Eligible,
+      taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult
     )
 
     def journeyAfterEligibilityCheckEligibleJson: JsObject = read("/testdata/epaye/bta/JourneyAfterEligibilityCheck.json").asJson
 
     def journeyAfterEligibilityCheckNotEligible: Journey.Epaye.AfterEligibilityCheck = Journey.Epaye.AfterEligibilityCheck(
-      _id       = dependencies.journeyId,
-      origin    = Origins.Epaye.Bta,
-      createdOn = dependencies.createdOn,
-      sjRequest = sjRequest,
-      sessionId = dependencies.sessionId,
-      stage     = Stage.AfterEligibilityCheck.Ineligible,
-      taxId     = empRef,
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Epaye.Bta,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterEligibilityCheck.Ineligible,
+      taxId                  = empRef,
       eligibilityCheckResult = ineligibleEligibilityCheckResult
     )
 

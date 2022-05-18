@@ -70,6 +70,20 @@ object Stage {
     case object Ineligible extends AfterEligibilityCheck
   }
 
+  sealed trait AfterCanPayUpfront extends Stage with EnumEntry
+
+  /**
+   * [[Journey]] has been orchestrated with can user make an upfront payment.
+   */
+  object AfterCanPayUpfront extends Enum[AfterCanPayUpfront] {
+    implicit val format: OFormat[AfterCanPayUpfront] = derived.oformat[AfterCanPayUpfront]()
+    val values = findValues
+
+    case object Yes extends AfterCanPayUpfront
+
+    case object No extends AfterCanPayUpfront
+  }
+
   sealed trait AfterEnteredDayOfMonth extends Stage with EnumEntry
 
   /**

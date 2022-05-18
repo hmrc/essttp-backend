@@ -51,6 +51,10 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
     httpClient.POST[EligibilityCheckResult, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-eligibility-result", eligibilityCheckResult)
   }
 
+  def updateCanPayUpfront(journeyId: JourneyId, canPayUpfront: CanPayUpfront)(implicit request: RequestHeader): Future[Unit] = {
+    httpClient.POST[CanPayUpfront, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-can-pay-upfront", canPayUpfront)
+  }
+
   object Epaye {
 
     def startJourneyBta(sjRequest: SjRequest.Epaye.Simple)(implicit request: RequestHeader): Future[SjResponse] = {

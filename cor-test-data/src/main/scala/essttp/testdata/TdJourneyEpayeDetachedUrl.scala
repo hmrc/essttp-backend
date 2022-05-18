@@ -71,26 +71,26 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
     def updateEligibilityCheckRequestJson(): JsObject = read("testdata/epaye/detachedurl/UpdateEligibilityCheckRequest.json").asJson
 
     def journeyAfterEligibilityCheckEligible: Journey.Epaye.AfterEligibilityCheck = Journey.Epaye.AfterEligibilityCheck(
-      _id       = dependencies.journeyId,
-      origin    = Origins.Epaye.DetachedUrl,
-      createdOn = dependencies.createdOn,
-      sjRequest = sjRequest,
-      sessionId = dependencies.sessionId,
-      stage     = Stage.AfterEligibilityCheck.Eligible,
-      taxId     = empRef,
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Epaye.DetachedUrl,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterEligibilityCheck.Eligible,
+      taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult
     )
 
     def journeyAfterEligibilityCheckEligibleJson: JsObject = read("testdata/epaye/detachedurl/JourneyAfterEligibilityCheck.json").asJson
 
     def journeyAfterEligibilityCheckNotEligible: Journey.Epaye.AfterEligibilityCheck = Journey.Epaye.AfterEligibilityCheck(
-      _id       = dependencies.journeyId,
-      origin    = Origins.Epaye.DetachedUrl,
-      createdOn = dependencies.createdOn,
-      sjRequest = sjRequest,
-      sessionId = dependencies.sessionId,
-      stage     = Stage.AfterEligibilityCheck.Ineligible,
-      taxId     = empRef,
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Epaye.DetachedUrl,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterEligibilityCheck.Ineligible,
+      taxId                  = empRef,
       eligibilityCheckResult = ineligibleEligibilityCheckResult
     )
 

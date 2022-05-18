@@ -78,6 +78,10 @@ object Journey {
     def eligibilityCheckResult: EligibilityCheckResult
   }
 
+  sealed trait HasCanPayUpfront extends Journey { self: Journey =>
+    def canPayUpfront: CanPayUpfront
+  }
+
   sealed trait HasDayOfMonth extends Journey { self: Journey =>
     def dayOfMonth: DayOfMonth
   }
@@ -125,6 +129,17 @@ object Journey {
         { self: Journey =>
       Errors.sanityCheck(Stage.AfterEligibilityCheck.values.contains(stage), sanityMessage)
       def stage: Stage.AfterEligibilityCheck
+    }
+
+    sealed trait AfterCanPayUpfront
+      extends Journey
+        with JourneyStage
+      with HasTaxId
+      with HasEligibilityCheckResult
+      with HasCanPayUpfront
+      { self: Journey =>
+      Errors.sanityCheck(Stage.AfterCanPayUpfront.values.contains(stage), sanityMessage)
+      def stage: Stage.AfterCanPayUpfront
     }
 
     sealed trait AfterEnteredDayOfMonth
@@ -229,6 +244,25 @@ object Journey {
                                         )
       extends Journey
         with Journey.Stages.AfterEligibilityCheck
+        with Journey.Epaye
+
+    /**
+     * [[Journey]] after CanPayUpfront
+     * Epaye
+     */
+    final case class AfterCanPayUpfront(
+                                            override val _id:         JourneyId,
+                                            override val origin:      Origins.Epaye,
+                                            override val createdOn:   LocalDateTime,
+                                            override val sjRequest:   SjRequest.Epaye,
+                                            override val sessionId:   SessionId,
+                                            override val stage:       Stage.AfterCanPayUpfront,
+                                            override val taxId:       EmpRef,
+                                            override val eligibilityCheckResult: EligibilityCheckResult,
+                                            override val canPayUpfront: CanPayUpfront
+                                        )
+      extends Journey
+        with Journey.Stages.AfterCanPayUpfront
         with Journey.Epaye
 
     /**
