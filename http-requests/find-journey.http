@@ -11,6 +11,6 @@ GET http://localhost:9216/essttp-backend/journey/find-latest-by-session-id
 Accept: */*
 Cache-Control: no-cache
 Content-Type: Application/Json
-X-Session-ID: sialalala
+X-Session-ID: sialalaladetachedurl
 
 ###

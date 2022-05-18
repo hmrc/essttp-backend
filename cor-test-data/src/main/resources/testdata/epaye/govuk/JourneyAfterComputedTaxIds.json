@@ -1,7 +1,7 @@
 {
-  "AfterStarted": {
+  "AfterComputedTaxIds": {
     "stage": {
-      "Started": {}
+      "ComputedTaxId": {}
     },
     "createdOn": "2022-05-17T13:42:37.526",
     "_id": "6283a64d4f01006f33b859b7",
@@ -9,7 +9,10 @@
     "sjRequest": {
       "Empty": {}
     },
-    "sessionId": "sialalalagovuk"
+    "sessionId": "sialalalagovuk",
+    "taxId": {
+      "value": "016/GZ91926"
+    }
   },
   "sessionId": "sialalalagovuk",
   "createdAt": "2022-05-17T13:42:37.526"
