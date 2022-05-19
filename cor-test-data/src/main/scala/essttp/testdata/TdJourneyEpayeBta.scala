@@ -29,7 +29,8 @@ import play.api.libs.json.JsObject
 
 import scala.language.reflectiveCalls
 
-trait TdJourneyEpayeBta { dependencies: TdBase with TdEpaye =>
+trait TdJourneyEpayeBta {
+  dependencies: TdBase with TdEpaye =>
 
   object EpayeBta {
 
@@ -42,7 +43,9 @@ trait TdJourneyEpayeBta { dependencies: TdBase with TdEpaye =>
       nextUrl   = NextUrl(s"http://localhost:9215/set-up-a-payment-plan?traceId=${dependencies.traceId.value}"),
       journeyId = dependencies.journeyId
     )
+
     def postPath: String = "/epaye/bta/journey/start"
+
     def sjRequestJson: JsObject = read("/testdata/epaye/bta/SjRequest.json").asJson
 
     def journeyAfterStarted: Journey.Epaye.AfterStarted = Journey.Epaye.AfterStarted(
@@ -101,5 +104,37 @@ trait TdJourneyEpayeBta { dependencies: TdBase with TdEpaye =>
     )
 
     def journeyAfterEligibilityCheckNotEligibleJson: JsObject = read("/testdata/epaye/bta/JourneyAfterEligibilityCheckNotEligible.json").asJson
+
+    def updateCanPayUpfrontYesRequest(): CanPayUpfront = canPayUpfrontYes
+
+    def updateCanPayUpfrontNoRequest(): CanPayUpfront = canPayUpfrontNo
+
+    def updateCanPayUpfrontYesRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateCanPayUpfrontYes.json").asJson
+
+    def updateCanPayUpfrontNoRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateCanPayUpfrontNo.json").asJson
+
+    def journeyAfterCanPayUpfrontYes: Journey.Epaye.AfterCanPayUpfront = Journey.Epaye.AfterCanPayUpfront(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Epaye.Bta,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterCanPayUpfront.Yes,
+      taxId                  = empRef,
+      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      canPayUpfront          = canPayUpfrontYes
+    )
+
+    def journeyAfterCanPayUpfrontNo: Journey.Epaye.AfterCanPayUpfront = Journey.Epaye.AfterCanPayUpfront(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Epaye.Bta,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterCanPayUpfront.No,
+      taxId                  = empRef,
+      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      canPayUpfront          = canPayUpfrontNo
+    )
   }
 }

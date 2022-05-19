@@ -17,20 +17,27 @@
 package essttp.testdata
 
 import essttp.journey.model.ttp._
-import essttp.rootmodel.EmpRef
+import essttp.rootmodel.{CanPayUpfront, EmpRef}
 import essttp.rootmodel.epaye.{Aor, TaxOfficeNumber, TaxOfficeReference}
 
-trait TdEpaye { dependencies: TdBase =>
+trait TdEpaye {
+  dependencies: TdBase =>
 
-  def taxOfficeNumber: TaxOfficeNumber = TaxOfficeNumber("840")
-  def taxOfficeReference: TaxOfficeReference = TaxOfficeReference("GZ00064")
-  def empRef: EmpRef = EmpRef("840/GZ00064")
-  def aor: Aor = Aor("840PZ00002232")
-  def reusableDate: String = "2022-05-17"
-  def eligibleEligibilityRules: EligibilityRules = EligibilityRules(hasRlsOnAddress            = false, markedAsInsolvent = false, isLessThanMinDebtAllowance = false, isMoreThanMaxDebtAllowance = false, disallowedChargeLocks = false, existingTTP = false, exceedsMaxDebtAge = false, eligibleChargeType = false, missingFiledReturns = false)
-  def hasRlsAddressOn: EligibilityRules = eligibleEligibilityRules.copy(true)
+  val taxOfficeNumber: TaxOfficeNumber = TaxOfficeNumber("840")
 
-  def eligibleEligibilityCheckResult: EligibilityCheckResult = EligibilityCheckResult(
+  val taxOfficeReference: TaxOfficeReference = TaxOfficeReference("GZ00064")
+
+  val empRef: EmpRef = EmpRef("840/GZ00064")
+
+  val aor: Aor = Aor("840PZ00002232")
+
+  val reusableDate: String = "2022-05-17"
+
+  val eligibleEligibilityRules: EligibilityRules = EligibilityRules(hasRlsOnAddress            = false, markedAsInsolvent = false, isLessThanMinDebtAllowance = false, isMoreThanMaxDebtAllowance = false, disallowedChargeLocks = false, existingTTP = false, exceedsMaxDebtAge = false, eligibleChargeType = false, missingFiledReturns = false)
+
+  val hasRlsAddressOn: EligibilityRules = eligibleEligibilityRules.copy(true)
+
+  val eligibleEligibilityCheckResult: EligibilityCheckResult = EligibilityCheckResult(
     idType               = IdType("SSTTP"),
     idNumber             = IdNumber(empRef.value),
     regimeType           = RegimeType("PAYE"),
@@ -71,5 +78,9 @@ trait TdEpaye { dependencies: TdBase =>
     eligibilityStatus = EligibilityStatus(OverallEligibilityStatus(false)),
     eligibilityRules  = hasRlsAddressOn
   )
+
+  val canPayUpfrontYes: CanPayUpfront = CanPayUpfront(true)
+
+  val canPayUpfrontNo: CanPayUpfront = CanPayUpfront(false)
 
 }

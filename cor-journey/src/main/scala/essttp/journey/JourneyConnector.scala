@@ -18,7 +18,7 @@ package essttp.journey
 
 import essttp.journey.model.ttp.EligibilityCheckResult
 import essttp.journey.model.{Journey, JourneyId, SjRequest, SjResponse}
-import essttp.rootmodel.TaxId
+import essttp.rootmodel.{CanPayUpfront, TaxId}
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig

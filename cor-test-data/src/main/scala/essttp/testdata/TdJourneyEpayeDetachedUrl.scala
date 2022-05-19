@@ -18,7 +18,7 @@ package essttp.testdata
 
 import essttp.journey.model._
 import essttp.journey.model.ttp.EligibilityCheckResult
-import essttp.rootmodel.TaxId
+import essttp.rootmodel.{CanPayUpfront, TaxId}
 import essttp.utils.JsonSyntax._
 import essttp.utils.ResourceReader._
 import play.api.libs.json.JsObject
@@ -95,5 +95,37 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
     )
 
     def journeyAfterEligibilityCheckNotEligibleJson: JsObject = read("testdata/epaye/detachedurl/JourneyAfterEligibilityCheckNotEligible.json").asJson
+
+    def updateCanPayUpfrontYesRequest(): CanPayUpfront = canPayUpfrontYes
+
+    def updateCanPayUpfrontNoRequest(): CanPayUpfront = canPayUpfrontNo
+
+    def updateCanPayUpfrontYesRequestJson(): JsObject = read("/testdata/epaye/detachedurl/UpdateCanPayUpfrontYes.json").asJson
+
+    def updateCanPayUpfrontNoRequestJson(): JsObject = read("/testdata/epaye/detachedurl/UpdateCanPayUpfrontNo.json").asJson
+
+    def journeyAfterCanPayUpfrontYes: Journey.Epaye.AfterCanPayUpfront = Journey.Epaye.AfterCanPayUpfront(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Epaye.DetachedUrl,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterCanPayUpfront.Yes,
+      taxId                  = empRef,
+      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      canPayUpfront          = canPayUpfrontYes
+    )
+
+    def journeyAfterCanPayUpfrontNo: Journey.Epaye.AfterCanPayUpfront = Journey.Epaye.AfterCanPayUpfront(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Epaye.DetachedUrl,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterCanPayUpfront.No,
+      taxId                  = empRef,
+      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      canPayUpfront          = canPayUpfrontNo
+    )
   }
 }
