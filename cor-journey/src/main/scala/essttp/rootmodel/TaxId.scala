@@ -16,6 +16,7 @@
 
 package essttp.rootmodel
 
+import cats.Eq
 import essttp.rootmodel.epaye.{TaxOfficeNumber, TaxOfficeReference}
 import julienrf.json.derived
 import play.api.libs.json.OFormat
@@ -23,7 +24,11 @@ import play.api.libs.json.OFormat
 sealed trait TaxId
 
 object TaxId {
-  implicit val format = derived.oformat[TaxId]()
+
+  implicit val format: OFormat[TaxId] = derived.oformat[TaxId]()
+
+  implicit val eq: Eq[TaxId] = Eq.fromUniversalEquals
+
 }
 
 final case class EmpRef(value: String) extends TaxId

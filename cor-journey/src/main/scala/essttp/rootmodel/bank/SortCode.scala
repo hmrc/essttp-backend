@@ -16,7 +16,7 @@
 
 package essttp.rootmodel.bank
 
-import play.api.libs.json.{Format, Json, OFormat}
+import play.api.libs.json.{Format, Json}
 
 final case class SortCode(value: String)
 

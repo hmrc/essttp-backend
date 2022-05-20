@@ -20,9 +20,7 @@ import essttp.journey.model.{Journey, JourneyId}
 import essttp.rootmodel.SessionId
 import play.api.mvc.Request
 import repository.RepoResultChecker._
-import uk.gov.hmrc.http.HeaderCarrier
 
-import java.time.Clock
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -31,7 +29,7 @@ class JourneyService @Inject() (
     journeyRepo: JourneyRepo
 )(implicit ec: ExecutionContext) {
 
-  def findLatestJourney(sessionId: SessionId)(implicit hc: HeaderCarrier): Future[Option[Journey]] = {
+  def findLatestJourney(sessionId: SessionId): Future[Option[Journey]] = {
     journeyRepo.findLatestJourney(sessionId)
   }
 
@@ -41,7 +39,7 @@ class JourneyService @Inject() (
     }
   }
 
-  private def find(journeyId: JourneyId)(implicit request: Request[_]): Future[Option[Journey]] = {
+  private def find(journeyId: JourneyId): Future[Option[Journey]] = {
     journeyRepo.findById(journeyId)
   }
 

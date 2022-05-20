@@ -41,6 +41,7 @@ trait RichMatchers
 
   implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
+  @SuppressWarnings(Array("org.wartremover.warts.ExplicitImplicitTypes", "org.wartremover.warts.PublicInference"))
   implicit def toLoggedRequestOps(lr: LoggedRequest) = new {
     def getBodyAsJson: JsValue = Json.parse(lr.getBodyAsString)
   }
@@ -52,8 +53,10 @@ trait RichMatchers
    */
   def getRecordedRequest(): LoggedRequest = {
     val allRecordedRequests = WireMock.getAllServeEvents().asScala.map(_.getRequest)
-    allRecordedRequests should have length 1 withClue "there suppose to be only one request recorded"
-    allRecordedRequests.head
+    allRecordedRequests.toList match {
+      case r :: Nil => r
+      case _        => fail("there suppose to be only one request recorded")
+    }
   }
 
   def assertThereWasOnlyOneReqeust() = getRecordedRequest()

@@ -16,11 +16,9 @@
 
 package essttp.journey.model
 
-import enumeratum.EnumEntry.Uppercase
 import enumeratum.{Enum, EnumEntry}
 import essttp.utils.EnumFormat
-import julienrf.json.derived
-import play.api.libs.json.{Format, OFormat}
+import play.api.libs.json.Format
 
 import scala.collection.immutable
 
@@ -53,14 +51,14 @@ object Origins extends Enum[Origin] {
   object Epaye extends Enum[Epaye] {
     implicit val format: Format[Epaye] = EnumFormat(Epaye)
 
-    case object Bta extends Origin with Epaye with BetterName { def show = "Origin.Epaye.Bta" }
-    case object GovUk extends Origin with Epaye { def show = "Origin.Epaye.GovUk" }
+    case object Bta extends Origin with Epaye with BetterName { def show: String = "Origin.Epaye.Bta" }
+    case object GovUk extends Origin with Epaye { def show: String = "Origin.Epaye.GovUk" }
 
     /**
      * This represents situation when user receives link to the application in watsapp/email/etc and it's not clear
      * where the journey actually started from.
      */
-    case object DetachedUrl extends Origin with Epaye { def show = "Origin.Epaye.DetachedUrl" }
+    case object DetachedUrl extends Origin with Epaye { def show: String = "Origin.Epaye.DetachedUrl" }
 
     override def values = findValues
   }

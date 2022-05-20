@@ -1,12 +1,11 @@
 import _root_.play.sbt.routes.RoutesKeys._
 import com.typesafe.sbt.SbtScalariform.ScalariformKeys
-import play.core.PlayVersion
 import play.sbt.PlayImport.PlayKeys
 import sbt.Keys._
 import sbt.Tests.{Group, SubProcess}
 import scalariform.formatter.preferences._
 import scoverage.ScoverageKeys
-import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, defaultSettings, scalaSettings, targetJvm}
+import uk.gov.hmrc.DefaultBuildSettings.{scalaSettings, targetJvm}
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
 import uk.gov.hmrc.versioning.SbtGitVersioning
@@ -22,30 +21,10 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 
 val appScalaVersion = "2.12.12"
 
+val silencerVersion = "1.7.1"
+
 lazy val appDependencies : Seq[ModuleID] = AppDependencies()
 lazy val playSettings : Seq[Setting[_]] = Seq.empty
-
-lazy val commonSettings = Seq(
-  majorVersion := majorVer,
-  scalacOptions ++= scalaCompilerOptions,
-  resolvers ++= Seq(Resolver.bintrayRepo("hmrc", "releases"), Resolver.jcenterRepo),
-  update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
-  scalariformSettings,
-  shellPrompt := ShellPrompt(version.value),
-  buildInfoPackage := name.value.toLowerCase().replaceAllLiterally("-", ""),
-  targetJvm := "jvm-1.8",
-  Compile / doc / scalacOptions := Seq(), //this will allow to have warnings in `doc` task and not fail the build
-  resolvers ++= Seq(
-    Resolver.sonatypeRepo("releases"),
-    Resolver.bintrayRepo("hmrc", "releases"),
-    Resolver.jcenterRepo,
-    "third-party-maven-releases" at "https://artefacts.tax.service.gov.uk/artifactory/third-party-maven-releases/",
-    "hmrc-releases-local" at "https://artefacts.tax.service.gov.uk/artifactory/hmrc-releases-local"
-  )
-).++(wartRemoverSettings)
-  .++(scoverageSettings)
-  .++(scalaSettings)
-  .++(uk.gov.hmrc.DefaultBuildSettings.defaultSettings())
 
 lazy val scalariformSettings =
 // description of options found here -> https://github.com/scala-ide/scalariform
@@ -87,58 +66,32 @@ lazy val scoverageSettings =
     ScoverageKeys.coverageHighlighting := true
   )
 
-lazy val wartRemoverSettings = {
-  val wartRemoverWarning = {
-    val warningWarts = Seq(
-      Wart.JavaSerializable,
-      Wart.StringPlusAny,
-      Wart.AsInstanceOf,
-      Wart.IsInstanceOf
-      //Wart.Any
-    )
-    Compile / compile / wartremoverWarnings ++= warningWarts
-  }
-
-  val wartRemoverError = {
-    // Error
-    val errorWarts = Seq(
-      Wart.StringPlusAny,
-      Wart.AsInstanceOf,
-      Wart.IsInstanceOf,
-      Wart.ArrayEquals,
-      //      Wart.Any,
-      Wart.AnyVal,
-      Wart.EitherProjectionPartial,
-      Wart.Enumeration,
-      Wart.ExplicitImplicitTypes,
-      Wart.FinalVal,
-      Wart.JavaConversions,
-      Wart.JavaSerializable,
-      Wart.LeakingSealed,
-      Wart.MutableDataStructures,
-      Wart.Null,
-      Wart.OptionPartial,
-      Wart.Recursion,
-      Wart.Return,
-      Wart.TraversableOps,
-      Wart.TryPartial,
-      Wart.Var,
-      Wart.While)
-
-    Compile / compile / wartremoverErrors  ++= errorWarts
-  }
-
+lazy val wartRemoverSettings =
   Seq(
-    wartRemoverError,
-    wartRemoverWarning,
-    Test / compile / wartremoverErrors --= Seq(Wart.Any, Wart.Equals, Wart.Null, Wart.NonUnitStatements, Wart.PublicInference),
-    wartremoverExcluded ++= (baseDirectory.value / "test").get
+    (Compile / compile / wartremoverErrors) ++= Warts.allBut(
+      Wart.DefaultArguments,
+      Wart.ImplicitConversion,
+      Wart.ImplicitParameter,
+      Wart.Nothing,
+      Wart.Overloading,
+      Wart.Throw,
+      Wart.ToString
+    ),
+    Test / compile / wartremoverErrors --= Seq(
+      Wart.Any,
+      Wart.Equals,
+      Wart.GlobalExecutionContext,
+      Wart.Null,
+      Wart.NonUnitStatements,
+      Wart.PublicInference
+    ),
+    wartremoverExcluded ++= (
+        (baseDirectory.value ** "*.sc").get
+      )
   )
-}
 
 lazy val scalaCompilerOptions = Seq(
   "-Xfatal-warnings",
-  "-Ywarn-unused:-imports,-patvars,-privates,-locals,-explicits,-implicits,_",
   "-Xlint:-missing-interpolator,_",
   "-Yno-adapted-args",
   "-Ywarn-value-discard",
@@ -156,6 +109,34 @@ def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = {
   }
 }
 
+lazy val commonSettings = Seq(
+  majorVersion := majorVer,
+  scalacOptions ++= scalaCompilerOptions,
+  resolvers ++= Seq(Resolver.bintrayRepo("hmrc", "releases"), Resolver.jcenterRepo),
+  update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
+  scalariformSettings,
+  shellPrompt := ShellPrompt(version.value),
+  buildInfoPackage := name.value.toLowerCase().replaceAllLiterally("-", ""),
+  targetJvm := "jvm-1.8",
+  Compile / doc / scalacOptions := Seq(), //this will allow to have warnings in `doc` task and not fail the build
+  resolvers ++= Seq(
+    Resolver.sonatypeRepo("releases"),
+    Resolver.bintrayRepo("hmrc", "releases"),
+    Resolver.jcenterRepo,
+    "third-party-maven-releases" at "https://artefacts.tax.service.gov.uk/artifactory/third-party-maven-releases/",
+    "hmrc-releases-local" at "https://artefacts.tax.service.gov.uk/artifactory/hmrc-releases-local"
+  )
+).++(wartRemoverSettings)
+  .++(scoverageSettings)
+  .++(scalaSettings)
+  .++(uk.gov.hmrc.DefaultBuildSettings.defaultSettings())
+  .++(
+    libraryDependencies ++= Seq(
+      compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
+      "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
+    )
+  )
+
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin, SbtAutoBuildPlugin, SbtGitVersioning)
   .settings(commonSettings)
@@ -166,10 +147,9 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= appDependencies,
     Test / parallelExecution := false,
     Test / fork := false,
+    routesImport ++= Seq("essttp.journey.model._"),
     wartremoverExcluded ++= (Compile / routes).value,
-    routesImport ++= Seq(
-      "essttp.journey.model._",
-    )
+    scalacOptions += "-P:silencer:pathFilters=routes"
   )
   .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)
   .settings(
@@ -183,14 +163,9 @@ lazy val microservice = Project(appName, file("."))
   )
   .dependsOn(corJourney, corTestData)
   .aggregate(corJourney, corTestData)
-  .settings(
-    majorVersion                     := majorVer,
-    scalaVersion                     := appScalaVersion,
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
-    wartremoverExcluded ++= (Compile / routes).value
-  )
   .settings(publishingSettings: _*)
   .settings(resolvers += Resolver.jcenterRepo)
+
 
 /**
  * Collection Of Routines - the common journey
@@ -217,7 +192,8 @@ lazy val corJourney = Project(appName + "-cor-journey", file("cor-journey"))
       "com.github.pureconfig" %% "pureconfig" % "0.12.2",
       "com.beachape" %% "enumeratum-play" % "1.5.15",
       "com.typesafe.play" %% "play" % play.core.PlayVersion.current % Provided,
-      "io.scalaland" %% "chimney" % "0.6.1"
+      "io.scalaland" %% "chimney" % "0.6.1",
+      "org.typelevel"              %% "cats-core"                     % "2.7.0"
     )
   )
 

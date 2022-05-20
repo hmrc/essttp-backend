@@ -22,10 +22,11 @@ import essttp.testdata.TdAll
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import testsupport.ItSpec
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, SessionId}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, SessionId, SessionKeys}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import java.time.Clock
+import java.util.UUID
 
 class FindLatestJourneyBySessionIdSpec extends ItSpec {
 
@@ -34,7 +35,7 @@ class FindLatestJourneyBySessionIdSpec extends ItSpec {
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
   def makeHeaderCarrier(sessionId: SessionId): HeaderCarrier =
-    HeaderCarrier(sessionId = Some(SessionId(sessionId.value)))
+    HeaderCarrier(sessionId = Some(sessionId))
 
   "return a 500 when no sessionId provided" in {
     val httpClient = app.injector.instanceOf[HttpClient]
@@ -51,26 +52,23 @@ class FindLatestJourneyBySessionIdSpec extends ItSpec {
   "find a single journey" in {
 
       def startJourney(sessionId: SessionId): JourneyId = {
-        implicit val hc: HeaderCarrier = makeHeaderCarrier(sessionId)
-        implicit val request: FakeRequest[AnyContentAsEmpty.type] = TdAll.request
+        implicit val request: FakeRequest[AnyContentAsEmpty.type] = TdAll.request.withSession(SessionKeys.sessionId -> sessionId.value)
         val sjRequest = TdAll.EpayeBta.sjRequest
         val journeyId = journeyConnector.Epaye.startJourneyBta(sjRequest).futureValue.journeyId
         journeyId
       }
 
-    val sessionId = SessionId("session-2082fcd4-70f6-49cc-a4bf-845917981cd7")
-    val previousJourneyId = startJourney(sessionId) //there is only 1 journey in mongo with the sessionId
-    Thread.sleep(300)
-    val latterJourneyId = startJourney(sessionId) //now there are 2 journeys with the same sessionId
-    //end of test setup
-
+    val sessionId = SessionId(s"session-${UUID.randomUUID().toString}")
     implicit val hc: HeaderCarrier = makeHeaderCarrier(sessionId)
 
-    Thread.sleep(1000)
-    val journey = journeyConnector.findLatestJourneyBySessionId().futureValue.value
-    val journeyId = journey._id
-    journeyId shouldBe latterJourneyId
-    journeyId should not be previousJourneyId
+    val previousJourneyId = startJourney(sessionId) //there is only 1 journey in mongo with the sessionId
+    val result1 = journeyConnector.findLatestJourneyBySessionId().futureValue.value
+    result1.journeyId shouldBe previousJourneyId
+
+    val latterJourneyId = startJourney(sessionId) //now there are 2 journeys with the same sessionId
+    val result2 = journeyConnector.findLatestJourneyBySessionId().futureValue.value
+    result2.journeyId shouldBe latterJourneyId
+    result2.journeyId shouldNot be(previousJourneyId)
   }
 
   "find a single journey - Not Found" in {

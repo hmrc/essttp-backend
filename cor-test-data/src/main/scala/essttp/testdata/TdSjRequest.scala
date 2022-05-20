@@ -18,8 +18,6 @@ package essttp.testdata
 
 import essttp.journey.model.SjRequest
 import play.api.libs.json.JsObject
-import essttp.utils.ResourceReader._
-import essttp.utils.JsonSyntax._
 
 trait TdSjRequest[SJREQUEST <: SjRequest] {
 

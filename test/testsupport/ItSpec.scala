@@ -16,19 +16,18 @@
 
 package testsupport
 
+import com.github.ghik.silencer.silent
 import com.google.inject.{AbstractModule, Provides}
 import essttp.journey.model.JourneyId
 import journey.JourneyIdGenerator
-import org.scalatest.freespec.{AnyFreeSpecLike, FixtureAnyFreeSpecLike}
+import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.{FixtureTestSuite, TestData, fixture}
+import org.scalatest.TestData
 import org.scalatestplus.play.guice.GuiceOneServerPerTest
 import play.api.{Application, Mode}
-import play.api.inject.Injector
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.test.{DefaultTestServerFactory, RunningServer}
 import play.core.server.ServerConfig
-import reactivemongo.bson.BSONObjectID
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.{Clock, LocalDateTime, ZoneId, ZonedDateTime}
@@ -60,6 +59,7 @@ trait ItSpec
 
     @Provides
     @Singleton
+    @silent // silence "method never used" warning
     def clock: Clock = self.clock
 
     /**
@@ -68,13 +68,15 @@ trait ItSpec
      */
     @Provides
     @Singleton
+    @silent // silence "method never used" warning
     def journeyIdGenerator(testJourneyIdGenerator: TestJourneyIdGenerator): JourneyIdGenerator = testJourneyIdGenerator
 
     @Provides
     @Singleton
+    @silent // silence "method never used" warning
     def testJourneyIdGenerator(): TestJourneyIdGenerator = {
       val randomPart: String = Random.alphanumeric.take(5).mkString
-      val journeyIdPrefix =TestJourneyIdPrefix(s"TestJourneyId-$randomPart-")
+      val journeyIdPrefix: TestJourneyIdPrefix = TestJourneyIdPrefix(s"TestJourneyId-$randomPart-")
       new TestJourneyIdGenerator(journeyIdPrefix)
     }
   }
@@ -91,7 +93,7 @@ trait ItSpec
     "mongodb.uri" -> s"mongodb://localhost:27017/$databaseName",
     "microservice.services.essttp-backend.protocol" -> "http",
     "microservice.services.essttp-backend.host" -> "localhost",
-    "microservice.services.essttp-backend.port" -> testServerPort,
+    "microservice.services.essttp-backend.port" -> testServerPort
   )
 
   override def newAppForTest(testData: org.scalatest.TestData): Application = new GuiceApplicationBuilder()
@@ -109,12 +111,11 @@ trait ItSpec
     }
   }
 
-
 }
 
 final case class TestJourneyIdPrefix(value: String)
 
-class TestJourneyIdGenerator (testJourneyIdPrefix: TestJourneyIdPrefix) extends JourneyIdGenerator {
+class TestJourneyIdGenerator(testJourneyIdPrefix: TestJourneyIdPrefix) extends JourneyIdGenerator {
 
   private val idIterator: Iterator[JourneyId] = Stream.from(0).map(i => JourneyId(s"${testJourneyIdPrefix.value}$i")).iterator
   private val nextJourneyIdCached = new AtomicReference[JourneyId](idIterator.next())

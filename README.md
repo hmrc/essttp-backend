@@ -18,7 +18,7 @@ graph TD;
     AfterStarted --> AfterComputedTaxIds;
     AfterComputedTaxIds --> AfterEligibilityCheck;
     AfterEligibilityCheck --> AfterEligibilityCheck.Eligible;
-    AfterEligibilityCheck --> AfterEligibilityCheck.InEligible;
+    AfterEligibilityCheck --> AfterEligibilityCheck.Ineligible;
     AfterEligibilityCheck.Eligible --> AfterCanPayUpfront;
     AfterCanPayUpfront --> AddMore;
 ```
