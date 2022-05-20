@@ -18,7 +18,7 @@ package essttp.journey
 
 import essttp.journey.model.ttp.EligibilityCheckResult
 import essttp.journey.model.{Journey, JourneyId, SjRequest, SjResponse}
-import essttp.rootmodel.TaxId
+import essttp.rootmodel.{CanPayUpfront, TaxId}
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -49,6 +49,10 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
 
   def updateEligibilityCheckResult(journeyId: JourneyId, eligibilityCheckResult: EligibilityCheckResult)(implicit request: RequestHeader): Future[Unit] = {
     httpClient.POST[EligibilityCheckResult, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-eligibility-result", eligibilityCheckResult)
+  }
+
+  def updateCanPayUpfront(journeyId: JourneyId, canPayUpfront: CanPayUpfront)(implicit request: RequestHeader): Future[Unit] = {
+    httpClient.POST[CanPayUpfront, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-can-pay-upfront", canPayUpfront)
   }
 
   object Epaye {

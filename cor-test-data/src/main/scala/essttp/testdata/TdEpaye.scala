@@ -17,49 +17,56 @@
 package essttp.testdata
 
 import essttp.journey.model.ttp._
-import essttp.rootmodel.EmpRef
+import essttp.rootmodel.{CanPayUpfront, EmpRef}
 import essttp.rootmodel.epaye.{Aor, TaxOfficeNumber, TaxOfficeReference}
 
-trait TdEpaye { dependencies: TdBase =>
+trait TdEpaye {
+  dependencies: TdBase =>
 
-  def taxOfficeNumber: TaxOfficeNumber = TaxOfficeNumber("840")
-  def taxOfficeReference: TaxOfficeReference = TaxOfficeReference("GZ00064")
-  def empRef: EmpRef = EmpRef("840/GZ00064")
-  def aor: Aor = Aor("840PZ00002232")
-  def reusableDate: String = "2022-05-17"
-  def eligibleEligibilityRules: EligibilityRules = EligibilityRules(hasRlsOnAddress = false,markedAsInsolvent = false,isLessThanMinDebtAllowance = false,isMoreThanMaxDebtAllowance = false,disallowedChargeLocks = false,existingTTP = false,exceedsMaxDebtAge = false,eligibleChargeType = false,missingFiledReturns = false)
-  def hasRlsAddressOn: EligibilityRules = eligibleEligibilityRules.copy(true)
+  val taxOfficeNumber: TaxOfficeNumber = TaxOfficeNumber("840")
 
-  def eligibleEligibilityCheckResult: EligibilityCheckResult = EligibilityCheckResult(
-    idType = IdType("SSTTP"),
-    idNumber = IdNumber(empRef.value),
-    regimeType = RegimeType("PAYE"),
-    processingDate = ProcessingDate(reusableDate),
-    customerDetails = CustomerDetails(Country("Narnia"), PostCode("AA11AA")),
-    minPlanLengthMonths = MinPlanLengthMonths(1),
-    maxPlanLengthMonths = MaxPlanLengthMonths(3),
-    eligibilityStatus = EligibilityStatus(OverallEligibilityStatus(true)),
-    eligibilityRules = eligibleEligibilityRules,
+  val taxOfficeReference: TaxOfficeReference = TaxOfficeReference("GZ00064")
+
+  val empRef: EmpRef = EmpRef("840/GZ00064")
+
+  val aor: Aor = Aor("840PZ00002232")
+
+  val reusableDate: String = "2022-05-17"
+
+  val eligibleEligibilityRules: EligibilityRules = EligibilityRules(hasRlsOnAddress            = false, markedAsInsolvent = false, isLessThanMinDebtAllowance = false, isMoreThanMaxDebtAllowance = false, disallowedChargeLocks = false, existingTTP = false, exceedsMaxDebtAge = false, eligibleChargeType = false, missingFiledReturns = false)
+
+  val hasRlsAddressOn: EligibilityRules = eligibleEligibilityRules.copy(true)
+
+  val eligibleEligibilityCheckResult: EligibilityCheckResult = EligibilityCheckResult(
+    idType               = IdType("SSTTP"),
+    idNumber             = IdNumber(empRef.value),
+    regimeType           = RegimeType("PAYE"),
+    processingDate       = ProcessingDate(reusableDate),
+    customerDetails      = CustomerDetails(Country("Narnia"), PostCode("AA11AA")),
+    minPlanLengthMonths  = MinPlanLengthMonths(1),
+    maxPlanLengthMonths  = MaxPlanLengthMonths(3),
+    eligibilityStatus    = EligibilityStatus(OverallEligibilityStatus(true)),
+    eligibilityRules     = eligibleEligibilityRules,
     chargeTypeAssessment = List(
       ChargeTypeAssessment(
-        taxPeriodFrom = TaxPeriodFrom("2020-08-13"),
-        taxPeriodTo = TaxPeriodTo("2020-08-14"),
-        debtTotalAmount = DebtTotalAmount(300000),
+        taxPeriodFrom         = TaxPeriodFrom("2020-08-13"),
+        taxPeriodTo           = TaxPeriodTo("2020-08-14"),
+        debtTotalAmount       = DebtTotalAmount(300000),
         disallowedChargeLocks = List(
           DisallowedChargeLocks(
-            chargeId = ChargeId("A00000000001"),
-            mainTrans = MainTrans("mainTrans"),
-            mainTransDesc = MainTransDesc("mainTransDesc"),
-            subTrans = SubTrans("subTrans"),
-            subTransDesc = SubTransDesc("subTransDesc"),
+            chargeId              = ChargeId("A00000000001"),
+            mainTrans             = MainTrans("mainTrans"),
+            mainTransDesc         = MainTransDesc("mainTransDesc"),
+            subTrans              = SubTrans("subTrans"),
+            subTransDesc          = SubTransDesc("subTransDesc"),
             outstandingDebtAmount = OutstandingDebtAmount(100000),
-            interestStartDate = InterestStartDate("2017-03-07"),
+            interestStartDate     = InterestStartDate("2017-03-07"),
             accruedInterestToDate = AccruedInterestToDate(15.97),
-            chargeLocks = ChargeLocks(
-              paymentLock = PaymentLock(false, ""),
+            chargeLocks           = ChargeLocks(
+              paymentLock  = PaymentLock(false, ""),
               clearingLock = PaymentLock(false, ""),
               interestLock = PaymentLock(false, ""),
-              dunningLock = PaymentLock(false, "")
+              dunningLock  = PaymentLock(false, "")
             )
           )
         )
@@ -69,7 +76,11 @@ trait TdEpaye { dependencies: TdBase =>
 
   def ineligibleEligibilityCheckResult: EligibilityCheckResult = eligibleEligibilityCheckResult.copy(
     eligibilityStatus = EligibilityStatus(OverallEligibilityStatus(false)),
-    eligibilityRules = hasRlsAddressOn
+    eligibilityRules  = hasRlsAddressOn
   )
+
+  val canPayUpfrontYes: CanPayUpfront = CanPayUpfront(true)
+
+  val canPayUpfrontNo: CanPayUpfront = CanPayUpfront(false)
 
 }

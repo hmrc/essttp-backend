@@ -16,7 +16,7 @@
 
 package journey
 
-import com.google.inject.Inject
+import com.google.inject.{Inject, Singleton}
 import essttp.journey.model._
 import essttp.rootmodel.{EmpRef, TaxId, Vrn}
 import essttp.utils.Errors
@@ -26,6 +26,7 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class UpdateTaxIdController @Inject() (
     journeyService: JourneyService,
     cc:             ControllerComponents
