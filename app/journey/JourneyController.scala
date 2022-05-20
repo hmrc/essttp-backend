@@ -19,14 +19,13 @@ package journey
 import com.google.inject.Inject
 import essttp.journey.model._
 import essttp.rootmodel.SessionId
-import essttp.utils.{Errors, RequestSupport}
-import play.api.libs.json.{Json, Reads}
+import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents, Request, RequestHeader, Result}
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.play.bootstrap.backend.http.ErrorResponse
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 /**
  * Start Journey (Sj) Controller

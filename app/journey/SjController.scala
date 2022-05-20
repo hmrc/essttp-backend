@@ -18,8 +18,8 @@ package journey
 
 import com.google.inject.Inject
 import essttp.journey.model._
-import essttp.rootmodel.{SessionId, TraceId}
-import essttp.utils.{Errors, RequestSupport}
+import essttp.rootmodel.SessionId
+import essttp.utils.RequestSupport
 import play.api.libs.json.{Json, Reads}
 import play.api.mvc.{Action, ControllerComponents, Request, Result}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController

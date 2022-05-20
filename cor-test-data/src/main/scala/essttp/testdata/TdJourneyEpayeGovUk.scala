@@ -16,6 +16,7 @@
 
 package essttp.testdata
 
+import essttp.journey.model.SjRequest.Epaye
 import essttp.journey.model._
 import essttp.journey.model.ttp.EligibilityCheckResult
 import essttp.rootmodel.{CanPayUpfront, TaxId}
@@ -29,9 +30,9 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
 
   object EpayeGovUk {
 
-    def sjRequest = SjRequest.Epaye.Empty()
+    def sjRequest: Epaye.Empty = SjRequest.Epaye.Empty()
 
-    def sjResponse = SjResponse(
+    def sjResponse: SjResponse = SjResponse(
       nextUrl   = NextUrl(s"http://localhost:9215/set-up-a-payment-plan?traceId=${dependencies.traceId.value}"),
       journeyId = dependencies.journeyId
     )

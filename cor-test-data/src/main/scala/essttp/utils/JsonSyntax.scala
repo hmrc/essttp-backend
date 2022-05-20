@@ -22,7 +22,7 @@ object JsonSyntax extends JsonSyntax
 
 trait JsonSyntax {
 
-  @SuppressWarnings(Array("org.wartremover.warts.ExplicitImplicitTypes"))
+  @SuppressWarnings(Array("org.wartremover.warts.ExplicitImplicitTypes", "org.wartremover.warts.PublicInference"))
   implicit def toJsonOps(s: String) = new {
     def asJson: JsObject = Json.parse(s) match {
       case d: JsObject => d

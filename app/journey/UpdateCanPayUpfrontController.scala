@@ -16,9 +16,9 @@
 
 package journey
 
+import cats.syntax.eq._
+import cats.instances.boolean._
 import com.google.inject.{Inject, Singleton}
-import essttp.journey.model.Journey.Epaye
-import essttp.journey.model.Stage.AfterCanPayUpfront.No
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.CanPayUpfront
 import essttp.utils.Errors
@@ -64,7 +64,7 @@ class UpdateCanPayUpfrontController @Inject() (
   }
 
   private def hasChangedAnswer(journey: Journey.HasCanPayUpfront, latestCanPayUpfront: CanPayUpfront): Boolean =
-    journey.canPayUpfront.value != latestCanPayUpfront.value
+    journey.canPayUpfront.value =!= latestCanPayUpfront.value
 
   private def hasNotChangedAnswer(journey: Journey.HasCanPayUpfront, latestCanPayUpfront: CanPayUpfront): Boolean =
     !hasChangedAnswer(journey, latestCanPayUpfront)

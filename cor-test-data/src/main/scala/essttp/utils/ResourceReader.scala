@@ -16,14 +16,14 @@
 
 package essttp.utils
 
-import scala.io.Source
+import scala.io.{Codec, Source}
 
 object ResourceReader {
 
   def read(resourcePath: String): String = Source
     .fromInputStream(
       this.getClass.getResourceAsStream(resourcePath)
-    )
+    )(Codec.UTF8)
     .getLines()
     .mkString("\n")
 }

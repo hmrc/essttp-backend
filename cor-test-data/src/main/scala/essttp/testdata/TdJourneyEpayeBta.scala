@@ -16,13 +16,12 @@
 
 package essttp.testdata
 
+import essttp.journey.model.SjRequest.Epaye
 import essttp.journey.model.ttp.EligibilityCheckResult
 
 import scala.language.reflectiveCalls
-import essttp.journey.model.{Journey, NextUrl, Origin, Origins, SjRequest, SjResponse, Stage}
+import essttp.journey.model.{Journey, NextUrl, Origins, SjRequest, SjResponse, Stage}
 import essttp.rootmodel._
-import essttp.rootmodel.epaye._
-import essttp.utils.ResourceReader._
 import essttp.utils.JsonSyntax._
 import essttp.utils.ResourceReader._
 import play.api.libs.json.JsObject
@@ -34,12 +33,12 @@ trait TdJourneyEpayeBta {
 
   object EpayeBta {
 
-    def sjRequest = SjRequest.Epaye.Simple(
+    def sjRequest: Epaye.Simple = SjRequest.Epaye.Simple(
       dependencies.returnUrl,
       dependencies.backUrl
     )
 
-    def sjResponse = SjResponse(
+    def sjResponse: SjResponse = SjResponse(
       nextUrl   = NextUrl(s"http://localhost:9215/set-up-a-payment-plan?traceId=${dependencies.traceId.value}"),
       journeyId = dependencies.journeyId
     )

@@ -29,7 +29,7 @@ sealed trait SjRequest
 
 object SjRequest {
 
-  implicit val format = derived.oformat[SjRequest]()
+  implicit val format: OFormat[SjRequest] = derived.oformat[SjRequest]()
 
   def isAbsoluteUrl(urlStr: String): Boolean = Try(java.net.URI.create(urlStr).isAbsolute).getOrElse(false)
 
