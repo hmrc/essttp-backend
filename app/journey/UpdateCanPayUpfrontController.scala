@@ -17,8 +17,6 @@
 package journey
 
 import com.google.inject.{Inject, Singleton}
-import essttp.journey.model.Journey.Epaye
-import essttp.journey.model.Stage.AfterCanPayUpfront.No
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.CanPayUpfront
 import essttp.utils.Errors

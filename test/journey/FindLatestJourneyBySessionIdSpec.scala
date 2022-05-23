@@ -66,7 +66,6 @@ class FindLatestJourneyBySessionIdSpec extends ItSpec {
 
     implicit val hc: HeaderCarrier = makeHeaderCarrier(sessionId)
 
-    Thread.sleep(1000)
     val journey = journeyConnector.findLatestJourneyBySessionId().futureValue.value
     val journeyId = journey._id
     journeyId shouldBe latterJourneyId

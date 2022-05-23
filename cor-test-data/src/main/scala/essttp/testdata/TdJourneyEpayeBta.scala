@@ -16,13 +16,10 @@
 
 package essttp.testdata
 
+import essttp.journey.model.SjRequest.Epaye
+import essttp.journey.model._
 import essttp.journey.model.ttp.EligibilityCheckResult
-
-import scala.language.reflectiveCalls
-import essttp.journey.model.{Journey, NextUrl, Origin, Origins, SjRequest, SjResponse, Stage}
 import essttp.rootmodel._
-import essttp.rootmodel.epaye._
-import essttp.utils.ResourceReader._
 import essttp.utils.JsonSyntax._
 import essttp.utils.ResourceReader._
 import play.api.libs.json.JsObject
@@ -32,14 +29,14 @@ import scala.language.reflectiveCalls
 trait TdJourneyEpayeBta {
   dependencies: TdBase with TdEpaye =>
 
-  object EpayeBta {
+  object EpayeBta extends TdJourneyStructure {
 
-    def sjRequest = SjRequest.Epaye.Simple(
+    def sjRequest: Epaye.Simple = SjRequest.Epaye.Simple(
       dependencies.returnUrl,
       dependencies.backUrl
     )
 
-    def sjResponse = SjResponse(
+    def sjResponse: SjResponse = SjResponse(
       nextUrl   = NextUrl(s"http://localhost:9215/set-up-a-payment-plan?traceId=${dependencies.traceId.value}"),
       journeyId = dependencies.journeyId
     )
@@ -125,6 +122,8 @@ trait TdJourneyEpayeBta {
       canPayUpfront          = canPayUpfrontYes
     )
 
+    def journeyAfterCanPayUpfrontYesJson: JsObject = read("/testdata/epaye/bta/JourneyAfterCanPayUpfrontYes.json").asJson
+
     def journeyAfterCanPayUpfrontNo: Journey.Epaye.AfterCanPayUpfront = Journey.Epaye.AfterCanPayUpfront(
       _id                    = dependencies.journeyId,
       origin                 = Origins.Epaye.Bta,
@@ -136,5 +135,26 @@ trait TdJourneyEpayeBta {
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       canPayUpfront          = canPayUpfrontNo
     )
+
+    def journeyAfterCanPayUpfrontNoJson: JsObject = read("/testdata/epaye/bta/JourneyAfterCanPayUpfrontNo.json").asJson
+
+    def updateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.upfrontPaymentAmount
+
+    def updateUpfrontPaymentAmountRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateUpfrontPaymentAmountRequest.json").asJson
+
+    def journeyAfterUpfrontPaymentAmount: Journey.Epaye.AfterUpfrontPaymentAmount = Journey.Epaye.AfterUpfrontPaymentAmount(
+      _id                         = dependencies.journeyId,
+      origin                      = Origins.Epaye.Bta,
+      createdOn                   = dependencies.createdOn,
+      sjRequest                   = sjRequest,
+      sessionId                   = dependencies.sessionId,
+      stage                       = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
+      taxId                       = empRef,
+      eligibilityCheckResult      = eligibleEligibilityCheckResult,
+      canPayUpfront               = canPayUpfrontYes,
+      upfrontPaymentAmount        = dependencies.upfrontPaymentAmount
+    )
+
+    def journeyAfterUpfrontPaymentAmountJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateUpfrontPaymentAmount.json").asJson
   }
 }

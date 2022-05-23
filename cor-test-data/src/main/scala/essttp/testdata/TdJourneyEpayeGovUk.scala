@@ -18,7 +18,7 @@ package essttp.testdata
 
 import essttp.journey.model._
 import essttp.journey.model.ttp.EligibilityCheckResult
-import essttp.rootmodel.{CanPayUpfront, TaxId}
+import essttp.rootmodel.{CanPayUpfront, TaxId, UpfrontPaymentAmount}
 import essttp.utils.JsonSyntax._
 import essttp.utils.ResourceReader._
 import play.api.libs.json.JsObject
@@ -27,7 +27,7 @@ import scala.language.reflectiveCalls
 
 trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
 
-  object EpayeGovUk {
+  object EpayeGovUk extends TdJourneyStructure {
 
     def sjRequest = SjRequest.Epaye.Empty()
 
@@ -127,5 +127,28 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       canPayUpfront          = canPayUpfrontNo
     )
+
+    override def journeyAfterCanPayUpfrontYesJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterCanPayUpfrontYes.json").asJson
+
+    override def journeyAfterCanPayUpfrontNoJson: JsObject =  read("/testdata/epaye/govuk/JourneyAfterCanPayUpfrontNo.json").asJson
+
+    override def updateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.upfrontPaymentAmount
+
+    override def updateUpfrontPaymentAmountRequestJson(): JsObject =  read("/testdata/epaye/govuk/UpdateUpfrontPaymentAmountRequest.json").asJson
+
+    override def journeyAfterUpfrontPaymentAmount: Journey.Epaye.AfterUpfrontPaymentAmount = Journey.Epaye.AfterUpfrontPaymentAmount(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Epaye.GovUk,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
+      taxId                  = empRef,
+      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      canPayUpfront          = canPayUpfrontYes,
+      upfrontPaymentAmount = dependencies.upfrontPaymentAmount
+    )
+
+    override def journeyAfterUpfrontPaymentAmountJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterUpdateUpfrontPaymentAmount.json").asJson
   }
 }

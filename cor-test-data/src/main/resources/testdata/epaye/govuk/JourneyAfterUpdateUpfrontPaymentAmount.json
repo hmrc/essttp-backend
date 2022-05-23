@@ -1,13 +1,16 @@
 {
-  "AfterEligibilityCheck": {
+  "AfterUpfrontPaymentAmount": {
     "stage": {
-      "Eligible": {}
+      "EnteredUpfrontPaymentAmount": {}
     },
-    "createdOn": "2022-05-17T13:42:37.526",
-    "_id": "6283a64d4f01006f33b859b7",
+    "createdOn": "2022-05-17T13:28:52.261",
+    "_id": "6283a314430100e2eae927bf",
     "origin": "Origins.Epaye.GovUk",
     "sjRequest": {
-      "Empty": {}
+      "Simple": {
+        "returnUrl": "http://localhost:9066/return",
+        "backUrl": "http://localhost:9066/back"
+      }
     },
     "sessionId": "sialalalagovuk",
     "eligibilityCheckResult": {
@@ -22,10 +25,10 @@
       "minPlanLengthMonths": 1,
       "maxPlanLengthMonths": 3,
       "eligibilityStatus": {
-        "overallEligibilityStatus": false
+        "overallEligibilityStatus": true
       },
       "eligibilityRules": {
-        "hasRlsOnAddress": true,
+        "hasRlsOnAddress": false,
         "markedAsInsolvent": false,
         "isLessThanMinDebtAllowance": false,
         "isMoreThanMaxDebtAllowance": false,
@@ -75,8 +78,10 @@
     },
     "taxId": {
       "value": "840/GZ00064"
-    }
+    },
+    "canPayUpfront": true,
+    "upfrontPaymentAmount": 1000
   },
   "sessionId": "sialalalagovuk",
-  "createdAt": "2022-05-17T13:42:37.526"
+  "createdAt": "2022-05-17T13:28:52.261"
 }

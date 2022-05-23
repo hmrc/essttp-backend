@@ -18,8 +18,11 @@ graph TD;
     AfterStarted --> AfterComputedTaxIds;
     AfterComputedTaxIds --> AfterEligibilityCheck;
     AfterEligibilityCheck --> AfterEligibilityCheck.Eligible;
-    AfterEligibilityCheck --> AfterEligibilityCheck.InEligible;
-    AfterEligibilityCheck.Eligible --> AfterCanPayUpfront;
+    AfterEligibilityCheck --> AfterEligibilityCheck.Ineligible;
+    AfterEligibilityCheck.Eligible --> AfterCanPayUpfront.Yes;
+    AfterEligibilityCheck.Eligible --> AfterCanPayUpfront.No;
+    AfterCanPayUpfront.No --> Howmuchcanyoupayamonth;
+    AfterCanPayUpfront.Yes --> AfterAfterUpfrontPaymentAmount;
     AfterCanPayUpfront --> AddMore;
 ```
 To edit this, use [mermaid live editor](https://mermaid.live/)

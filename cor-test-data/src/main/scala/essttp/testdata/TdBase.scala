@@ -31,6 +31,8 @@ trait TdBase {
 
   def createdOn: LocalDateTime = LocalDateTime.parse("2057-11-02T16:28:55.185")
   def amountToUpdate: AmountInPence = AmountInPence(123499)
+  def amountInPence: AmountInPence = AmountInPence(1000)
+  def upfrontPaymentAmount: UpfrontPaymentAmount = UpfrontPaymentAmount(amountInPence)
 
   def backUrl: BackUrl = BackUrl("https://www.tax.service.gov.uk/back-url")
   def returnUrl: ReturnUrl = ReturnUrl("https://www.tax.service.gov.uk/return-url")
