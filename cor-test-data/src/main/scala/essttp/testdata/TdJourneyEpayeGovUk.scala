@@ -131,11 +131,11 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
 
     override def journeyAfterCanPayUpfrontYesJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterCanPayUpfrontYes.json").asJson
 
-    override def journeyAfterCanPayUpfrontNoJson: JsObject =  read("/testdata/epaye/govuk/JourneyAfterCanPayUpfrontNo.json").asJson
+    override def journeyAfterCanPayUpfrontNoJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterCanPayUpfrontNo.json").asJson
 
     override def updateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.upfrontPaymentAmount
 
-    override def updateUpfrontPaymentAmountRequestJson(): JsObject =  read("/testdata/epaye/govuk/UpdateUpfrontPaymentAmountRequest.json").asJson
+    override def updateUpfrontPaymentAmountRequestJson(): JsObject = read("/testdata/epaye/govuk/UpdateUpfrontPaymentAmountRequest.json").asJson
 
     override def journeyAfterUpfrontPaymentAmount: Journey.Epaye.AfterUpfrontPaymentAmount = Journey.Epaye.AfterUpfrontPaymentAmount(
       _id                    = dependencies.journeyId,
@@ -147,7 +147,7 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       canPayUpfront          = canPayUpfrontYes,
-      upfrontPaymentAmount = dependencies.upfrontPaymentAmount
+      upfrontPaymentAmount   = dependencies.upfrontPaymentAmount
     )
 
     override def journeyAfterUpfrontPaymentAmountJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterUpdateUpfrontPaymentAmount.json").asJson

@@ -16,6 +16,8 @@
 
 package journey
 
+import cats.syntax.eq._
+
 import com.google.inject.{Inject, Singleton}
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.UpfrontPaymentAmount
@@ -56,10 +58,9 @@ class UpdateUpfrontPaymentAmountController @Inject() (
         journeyService.upsert(newJourney)
       case j: Journey.Epaye.AfterCanPayUpfront if !j.canPayUpfront.value =>
         Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible when user has selected [No] for CanPayUpfront: [${j.stage.entryName}]")
-      case j: Journey.HasUpfrontPaymentAmount if j.upfrontPaymentAmount.value == upfrontPaymentAmount.value =>
+      case j: Journey.HasUpfrontPaymentAmount if j.upfrontPaymentAmount.value.value === upfrontPaymentAmount.value.value =>
         JourneyLogger.info("Nothing to update, UpfrontPaymentAmount is the same as the existing one in journey.")
         Future.successful(())
     }
   }
-
 }

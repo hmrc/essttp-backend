@@ -144,16 +144,16 @@ trait TdJourneyEpayeBta {
     def updateUpfrontPaymentAmountRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateUpfrontPaymentAmountRequest.json").asJson
 
     def journeyAfterUpfrontPaymentAmount: Journey.Epaye.AfterUpfrontPaymentAmount = Journey.Epaye.AfterUpfrontPaymentAmount(
-      _id                         = dependencies.journeyId,
-      origin                      = Origins.Epaye.Bta,
-      createdOn                   = dependencies.createdOn,
-      sjRequest                   = sjRequest,
-      sessionId                   = dependencies.sessionId,
-      stage                       = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
-      taxId                       = empRef,
-      eligibilityCheckResult      = eligibleEligibilityCheckResult,
-      canPayUpfront               = canPayUpfrontYes,
-      upfrontPaymentAmount        = dependencies.upfrontPaymentAmount
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Epaye.Bta,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
+      taxId                  = empRef,
+      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      canPayUpfront          = canPayUpfrontYes,
+      upfrontPaymentAmount   = dependencies.upfrontPaymentAmount
     )
 
     def journeyAfterUpfrontPaymentAmountJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateUpfrontPaymentAmount.json").asJson

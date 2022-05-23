@@ -16,9 +16,9 @@
 
 package essttp.testdata
 
-import essttp.journey.model.{Journey, SjRequest, SjResponse}
 import essttp.journey.model.ttp.EligibilityCheckResult
-import essttp.rootmodel.{AmountInPence, CanPayUpfront, TaxId, UpfrontPaymentAmount}
+import essttp.journey.model.{Journey, SjRequest, SjResponse}
+import essttp.rootmodel.{CanPayUpfront, TaxId, UpfrontPaymentAmount}
 import play.api.libs.json.JsObject
 
 trait TdJourneyStructure {

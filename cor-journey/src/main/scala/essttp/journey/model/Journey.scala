@@ -16,8 +16,6 @@
 
 package essttp.journey.model
 
-import essttp.journey.model.Journey.HasTaxId
-import essttp.journey.model.Stage.AfterCanPayUpfront
 import essttp.journey.model.ttp.EligibilityCheckResult
 import essttp.rootmodel._
 import essttp.utils.Errors
@@ -146,16 +144,15 @@ object Journey {
 
     sealed trait AfterUpfrontPaymentAmount
       extends Journey
-        with JourneyStage
+      with JourneyStage
       with HasTaxId
       with HasEligibilityCheckResult
       with HasCanPayUpfront
-      with HasUpfrontPaymentAmount
-      { self: Journey =>
+      with HasUpfrontPaymentAmount { self: Journey =>
       Errors.sanityCheck(Stage.AfterUpfrontPaymentAmount.values.contains(stage), sanityMessage)
       def stage: Stage.AfterUpfrontPaymentAmount
       // If entering amount to pay upfront, must have canPayUpfront = true
-      Errors.sanityCheck( self.canPayUpfront.value, sanityMessage)
+      Errors.sanityCheck(self.canPayUpfront.value, sanityMessage)
     }
 
     sealed trait AfterEnteredDayOfMonth
@@ -284,20 +281,20 @@ object Journey {
      * Epaye
      */
     final case class AfterUpfrontPaymentAmount(
-                                            override val _id:         JourneyId,
-                                            override val origin:      Origins.Epaye,
-                                            override val createdOn:   LocalDateTime,
-                                            override val sjRequest:   SjRequest.Epaye,
-                                            override val sessionId:   SessionId,
-                                            override val stage:       Stage.AfterUpfrontPaymentAmount,
-                                            override val taxId:       EmpRef,
-                                            override val eligibilityCheckResult: EligibilityCheckResult,
-                                            override val canPayUpfront: CanPayUpfront,
-                                            override val upfrontPaymentAmount: UpfrontPaymentAmount
-                                        )
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Epaye,
+        override val createdOn:              LocalDateTime,
+        override val sjRequest:              SjRequest.Epaye,
+        override val sessionId:              SessionId,
+        override val stage:                  Stage.AfterUpfrontPaymentAmount,
+        override val taxId:                  EmpRef,
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val canPayUpfront:          CanPayUpfront,
+        override val upfrontPaymentAmount:   UpfrontPaymentAmount
+    )
       extends Journey
-        with Journey.Stages.AfterUpfrontPaymentAmount
-        with Journey.Epaye
+      with Journey.Stages.AfterUpfrontPaymentAmount
+      with Journey.Epaye
 
     /**
      * [[Journey]] after EnteredDayOfMonth
