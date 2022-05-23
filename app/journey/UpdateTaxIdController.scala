@@ -16,6 +16,7 @@
 
 package journey
 
+import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.journey.model._
 import essttp.rootmodel.{EmpRef, TaxId, Vrn}
@@ -37,7 +38,7 @@ class UpdateTaxIdController @Inject() (
       journey <- journeyService.get(journeyId)
       _ <- (request.body, journey) match {
         case (empRef: EmpRef, journey: Journey.Epaye) => updateJourney(journey, empRef)
-        case (vrn: Vrn, journey: Journey /*.Vat*/ )   => Errors.throwBadRequestExceptionF("Vat not supported yet")
+        case (_: Vrn, _: Journey /*.Vat*/ )           => Errors.throwBadRequestExceptionF("Vat not supported yet")
       }
     } yield Ok
   }
@@ -51,10 +52,10 @@ class UpdateTaxIdController @Inject() (
           .withFieldConst(_.taxId, empRef)
           .transform
         journeyService.upsert(newJourney)
-      case j: Journey.HasTaxId if j.taxId == empRef =>
+      case j: Journey.HasTaxId if j.taxId === empRef =>
         JourneyLogger.info("Nothing to update, journey has already updated tax id.")
         Future.successful(())
-      case j: Journey.HasTaxId if j.taxId != empRef =>
+      case j: Journey.HasTaxId if j.taxId =!= empRef =>
         Errors.notImplemented("Incorrect taxId type. For Epaye it must be Aor")
     }
   }

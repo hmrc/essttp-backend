@@ -28,7 +28,7 @@ import scala.collection.immutable
  * Each stage defines what data are available in journey at this stage.
  * Each enum value defines what states journey can be in within this stage.
  */
-sealed trait Stage
+sealed trait Stage extends Product with Serializable
 
 object Stage {
 

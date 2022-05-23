@@ -44,7 +44,6 @@ final case class EligibilityRules(
     ).map{ if (_) 1 else 0 }.sum > 1
   }
 
-  @SuppressWarnings(Array("org.wartremover.warts.TraversableOps"))
   val isEligible: Boolean = {
     List(
       hasRlsOnAddress,

@@ -19,8 +19,7 @@ package journey
 import essttp.journey.JourneyConnector
 import essttp.journey.model.{JourneyId, SjResponse}
 import essttp.testdata.TdAll
-import play.api.mvc.AnyContentAsEmpty
-import play.api.test.FakeRequest
+import play.api.mvc.Request
 import testsupport.ItSpec
 
 class JourneyControllerSpec extends ItSpec {
@@ -38,7 +37,8 @@ class JourneyControllerSpec extends ItSpec {
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
     }
-    implicit val request: FakeRequest[AnyContentAsEmpty.type] = tdAll.request
+
+    implicit val request: Request[_] = tdAll.request
     val response: SjResponse = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
 
     /** Start journey */
@@ -66,7 +66,8 @@ class JourneyControllerSpec extends ItSpec {
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
     }
-    implicit val request: FakeRequest[AnyContentAsEmpty.type] = tdAll.request
+
+    implicit val request: Request[_] = tdAll.request
     val response: SjResponse = journeyConnector.Epaye.startJourneyGovUk(tdAll.EpayeGovUk.sjRequest).futureValue
 
     /** Start journey * */
@@ -94,7 +95,8 @@ class JourneyControllerSpec extends ItSpec {
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
     }
-    implicit val request: FakeRequest[AnyContentAsEmpty.type] = tdAll.request
+
+    implicit val request: Request[_] = tdAll.request
     val response: SjResponse = journeyConnector.Epaye.startJourneyDetachedUrl(tdAll.EpayeDetachedUrl.sjRequest).futureValue
 
     /** Start journey * */
@@ -122,7 +124,8 @@ class JourneyControllerSpec extends ItSpec {
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
     }
-    implicit val request: FakeRequest[AnyContentAsEmpty.type] = tdAll.request
+
+    implicit val request: Request[_] = tdAll.request
     val response = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
 
     /** Start journey * */

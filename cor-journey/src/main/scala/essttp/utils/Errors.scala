@@ -29,7 +29,7 @@ object Errors {
    * Creates a requirement which has to pass in order to continue computation.
    * If it failes it will result in Upstream4xxResponse.
    */
-  def require(requirement: Boolean, message: => String) = {
+  def require(requirement: Boolean, message: => String): Unit = {
     if (!requirement) throw UpstreamErrorResponse(message, play.mvc.Http.Status.BAD_REQUEST)
     else ()
   }

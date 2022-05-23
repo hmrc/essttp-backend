@@ -19,6 +19,7 @@ package essttp.testdata
 import essttp.journey.model.SjRequest.Epaye
 import essttp.journey.model._
 import essttp.journey.model.ttp.EligibilityCheckResult
+import scala.language.reflectiveCalls
 import essttp.rootmodel._
 import essttp.utils.JsonSyntax._
 import essttp.utils.ResourceReader._

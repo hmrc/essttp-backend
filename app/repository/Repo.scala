@@ -27,8 +27,7 @@ abstract class Repo[A, ID](
     collectionName:         String,
     reactiveMongoComponent: ReactiveMongoComponent
 )(implicit
-    manifest: Manifest[A],
-  domainFormat:     OFormat[A],
+    domainFormat: OFormat[A],
   idFormat:         Format[ID],
   executionContext: ExecutionContext
 )

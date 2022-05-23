@@ -16,8 +16,7 @@
 
 package essttp.rootmodel
 
-import essttp.journey.model.{Origin, Origins}
-import play.api.libs.json.{JsNull, JsString, Json}
+import play.api.libs.json.Json
 import testsupport.UnitSpec
 
 class TaxIdSpec extends UnitSpec {

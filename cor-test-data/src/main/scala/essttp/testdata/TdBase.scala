@@ -54,11 +54,11 @@ trait TdBase {
     .withTrueClientPort()
     .withDeviceId()
 
-  def authToken = "authorization-value-123"
-  def akamaiReputationValue = "akamai-reputation-value-123"
-  def requestId = "request-id-value-123"
-  def trueClientIp = "client-ip-123"
-  def trueClientPort = "client-port-123"
-  def deviceId = "device-id-123"
+  def authToken: String = "authorization-value-123"
+  def akamaiReputationValue: String = "akamai-reputation-value-123"
+  def requestId: String = "request-id-value-123"
+  def trueClientIp: String = "client-ip-123"
+  def trueClientPort: String = "client-port-123"
+  def deviceId: String = "device-id-123"
 
 }

@@ -16,6 +16,9 @@
 
 package journey
 
+import cats.syntax.eq._
+import cats.instances.string._
+
 import essttp.journey.model.JourneyId
 import essttp.rootmodel.TraceId
 import action.model._
@@ -69,9 +72,9 @@ object JourneyLogger {
 
   private def sessionId(implicit request: RequestHeader) = s"[${hc.sessionId}]"
 
-  private def referer(implicit r: RequestHeader) = s"[Referer: ${r.headers.headers.find(_._1 == "Referer").map(_._2).getOrElse("")}]"
+  private def referer(implicit r: RequestHeader) = s"[Referer: ${r.headers.headers.find(_._1 === "Referer").map(_._2).getOrElse("")}]"
 
-  private def deviceId(implicit r: RequestHeader) = s"[deviceId: ${r.cookies.find(_.name == CookieNames.deviceID).map(_.value).getOrElse("")}]"
+  private def deviceId(implicit r: RequestHeader) = s"[deviceId: ${r.cookies.find(_.name === CookieNames.deviceID).map(_.value).getOrElse("")}]"
 
   private def origin(implicit r: JourneyRequest[_]) = s"[${r.journey.origin}]"
 
