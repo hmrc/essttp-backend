@@ -148,11 +148,9 @@ object Journey {
       with HasTaxId
       with HasEligibilityCheckResult
       with HasCanPayUpfront
-      with HasUpfrontPaymentAmount { self: Journey =>
+      with HasUpfrontPaymentAmount {
       Errors.sanityCheck(Stage.AfterUpfrontPaymentAmount.values.contains(stage), sanityMessage)
       def stage: Stage.AfterUpfrontPaymentAmount
-      // If entering amount to pay upfront, must have canPayUpfront = true
-      Errors.sanityCheck(self.canPayUpfront.value, sanityMessage)
     }
 
     sealed trait AfterEnteredDayOfMonth

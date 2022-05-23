@@ -119,33 +119,4 @@ class JourneyControllerSpec extends ItSpec {
     journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateUpfrontPaymentAmountRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterUpfrontPaymentAmount
   }
-
-  "[Epaye.Bta][Update can pay upfront decision - yes to no]" in {
-    val tdAll = new TdAll {
-      override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
-    }
-
-    implicit val request: Request[_] = tdAll.request
-    val response = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
-
-    /** Start journey * */
-    response shouldBe tdAll.EpayeBta.sjResponse
-    journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterStarted
-
-    /** Update tax id * */
-    journeyConnector.updateTaxId(tdAll.journeyId, tdAll.EpayeBta.updateTaxIdRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterDetermineTaxIds
-
-    /** Update eligibility result * */
-    journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
-
-    /** Update CanPayUpfront as YES * */
-    journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
-
-    /** Update CanPayUpfront as No * */
-    journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontNoRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontNo
-  }
 }

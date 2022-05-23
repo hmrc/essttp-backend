@@ -60,6 +60,16 @@ class UpdateCanPayUpfrontController @Inject() (
       case j: Journey.Epaye.AfterCanPayUpfront if hasNotChangedAnswer(j, canPayUpfront) =>
         JourneyLogger.info("Nothing to update, user's choice has not changed.")
         Future.successful(())
+      case j: Journey.Epaye.AfterUpfrontPaymentAmount if hasChangedAnswer(j, canPayUpfront) =>
+        JourneyLogger.info("User has decided not to pay upfront, after initially entering an upfront payment amount")
+        val newJourney: Journey.Epaye.AfterCanPayUpfront =
+          j.into[Journey.Epaye.AfterCanPayUpfront]
+            .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+            .withFieldConst(_.canPayUpfront, canPayUpfront).transform
+        journeyService.upsert(newJourney)
+      case j: Journey.Epaye.AfterUpfrontPaymentAmount if hasNotChangedAnswer(j, canPayUpfront) =>
+        JourneyLogger.info("Nothing to update, user's choice has not changed.")
+        Future.successful(())
     }
   }
 

@@ -141,6 +141,9 @@ trait TdJourneyEpayeBta {
 
     def updateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.upfrontPaymentAmount
 
+    // used in specific test for changing upfront payment amount, no need to copy to other TdJourneys
+    def anotherUpdateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.anotherUpfrontPaymentAmount
+
     def updateUpfrontPaymentAmountRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateUpfrontPaymentAmountRequest.json").asJson
 
     def journeyAfterUpfrontPaymentAmount: Journey.Epaye.AfterUpfrontPaymentAmount = Journey.Epaye.AfterUpfrontPaymentAmount(

@@ -33,6 +33,7 @@ trait TdBase {
   def amountToUpdate: AmountInPence = AmountInPence(123499)
   def amountInPence: AmountInPence = AmountInPence(1000)
   def upfrontPaymentAmount: UpfrontPaymentAmount = UpfrontPaymentAmount(amountInPence)
+  def anotherUpfrontPaymentAmount: UpfrontPaymentAmount = UpfrontPaymentAmount(amountInPence.copy(value = 1001))
 
   def backUrl: BackUrl = BackUrl("https://www.tax.service.gov.uk/back-url")
   def returnUrl: ReturnUrl = ReturnUrl("https://www.tax.service.gov.uk/return-url")

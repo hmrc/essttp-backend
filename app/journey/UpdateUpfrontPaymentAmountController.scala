@@ -61,6 +61,9 @@ class UpdateUpfrontPaymentAmountController @Inject() (
       case j: Journey.HasUpfrontPaymentAmount if j.upfrontPaymentAmount.value.value === upfrontPaymentAmount.value.value =>
         JourneyLogger.info("Nothing to update, UpfrontPaymentAmount is the same as the existing one in journey.")
         Future.successful(())
+      case j: Journey.Epaye.AfterUpfrontPaymentAmount =>
+        val updatedJourney: Journey.Epaye.AfterUpfrontPaymentAmount = j.copy(upfrontPaymentAmount = upfrontPaymentAmount)
+        journeyService.upsert(updatedJourney)
     }
   }
 }
