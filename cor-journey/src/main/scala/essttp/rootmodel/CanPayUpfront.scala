@@ -19,7 +19,7 @@ package essttp.rootmodel
 import play.api.libs.json.{Format, Json}
 
 final case class CanPayUpfront(value: Boolean) extends AnyVal {
-  def userWantsToPayUpFront: Boolean = value
+  def userCanPayUpfront: Boolean = value
 }
 
 object CanPayUpfront {
