@@ -1,5 +1,5 @@
 {
-  "AfterEligibilityCheck": {
+  "EligibilityCheck": {
     "stage": {
       "Eligible": {}
     },

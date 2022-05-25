@@ -71,7 +71,7 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
 
     def updateEligibilityCheckRequestJson(): JsObject = read("testdata/epaye/govuk/UpdateEligibilityCheckRequest.json").asJson
 
-    def journeyAfterEligibilityCheckEligible: Journey.Epaye.EligibilityCheck = Journey.Epaye.EligibilityCheck(
+    def journeyAfterEligibilityCheckEligible: Journey.Epaye.EligibilityChecked = Journey.Epaye.EligibilityChecked(
       _id                    = dependencies.journeyId,
       origin                 = Origins.Epaye.GovUk,
       createdOn              = dependencies.createdOn,
@@ -84,7 +84,7 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
 
     def journeyAfterEligibilityCheckEligibleJson: JsObject = read("testdata/epaye/govuk/JourneyAfterEligibilityCheck.json").asJson
 
-    def journeyAfterEligibilityCheckNotEligible: Journey.Epaye.EligibilityCheck = Journey.Epaye.EligibilityCheck(
+    def journeyAfterEligibilityCheckNotEligible: Journey.Epaye.EligibilityChecked = Journey.Epaye.EligibilityChecked(
       _id                    = dependencies.journeyId,
       origin                 = Origins.Epaye.GovUk,
       createdOn              = dependencies.createdOn,

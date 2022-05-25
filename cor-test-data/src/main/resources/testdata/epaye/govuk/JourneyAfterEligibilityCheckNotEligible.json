@@ -1,7 +1,7 @@
 {
-  "AfterEligibilityCheck": {
+  "EligibilityCheck": {
     "stage": {
-      "Eligible": {}
+      "Ineligible": {}
     },
     "createdOn": "2022-05-17T13:42:37.526",
     "_id": "6283a64d4f01006f33b859b7",

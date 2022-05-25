@@ -23,10 +23,10 @@ import essttp.testdata.TdAll
 import play.api.mvc.Request
 import testsupport.ItSpec
 
-class JourneyUpdatesCanPayUpfront extends ItSpec {
+class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
-  def getToEligibilityCheck(tdAll: TdAll)(implicit request: Request[_]): Unit = {
+  def primeStubsForEligibilityCheck(tdAll: TdAll)(implicit request: Request[_]): Unit = {
     journeyConnector.updateTaxId(tdAll.journeyId, tdAll.EpayeBta.updateTaxIdRequest()).futureValue
     journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).futureValue
   }
@@ -39,7 +39,7 @@ class JourneyUpdatesCanPayUpfront extends ItSpec {
     implicit val request: Request[_] = tdAll.request
     val response: SjResponse = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
     response shouldBe tdAll.EpayeBta.sjResponse
-    getToEligibilityCheck(tdAll)
+    primeStubsForEligibilityCheck(tdAll)
 
     /** Update CanPayUpfront as YES */
     journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
@@ -62,7 +62,7 @@ class JourneyUpdatesCanPayUpfront extends ItSpec {
     implicit val request: Request[_] = tdAll.request
     val response: SjResponse = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
     response shouldBe tdAll.EpayeBta.sjResponse
-    getToEligibilityCheck(tdAll)
+    primeStubsForEligibilityCheck(tdAll)
 
     /** Update CanPayUpfront as YES */
     journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
@@ -85,7 +85,7 @@ class JourneyUpdatesCanPayUpfront extends ItSpec {
     implicit val request: Request[_] = tdAll.request
     val response: SjResponse = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
     response shouldBe tdAll.EpayeBta.sjResponse
-    getToEligibilityCheck(tdAll)
+    primeStubsForEligibilityCheck(tdAll)
 
     journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes

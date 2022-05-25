@@ -39,42 +39,58 @@ class UpdateUpfrontPaymentAmountController @Inject() (
       journey <- journeyService.get(journeyId)
       _ <- journey match {
         case j: Journey.BeforeAnsweredCanPayUpfront      => Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible in that state: [${j.stage}]")
-        case j: Journey.Stages.AnsweredCanPayUpfront     => updateJourney(j, request.body)
-        case j: Journey.AfterEnteredUpfrontPaymentAmount => updateJourney(j, request.body)
+        case j: Journey.Stages.AnsweredCanPayUpfront     => updateJourneyWithNewValue(j, request.body)
+        case j: Journey.AfterEnteredUpfrontPaymentAmount => updateJourneyWithExistingValue(j, request.body)
       }
     } yield Ok
   }
 
-  private def updateJourney(
-      journey:              Journey.AfterEnteredUpfrontPaymentAmount,
-      upfrontPaymentAmount: UpfrontPaymentAmount
-  )(implicit request: Request[_]): Future[Unit] = if (journey.upfrontPaymentAmount.value.value === upfrontPaymentAmount.value.value) {
-    JourneyLogger.info("Nothing to update, UpfrontPaymentAmount is the same as the existing one in journey.")
-    Future.successful(())
-  } else {
-    val updatedJourney: Journey = journey match {
-      case j: Epaye.EnteredUpfrontPaymentAmount => j.copy(upfrontPaymentAmount = upfrontPaymentAmount)
-      case j: Epaye.EnteredDayOfMonth           => j.copy(upfrontPaymentAmount = upfrontPaymentAmount)
-      case j: Epaye.EnteredInstalmentAmount     => j.copy(upfrontPaymentAmount = upfrontPaymentAmount)
-      case j: Epaye.HasSelectedPlan             => j.copy(upfrontPaymentAmount = upfrontPaymentAmount)
-    }
-    journeyService.upsert(updatedJourney)
-  }
-
-  private def updateJourney(
+  private def updateJourneyWithNewValue(
       journey:              Stages.AnsweredCanPayUpfront,
       upfrontPaymentAmount: UpfrontPaymentAmount
-  )(implicit request: Request[_]): Future[Unit] = if (journey.canPayUpfront.value) {
-    journey match {
-      case j: Epaye.AnsweredCanPayUpfront =>
-        val newJourney: Epaye.EnteredUpfrontPaymentAmount =
-          j.into[Epaye.EnteredUpfrontPaymentAmount]
+  )(implicit request: Request[_]): Future[Unit] = {
+    if (journey.canPayUpfront.value) {
+      journey match {
+        case j: Epaye.AnsweredCanPayUpfront =>
+          val newJourney: Epaye.EnteredUpfrontPaymentAmount =
+            j.into[Epaye.EnteredUpfrontPaymentAmount]
+              .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+              .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
+              .transform
+          journeyService.upsert(newJourney)
+      }
+    } else {
+      Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible when user has selected [No] for CanPayUpfront: [${journey.stage}]")
+    }
+  }
+
+  private def updateJourneyWithExistingValue(
+      journey:              Journey.AfterEnteredUpfrontPaymentAmount,
+      upfrontPaymentAmount: UpfrontPaymentAmount
+  )(implicit request: Request[_]): Future[Unit] = {
+    if (journey.upfrontPaymentAmount.value.value === upfrontPaymentAmount.value.value) {
+      JourneyLogger.info("Nothing to update, UpfrontPaymentAmount is the same as the existing one in journey.")
+      Future.successful(())
+    } else {
+      val updatedJourney: Journey = journey match {
+        case j: Epaye.EnteredUpfrontPaymentAmount => j.copy(upfrontPaymentAmount = upfrontPaymentAmount)
+        case j: Epaye.EnteredDayOfMonth =>
+          j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
             .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
             .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
             .transform
-        journeyService.upsert(newJourney)
+        case j: Epaye.EnteredInstalmentAmount =>
+          j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+            .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
+            .transform
+        case j: Epaye.HasSelectedPlan =>
+          j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+            .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
+            .transform
+      }
+      journeyService.upsert(updatedJourney)
     }
-  } else {
-    Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible when user has selected [No] for CanPayUpfront: [${journey.stage}]")
   }
 }

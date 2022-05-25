@@ -1,5 +1,5 @@
 {
-  "AfterUpfrontPaymentAmount": {
+  "EnteredUpfrontPaymentAmount": {
     "stage": {
       "EnteredUpfrontPaymentAmount": {}
     },

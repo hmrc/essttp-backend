@@ -77,7 +77,7 @@ trait TdJourneyEpayeBta {
 
     def updateEligibilityCheckRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateEligibilityCheckRequest.json").asJson
 
-    def journeyAfterEligibilityCheckEligible: Journey.Epaye.EligibilityCheck = Journey.Epaye.EligibilityCheck(
+    def journeyAfterEligibilityCheckEligible: Journey.Epaye.EligibilityChecked = Journey.Epaye.EligibilityChecked(
       _id                    = dependencies.journeyId,
       origin                 = Origins.Epaye.Bta,
       createdOn              = dependencies.createdOn,
@@ -90,7 +90,7 @@ trait TdJourneyEpayeBta {
 
     def journeyAfterEligibilityCheckEligibleJson: JsObject = read("/testdata/epaye/bta/JourneyAfterEligibilityCheck.json").asJson
 
-    def journeyAfterEligibilityCheckNotEligible: Journey.Epaye.EligibilityCheck = Journey.Epaye.EligibilityCheck(
+    def journeyAfterEligibilityCheckNotEligible: Journey.Epaye.EligibilityChecked = Journey.Epaye.EligibilityChecked(
       _id                    = dependencies.journeyId,
       origin                 = Origins.Epaye.Bta,
       createdOn              = dependencies.createdOn,

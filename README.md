@@ -15,15 +15,15 @@ Acronyms used in a codebase. To speed up writing and reading.
 ### General flow
 ```mermaid
 graph TD;
-    AfterStarted --> AfterComputedTaxIds;
-    AfterComputedTaxIds --> AfterEligibilityCheck;
-    AfterEligibilityCheck --> AfterEligibilityCheck.Eligible;
-    AfterEligibilityCheck --> AfterEligibilityCheck.Ineligible;
-    AfterEligibilityCheck.Eligible --> AfterCanPayUpfront.Yes;
-    AfterEligibilityCheck.Eligible --> AfterCanPayUpfront.No;
-    AfterCanPayUpfront.No --> Howmuchcanyoupayamonth;
-    AfterCanPayUpfront.Yes --> AfterAfterUpfrontPaymentAmount;
-    AfterCanPayUpfront --> AddMore;
+    Started --> ComputedTaxId;
+    ComputedTaxId --> EligibilityCheck;
+    EligibilityCheck --> EligibilityCheck.Eligible;
+    EligibilityCheck --> EligibilityCheck.Ineligible;
+    EligibilityCheck.Eligible --> AnsweredCanPayUpfront.Yes;
+    EligibilityCheck.Eligible --> AnsweredCanPayUpfront.No;
+    AnsweredCanPayUpfront.No --> Howmuchcanyoupayamonth;
+    AnsweredCanPayUpfront.Yes --> EnteredUpfrontPaymentAmount;
+    CanPayUpfront --> AddMore;
 ```
 To edit this, use [mermaid live editor](https://mermaid.live/)
 
