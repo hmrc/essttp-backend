@@ -35,10 +35,10 @@ class UpdateEligibilityCheckResultController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {
-        case j: Journey.Epaye.AfterStarted => Errors.throwBadRequestExceptionF("EligibilityCheckResult update is not possible in that state.")
-        case j: Journey.Epaye.AfterComputedTaxIds =>
+        case j: Journey.Epaye.Started => Errors.throwBadRequestExceptionF("EligibilityCheckResult update is not possible in that state.")
+        case j: Journey.Epaye.ComputedTaxId =>
           val newJourney = j
-            .into[Journey.Epaye.AfterEligibilityCheck]
+            .into[Journey.Epaye.EligibilityCheck]
             .withFieldConst(_.eligibilityCheckResult, request.body)
             .withFieldConst(
               _.stage,
@@ -49,7 +49,7 @@ class UpdateEligibilityCheckResultController @Inject() (
             )
             .transform
           journeyService.upsert(newJourney)
-        case j: Journey.HasEligibilityCheckResult =>
+        case j: Journey.AfterEligibilityChecked =>
           JourneyLogger.info("Nothing to update, journey has already updated EligibilityCheckResult.")
           Future.successful(())
       }

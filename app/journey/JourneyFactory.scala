@@ -34,7 +34,7 @@ class JourneyFactory @Inject() (
   ): Journey = originatedSjRequest match {
 
     case OriginatedSjRequest.Epaye(origin, sjRequest) =>
-      Journey.Epaye.AfterStarted(
+      Journey.Epaye.Started(
         _id       = journeyIdGenerator.nextJourneyId(),
         origin    = origin,
         sjRequest = sjRequest,
