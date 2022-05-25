@@ -45,17 +45,17 @@ class UpdateTaxIdController @Inject() (
 
   private def updateJourney(journey: Journey.Epaye, empRef: EmpRef)(implicit request: Request[_]): Future[Unit] = {
     journey match {
-      case j: Journey.Epaye.AfterStarted =>
-        val newJourney: Journey.Epaye.AfterComputedTaxIds = j
-          .into[Journey.Epaye.AfterComputedTaxIds]
+      case j: Journey.Epaye.Started =>
+        val newJourney: Journey.Epaye.ComputedTaxId = j
+          .into[Journey.Epaye.ComputedTaxId]
           .withFieldConst(_.stage, Stage.AfterComputedTaxId.ComputedTaxId)
           .withFieldConst(_.taxId, empRef)
           .transform
         journeyService.upsert(newJourney)
-      case j: Journey.HasTaxId if j.taxId === empRef =>
+      case j: Journey.AfterComputedTaxId if j.taxId === empRef =>
         JourneyLogger.info("Nothing to update, journey has already updated tax id.")
         Future.successful(())
-      case j: Journey.HasTaxId if j.taxId =!= empRef =>
+      case j: Journey.AfterComputedTaxId if j.taxId =!= empRef =>
         Errors.notImplemented("Incorrect taxId type. For Epaye it must be Aor")
     }
   }
