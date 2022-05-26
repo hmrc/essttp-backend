@@ -1,15 +1,18 @@
 {
-  "EligibilityCheck": {
+  "AnsweredCanPayUpfront": {
     "stage": {
-      "Eligible": {}
+      "No": {}
     },
-    "createdOn": "2022-05-17T13:42:37.526",
-    "_id": "6283a64d4f01006f33b859b7",
-    "origin": "Origins.Epaye.GovUk",
+    "createdOn": "2022-05-17T13:28:52.261",
+    "_id": "6283a314430100e2eae927bf",
+    "origin": "Origins.Epaye.DetachedUrl",
     "sjRequest": {
-      "Empty": {}
+      "Simple": {
+        "returnUrl": "http://localhost:9066/return",
+        "backUrl": "http://localhost:9066/back"
+      }
     },
-    "sessionId": "sialalalagovuk",
+    "sessionId": "sialalaladetachedurl",
     "eligibilityCheckResult": {
       "idType": "SSTTP",
       "idNumber": "840/GZ00064",
@@ -75,8 +78,9 @@
     },
     "taxId": {
       "value": "840/GZ00064"
-    }
+    },
+    "canPayUpfront": false
   },
-  "sessionId": "sialalalagovuk",
-  "createdAt": "2022-05-17T13:42:37.526"
+  "sessionId": "sialalaladetachedurl",
+  "createdAt": "2022-05-17T13:28:52.261"
 }

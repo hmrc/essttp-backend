@@ -19,7 +19,7 @@ package essttp.testdata
 import essttp.journey.model.SjRequest.Epaye
 import essttp.journey.model._
 import essttp.journey.model.ttp.EligibilityCheckResult
-import essttp.rootmodel.{CanPayUpfront, TaxId}
+import essttp.rootmodel.{CanPayUpfront, TaxId, UpfrontPaymentAmount}
 import essttp.utils.JsonSyntax._
 import essttp.utils.ResourceReader._
 import play.api.libs.json.JsObject
@@ -28,7 +28,7 @@ import scala.language.reflectiveCalls
 
 trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
 
-  object EpayeDetachedUrl {
+  object EpayeDetachedUrl extends TdJourneyStructure {
 
     def sjRequest: Epaye.Empty = SjRequest.Epaye.Empty()
 
@@ -40,7 +40,7 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
     def postPath: String = "/epaye/detached-url/journey/start"
     def sjRequestJson: JsObject = read("testdata/epaye/detachedurl/SjRequest.json").asJson
 
-    def journeyAfterStarted: Journey.Epaye.AfterStarted = Journey.Epaye.AfterStarted(
+    def journeyAfterStarted: Journey.Epaye.Started = Journey.Epaye.Started(
       _id       = dependencies.journeyId,
       origin    = Origins.Epaye.DetachedUrl,
       createdOn = dependencies.createdOn,
@@ -55,7 +55,7 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
 
     def updateTaxIdRequestJson(): JsObject = read("testdata/epaye/detachedurl/UpdateTaxIdRequest.json").asJson
 
-    def journeyAfterDetermineTaxIds: Journey.Epaye.AfterComputedTaxIds = Journey.Epaye.AfterComputedTaxIds(
+    def journeyAfterDetermineTaxIds: Journey.Epaye.ComputedTaxId = Journey.Epaye.ComputedTaxId(
       _id       = dependencies.journeyId,
       origin    = Origins.Epaye.DetachedUrl,
       createdOn = dependencies.createdOn,
@@ -71,7 +71,7 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
 
     def updateEligibilityCheckRequestJson(): JsObject = read("testdata/epaye/detachedurl/UpdateEligibilityCheckRequest.json").asJson
 
-    def journeyAfterEligibilityCheckEligible: Journey.Epaye.AfterEligibilityCheck = Journey.Epaye.AfterEligibilityCheck(
+    def journeyAfterEligibilityCheckEligible: Journey.Epaye.EligibilityChecked = Journey.Epaye.EligibilityChecked(
       _id                    = dependencies.journeyId,
       origin                 = Origins.Epaye.DetachedUrl,
       createdOn              = dependencies.createdOn,
@@ -84,7 +84,7 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
 
     def journeyAfterEligibilityCheckEligibleJson: JsObject = read("testdata/epaye/detachedurl/JourneyAfterEligibilityCheck.json").asJson
 
-    def journeyAfterEligibilityCheckNotEligible: Journey.Epaye.AfterEligibilityCheck = Journey.Epaye.AfterEligibilityCheck(
+    def journeyAfterEligibilityCheckNotEligible: Journey.Epaye.EligibilityChecked = Journey.Epaye.EligibilityChecked(
       _id                    = dependencies.journeyId,
       origin                 = Origins.Epaye.DetachedUrl,
       createdOn              = dependencies.createdOn,
@@ -105,7 +105,7 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
 
     def updateCanPayUpfrontNoRequestJson(): JsObject = read("/testdata/epaye/detachedurl/UpdateCanPayUpfrontNo.json").asJson
 
-    def journeyAfterCanPayUpfrontYes: Journey.Epaye.AfterCanPayUpfront = Journey.Epaye.AfterCanPayUpfront(
+    def journeyAfterCanPayUpfrontYes: Journey.Epaye.AnsweredCanPayUpfront = Journey.Epaye.AnsweredCanPayUpfront(
       _id                    = dependencies.journeyId,
       origin                 = Origins.Epaye.DetachedUrl,
       createdOn              = dependencies.createdOn,
@@ -117,7 +117,7 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
       canPayUpfront          = canPayUpfrontYes
     )
 
-    def journeyAfterCanPayUpfrontNo: Journey.Epaye.AfterCanPayUpfront = Journey.Epaye.AfterCanPayUpfront(
+    def journeyAfterCanPayUpfrontNo: Journey.Epaye.AnsweredCanPayUpfront = Journey.Epaye.AnsweredCanPayUpfront(
       _id                    = dependencies.journeyId,
       origin                 = Origins.Epaye.DetachedUrl,
       createdOn              = dependencies.createdOn,
@@ -128,5 +128,28 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       canPayUpfront          = canPayUpfrontNo
     )
+
+    override def journeyAfterCanPayUpfrontYesJson: JsObject = read("/testdata/epaye/detachedurl/JourneyAfterCanPayUpfrontYes.json").asJson
+
+    override def journeyAfterCanPayUpfrontNoJson: JsObject = read("/testdata/epaye/detachedurl/JourneyAfterCanPayUpfrontNo.json").asJson
+
+    override def updateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.upfrontPaymentAmount
+
+    override def updateUpfrontPaymentAmountRequestJson(): JsObject = read("/testdata/epaye/detachedurl/UpdateUpfrontPaymentAmountRequest.json").asJson
+
+    override def journeyAfterUpfrontPaymentAmount: Journey.Epaye.EnteredUpfrontPaymentAmount = Journey.Epaye.EnteredUpfrontPaymentAmount(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Epaye.DetachedUrl,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
+      taxId                  = empRef,
+      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      canPayUpfront          = canPayUpfrontYes,
+      upfrontPaymentAmount   = dependencies.upfrontPaymentAmount
+    )
+
+    override def journeyAfterUpfrontPaymentAmountJson: JsObject = read("/testdata/epaye/detachedurl/JourneyAfterUpdateUpfrontPaymentAmount.json").asJson
   }
 }

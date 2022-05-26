@@ -16,7 +16,10 @@
 
 package journey
 
+import cats.Eq
+import cats.syntax.eq._
 import com.google.inject.Inject
+import essttp.journey.model.Journey.{Epaye, Stages}
 import essttp.journey.model._
 import essttp.journey.model.ttp.EligibilityCheckResult
 import essttp.utils.Errors
@@ -31,29 +34,77 @@ class UpdateEligibilityCheckResultController @Inject() (
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
 
+  implicit val eq: Eq[EligibilityCheckResult] = Eq.fromUniversalEquals
+
   def updateEligibilityResult(journeyId: JourneyId): Action[EligibilityCheckResult] = Action.async(parse.json[EligibilityCheckResult]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {
-        case j: Journey.Epaye.AfterStarted => Errors.throwBadRequestExceptionF("EligibilityCheckResult update is not possible in that state.")
-        case j: Journey.Epaye.AfterComputedTaxIds =>
-          val newJourney = j
-            .into[Journey.Epaye.AfterEligibilityCheck]
-            .withFieldConst(_.eligibilityCheckResult, request.body)
-            .withFieldConst(
-              _.stage,
-              if (request.body.isEligible)
-                Stage.AfterEligibilityCheck.Eligible
-              else
-                Stage.AfterEligibilityCheck.Ineligible
-            )
-            .transform
-          journeyService.upsert(newJourney)
-        case j: Journey.HasEligibilityCheckResult =>
-          JourneyLogger.info("Nothing to update, journey has already updated EligibilityCheckResult.")
-          Future.successful(())
+        case _: Journey.BeforeComputedTaxId     => Errors.throwBadRequestExceptionF("EligibilityCheckResult update is not possible in that state.")
+        case j: Journey.Stages.ComputedTaxId    => updateJourneyWithNewValue(j, request.body)
+        case j: Journey.AfterEligibilityChecked => updateJourneyWithExistingValue(j, request.body)
       }
     } yield Ok
+  }
+
+  private def updateJourneyWithNewValue(
+      journey:                Stages.ComputedTaxId,
+      eligibilityCheckResult: EligibilityCheckResult
+  )(implicit request: Request[_]): Future[Unit] = {
+    journey match {
+      case j: Journey.Epaye.ComputedTaxId =>
+        val newJourney = j
+          .into[Journey.Epaye.EligibilityChecked]
+          .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+          .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+          .transform
+        journeyService.upsert(newJourney)
+    }
+  }
+
+  private def updateJourneyWithExistingValue(
+      journey:                Journey.AfterEligibilityChecked,
+      eligibilityCheckResult: EligibilityCheckResult
+  )(implicit request: Request[_]): Future[Unit] = {
+    if (journey.eligibilityCheckResult === eligibilityCheckResult) {
+      JourneyLogger.info("Nothing to update, EligibilityCheckResult is the same as the existing one in journey.")
+      Future.successful(())
+    } else {
+      val updatedJourney: Journey.AfterEligibilityChecked = journey match {
+        case j: Epaye.EligibilityChecked => j.copy(eligibilityCheckResult = eligibilityCheckResult)
+        case j: Epaye.AnsweredCanPayUpfront =>
+          j.into[Journey.Epaye.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+        case j: Epaye.EnteredUpfrontPaymentAmount =>
+          j.into[Journey.Epaye.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+        case j: Epaye.EnteredDayOfMonth =>
+          j.into[Journey.Epaye.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+        case j: Epaye.EnteredInstalmentAmount =>
+          j.into[Journey.Epaye.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+        case j: Epaye.HasSelectedPlan =>
+          j.into[Journey.Epaye.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+      }
+      journeyService.upsert(updatedJourney)
+    }
+  }
+
+  private def deriveEligibilityEnum(eligibilityCheckResult: EligibilityCheckResult): Stage.AfterEligibilityCheck = {
+    if (eligibilityCheckResult.isEligible) Stage.AfterEligibilityCheck.Eligible
+    else Stage.AfterEligibilityCheck.Ineligible
   }
 
 }

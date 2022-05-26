@@ -17,7 +17,7 @@
 package journey
 
 import essttp.journey.JourneyConnector
-import essttp.journey.model.JourneyId
+import essttp.journey.model.{JourneyId, SjResponse}
 import essttp.testdata.TdAll
 import play.api.mvc.Request
 import testsupport.ItSpec
@@ -26,90 +26,97 @@ class JourneyControllerSpec extends ItSpec {
 
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
-  "[Epaye.Bta][Happy path with upfront payment][start journey, update tax id, update eligibility, update canPayUpfront]" in {
+  private val testNameJourneyStages: String =
+    "[StartJourney]" +
+      "[UpdateTaxId]" +
+      "[UpdateEligibilityCheck]" +
+      "[UpdateCanPayUpfront]" +
+      "[UpdateUpfrontPaymentAmount]"
+
+  s"[Epaye.Bta][Happy path with upfront payment]$testNameJourneyStages" in {
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
     }
-    implicit val request: Request[_] = tdAll.request
-    val response = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
 
-    /** Start journey **/
+    implicit val request: Request[_] = tdAll.request
+    val response: SjResponse = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
+
+    /** Start journey */
     response shouldBe tdAll.EpayeBta.sjResponse
     journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterStarted
-    /** Update tax id **/
+
+    /** Update tax id */
     journeyConnector.updateTaxId(tdAll.journeyId, tdAll.EpayeBta.updateTaxIdRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterDetermineTaxIds
-    /** Update eligibility result **/
+
+    /** Update eligibility result */
     journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
-    /** Update CanPayUpfront **/
+
+    /** Update CanPayUpfront */
     journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
+
+    /** Update UpfrontPaymentAmount */
+    journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
   }
 
-  "[Epaye.GovUk][start journey, update tax id, update eligibility, update canPayUpfront]" in {
+  s"[Epaye.GovUk][Happy path with upfront payment]$testNameJourneyStages" in {
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
     }
-    implicit val request: Request[_] = tdAll.request
-    val response = journeyConnector.Epaye.startJourneyGovUk(tdAll.EpayeGovUk.sjRequest).futureValue
 
-    /** Start journey **/
+    implicit val request: Request[_] = tdAll.request
+    val response: SjResponse = journeyConnector.Epaye.startJourneyGovUk(tdAll.EpayeGovUk.sjRequest).futureValue
+
+    /** Start journey * */
     response shouldBe tdAll.EpayeGovUk.sjResponse
     journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterStarted
-    /** Update tax id **/
+
+    /** Update tax id * */
     journeyConnector.updateTaxId(tdAll.journeyId, tdAll.EpayeGovUk.updateTaxIdRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterDetermineTaxIds
-    /** Update eligibility result **/
+
+    /** Update eligibility result * */
     journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeGovUk.updateEligibilityCheckRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterEligibilityCheckEligible
-    /** Update CanPayUpfront **/
+
+    /** Update CanPayUpfront * */
     journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeGovUk.updateCanPayUpfrontYesRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterCanPayUpfrontYes
+
+    /** Update UpfrontPaymentAmount */
+    journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeGovUk.updateUpfrontPaymentAmountRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterUpfrontPaymentAmount
   }
 
-  "[Epaye.DetachedUrl][start journey, update tax id, update eligibility, update canPayUpfront]" in {
+  s"[Epaye.DetachedUrl][Happy path with upfront payment]$testNameJourneyStages" in {
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
     }
-    implicit val request: Request[_] = tdAll.request
-    val response = journeyConnector.Epaye.startJourneyDetachedUrl(tdAll.EpayeDetachedUrl.sjRequest).futureValue
 
-    /** Start journey **/
+    implicit val request: Request[_] = tdAll.request
+    val response: SjResponse = journeyConnector.Epaye.startJourneyDetachedUrl(tdAll.EpayeDetachedUrl.sjRequest).futureValue
+
+    /** Start journey * */
     response shouldBe tdAll.EpayeDetachedUrl.sjResponse
     journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterStarted
-    /** Update tax id **/
+
+    /** Update tax id * */
     journeyConnector.updateTaxId(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateTaxIdRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterDetermineTaxIds
-    /** Update eligibility result **/
+
+    /** Update eligibility result * */
     journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateEligibilityCheckRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterEligibilityCheckEligible
-    /** Update CanPayUpfront **/
+
+    /** Update CanPayUpfront * */
     journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateCanPayUpfrontYesRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterCanPayUpfrontYes
-  }
 
-  "[Epaye.Bta][Update can pay upfront decision]" in {
-    val tdAll = new TdAll {
-      override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
-    }
-    implicit val request: Request[_] = tdAll.request
-    val response = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
-
-    /** Start journey **/
-    response shouldBe tdAll.EpayeBta.sjResponse
-    journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterStarted
-    /** Update tax id **/
-    journeyConnector.updateTaxId(tdAll.journeyId, tdAll.EpayeBta.updateTaxIdRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterDetermineTaxIds
-    /** Update eligibility result **/
-    journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
-    /** Update CanPayUpfront as YES **/
-    journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
-    /** Update CanPayUpfront as No **/
-    journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontNoRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontNo
+    /** Update UpfrontPaymentAmount */
+    journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateUpfrontPaymentAmountRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterUpfrontPaymentAmount
   }
 }

@@ -9,3 +9,4 @@ GET         /journey/:journeyId                                  journey.Journey
 POST        /journey/:journeyId/update-tax-id                    journey.UpdateTaxIdController.updateTaxId(journeyId: JourneyId)
 POST        /journey/:journeyId/update-eligibility-result        journey.UpdateEligibilityCheckResultController.updateEligibilityResult(journeyId: JourneyId)
 POST        /journey/:journeyId/update-can-pay-upfront           journey.UpdateCanPayUpfrontController.updateCanPayUpfront(journeyId: JourneyId)
+POST        /journey/:journeyId/update-upfront-payment-amount    journey.UpdateUpfrontPaymentAmountController.updateUpfrontPaymentAmount(journeyId: JourneyId)

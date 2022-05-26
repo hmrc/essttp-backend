@@ -20,6 +20,8 @@ import enumeratum._
 import julienrf.json.derived
 import play.api.libs.json.OFormat
 
+import scala.collection.immutable
+
 /**
  * Journey Stage
  * It defines how journey propagates through stages.
@@ -34,7 +36,7 @@ object Stage {
 
   object AfterStarted extends Enum[AfterStarted] {
     implicit val format: OFormat[AfterStarted] = derived.oformat[AfterStarted]()
-    val values = findValues
+    val values: immutable.IndexedSeq[AfterStarted] = findValues
 
     /**
      * Journey has been just started.
@@ -48,7 +50,7 @@ object Stage {
 
   object AfterComputedTaxId extends Enum[AfterComputedTaxId] {
     implicit val format: OFormat[AfterComputedTaxId] = derived.oformat[AfterComputedTaxId]()
-    val values = findValues
+    val values: immutable.IndexedSeq[AfterComputedTaxId] = findValues
 
     /**
      * [[Journey]] has been orchestrated with tax identifiers from Enrolments.
@@ -63,7 +65,7 @@ object Stage {
    */
   object AfterEligibilityCheck extends Enum[AfterEligibilityCheck] {
     implicit val format: OFormat[AfterEligibilityCheck] = derived.oformat[AfterEligibilityCheck]()
-    val values = findValues
+    val values: immutable.IndexedSeq[AfterEligibilityCheck] = findValues
 
     case object Eligible extends AfterEligibilityCheck
 
@@ -77,11 +79,23 @@ object Stage {
    */
   object AfterCanPayUpfront extends Enum[AfterCanPayUpfront] {
     implicit val format: OFormat[AfterCanPayUpfront] = derived.oformat[AfterCanPayUpfront]()
-    val values = findValues
+    val values: immutable.IndexedSeq[AfterCanPayUpfront] = findValues
 
     case object Yes extends AfterCanPayUpfront
 
     case object No extends AfterCanPayUpfront
+  }
+
+  sealed trait AfterUpfrontPaymentAmount extends Stage with EnumEntry
+
+  object AfterUpfrontPaymentAmount extends Enum[AfterUpfrontPaymentAmount] {
+    implicit val format: OFormat[AfterUpfrontPaymentAmount] = derived.oformat[AfterUpfrontPaymentAmount]()
+    val values: immutable.IndexedSeq[AfterUpfrontPaymentAmount] = findValues
+
+    /**
+     * [[Journey]] has been orchestrated with tax identifiers from Enrolments.
+     */
+    case object EnteredUpfrontPaymentAmount extends AfterUpfrontPaymentAmount
   }
 
   sealed trait AfterEnteredDayOfMonth extends Stage with EnumEntry

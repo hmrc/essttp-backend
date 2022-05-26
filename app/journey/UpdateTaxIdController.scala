@@ -16,7 +16,6 @@
 
 package journey
 
-import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.journey.model._
 import essttp.rootmodel.{EmpRef, TaxId, Vrn}
@@ -36,27 +35,25 @@ class UpdateTaxIdController @Inject() (
   def updateTaxId(journeyId: JourneyId): Action[TaxId] = Action.async(parse.json[TaxId]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
-      _ <- (request.body, journey) match {
-        case (empRef: EmpRef, journey: Journey.Epaye) => updateJourney(journey, empRef)
-        case (_: Vrn, _: Journey /*.Vat*/ )           => Errors.throwBadRequestExceptionF("Vat not supported yet")
-      }
+      _ <- updateJourney(journey, request.body)
     } yield Ok
   }
 
-  private def updateJourney(journey: Journey.Epaye, empRef: EmpRef)(implicit request: Request[_]): Future[Unit] = {
+  private def updateJourney(journey: Journey, taxId: TaxId)(implicit request: Request[_]): Future[Unit] = {
     journey match {
-      case j: Journey.Epaye.AfterStarted =>
-        val newJourney: Journey.Epaye.AfterComputedTaxIds = j
-          .into[Journey.Epaye.AfterComputedTaxIds]
-          .withFieldConst(_.stage, Stage.AfterComputedTaxId.ComputedTaxId)
-          .withFieldConst(_.taxId, empRef)
-          .transform
-        journeyService.upsert(newJourney)
-      case j: Journey.HasTaxId if j.taxId === empRef =>
-        JourneyLogger.info("Nothing to update, journey has already updated tax id.")
-        Future.successful(())
-      case j: Journey.HasTaxId if j.taxId =!= empRef =>
-        Errors.notImplemented("Incorrect taxId type. For Epaye it must be Aor")
+      case j: Journey.Epaye.Started =>
+        taxId match {
+          case empRef: EmpRef =>
+            val newJourney: Journey.Epaye.ComputedTaxId =
+              j.into[Journey.Epaye.ComputedTaxId]
+                .withFieldConst(_.stage, Stage.AfterComputedTaxId.ComputedTaxId)
+                .withFieldConst(_.taxId, empRef)
+                .transform
+            journeyService.upsert(newJourney)
+          case _: Vrn => Errors.throwBadRequestExceptionF("Why is there a vrn, this is for EPAYE...")
+        }
+      case j: Journey.AfterComputedTaxId =>
+        Errors.throwBadRequestExceptionF(s"UpdateTaxId is not possible in this stage, why is it happening? Debug me... [${j.stage}]")
     }
   }
 }
