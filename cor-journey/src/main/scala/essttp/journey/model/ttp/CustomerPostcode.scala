@@ -16,10 +16,15 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Json, Format}
+import play.api.libs.json.{Json, OFormat}
 
-final case class MainTransDesc(value: String)
+final case class CustomerPostcode(
+    addressPostcode: PostCode,
+    postcodeDate:    PostcodeDate
+)
 
-object MainTransDesc {
-  implicit val format: Format[MainTransDesc] = Json.valueFormat
+object CustomerPostcode {
+
+  implicit val format: OFormat[CustomerPostcode] = Json.format[CustomerPostcode]
+
 }

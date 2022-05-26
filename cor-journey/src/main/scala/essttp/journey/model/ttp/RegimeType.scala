@@ -16,11 +16,10 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.json.{Json, Format}
 
 final case class RegimeType(value: String)
 
 object RegimeType {
-  implicit val format: Format[RegimeType] = implicitly[Format[String]].inmap(RegimeType(_), _.value)
+  implicit val format: Format[RegimeType] = Json.valueFormat
 }

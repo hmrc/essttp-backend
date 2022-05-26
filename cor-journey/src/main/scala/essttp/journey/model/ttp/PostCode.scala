@@ -16,11 +16,10 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.json.{Json, Format}
 
 final case class PostCode(value: String)
 
 object PostCode {
-  implicit val format: Format[PostCode] = implicitly[Format[String]].inmap(PostCode(_), _.value)
+  implicit val format: Format[PostCode] = Json.valueFormat
 }

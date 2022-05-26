@@ -16,11 +16,10 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.json.{Json, Format}
 
 final case class TaxPeriodFrom(value: String)
 
 object TaxPeriodFrom {
-  implicit val format: Format[TaxPeriodFrom] = implicitly[Format[String]].inmap(TaxPeriodFrom(_), _.value)
+  implicit val format: Format[TaxPeriodFrom] = Json.valueFormat
 }
