@@ -73,7 +73,7 @@ class UpdateCanPayUpfrontController @Inject() (
       val updatedJourney: Journey = journey match {
         case j: Epaye.AnsweredCanPayUpfront =>
           j.copy(
-            stage = determineCanPayUpFrontEnum(canPayUpfront),
+            stage         = determineCanPayUpFrontEnum(canPayUpfront),
             canPayUpfront = canPayUpfront
           )
         case j: Epaye.EnteredUpfrontPaymentAmount =>
