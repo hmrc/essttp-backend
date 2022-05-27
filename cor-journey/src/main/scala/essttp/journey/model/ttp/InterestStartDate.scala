@@ -16,11 +16,9 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
-
+import play.api.libs.json.{Json, Format}
 final case class InterestStartDate(value: String)
 
 object InterestStartDate {
-  implicit val format: Format[InterestStartDate] = implicitly[Format[String]].inmap(InterestStartDate(_), _.value)
+  implicit val format: Format[InterestStartDate] = Json.valueFormat
 }

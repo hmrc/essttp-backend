@@ -16,11 +16,10 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.json.{Json, Format}
 
 final case class SubTrans(value: String)
 
 object SubTrans {
-  implicit val format: Format[SubTrans] = implicitly[Format[String]].inmap(SubTrans(_), _.value)
+  implicit val format: Format[SubTrans] = Json.valueFormat
 }

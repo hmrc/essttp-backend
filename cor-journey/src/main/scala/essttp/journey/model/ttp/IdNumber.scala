@@ -16,11 +16,10 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.json.{Json, Format}
 
 final case class IdNumber(value: String)
 
 object IdNumber {
-  implicit val format: Format[IdNumber] = implicitly[Format[String]].inmap(IdNumber(_), _.value)
+  implicit val format: Format[IdNumber] = Json.valueFormat
 }

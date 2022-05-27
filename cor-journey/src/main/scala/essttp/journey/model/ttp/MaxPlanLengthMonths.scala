@@ -16,11 +16,10 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.json.{Json, Format}
 
 final case class MaxPlanLengthMonths(value: Int)
 
 object MaxPlanLengthMonths {
-  implicit val format: Format[MaxPlanLengthMonths] = implicitly[Format[Int]].inmap(MaxPlanLengthMonths(_), _.value)
+  implicit val format: Format[MaxPlanLengthMonths] = Json.valueFormat
 }

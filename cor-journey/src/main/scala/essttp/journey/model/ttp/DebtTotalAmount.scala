@@ -16,11 +16,10 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.json.{Json, Format}
 
 final case class DebtTotalAmount(value: Int)
 
 object DebtTotalAmount {
-  implicit val format: Format[DebtTotalAmount] = implicitly[Format[Int]].inmap(DebtTotalAmount(_), _.value)
+  implicit val format: Format[DebtTotalAmount] = Json.valueFormat
 }

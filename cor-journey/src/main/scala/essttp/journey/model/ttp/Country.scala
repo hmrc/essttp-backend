@@ -16,11 +16,10 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.json.{Json, Format}
 
 final case class Country(value: String)
 
 object Country {
-  implicit val format: Format[Country] = implicitly[Format[String]].inmap(Country(_), _.value)
+  implicit val format: Format[Country] = Json.valueFormat
 }

@@ -3,10 +3,12 @@
   "idNumber": "840/GZ00064",
   "regimeType": "PAYE",
   "processingDate": "2022-05-17",
-  "customerDetails": {
-    "country": "Narnia",
-    "postCode": "AA11AA"
-  },
+  "customerPostcodes": [
+    {
+      "addressPostCode": "AA11AA",
+      "postcodeDate": "2022-01-31"
+    }
+  ],
   "minPlanLengthMonths": 1,
   "maxPlanLengthMonths": 3,
   "eligibilityStatus": {

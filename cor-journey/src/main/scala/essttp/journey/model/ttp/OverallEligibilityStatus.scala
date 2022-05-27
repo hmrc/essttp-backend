@@ -16,11 +16,9 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
-
+import play.api.libs.json.{Json, Format}
 final case class OverallEligibilityStatus(value: Boolean)
 
 object OverallEligibilityStatus {
-  implicit val format: Format[OverallEligibilityStatus] = implicitly[Format[Boolean]].inmap(OverallEligibilityStatus(_), _.value)
+  implicit val format: Format[OverallEligibilityStatus] = Json.valueFormat
 }

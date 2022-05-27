@@ -16,11 +16,10 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
+import play.api.libs.json.{Json, Format}
 
 final case class AccruedInterestToDate(value: Double)
 
 object AccruedInterestToDate {
-  implicit val format: Format[AccruedInterestToDate] = implicitly[Format[Double]].inmap(AccruedInterestToDate(_), _.value)
+  implicit val format: Format[AccruedInterestToDate] = Json.valueFormat
 }

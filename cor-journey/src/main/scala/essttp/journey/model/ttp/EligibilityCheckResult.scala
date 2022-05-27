@@ -27,7 +27,7 @@ final case class EligibilityCheckResult(
     idNumber:             IdNumber,
     regimeType:           RegimeType,
     processingDate:       ProcessingDate,
-    customerDetails:      CustomerDetails,
+    customerPostcodes:    List[CustomerPostcode],
     minPlanLengthMonths:  MinPlanLengthMonths,
     maxPlanLengthMonths:  MaxPlanLengthMonths,
     eligibilityStatus:    EligibilityStatus,
