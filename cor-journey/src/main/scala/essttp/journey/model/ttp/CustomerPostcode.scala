@@ -19,7 +19,7 @@ package essttp.journey.model.ttp
 import play.api.libs.json.{Json, OFormat}
 
 final case class CustomerPostcode(
-    addressPostcode: PostCode,
+    addressPostcode: Postcode,
     postcodeDate:    PostcodeDate
 )
 

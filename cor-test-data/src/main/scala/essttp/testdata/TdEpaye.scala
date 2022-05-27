@@ -42,7 +42,7 @@ trait TdEpaye {
     idNumber             = IdNumber(empRef.value),
     regimeType           = RegimeType("PAYE"),
     processingDate       = ProcessingDate(reusableDate),
-    customerPostcodes    = List(CustomerPostcode(PostCode("AA11AA"), PostcodeDate("2020-01-01"))),
+    customerPostcodes    = List(CustomerPostcode(Postcode("AA11AA"), PostcodeDate("2020-01-01"))),
     minPlanLengthMonths  = MinPlanLengthMonths(1),
     maxPlanLengthMonths  = MaxPlanLengthMonths(3),
     eligibilityStatus    = EligibilityStatus(OverallEligibilityStatus(true)),
