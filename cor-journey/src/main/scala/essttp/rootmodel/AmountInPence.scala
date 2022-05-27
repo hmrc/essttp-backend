@@ -33,6 +33,7 @@ final case class AmountInPence(value: Long) {
 
   def >(other: AmountInPence): Boolean = value > other.value
   def +(other: AmountInPence): AmountInPence = AmountInPence(value + other.value)
+  def -(other: AmountInPence): AmountInPence = AmountInPence(value - other.value)
 }
 
 object AmountInPence {
