@@ -24,6 +24,9 @@ import java.util.Locale
 final case class AmountInPence(value: Long) {
   def formatInPounds: String = NumberFormat.getCurrencyInstance(Locale.UK).format(inPounds)
 
+  //removes trailing decimal and zeros, i.e. if £x.00
+  def gdsFormatInPounds: String = formatInPounds.replace(".00", "")
+
   def formatInDecimal: String = inPounds.formatted("%,1.2f")
 
   def inPounds: BigDecimal = AmountInPence.toPounds(this)
