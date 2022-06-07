@@ -112,7 +112,6 @@ def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = {
 lazy val commonSettings = Seq(
   majorVersion := majorVer,
   scalacOptions ++= scalaCompilerOptions,
-  resolvers ++= Seq(Resolver.bintrayRepo("hmrc", "releases"), Resolver.jcenterRepo),
   update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
   scalariformSettings,
   shellPrompt := ShellPrompt(version.value),
@@ -121,10 +120,7 @@ lazy val commonSettings = Seq(
   Compile / doc / scalacOptions := Seq(), //this will allow to have warnings in `doc` task and not fail the build
   resolvers ++= Seq(
     Resolver.sonatypeRepo("releases"),
-    Resolver.bintrayRepo("hmrc", "releases"),
-    Resolver.jcenterRepo,
-    "third-party-maven-releases" at "https://artefacts.tax.service.gov.uk/artifactory/third-party-maven-releases/",
-    "hmrc-releases-local" at "https://artefacts.tax.service.gov.uk/artifactory/hmrc-releases-local"
+    Resolver.jcenterRepo
   )
 ).++(wartRemoverSettings)
   .++(scoverageSettings)

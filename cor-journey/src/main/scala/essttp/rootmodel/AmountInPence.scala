@@ -40,10 +40,10 @@ object AmountInPence {
   def apply(str: String): AmountInPence = {
     str match {
       case s if s.isEmpty => AmountInPence(0)
-      case s              => AmountInPence(BigDecimal(s).longValue() * 100)
+      case s              => AmountInPence((BigDecimal(s) * 100).toLongExact)
     }
   }
-  def apply(bigDecimal: BigDecimal): AmountInPence = AmountInPence(bigDecimal.longValue() * 100)
+  def apply(bigDecimal: BigDecimal): AmountInPence = AmountInPence((bigDecimal * 100).toLongExact)
 
   val zero: AmountInPence = AmountInPence(0)
 
