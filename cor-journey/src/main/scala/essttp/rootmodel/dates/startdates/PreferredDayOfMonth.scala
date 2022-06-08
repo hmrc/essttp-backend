@@ -18,13 +18,17 @@ package essttp.rootmodel.dates.startdates
 
 import play.api.libs.json.{Format, Json, JsonValidationError}
 
-final case class PreferredDayOfMonth(value: Int)
+final case class PreferredDayOfMonth(value: Int) {
+  require(value >= 1, "Day of month can't be less then 1")
+  require(value <= 28, "Day of month can't be grater then 28")
+}
 
 object PreferredDayOfMonth {
   private val reads = Json
     .valueReads[PreferredDayOfMonth]
     .filterNot(JsonValidationError("Day of month can't be less then 1"))(_.value < 1)
     .filterNot(JsonValidationError("Day of month can't be grater then 28"))(_.value > 28)
-  private val writes = Json.valueWrites[PreferredDayOfMonth]
+  private val writes = Json
+    .valueWrites[PreferredDayOfMonth]
   implicit val format: Format[PreferredDayOfMonth] = Format(reads, writes)
 }

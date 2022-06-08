@@ -20,7 +20,7 @@ import essttp.dates.DatesTdAll
 import essttp.rootmodel.dates.InitialPayment
 import essttp.rootmodel.dates.extremedates.{ExtremeDatesRequest, ExtremeDatesResponse}
 import essttp.rootmodel.dates.startdates.{PreferredDayOfMonth, StartDatesRequest, StartDatesResponse}
-import play.api.libs.json.{JsResultException, Json}
+import play.api.libs.json.Json
 import testsupport.UnitSpec
 
 class DatesSerialisationSpec extends UnitSpec {
@@ -43,18 +43,18 @@ class DatesSerialisationSpec extends UnitSpec {
     "de-serialise as PreferredDayOfMonth" in {
       Json.parse("28").as[PreferredDayOfMonth] shouldBe PreferredDayOfMonth(28)
     }
-    "input of less than 1 throws JsResultException" in {
-      intercept[JsResultException] {
+    "input of less than 1 throws IllegalArgumentException" in {
+      intercept[IllegalArgumentException] {
         Json.parse("0").as[PreferredDayOfMonth]
       }.getMessage should include("Day of month can't be less then 1")
     }
-    "input of greater than 28 throws JsResultException" in {
-      intercept[JsResultException] {
+    "input of greater than 28 throws IllegalArgumentException" in {
+      intercept[IllegalArgumentException] {
         Json.parse("29").as[PreferredDayOfMonth]
       }.getMessage should include("Day of month can't be grater then 28")
     }
-    "negative input throws JsResultException" in {
-      intercept[JsResultException] {
+    "negative input throws IllegalArgumentException" in {
+      intercept[IllegalArgumentException] {
         Json.parse("-1").as[PreferredDayOfMonth]
       }.getMessage should include("Day of month can't be less then 1")
     }
