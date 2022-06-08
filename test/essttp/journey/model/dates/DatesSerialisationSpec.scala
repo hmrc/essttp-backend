@@ -43,6 +43,21 @@ class DatesSerialisationSpec extends UnitSpec {
     "de-serialise as PreferredDayOfMonth" in {
       Json.parse("28").as[PreferredDayOfMonth] shouldBe PreferredDayOfMonth(28)
     }
+    "input of less than 1 throws IllegalArgumentException" in {
+      intercept[IllegalArgumentException] {
+        Json.parse("0").as[PreferredDayOfMonth]
+      }.getMessage should include("Day of month can't be less then 1")
+    }
+    "input of greater than 28 throws IllegalArgumentException" in {
+      intercept[IllegalArgumentException] {
+        Json.parse("29").as[PreferredDayOfMonth]
+      }.getMessage should include("Day of month can't be grater then 28")
+    }
+    "negative input throws IllegalArgumentException" in {
+      intercept[IllegalArgumentException] {
+        Json.parse("-1").as[PreferredDayOfMonth]
+      }.getMessage should include("Day of month can't be less then 1")
+    }
   }
 
   "StartDatesRequest should" - {
