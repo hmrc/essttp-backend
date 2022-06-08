@@ -10,3 +10,4 @@ POST        /journey/:journeyId/update-tax-id                    journey.UpdateT
 POST        /journey/:journeyId/update-eligibility-result        journey.UpdateEligibilityCheckResultController.updateEligibilityResult(journeyId: JourneyId)
 POST        /journey/:journeyId/update-can-pay-upfront           journey.UpdateCanPayUpfrontController.updateCanPayUpfront(journeyId: JourneyId)
 POST        /journey/:journeyId/update-upfront-payment-amount    journey.UpdateUpfrontPaymentAmountController.updateUpfrontPaymentAmount(journeyId: JourneyId)
+POST        /journey/:journeyId/update-monthly-payment-amount    journey.UpdateUpfrontPaymentAmountController.updateUpfrontPaymentAmount(journeyId: JourneyId)

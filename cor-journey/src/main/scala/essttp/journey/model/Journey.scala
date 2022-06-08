@@ -95,6 +95,12 @@ object Journey {
     def upfrontPaymentAmount: UpfrontPaymentAmount
   }
 
+  sealed trait BeforeEnteredMonthlyPaymentAmount extends Journey with Stages.JourneyStage
+
+  sealed trait AfterEnteredMonthlyPaymentAmount extends Journey {
+    def monthlyPaymentAmount: MonthlyPaymentAmount
+  }
+
   //  sealed trait AfterEnteredDayOfMonth extends Journey {
   //    def dayOfMonth: DayOfMonth
   //  }
@@ -175,6 +181,18 @@ object Journey {
       with AfterEnteredUpfrontPaymentAmount {
       Errors.sanityCheck(Stage.AfterUpfrontPaymentAmount.values.contains(stage), sanityMessage)
       def stage: Stage.AfterUpfrontPaymentAmount
+    }
+
+    sealed trait EnteredMonthlyPaymentAmount
+      extends Journey
+      with JourneyStage
+      with AfterComputedTaxId
+      with AfterEligibilityChecked
+      with AfterAnsweredCanPayUpfront
+      with AfterEnteredUpfrontPaymentAmount
+      with AfterEnteredMonthlyPaymentAmount {
+      Errors.sanityCheck(Stage.AfterMonthlyPaymentAmount.values.contains(stage), sanityMessage)
+      def stage: Stage.AfterMonthlyPaymentAmount
     }
 
     sealed trait EnteredDayOfMonth
@@ -319,6 +337,27 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.EnteredUpfrontPaymentAmount
+      with Journey.Epaye
+
+    /**
+     * [[Journey]] after MonthlyPaymentAmount
+     * Epaye
+     */
+    final case class EnteredMonthlyPaymentAmount(
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Epaye,
+        override val createdOn:              LocalDateTime,
+        override val sjRequest:              SjRequest.Epaye,
+        override val sessionId:              SessionId,
+        override val stage:                  Stage.AfterMonthlyPaymentAmount,
+        override val taxId:                  EmpRef,
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val canPayUpfront:          CanPayUpfront,
+        override val upfrontPaymentAmount:   UpfrontPaymentAmount,
+        override val monthlyPaymentAmount:   MonthlyPaymentAmount
+    )
+      extends Journey
+      with Journey.Stages.EnteredMonthlyPaymentAmount
       with Journey.Epaye
 
     /**

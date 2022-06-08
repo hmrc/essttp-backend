@@ -93,9 +93,21 @@ object Stage {
     val values: immutable.IndexedSeq[AfterUpfrontPaymentAmount] = findValues
 
     /**
-     * [[Journey]] has been orchestrated with tax identifiers from Enrolments.
+     * [[Journey]] has been orchestrated with Upfront payment amount.
      */
     case object EnteredUpfrontPaymentAmount extends AfterUpfrontPaymentAmount
+  }
+
+  sealed trait AfterMonthlyPaymentAmount extends Stage with EnumEntry
+
+  object AfterMonthlyPaymentAmount extends Enum[AfterMonthlyPaymentAmount] {
+    implicit val format: OFormat[AfterMonthlyPaymentAmount] = derived.oformat[AfterMonthlyPaymentAmount]()
+    val values: immutable.IndexedSeq[AfterMonthlyPaymentAmount] = findValues
+
+    /**
+     * [[Journey]] has been orchestrated with Monthly payment amount.
+     */
+    case object EnteredMonthlyPaymentAmount extends AfterMonthlyPaymentAmount
   }
 
   sealed trait AfterEnteredDayOfMonth extends Stage with EnumEntry
