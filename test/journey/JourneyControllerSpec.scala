@@ -31,7 +31,8 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateTaxId]" +
       "[UpdateEligibilityCheck]" +
       "[UpdateCanPayUpfront]" +
-      "[UpdateUpfrontPaymentAmount]"
+      "[UpdateUpfrontPaymentAmount]" +
+      "[UpdateMonthlyPaymentAmount]"
 
   s"[Epaye.Bta][Happy path with upfront payment]$testNameJourneyStages" in {
     val tdAll = new TdAll {
@@ -60,6 +61,10 @@ class JourneyControllerSpec extends ItSpec {
     /** Update UpfrontPaymentAmount */
     journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
+
+    /** Update MonthlyPaymentAmount */
+    journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateMonthlyPaymentAmountRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount
   }
 
   s"[Epaye.GovUk][Happy path with upfront payment]$testNameJourneyStages" in {
@@ -89,6 +94,10 @@ class JourneyControllerSpec extends ItSpec {
     /** Update UpfrontPaymentAmount */
     journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeGovUk.updateUpfrontPaymentAmountRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterUpfrontPaymentAmount
+
+    /** Update MonthlyPaymentAmount */
+    journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.EpayeGovUk.updateMonthlyPaymentAmountRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterMonthlyPaymentAmount
   }
 
   s"[Epaye.DetachedUrl][Happy path with upfront payment]$testNameJourneyStages" in {
@@ -118,5 +127,9 @@ class JourneyControllerSpec extends ItSpec {
     /** Update UpfrontPaymentAmount */
     journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateUpfrontPaymentAmountRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterUpfrontPaymentAmount
+
+    /** Update MonthlyPaymentAmount */
+    journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateMonthlyPaymentAmountRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterMonthlyPaymentAmount
   }
 }

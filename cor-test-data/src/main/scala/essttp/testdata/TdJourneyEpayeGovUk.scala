@@ -19,7 +19,7 @@ package essttp.testdata
 import essttp.journey.model.SjRequest.Epaye
 import essttp.journey.model._
 import essttp.journey.model.ttp.EligibilityCheckResult
-import essttp.rootmodel.{CanPayUpfront, TaxId, UpfrontPaymentAmount}
+import essttp.rootmodel.{CanPayUpfront, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import essttp.utils.JsonSyntax._
 import essttp.utils.ResourceReader._
 import play.api.libs.json.JsObject
@@ -151,5 +151,25 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
     )
 
     override def journeyAfterUpfrontPaymentAmountJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterUpdateUpfrontPaymentAmount.json").asJson
+
+    def updateMonthlyPaymentAmountRequest(): MonthlyPaymentAmount = dependencies.monthlyPaymentAmount
+
+    def updateMonthlyPaymentAmountRequestJson(): JsObject = read("/testdata/epaye/govuk/UpdateMonthlyPaymentAmountRequest.json").asJson
+
+    def journeyAfterMonthlyPaymentAmount: Journey.Epaye.EnteredMonthlyPaymentAmount = Journey.Epaye.EnteredMonthlyPaymentAmount(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Epaye.GovUk,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount,
+      taxId                  = empRef,
+      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      canPayUpfront          = canPayUpfrontYes,
+      upfrontPaymentAmount   = dependencies.upfrontPaymentAmount,
+      monthlyPaymentAmount   = dependencies.monthlyPaymentAmount
+    )
+
+    def journeyAfterMonthlyPaymentAmountJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterUpdateMonthlyPaymentAmount.json").asJson
   }
 }

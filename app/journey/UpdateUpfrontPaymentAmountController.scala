@@ -74,6 +74,11 @@ class UpdateUpfrontPaymentAmountController @Inject() (
     } else {
       val updatedJourney: Journey = journey match {
         case j: Epaye.EnteredUpfrontPaymentAmount => j.copy(upfrontPaymentAmount = upfrontPaymentAmount)
+        case j: Epaye.EnteredMonthlyPaymentAmount =>
+          j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+            .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
+            .transform
         case j: Epaye.EnteredDayOfMonth =>
           j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
             .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)

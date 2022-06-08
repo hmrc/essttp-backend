@@ -134,7 +134,8 @@ object Journey {
       with BeforeComputedTaxId
       with BeforeEligibilityChecked
       with BeforeAnsweredCanPayUpfront
-      with BeforeEnteredUpfrontPaymentAmount {
+      with BeforeEnteredUpfrontPaymentAmount
+      with BeforeEnteredMonthlyPaymentAmount {
       Errors.sanityCheck(Stage.AfterStarted.values.contains(stage), sanityMessage)
       def stage: Stage.AfterStarted
     }
@@ -145,7 +146,8 @@ object Journey {
       with AfterComputedTaxId
       with BeforeEligibilityChecked
       with BeforeAnsweredCanPayUpfront
-      with BeforeEnteredUpfrontPaymentAmount {
+      with BeforeEnteredUpfrontPaymentAmount
+      with BeforeEnteredMonthlyPaymentAmount {
       Errors.sanityCheck(Stage.AfterComputedTaxId.values.contains(stage), sanityMessage)
       def stage: Stage.AfterComputedTaxId
     }
@@ -156,7 +158,8 @@ object Journey {
       with AfterComputedTaxId
       with AfterEligibilityChecked
       with BeforeAnsweredCanPayUpfront
-      with BeforeEnteredUpfrontPaymentAmount {
+      with BeforeEnteredUpfrontPaymentAmount
+      with BeforeEnteredMonthlyPaymentAmount {
       Errors.sanityCheck(Stage.AfterEligibilityCheck.values.contains(stage), sanityMessage)
       def stage: Stage.AfterEligibilityCheck
     }
@@ -167,7 +170,8 @@ object Journey {
       with AfterComputedTaxId
       with AfterEligibilityChecked
       with AfterAnsweredCanPayUpfront
-      with BeforeEnteredUpfrontPaymentAmount {
+      with BeforeEnteredUpfrontPaymentAmount
+      with BeforeEnteredMonthlyPaymentAmount {
       Errors.sanityCheck(Stage.AfterCanPayUpfront.values.contains(stage), sanityMessage)
       def stage: Stage.AfterCanPayUpfront
     }
@@ -178,10 +182,13 @@ object Journey {
       with AfterComputedTaxId
       with AfterEligibilityChecked
       with AfterAnsweredCanPayUpfront
-      with AfterEnteredUpfrontPaymentAmount {
+      with AfterEnteredUpfrontPaymentAmount
+      with BeforeEnteredMonthlyPaymentAmount {
       Errors.sanityCheck(Stage.AfterUpfrontPaymentAmount.values.contains(stage), sanityMessage)
       def stage: Stage.AfterUpfrontPaymentAmount
     }
+
+
 
     sealed trait EnteredMonthlyPaymentAmount
       extends Journey
@@ -201,7 +208,8 @@ object Journey {
       with AfterComputedTaxId
       with AfterEligibilityChecked
       with AfterAnsweredCanPayUpfront
-      with AfterEnteredUpfrontPaymentAmount /*with AfterEnteredDayOfMonth*/ {
+      with AfterEnteredUpfrontPaymentAmount
+      with AfterEnteredMonthlyPaymentAmount /*with AfterEnteredDayOfMonth*/ {
       Errors.sanityCheck(Stage.AfterEnteredDayOfMonth.values.contains(stage), sanityMessage)
       def stage: Stage.AfterEnteredDayOfMonth
     }
@@ -212,7 +220,8 @@ object Journey {
       with AfterComputedTaxId
       with AfterEligibilityChecked
       with AfterAnsweredCanPayUpfront
-      with AfterEnteredUpfrontPaymentAmount /*with AfterEnteredDayOfMonth
+      with AfterEnteredUpfrontPaymentAmount
+      with AfterEnteredMonthlyPaymentAmount /*with AfterEnteredDayOfMonth
       with AfterEnteredInstalmentAmount*/ {
       Errors.sanityCheck(Stage.AfterEnteredAmount.values.contains(stage), sanityMessage)
       def stage: Stage.AfterEnteredAmount
@@ -224,7 +233,8 @@ object Journey {
       with AfterComputedTaxId
       with AfterEligibilityChecked
       with AfterAnsweredCanPayUpfront
-      with AfterEnteredUpfrontPaymentAmount /*with AfterEnteredDayOfMonth
+      with AfterEnteredUpfrontPaymentAmount
+      with AfterEnteredMonthlyPaymentAmount /*with AfterEnteredDayOfMonth
       with AfterEnteredInstalmentAmount
       with AfterSelectedPlan*/ {
       Errors.sanityCheck(Stage.AfterSelectedPlan.values.contains(stage), sanityMessage)
@@ -374,7 +384,8 @@ object Journey {
         override val taxId:                  EmpRef,
         override val eligibilityCheckResult: EligibilityCheckResult,
         override val canPayUpfront:          CanPayUpfront,
-        override val upfrontPaymentAmount:   UpfrontPaymentAmount //,
+        override val upfrontPaymentAmount:   UpfrontPaymentAmount,
+        override val monthlyPaymentAmount:   MonthlyPaymentAmount //,
     //        override val dayOfMonth:             DayOfMonth
     )
       extends Journey
@@ -395,7 +406,8 @@ object Journey {
         override val taxId:                  EmpRef,
         override val eligibilityCheckResult: EligibilityCheckResult,
         override val canPayUpfront:          CanPayUpfront,
-        override val upfrontPaymentAmount:   UpfrontPaymentAmount //,
+        override val upfrontPaymentAmount:   UpfrontPaymentAmount,
+        override val monthlyPaymentAmount:   MonthlyPaymentAmount //,
     //        override val dayOfMonth:             DayOfMonth,
     //        override val amount:                 AmountInPence
     )
@@ -417,7 +429,8 @@ object Journey {
         override val taxId:                  EmpRef,
         override val eligibilityCheckResult: EligibilityCheckResult,
         override val canPayUpfront:          CanPayUpfront,
-        override val upfrontPaymentAmount:   UpfrontPaymentAmount //,
+        override val upfrontPaymentAmount:   UpfrontPaymentAmount,
+        override val monthlyPaymentAmount:   MonthlyPaymentAmount //,
     //        override val dayOfMonth:             DayOfMonth,
     //        override val amount:                 AmountInPence,
     //        override val selectedPlan:           SelectedPlan
