@@ -19,8 +19,8 @@ package journey
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.journey.model.Journey.{Epaye, Stages}
-import essttp.journey.model.{Journey, JourneyId, Stage}
-import essttp.rootmodel.UpfrontPaymentAmount
+import essttp.journey.model.{Journey, JourneyId, Stage, UpfrontPaymentAnswers}
+import essttp.rootmodel.{CanPayUpfront, UpfrontPaymentAmount}
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformerOps
 import play.api.mvc.{Action, ControllerComponents, Request}
@@ -40,7 +40,12 @@ class UpdateUpfrontPaymentAmountController @Inject() (
       _ <- journey match {
         case j: Journey.BeforeAnsweredCanPayUpfront      => Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible in that state: [${j.stage}]")
         case j: Journey.Stages.AnsweredCanPayUpfront     => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterEnteredUpfrontPaymentAmount => updateJourneyWithExistingValue(j, request.body)
+        case j: Journey.AfterEnteredUpfrontPaymentAmount => updateJourneyWithExistingValue(Left(j), request.body)
+        case j: Journey.AfterUpfrontPaymentAnswers =>
+          j.upfrontPaymentAnswers match {
+            case _: UpfrontPaymentAnswers.DeclaredUpfrontPayment => updateJourneyWithExistingValue(Right(j), request.body)
+            case UpfrontPaymentAnswers.NoUpfrontPayment          => Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible in that state: [${j.stage}]")
+          }
       }
     } yield Ok
   }
@@ -65,37 +70,31 @@ class UpdateUpfrontPaymentAmountController @Inject() (
   }
 
   private def updateJourneyWithExistingValue(
-      journey:              Journey.AfterEnteredUpfrontPaymentAmount,
+      journey:              Either[Journey.AfterEnteredUpfrontPaymentAmount, Journey.AfterUpfrontPaymentAnswers],
       upfrontPaymentAmount: UpfrontPaymentAmount
   )(implicit request: Request[_]): Future[Unit] = {
-    if (journey.upfrontPaymentAmount.value.value === upfrontPaymentAmount.value.value) {
-      JourneyLogger.info("Nothing to update, UpfrontPaymentAmount is the same as the existing one in journey.")
-      Future.successful(())
-    } else {
-      val updatedJourney: Journey = journey match {
-        case j: Epaye.EnteredUpfrontPaymentAmount => j.copy(upfrontPaymentAmount = upfrontPaymentAmount)
-        case j: Epaye.EnteredMonthlyPaymentAmount =>
-          j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
-            .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-            .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
-            .transform
-        case j: Epaye.EnteredDayOfMonth =>
-          j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
-            .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-            .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
-            .transform
-        case j: Epaye.EnteredInstalmentAmount =>
-          j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
-            .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-            .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
-            .transform
-        case j: Epaye.HasSelectedPlan =>
-          j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
-            .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-            .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
-            .transform
-      }
-      journeyService.upsert(updatedJourney)
+
+    journey match {
+      case Left(j: Epaye.EnteredUpfrontPaymentAmount) =>
+        if (j.upfrontPaymentAmount.value.value === upfrontPaymentAmount.value.value) {
+          JourneyLogger.info("Nothing to update, UpfrontPaymentAmount is the same as the existing one in journey.")
+          Future.successful(())
+        } else {
+          val updatedJourney: Epaye.EnteredUpfrontPaymentAmount = j.copy(upfrontPaymentAmount = upfrontPaymentAmount)
+          journeyService.upsert(updatedJourney)
+        }
+      case Right(j: Epaye.EnteredMonthlyPaymentAmount) =>
+        j.upfrontPaymentAnswers match {
+          case UpfrontPaymentAnswers.NoUpfrontPayment =>
+            Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible there is no upfront payment amount before...: [${j.stage}]")
+          case upfrontPaymentAmount: UpfrontPaymentAnswers.DeclaredUpfrontPayment =>
+            val updatedJourney = j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
+              .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+              .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+              .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount.amount)
+              .transform
+            journeyService.upsert(updatedJourney)
+        }
     }
   }
 }

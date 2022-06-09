@@ -174,8 +174,7 @@ trait TdJourneyEpayeBta {
       stage                  = Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,
-      canPayUpfront          = canPayUpfrontYes,
-      upfrontPaymentAmount   = dependencies.upfrontPaymentAmount,
+      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
       monthlyPaymentAmount   = dependencies.monthlyPaymentAmount
     )
 

@@ -165,8 +165,7 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
       stage                  = Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,
-      canPayUpfront          = canPayUpfrontYes,
-      upfrontPaymentAmount   = dependencies.upfrontPaymentAmount,
+      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
       monthlyPaymentAmount   = dependencies.monthlyPaymentAmount
     )
 

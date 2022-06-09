@@ -16,10 +16,10 @@
 
 package journey
 
-import cats.syntax.eq._
 import cats.instances.boolean._
+import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
-import essttp.journey.model.Journey.{Epaye, Stages}
+import essttp.journey.model.Journey.Stages
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.CanPayUpfront
 import essttp.utils.Errors
@@ -41,7 +41,8 @@ class UpdateCanPayUpfrontController @Inject() (
       _ <- journey match {
         case _: Journey.BeforeEligibilityChecked   => Errors.throwBadRequestExceptionF("UpdateCanPayUpfront is not possible in that state.")
         case j: Journey.Stages.EligibilityChecked  => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterAnsweredCanPayUpfront => updateJourneyWithExistingValue(j, request.body)
+        case j: Journey.AfterAnsweredCanPayUpfront => updateJourneyWithExistingValue(Left(j), request.body)
+        case j: Journey.AfterUpfrontPaymentAnswers => updateJourneyWithExistingValue(Right(j), request.body)
       }
     } yield Ok
   }
@@ -62,44 +63,38 @@ class UpdateCanPayUpfrontController @Inject() (
   }
 
   private def updateJourneyWithExistingValue(
-      journey:       Journey.AfterAnsweredCanPayUpfront,
+      journey:       Either[Journey.AfterAnsweredCanPayUpfront, Journey.AfterUpfrontPaymentAnswers],
       canPayUpfront: CanPayUpfront
   )(implicit request: Request[_]): Future[Unit] = {
-    if (journey.canPayUpfront.value === canPayUpfront.value) {
-      JourneyLogger.info("Nothing to update, CanPayUpfront is the same as the existing one in journey.")
-      Future.successful(())
-    } else {
-      //todo try to refactor the repeated use of j.into[Journey.Epaye.AnsweredCanPayUpfront]...
-      val updatedJourney: Journey = journey match {
-        case j: Epaye.AnsweredCanPayUpfront =>
-          j.copy(
-            stage         = determineCanPayUpFrontEnum(canPayUpfront),
-            canPayUpfront = canPayUpfront
-          )
-        case j: Epaye.EnteredUpfrontPaymentAmount =>
-          j.into[Journey.Epaye.AnsweredCanPayUpfront]
-            .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-            .withFieldConst(_.canPayUpfront, canPayUpfront)
-            .transform
-        case j: Epaye.EnteredMonthlyPaymentAmount =>
-          j.into[Journey.Epaye.AnsweredCanPayUpfront]
-            .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-            .withFieldConst(_.canPayUpfront, canPayUpfront)
-            .transform
-        case j: Epaye.EnteredDayOfMonth =>
-          j.into[Journey.Epaye.AnsweredCanPayUpfront]
-            .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-            .withFieldConst(_.canPayUpfront, canPayUpfront).transform
-        case j: Epaye.EnteredInstalmentAmount =>
-          j.into[Journey.Epaye.AnsweredCanPayUpfront]
-            .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-            .withFieldConst(_.canPayUpfront, canPayUpfront).transform
-        case j: Epaye.HasSelectedPlan =>
-          j.into[Journey.Epaye.AnsweredCanPayUpfront]
-            .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-            .withFieldConst(_.canPayUpfront, canPayUpfront).transform
-      }
-      journeyService.upsert(updatedJourney)
+    journey match {
+      case Left(j: Journey.AfterAnsweredCanPayUpfront) =>
+        if (j.canPayUpfront.value === canPayUpfront.value) {
+          JourneyLogger.info("Nothing to update, CanPayUpfront is the same as the existing one in journey.")
+          Future.successful(())
+        } else {
+          val updatedJourney: Journey = j match {
+            case j1: Journey.Epaye.AnsweredCanPayUpfront =>
+              j1.copy(
+                stage         = determineCanPayUpFrontEnum(canPayUpfront),
+                canPayUpfront = canPayUpfront
+              )
+            case j1: Journey.Epaye.EnteredUpfrontPaymentAmount =>
+              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
+                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+                .withFieldConst(_.canPayUpfront, canPayUpfront)
+                .transform
+          }
+          journeyService.upsert(updatedJourney)
+        }
+      case Right(j: Journey.AfterUpfrontPaymentAnswers) =>
+        val updatedJourney: Journey = j match {
+          case j1: Journey.Epaye.EnteredMonthlyPaymentAmount =>
+            j1.into[Journey.Epaye.AnsweredCanPayUpfront]
+              .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              .withFieldConst(_.canPayUpfront, canPayUpfront)
+              .transform
+        }
+        journeyService.upsert(updatedJourney)
     }
   }
 

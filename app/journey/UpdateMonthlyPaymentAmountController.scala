@@ -18,8 +18,9 @@ package journey
 
 import com.google.inject.{Inject, Singleton}
 import essttp.journey.model.Journey.Epaye
-import essttp.journey.model.{Journey, JourneyId, Stage}
-import essttp.rootmodel.{AmountInPence, MonthlyPaymentAmount, UpfrontPaymentAmount}
+import essttp.journey.model.Journey.Stages.{AnsweredCanPayUpfront, EnteredUpfrontPaymentAmount}
+import essttp.journey.model.{Journey, JourneyId, Stage, UpfrontPaymentAnswers}
+import essttp.rootmodel.MonthlyPaymentAmount
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformerOps
 import play.api.mvc.{Action, ControllerComponents, Request}
@@ -37,38 +38,33 @@ class UpdateMonthlyPaymentAmountController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {
-        case j: Journey.BeforeAnsweredCanPayUpfront      => Errors.throwBadRequestExceptionF(s"UpdateMonthlyPaymentAmount update is not possible in that state: [${j.stage}]")
-        case j: Journey.Stages.AfterUpfrontPaymentAnswers       => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterEnteredMonthlyPaymentAmount => updateJourneyWithExistingValue(j, request.body)
+        case j: Journey.BeforeAnsweredCanPayUpfront        => Errors.throwBadRequestExceptionF(s"UpdateMonthlyPaymentAmount update is not possible in that state: [${j.stage}]")
+        case j: Journey.Stages.EnteredUpfrontPaymentAmount => updateJourneyWithNewValue(Left(j), request.body)
+        case j: Journey.Stages.AnsweredCanPayUpfront       => updateJourneyWithNewValue(Right(j), request.body)
+        case j: Journey.AfterEnteredMonthlyPaymentAmount   => updateJourneyWithExistingValue(j, request.body)
       }
     } yield Ok
   }
 
-  private val noUpfrontPayment: UpfrontPaymentAmount = UpfrontPaymentAmount(AmountInPence(0))
-
   private def updateJourneyWithNewValue(
-      journey:              Journey.AfterAnsweredCanPayUpfront,
+      journey:              Either[EnteredUpfrontPaymentAmount, AnsweredCanPayUpfront],
       monthlyPaymentAmount: MonthlyPaymentAmount
   )(implicit request: Request[_]): Future[Unit] = {
-    //andy/pawel, this is where chimney is not happy - work around is to set to 0 for AnsweredCanPayUpfront
-    // - maybe add a conditional for checking they aren't in state yes-payupfront but no upfrontAmount?
-    journey match {
-      case j: Epaye.EnteredUpfrontPaymentAmount =>
-        val newJourney: Epaye.EnteredMonthlyPaymentAmount =
-          j.into[Epaye.EnteredMonthlyPaymentAmount]
-            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-            .transform
-        journeyService.upsert(newJourney)
-      case j: Epaye.AnsweredCanPayUpfront =>
-        val newJourney: Epaye.EnteredMonthlyPaymentAmount =
-          j.into[Epaye.EnteredMonthlyPaymentAmount]
-            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-            .withFieldConst(_.upfrontPaymentAmount, noUpfrontPayment)
-            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-            .transform
-        journeyService.upsert(newJourney)
+    val newJourney: Epaye.EnteredMonthlyPaymentAmount = journey match {
+      case Left(j: Epaye.EnteredUpfrontPaymentAmount) =>
+        j.into[Epaye.EnteredMonthlyPaymentAmount]
+          .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+          .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.DeclaredUpfrontPayment(j.upfrontPaymentAmount))
+          .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+          .transform
+      case Right(j: Epaye.AnsweredCanPayUpfront) =>
+        j.into[Epaye.EnteredMonthlyPaymentAmount]
+          .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+          .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.NoUpfrontPayment)
+          .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+          .transform
     }
+    journeyService.upsert(newJourney)
   }
 
   private def updateJourneyWithExistingValue(
@@ -77,21 +73,7 @@ class UpdateMonthlyPaymentAmountController @Inject() (
   )(implicit request: Request[_]): Future[Unit] = {
     val updatedJourney: Journey = journey match {
       case j: Epaye.EnteredMonthlyPaymentAmount => j.copy(monthlyPaymentAmount = monthlyPaymentAmount)
-      case j: Epaye.EnteredDayOfMonth =>
-        j.into[Journey.Epaye.EnteredMonthlyPaymentAmount]
-          .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-          .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-          .transform
-      case j: Epaye.EnteredInstalmentAmount =>
-        j.into[Journey.Epaye.EnteredMonthlyPaymentAmount]
-          .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-          .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-          .transform
-      case j: Epaye.HasSelectedPlan =>
-        j.into[Journey.Epaye.EnteredMonthlyPaymentAmount]
-          .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-          .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-          .transform
+      //here add stages after EnteredMonthlyPaymentAmount, using chimney
     }
     journeyService.upsert(updatedJourney)
   }

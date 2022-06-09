@@ -87,21 +87,6 @@ class UpdateEligibilityCheckResultController @Inject() (
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
-        case j: Epaye.EnteredDayOfMonth =>
-          j.into[Journey.Epaye.EligibilityChecked]
-            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
-            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
-            .transform
-        case j: Epaye.EnteredInstalmentAmount =>
-          j.into[Journey.Epaye.EligibilityChecked]
-            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
-            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
-            .transform
-        case j: Epaye.HasSelectedPlan =>
-          j.into[Journey.Epaye.EligibilityChecked]
-            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
-            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
-            .transform
       }
       journeyService.upsert(updatedJourney)
     }
