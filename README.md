@@ -21,9 +21,13 @@ graph TD;
     EligibilityCheck --> EligibilityCheck.Ineligible;
     EligibilityCheck.Eligible --> AnsweredCanPayUpfront.Yes;
     EligibilityCheck.Eligible --> AnsweredCanPayUpfront.No;
-    AnsweredCanPayUpfront.No --> Howmuchcanyoupayamonth;
+    AnsweredCanPayUpfront.No --> EnteredMonthlyPaymentAmount;
     AnsweredCanPayUpfront.Yes --> EnteredUpfrontPaymentAmount;
-    CanPayUpfront --> AddMore;
+    EnteredUpfrontPaymentAmount -->  EnteredMonthlyPaymentAmount;
+    EnteredMonthlyPaymentAmount --> EnteredPaymentDay;
+    EnteredPaymentDay --> SelectedInstalments;
+    SelectedInstalments --> EnteredDirectDebitDetails;
+    EnteredDirectDebitDetails --> SubmittedPaymentPlan;
 ```
 To edit this, use [mermaid live editor](https://mermaid.live/)
 
