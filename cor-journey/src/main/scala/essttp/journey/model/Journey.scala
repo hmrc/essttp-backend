@@ -114,18 +114,6 @@ object Journey {
     def monthlyPaymentAmount: MonthlyPaymentAmount
   }
 
-  //  sealed trait AfterEnteredDayOfMonth extends Journey {
-  //    def dayOfMonth: DayOfMonth
-  //  }
-  //
-  //  sealed trait AfterEnteredInstalmentAmount extends Journey {
-  //    def amount: AmountInPence
-  //  }
-  //
-  //  sealed trait AfterSelectedPlan extends Journey {
-  //    def selectedPlan: SelectedPlan
-  //  }
-
   /**
    * Journey extractors extracting journeys in particular stage.
    * They correspond to actual [[Stage]] values
@@ -204,6 +192,7 @@ object Journey {
       with AfterEligibilityChecked
       with AfterAnsweredCanPayUpfront
       with AfterEnteredUpfrontPaymentAmount
+      with BeforeUpfrontPaymentAnswers
       with BeforeRetrievedAffordabilityResult
       with BeforeEnteredMonthlyPaymentAmount {
       Errors.sanityCheck(Stage.AfterUpfrontPaymentAmount.values.contains(stage), sanityMessage)
@@ -233,45 +222,6 @@ object Journey {
       Errors.sanityCheck(Stage.AfterMonthlyPaymentAmount.values.contains(stage), sanityMessage)
       def stage: Stage.AfterMonthlyPaymentAmount
     }
-
-    //    sealed trait EnteredDayOfMonth
-    //      extends Journey
-    //      with JourneyStage
-    //      with AfterComputedTaxId
-    //      with AfterEligibilityChecked
-    //      with AfterAnsweredCanPayUpfront
-    //      with AfterEnteredUpfrontPaymentAmount
-    //      with AfterEnteredMonthlyPaymentAmount /*with AfterEnteredDayOfMonth*/ {
-    //      Errors.sanityCheck(Stage.AfterEnteredDayOfMonth.values.contains(stage), sanityMessage)
-    //      def stage: Stage.AfterEnteredDayOfMonth
-    //    }
-    //
-    //    sealed trait EnteredInstalmentAmount
-    //      extends Journey
-    //      with JourneyStage
-    //      with AfterComputedTaxId
-    //      with AfterEligibilityChecked
-    //      with AfterAnsweredCanPayUpfront
-    //      with AfterEnteredUpfrontPaymentAmount
-    //      with AfterEnteredMonthlyPaymentAmount /*with AfterEnteredDayOfMonth
-    //      with AfterEnteredInstalmentAmount*/ {
-    //      Errors.sanityCheck(Stage.AfterEnteredAmount.values.contains(stage), sanityMessage)
-    //      def stage: Stage.AfterEnteredAmount
-    //    }
-    //
-    //    sealed trait HasSelectedPlan
-    //      extends Journey
-    //      with JourneyStage
-    //      with AfterComputedTaxId
-    //      with AfterEligibilityChecked
-    //      with AfterAnsweredCanPayUpfront
-    //      with AfterEnteredUpfrontPaymentAmount
-    //      with AfterEnteredMonthlyPaymentAmount /*with AfterEnteredDayOfMonth
-    //      with AfterEnteredInstalmentAmount
-    //      with AfterSelectedPlan*/ {
-    //      Errors.sanityCheck(Stage.AfterSelectedPlan.values.contains(stage), sanityMessage)
-    //      def stage: Stage.AfterSelectedPlan
-    //    }
 
   }
 
