@@ -17,9 +17,8 @@
 package journey
 
 import com.google.inject.{Inject, Singleton}
-import essttp.journey.model.Journey.Epaye
-import essttp.journey.model.Journey.Stages.{AnsweredCanPayUpfront, EnteredUpfrontPaymentAmount}
-import essttp.journey.model.{Journey, JourneyId, Stage, UpfrontPaymentAnswers}
+import essttp.journey.model.Journey.{Epaye, Stages}
+import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.MonthlyPaymentAmount
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformerOps
@@ -38,29 +37,21 @@ class UpdateMonthlyPaymentAmountController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {
-        case j: Journey.BeforeAnsweredCanPayUpfront        => Errors.throwBadRequestExceptionF(s"UpdateMonthlyPaymentAmount update is not possible in that state: [${j.stage}]")
-        case j: Journey.Stages.EnteredUpfrontPaymentAmount => updateJourneyWithNewValue(Left(j), request.body)
-        case j: Journey.Stages.AnsweredCanPayUpfront       => updateJourneyWithNewValue(Right(j), request.body)
-        case j: Journey.AfterEnteredMonthlyPaymentAmount   => updateJourneyWithExistingValue(j, request.body)
+        case j: Journey.BeforeRetrievedAffordabilityResult  => Errors.throwBadRequestExceptionF(s"UpdateMonthlyPaymentAmount update is not possible in that state: [${j.stage}]")
+        case j: Journey.Stages.RetrievedAffordabilityResult => updateJourneyWithNewValue(j, request.body)
+        case j: Journey.AfterEnteredMonthlyPaymentAmount    => updateJourneyWithExistingValue(j, request.body)
       }
     } yield Ok
   }
 
   private def updateJourneyWithNewValue(
-      journey:              Either[EnteredUpfrontPaymentAmount, AnsweredCanPayUpfront],
+      journey:              Stages.RetrievedAffordabilityResult,
       monthlyPaymentAmount: MonthlyPaymentAmount
   )(implicit request: Request[_]): Future[Unit] = {
     val newJourney: Epaye.EnteredMonthlyPaymentAmount = journey match {
-      case Left(j: Epaye.EnteredUpfrontPaymentAmount) =>
+      case j: Epaye.RetrievedAffordabilityResult =>
         j.into[Epaye.EnteredMonthlyPaymentAmount]
           .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-          .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.DeclaredUpfrontPayment(j.upfrontPaymentAmount))
-          .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-          .transform
-      case Right(j: Epaye.AnsweredCanPayUpfront) =>
-        j.into[Epaye.EnteredMonthlyPaymentAmount]
-          .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-          .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.NoUpfrontPayment)
           .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
           .transform
     }

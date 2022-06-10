@@ -19,6 +19,7 @@ package essttp.testdata
 import essttp.journey.model.SjRequest.Epaye
 import essttp.journey.model._
 import essttp.journey.model.ttp.EligibilityCheckResult
+import essttp.journey.model.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.{CanPayUpfront, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import essttp.utils.JsonSyntax._
 import essttp.utils.ResourceReader._
@@ -152,6 +153,25 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
 
     override def journeyAfterUpfrontPaymentAmountJson: JsObject = read("/testdata/epaye/detachedurl/JourneyAfterUpdateUpfrontPaymentAmount.json").asJson
 
+    def updateInstalmentAmountsRequest(): InstalmentAmounts = dependencies.instalmentAmounts
+
+    def updateInstalmentAmountsRequestJson(): JsObject = read("/testdata/epaye/detachedurl/UpdateInstalmentAmountsRequest.json").asJson
+
+    def journeyAfterInstalmentAmounts: Journey.Epaye.RetrievedAffordabilityResult = Journey.Epaye.RetrievedAffordabilityResult(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Epaye.DetachedUrl,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterAffordabilityResult.RetrievedAffordabilityResult,
+      taxId                  = empRef,
+      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
+      instalmentAmounts      = dependencies.instalmentAmounts
+    )
+
+    def journeyAfterInstalmentAmountsJson: JsObject = read("/testdata/epaye/detachedurl/JourneyAfterUpdateInstalmentAmounts.json").asJson
+
     def updateMonthlyPaymentAmountRequest(): MonthlyPaymentAmount = dependencies.monthlyPaymentAmount
 
     def updateMonthlyPaymentAmountRequestJson(): JsObject = read("/testdata/epaye/detachedurl/UpdateMonthlyPaymentAmountRequest.json").asJson
@@ -166,6 +186,7 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
+      instalmentAmounts      = dependencies.instalmentAmounts,
       monthlyPaymentAmount   = dependencies.monthlyPaymentAmount
     )
 

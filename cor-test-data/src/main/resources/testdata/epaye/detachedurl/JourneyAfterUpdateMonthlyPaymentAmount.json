@@ -83,6 +83,10 @@
     },
     "canPayUpfront": true,
     "upfrontPaymentAmount": 1000,
+    "instalmentAmounts": {
+      "minimumInstalmentAmount": 33333,
+      "maximumInstalmentAmount": 100000
+    },
     "monthlyPaymentAmount": 20000
   },
   "sessionId": "sialalaladetachedurl",

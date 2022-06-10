@@ -17,6 +17,7 @@
 package essttp.journey
 
 import essttp.journey.model.ttp.EligibilityCheckResult
+import essttp.journey.model.ttp.affordability.InstalmentAmounts
 import essttp.journey.model.{Journey, JourneyId, SjRequest, SjResponse}
 import essttp.rootmodel.{CanPayUpfront, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import play.api.mvc.RequestHeader
@@ -57,6 +58,10 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
 
   def updateUpfrontPaymentAmount(journeyId: JourneyId, upfrontPaymentAmount: UpfrontPaymentAmount)(implicit request: RequestHeader): Future[Unit] = {
     httpClient.POST[UpfrontPaymentAmount, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-upfront-payment-amount", upfrontPaymentAmount)
+  }
+
+  def updateAffordabilityResult(journeyId: JourneyId, instalmentAmounts: InstalmentAmounts)(implicit request: RequestHeader): Future[Unit] = {
+    httpClient.POST[InstalmentAmounts, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-affordability-result", instalmentAmounts)
   }
 
   def updateMonthlyPaymentAmount(journeyId: JourneyId, monthlyPaymentAmount: MonthlyPaymentAmount)(implicit request: RequestHeader): Future[Unit] = {
