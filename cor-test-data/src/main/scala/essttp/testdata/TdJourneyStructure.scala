@@ -17,6 +17,7 @@
 package essttp.testdata
 
 import essttp.journey.model.ttp.EligibilityCheckResult
+import essttp.journey.model.ttp.affordability.InstalmentAmounts
 import essttp.journey.model.{Journey, SjRequest, SjResponse}
 import essttp.rootmodel.{CanPayUpfront, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import play.api.libs.json.JsObject
@@ -53,6 +54,10 @@ trait TdJourneyStructure {
   def updateUpfrontPaymentAmountRequestJson(): JsObject
   def journeyAfterUpfrontPaymentAmount: Journey
   def journeyAfterUpfrontPaymentAmountJson: JsObject
+  def updateInstalmentAmountsRequest(): InstalmentAmounts
+  def updateInstalmentAmountsRequestJson(): JsObject
+  def journeyAfterInstalmentAmounts: Journey
+  def journeyAfterInstalmentAmountsJson: JsObject
   def updateMonthlyPaymentAmountRequest(): MonthlyPaymentAmount
   def updateMonthlyPaymentAmountRequestJson(): JsObject
   def journeyAfterMonthlyPaymentAmount: Journey

@@ -32,6 +32,7 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateEligibilityCheck]" +
       "[UpdateCanPayUpfront]" +
       "[UpdateUpfrontPaymentAmount]" +
+      "[UpdateAffordabilityResult]" +
       "[UpdateMonthlyPaymentAmount]"
 
   s"[Epaye.Bta][Happy path with upfront payment]$testNameJourneyStages" in {
@@ -61,6 +62,10 @@ class JourneyControllerSpec extends ItSpec {
     /** Update UpfrontPaymentAmount */
     journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
+
+    /** Update AffordabilityResult */
+    journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.EpayeBta.updateInstalmentAmountsRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterInstalmentAmounts
 
     /** Update MonthlyPaymentAmount */
     journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateMonthlyPaymentAmountRequest()).futureValue
@@ -95,6 +100,10 @@ class JourneyControllerSpec extends ItSpec {
     journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeGovUk.updateUpfrontPaymentAmountRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterUpfrontPaymentAmount
 
+    /** Update AffordabilityResult */
+    journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.EpayeGovUk.updateInstalmentAmountsRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterInstalmentAmounts
+
     /** Update MonthlyPaymentAmount */
     journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.EpayeGovUk.updateMonthlyPaymentAmountRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterMonthlyPaymentAmount
@@ -127,6 +136,10 @@ class JourneyControllerSpec extends ItSpec {
     /** Update UpfrontPaymentAmount */
     journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateUpfrontPaymentAmountRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterUpfrontPaymentAmount
+
+    /** Update AffordabilityResult */
+    journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateInstalmentAmountsRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterInstalmentAmounts
 
     /** Update MonthlyPaymentAmount */
     journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateMonthlyPaymentAmountRequest()).futureValue
