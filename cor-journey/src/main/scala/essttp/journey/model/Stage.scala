@@ -110,6 +110,18 @@ object Stage {
     case object SubmittedUpfrontPaymentAnswers extends AfterUpfrontPaymentAnswers
   }
 
+  sealed trait AfterExtremeDatesResponse extends Stage with EnumEntry
+
+  object AfterExtremeDatesResponse extends Enum[AfterExtremeDatesResponse] {
+    implicit val format: OFormat[AfterExtremeDatesResponse] = derived.oformat[AfterExtremeDatesResponse]()
+    val values: immutable.IndexedSeq[AfterExtremeDatesResponse] = findValues
+
+    /**
+     * [[Journey]] has been orchestrated with Extreme dates response.
+     */
+    case object ExtremeDatesResponseRetrieved extends AfterExtremeDatesResponse
+  }
+
   sealed trait AfterAffordabilityResult extends Stage with EnumEntry
 
   object AfterAffordabilityResult extends Enum[AfterAffordabilityResult] {

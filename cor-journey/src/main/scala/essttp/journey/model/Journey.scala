@@ -19,6 +19,7 @@ package essttp.journey.model
 import essttp.journey.model.ttp.EligibilityCheckResult
 import essttp.journey.model.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel._
+import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.utils.Errors
 import julienrf.json.derived
 import play.api.libs.json.{Json, OFormat, OWrites}
@@ -102,6 +103,12 @@ object Journey {
     def upfrontPaymentAnswers: UpfrontPaymentAnswers
   }
 
+  sealed trait BeforeExtremeDatesResponse extends Journey with Stages.JourneyStage
+
+  sealed trait AfterExtremeDatesResponse extends Journey with Stages.JourneyStage {
+    def extremeDatesResponse: ExtremeDatesResponse
+  }
+
   sealed trait BeforeRetrievedAffordabilityResult extends Journey with Stages.JourneyStage
 
   sealed trait AfterRetrievedAffordabilityResult extends Journey {
@@ -137,6 +144,7 @@ object Journey {
       with BeforeAnsweredCanPayUpfront
       with BeforeEnteredUpfrontPaymentAmount
       with BeforeUpfrontPaymentAnswers
+      with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
       with BeforeEnteredMonthlyPaymentAmount {
       Errors.sanityCheck(Stage.AfterStarted.values.contains(stage), sanityMessage)
@@ -151,6 +159,7 @@ object Journey {
       with BeforeAnsweredCanPayUpfront
       with BeforeEnteredUpfrontPaymentAmount
       with BeforeUpfrontPaymentAnswers
+      with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
       with BeforeEnteredMonthlyPaymentAmount {
       Errors.sanityCheck(Stage.AfterComputedTaxId.values.contains(stage), sanityMessage)
@@ -165,6 +174,7 @@ object Journey {
       with BeforeAnsweredCanPayUpfront
       with BeforeEnteredUpfrontPaymentAmount
       with BeforeUpfrontPaymentAnswers
+      with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
       with BeforeEnteredMonthlyPaymentAmount {
       Errors.sanityCheck(Stage.AfterEligibilityCheck.values.contains(stage), sanityMessage)
@@ -179,6 +189,7 @@ object Journey {
       with AfterAnsweredCanPayUpfront
       with BeforeEnteredUpfrontPaymentAmount
       with BeforeUpfrontPaymentAnswers
+      with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
       with BeforeEnteredMonthlyPaymentAmount {
       Errors.sanityCheck(Stage.AfterCanPayUpfront.values.contains(stage), sanityMessage)
@@ -193,10 +204,24 @@ object Journey {
       with AfterAnsweredCanPayUpfront
       with AfterEnteredUpfrontPaymentAmount
       with BeforeUpfrontPaymentAnswers
+      with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
       with BeforeEnteredMonthlyPaymentAmount {
       Errors.sanityCheck(Stage.AfterUpfrontPaymentAmount.values.contains(stage), sanityMessage)
       def stage: Stage.AfterUpfrontPaymentAmount
+    }
+
+    sealed trait RetrievedExtremeDates
+      extends Journey
+      with JourneyStage
+      with AfterComputedTaxId
+      with AfterEligibilityChecked
+      with AfterUpfrontPaymentAnswers
+      with AfterExtremeDatesResponse
+      with BeforeRetrievedAffordabilityResult
+      with BeforeEnteredMonthlyPaymentAmount {
+      Errors.sanityCheck(Stage.AfterExtremeDatesResponse.values.contains(stage), sanityMessage)
+      def stage: Stage.AfterExtremeDatesResponse
     }
 
     sealed trait RetrievedAffordabilityResult
@@ -205,6 +230,7 @@ object Journey {
       with AfterComputedTaxId
       with AfterEligibilityChecked
       with AfterUpfrontPaymentAnswers
+      with AfterExtremeDatesResponse
       with AfterRetrievedAffordabilityResult
       with BeforeEnteredMonthlyPaymentAmount {
       Errors.sanityCheck(Stage.AfterAffordabilityResult.values.contains(stage), sanityMessage)
@@ -217,6 +243,7 @@ object Journey {
       with AfterComputedTaxId
       with AfterEligibilityChecked
       with AfterUpfrontPaymentAnswers
+      with AfterExtremeDatesResponse
       with AfterRetrievedAffordabilityResult
       with AfterEnteredMonthlyPaymentAmount {
       Errors.sanityCheck(Stage.AfterMonthlyPaymentAmount.values.contains(stage), sanityMessage)
@@ -335,6 +362,26 @@ object Journey {
      * [[Journey]] after Affordability request to tpp
      * Epaye
      */
+    final case class RetrievedExtremeDates(
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Epaye,
+        override val createdOn:              LocalDateTime,
+        override val sjRequest:              SjRequest.Epaye,
+        override val sessionId:              SessionId,
+        override val stage:                  Stage.AfterExtremeDatesResponse,
+        override val taxId:                  EmpRef,
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val upfrontPaymentAnswers:  UpfrontPaymentAnswers,
+        override val extremeDatesResponse:   ExtremeDatesResponse
+    )
+      extends Journey
+      with Journey.Stages.RetrievedExtremeDates
+      with Journey.Epaye
+
+    /**
+     * [[Journey]] after Affordability request to tpp
+     * Epaye
+     */
     final case class RetrievedAffordabilityResult(
         override val _id:                    JourneyId,
         override val origin:                 Origins.Epaye,
@@ -345,6 +392,7 @@ object Journey {
         override val taxId:                  EmpRef,
         override val eligibilityCheckResult: EligibilityCheckResult,
         override val upfrontPaymentAnswers:  UpfrontPaymentAnswers,
+        override val extremeDatesResponse:   ExtremeDatesResponse,
         override val instalmentAmounts:      InstalmentAmounts
     )
       extends Journey
@@ -365,6 +413,7 @@ object Journey {
         override val taxId:                  EmpRef,
         override val eligibilityCheckResult: EligibilityCheckResult,
         override val upfrontPaymentAnswers:  UpfrontPaymentAnswers,
+        override val extremeDatesResponse:   ExtremeDatesResponse,
         override val instalmentAmounts:      InstalmentAmounts,
         override val monthlyPaymentAmount:   MonthlyPaymentAmount
     )

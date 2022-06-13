@@ -19,11 +19,13 @@ package essttp.testdata
 import essttp.journey.model.ttp.affordability.InstalmentAmounts
 import essttp.journey.model.{JourneyId, UpfrontPaymentAnswers}
 import essttp.rootmodel._
+import essttp.rootmodel.dates.InitialPaymentDate
+import essttp.rootmodel.dates.extremedates.{EarliestPlanStartDate, ExtremeDatesResponse, LatestPlanStartDate}
 import essttp.utils.TdSupport.FakeRequestOps
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 
 trait TdBase {
   def journeyId: JourneyId = JourneyId("b6217497-ab5b-4e93-855a-afc9f9e933b6")
@@ -38,6 +40,11 @@ trait TdBase {
   def instalmentAmounts: InstalmentAmounts = InstalmentAmounts(AmountInPence(1000), AmountInPence(2000))
   def upfrontPaymentAnswersDeclared: UpfrontPaymentAnswers = UpfrontPaymentAnswers.DeclaredUpfrontPayment(upfrontPaymentAmount)
   def upfrontPaymentAnswersNoUpfrontPayment: UpfrontPaymentAnswers = UpfrontPaymentAnswers.NoUpfrontPayment
+  def initialPaymentDate: InitialPaymentDate = InitialPaymentDate(LocalDate.parse("2022-01-01"))
+  def earliestPlanStartDate: EarliestPlanStartDate = EarliestPlanStartDate(LocalDate.parse("2022-02-01"))
+  def latestPlanStartDate: LatestPlanStartDate = LatestPlanStartDate(LocalDate.parse("2022-03-01"))
+  def extremeDatesWithUpfrontPayment: ExtremeDatesResponse = ExtremeDatesResponse(Some(initialPaymentDate), earliestPlanStartDate, latestPlanStartDate)
+  def extremeDatesWithoutUpfrontPayment: ExtremeDatesResponse = extremeDatesWithUpfrontPayment.copy(initialPaymentDate = None)
   def monthlyPaymentAmount: MonthlyPaymentAmount = MonthlyPaymentAmount(AmountInPence(20000))
 
   def backUrl: BackUrl = BackUrl("https://www.tax.service.gov.uk/back-url")
