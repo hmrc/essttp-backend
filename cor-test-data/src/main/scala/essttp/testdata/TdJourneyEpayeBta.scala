@@ -23,6 +23,7 @@ import essttp.journey.model.ttp.affordability.InstalmentAmounts
 
 import scala.language.reflectiveCalls
 import essttp.rootmodel._
+import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.utils.JsonSyntax._
 import essttp.utils.ResourceReader._
 import play.api.libs.json.JsObject
@@ -163,6 +164,25 @@ trait TdJourneyEpayeBta {
 
     def journeyAfterUpfrontPaymentAmountJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateUpfrontPaymentAmount.json").asJson
 
+    def updateExtremeDatesRequest(): ExtremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment
+
+    def updateExtremeDatesRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateExtremeDatesRequest.json").asJson
+
+    def journeyAfterExtremeDates: Journey.Epaye.RetrievedExtremeDates = Journey.Epaye.RetrievedExtremeDates(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Epaye.Bta,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved,
+      taxId                  = empRef,
+      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment
+    )
+
+    def journeyAfterExtremeDatesJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateExtremeDates.json").asJson
+
     def updateInstalmentAmountsRequest(): InstalmentAmounts = dependencies.instalmentAmounts
 
     def updateInstalmentAmountsRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateInstalmentAmountsRequest.json").asJson
@@ -177,6 +197,7 @@ trait TdJourneyEpayeBta {
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts      = dependencies.instalmentAmounts
     )
 
@@ -196,6 +217,7 @@ trait TdJourneyEpayeBta {
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts      = dependencies.instalmentAmounts,
       monthlyPaymentAmount   = dependencies.monthlyPaymentAmount
     )

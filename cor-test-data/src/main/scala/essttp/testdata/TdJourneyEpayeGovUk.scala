@@ -20,6 +20,7 @@ import essttp.journey.model.SjRequest.Epaye
 import essttp.journey.model._
 import essttp.journey.model.ttp.EligibilityCheckResult
 import essttp.journey.model.ttp.affordability.InstalmentAmounts
+import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.{CanPayUpfront, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import essttp.utils.JsonSyntax._
 import essttp.utils.ResourceReader._
@@ -153,6 +154,25 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
 
     override def journeyAfterUpfrontPaymentAmountJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterUpdateUpfrontPaymentAmount.json").asJson
 
+    def updateExtremeDatesRequest(): ExtremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment
+
+    def updateExtremeDatesRequestJson(): JsObject = read("/testdata/epaye/govuk/UpdateExtremeDatesRequest.json").asJson
+
+    def journeyAfterExtremeDates: Journey.Epaye.RetrievedExtremeDates = Journey.Epaye.RetrievedExtremeDates(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Epaye.GovUk,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved,
+      taxId                  = empRef,
+      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment
+    )
+
+    def journeyAfterExtremeDatesJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterUpdateExtremeDates.json").asJson
+
     def updateInstalmentAmountsRequest(): InstalmentAmounts = dependencies.instalmentAmounts
 
     def updateInstalmentAmountsRequestJson(): JsObject = read("/testdata/epaye/govuk/UpdateInstalmentAmountsRequest.json").asJson
@@ -167,6 +187,7 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts      = dependencies.instalmentAmounts
     )
 
@@ -186,6 +207,7 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts      = dependencies.instalmentAmounts,
       monthlyPaymentAmount   = dependencies.monthlyPaymentAmount
     )

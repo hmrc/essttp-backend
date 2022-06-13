@@ -1,0 +1,9 @@
+POST http://localhost:9216/essttp-backend/journey/6283a6f14f01006f33b859b8/update-extreme-dates
+Accept: */*
+Cache-Control: no-cache
+Content-Type: Application/Json
+X-Session-ID: sialalaladetachedurl
+
+{
+
+}

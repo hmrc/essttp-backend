@@ -16,6 +16,7 @@
 
 package essttp.rootmodel.dates.extremedates
 
+import cats.Eq
 import essttp.rootmodel.dates.InitialPaymentDate
 import play.api.libs.json.{Format, Json}
 
@@ -27,4 +28,5 @@ final case class ExtremeDatesResponse(
 
 object ExtremeDatesResponse {
   implicit val format: Format[ExtremeDatesResponse] = Json.format[ExtremeDatesResponse]
+  implicit val eqInstalmentAmounts: Eq[ExtremeDatesResponse] = Eq.fromUniversalEquals
 }

@@ -83,9 +83,19 @@
     },
     "canPayUpfront": true,
     "upfrontPaymentAmount": 1000,
+    "upfrontPaymentAnswers" : {
+      "DeclaredUpfrontPayment" : {
+        "amount" : 1000
+      }
+    },
     "instalmentAmounts": {
       "minimumInstalmentAmount": 33333,
       "maximumInstalmentAmount": 100000
+    },
+    "extremeDatesResponse" : {
+      "initialPaymentDate" : "2022-01-01",
+      "earliestPlanStartDate" : "2022-02-01",
+      "latestPlanStartDate" : "2022-03-01"
     },
     "monthlyPaymentAmount": 20000
   },

@@ -1,18 +1,18 @@
 {
-  "AfterAffordabilityResult": {
+  "AfterExtremeDatesResponse": {
     "stage": {
-      "RetrievedAffordabilityResult": {}
+      "ExtremeDatesResponseRetrieved": {}
     },
     "createdOn": "2022-05-17T13:28:52.261",
     "_id": "6283a314430100e2eae927bf",
-    "origin": "Origins.Epaye.GovUk",
+    "origin": "Origins.Epaye.DetachedUrl",
     "sjRequest": {
       "Simple": {
         "returnUrl": "http://localhost:9066/return",
         "backUrl": "http://localhost:9066/back"
       }
     },
-    "sessionId": "sialalalagovuk",
+    "sessionId": "sialalaladetachedurl",
     "eligibilityCheckResult": {
       "idType": "SSTTP",
       "idNumber": "840/GZ00064",
@@ -23,7 +23,6 @@
           "addressPostcode": "AA11AA",
           "postcodeDate": "2022-01-31"
         }
-
       ],
       "minPlanLengthMonths": 1,
       "maxPlanLengthMonths": 3,
@@ -82,12 +81,6 @@
     "taxId": {
       "value": "840/GZ00064"
     },
-    "canPayUpfront": true,
-    "upfrontPaymentAmount": 1000,
-    "instalmentAmounts": {
-      "minimumInstalmentAmount": 33333,
-      "maximumInstalmentAmount": 100000
-    },
     "upfrontPaymentAnswers" : {
       "DeclaredUpfrontPayment" : {
         "amount" : 1000
@@ -99,6 +92,6 @@
       "latestPlanStartDate" : "2022-03-01"
     }
   },
-  "sessionId": "sialalalagovuk",
+  "sessionId": "sialalaladetachedurl",
   "createdAt": "2022-05-17T13:28:52.261"
 }
