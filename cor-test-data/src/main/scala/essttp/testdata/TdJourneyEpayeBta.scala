@@ -223,5 +223,27 @@ trait TdJourneyEpayeBta {
     )
 
     def journeyAfterMonthlyPaymentAmountJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateMonthlyPaymentAmount.json").asJson
+
+    def updateDayOfMonthRequest(): DayOfMonth = dependencies.dayOfMonth
+
+    def updateDayOfMonthRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateDayOfMonthRequest.json").asJson
+
+    def journeyAfterDayOfMonth: Journey.Epaye.EnteredDayOfMonth = Journey.Epaye.EnteredDayOfMonth(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Epaye.Bta,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth,
+      taxId                  = empRef,
+      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts      = dependencies.instalmentAmounts,
+      monthlyPaymentAmount   = dependencies.monthlyPaymentAmount,
+      dayOfMonth             = dependencies.dayOfMonth
+    )
+
+    def journeyAfterDayOfMonthJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateDayOfMonth.json").asJson
   }
 }

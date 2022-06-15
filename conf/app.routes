@@ -15,3 +15,4 @@ POST        /journey/:journeyId/update-extreme-dates             journey.UpdateD
 
 POST        /journey/:journeyId/update-affordability-result      journey.UpdateAffordabilityResultController.updateAffordabilityResultController(journeyId: JourneyId)
 POST        /journey/:journeyId/update-monthly-payment-amount    journey.UpdateMonthlyPaymentAmountController.updateMonthlyPaymentAmount(journeyId: JourneyId)
+POST        /journey/:journeyId/update-day-of-month              journey.UpdateDayOfMonthController.updateDayOfMonth(journeyId: JourneyId)

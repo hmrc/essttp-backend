@@ -1,8 +1,8 @@
 {
   "_id": "6283a314430100e2eae927bf",
-  "AfterExtremeDatesResponse": {
+  "EnteredDayOfMonth": {
     "stage": {
-      "ExtremeDatesResponseRetrieved": {}
+      "EnteredDayOfMonth": {}
     },
     "createdOn": "2022-05-17T13:28:52.261",
     "_id": "6283a314430100e2eae927bf",
@@ -24,7 +24,6 @@
           "addressPostcode": "AA11AA",
           "postcodeDate": "2022-01-31"
         }
-
       ],
       "minPlanLengthMonths": 1,
       "maxPlanLengthMonths": 3,
@@ -89,17 +88,18 @@
       "minimumInstalmentAmount": 33333,
       "maximumInstalmentAmount": 100000
     },
-    "upfrontPaymentAnswers" : {
-      "DeclaredUpfrontPayment" : {
-        "amount" : 1000
+    "upfrontPaymentAnswers": {
+      "DeclaredUpfrontPayment": {
+        "amount": 1000
       }
     },
-    "extremeDatesResponse" : {
-      "initialPaymentDate" : "2022-01-01",
-      "earliestPlanStartDate" : "2022-02-01",
-      "latestPlanStartDate" : "2022-03-01"
+    "extremeDatesResponse": {
+      "initialPaymentDate": "2022-01-01",
+      "earliestPlanStartDate": "2022-02-01",
+      "latestPlanStartDate": "2022-03-01"
     },
-    "monthlyPaymentAmount": 20000
+    "monthlyPaymentAmount": 20000,
+    "dayOfMonth": 1
   },
   "sessionId": "sialalalagovuk",
   "createdAt": "2022-05-17T13:28:52.261"

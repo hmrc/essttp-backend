@@ -25,8 +25,8 @@ graph TD;
     AnsweredCanPayUpfront.Yes --> RetrievedExtremeDates;
     RetrievedExtremeDates --> RetrievedAffordabilityResult;
     RetrievedAffordabilityResult --> EnteredMonthlyPaymentAmount;
-    EnteredMonthlyPaymentAmount --> EnteredPaymentDay;
-    EnteredPaymentDay --> SelectedInstalments;
+    EnteredMonthlyPaymentAmount --> EnteredDayOfMonth;
+    EnteredDayOfMonth --> SelectedInstalments;
     SelectedInstalments --> EnteredDirectDebitDetails;
     EnteredDirectDebitDetails --> SubmittedPaymentPlan;
 ```
