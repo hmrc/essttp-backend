@@ -5,5 +5,7 @@ Content-Type: Application/Json
 X-Session-ID: sialalaladetachedurl
 
 {
-
+  "initialPaymentDate": "2022-01-01",
+  "earliestPlanStartDate": "2022-02-01",
+  "latestPlanStartDate": "2022-03-01"
 }

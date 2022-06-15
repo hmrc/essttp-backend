@@ -16,6 +16,7 @@
 
 package essttp.rootmodel
 
+import cats.Eq
 import play.api.libs.json._
 import essttp.utils.Errors
 
@@ -25,6 +26,7 @@ final case class DayOfMonth(value: Int) {
 
 object DayOfMonth {
   implicit val format: Format[DayOfMonth] = Json.valueFormat
+  implicit val eq: Eq[DayOfMonth] = Eq.fromUniversalEquals
 
   def isValid(dayOfMonth: Int): Boolean = dayOfMonth >= 1 && dayOfMonth <= 28
 }

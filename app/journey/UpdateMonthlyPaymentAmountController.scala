@@ -64,7 +64,11 @@ class UpdateMonthlyPaymentAmountController @Inject() (
   )(implicit request: Request[_]): Future[Unit] = {
     val updatedJourney: Journey = journey match {
       case j: Epaye.EnteredMonthlyPaymentAmount => j.copy(monthlyPaymentAmount = monthlyPaymentAmount)
-      //here add stages after EnteredMonthlyPaymentAmount, using chimney
+      case j: Epaye.EnteredDayOfMonth =>
+        j.into[Epaye.EnteredMonthlyPaymentAmount]
+          .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+          .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+          .transform
     }
     journeyService.upsert(updatedJourney)
   }

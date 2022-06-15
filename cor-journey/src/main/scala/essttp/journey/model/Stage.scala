@@ -153,7 +153,7 @@ object Stage {
    */
   object AfterEnteredDayOfMonth extends Enum[AfterEnteredDayOfMonth] {
     implicit val format: OFormat[AfterEnteredDayOfMonth] = derived.oformat[AfterEnteredDayOfMonth]()
-    val values = findValues
+    val values: immutable.IndexedSeq[AfterEnteredDayOfMonth] = findValues
 
     case object EnteredDayOfMonth extends AfterEnteredDayOfMonth
   }

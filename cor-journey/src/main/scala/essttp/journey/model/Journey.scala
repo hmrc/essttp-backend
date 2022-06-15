@@ -121,6 +121,12 @@ object Journey {
     def monthlyPaymentAmount: MonthlyPaymentAmount
   }
 
+  sealed trait BeforeEnteredDayOfMonth extends Journey with Stages.JourneyStage
+
+  sealed trait AfterEnteredDayOfMonth extends Journey {
+    def dayOfMonth: DayOfMonth
+  }
+
   /**
    * Journey extractors extracting journeys in particular stage.
    * They correspond to actual [[Stage]] values
@@ -146,7 +152,8 @@ object Journey {
       with BeforeUpfrontPaymentAnswers
       with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
-      with BeforeEnteredMonthlyPaymentAmount {
+      with BeforeEnteredMonthlyPaymentAmount
+      with BeforeEnteredDayOfMonth {
       Errors.sanityCheck(Stage.AfterStarted.values.contains(stage), sanityMessage)
       def stage: Stage.AfterStarted
     }
@@ -161,7 +168,8 @@ object Journey {
       with BeforeUpfrontPaymentAnswers
       with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
-      with BeforeEnteredMonthlyPaymentAmount {
+      with BeforeEnteredMonthlyPaymentAmount
+      with BeforeEnteredDayOfMonth {
       Errors.sanityCheck(Stage.AfterComputedTaxId.values.contains(stage), sanityMessage)
       def stage: Stage.AfterComputedTaxId
     }
@@ -176,7 +184,8 @@ object Journey {
       with BeforeUpfrontPaymentAnswers
       with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
-      with BeforeEnteredMonthlyPaymentAmount {
+      with BeforeEnteredMonthlyPaymentAmount
+      with BeforeEnteredDayOfMonth {
       Errors.sanityCheck(Stage.AfterEligibilityCheck.values.contains(stage), sanityMessage)
       def stage: Stage.AfterEligibilityCheck
     }
@@ -191,7 +200,8 @@ object Journey {
       with BeforeUpfrontPaymentAnswers
       with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
-      with BeforeEnteredMonthlyPaymentAmount {
+      with BeforeEnteredMonthlyPaymentAmount
+      with BeforeEnteredDayOfMonth {
       Errors.sanityCheck(Stage.AfterCanPayUpfront.values.contains(stage), sanityMessage)
       def stage: Stage.AfterCanPayUpfront
     }
@@ -206,7 +216,8 @@ object Journey {
       with BeforeUpfrontPaymentAnswers
       with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
-      with BeforeEnteredMonthlyPaymentAmount {
+      with BeforeEnteredMonthlyPaymentAmount
+      with BeforeEnteredDayOfMonth {
       Errors.sanityCheck(Stage.AfterUpfrontPaymentAmount.values.contains(stage), sanityMessage)
       def stage: Stage.AfterUpfrontPaymentAmount
     }
@@ -219,7 +230,8 @@ object Journey {
       with AfterUpfrontPaymentAnswers
       with AfterExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
-      with BeforeEnteredMonthlyPaymentAmount {
+      with BeforeEnteredMonthlyPaymentAmount
+      with BeforeEnteredDayOfMonth {
       Errors.sanityCheck(Stage.AfterExtremeDatesResponse.values.contains(stage), sanityMessage)
       def stage: Stage.AfterExtremeDatesResponse
     }
@@ -232,7 +244,8 @@ object Journey {
       with AfterUpfrontPaymentAnswers
       with AfterExtremeDatesResponse
       with AfterRetrievedAffordabilityResult
-      with BeforeEnteredMonthlyPaymentAmount {
+      with BeforeEnteredMonthlyPaymentAmount
+      with BeforeEnteredDayOfMonth {
       Errors.sanityCheck(Stage.AfterAffordabilityResult.values.contains(stage), sanityMessage)
       def stage: Stage.AfterAffordabilityResult
     }
@@ -245,9 +258,24 @@ object Journey {
       with AfterUpfrontPaymentAnswers
       with AfterExtremeDatesResponse
       with AfterRetrievedAffordabilityResult
-      with AfterEnteredMonthlyPaymentAmount {
+      with AfterEnteredMonthlyPaymentAmount
+      with BeforeEnteredDayOfMonth {
       Errors.sanityCheck(Stage.AfterMonthlyPaymentAmount.values.contains(stage), sanityMessage)
       def stage: Stage.AfterMonthlyPaymentAmount
+    }
+
+    sealed trait EnteredDayOfMonth
+      extends Journey
+      with JourneyStage
+      with AfterComputedTaxId
+      with AfterEligibilityChecked
+      with AfterUpfrontPaymentAnswers
+      with AfterExtremeDatesResponse
+      with AfterRetrievedAffordabilityResult
+      with AfterEnteredMonthlyPaymentAmount
+      with AfterEnteredDayOfMonth {
+      Errors.sanityCheck(Stage.AfterEnteredDayOfMonth.values.contains(stage), sanityMessage)
+      def stage: Stage.AfterEnteredDayOfMonth
     }
 
   }
@@ -420,6 +448,29 @@ object Journey {
       extends Journey
       with Journey.Stages.EnteredMonthlyPaymentAmount
       with Journey.Epaye
-  }
 
+    /**
+     * [[Journey]] after Day of month
+     * Epaye
+     */
+    final case class EnteredDayOfMonth(
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Epaye,
+        override val createdOn:              LocalDateTime,
+        override val sjRequest:              SjRequest.Epaye,
+        override val sessionId:              SessionId,
+        override val stage:                  Stage.AfterEnteredDayOfMonth,
+        override val taxId:                  EmpRef,
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val upfrontPaymentAnswers:  UpfrontPaymentAnswers,
+        override val extremeDatesResponse:   ExtremeDatesResponse,
+        override val instalmentAmounts:      InstalmentAmounts,
+        override val monthlyPaymentAmount:   MonthlyPaymentAmount,
+        override val dayOfMonth:             DayOfMonth
+    )
+      extends Journey
+      with Journey.Stages.EnteredDayOfMonth
+      with Journey.Epaye
+
+  }
 }
