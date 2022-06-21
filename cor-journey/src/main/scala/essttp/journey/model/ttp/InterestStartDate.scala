@@ -16,7 +16,8 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Json, Format}
+import play.api.libs.json.{Format, Json}
+
 final case class InterestStartDate(value: String)
 
 object InterestStartDate {

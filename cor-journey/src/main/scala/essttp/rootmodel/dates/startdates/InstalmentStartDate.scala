@@ -23,5 +23,5 @@ import java.time.LocalDate
 final case class InstalmentStartDate(value: LocalDate)
 
 object InstalmentStartDate {
-  implicit val format: Format[InstalmentStartDate] = Json.valueFormat
+  implicit val format: Format[InstalmentStartDate] = Json.valueFormat[InstalmentStartDate]
 }

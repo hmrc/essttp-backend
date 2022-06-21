@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.dates
+package essttp.journey.model.ttp
 
+import essttp.rootmodel.AmountInPence
 import play.api.libs.json.{Format, Json}
 
-import java.time.LocalDate
+final case class InterestAccrued(value: AmountInPence)
 
-final case class InitialPaymentDate(value: LocalDate)
-
-object InitialPaymentDate {
-  implicit val format: Format[InitialPaymentDate] = Json.valueFormat[InitialPaymentDate]
+object InterestAccrued {
+  implicit val format: Format[InterestAccrued] = Json.valueFormat[InterestAccrued]
 }

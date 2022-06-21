@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.dates
+package essttp.journey.model.ttp.affordablequotes
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Json, OFormat}
 
-import java.time.LocalDate
+final case class Collection(initialCollection: Option[InitialCollection], regularCollections: List[RegularCollection])
 
-final case class InitialPaymentDate(value: LocalDate)
-
-object InitialPaymentDate {
-  implicit val format: Format[InitialPaymentDate] = Json.valueFormat[InitialPaymentDate]
+object Collection {
+  implicit val format: OFormat[Collection] = Json.format[Collection]
 }

@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.dates
+package essttp.journey.model.ttp.affordablequotes
 
 import play.api.libs.json.{Format, Json}
 
-import java.time.LocalDate
+final case class PaymentPlanMinLength(value: Int)
 
-final case class InitialPaymentDate(value: LocalDate)
-
-object InitialPaymentDate {
-  implicit val format: Format[InitialPaymentDate] = Json.valueFormat[InitialPaymentDate]
+object PaymentPlanMinLength {
+  implicit val format: Format[PaymentPlanMinLength] = Json.valueFormat[PaymentPlanMinLength]
 }
