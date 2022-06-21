@@ -18,8 +18,8 @@ package essttp.journey.model.ttp
 
 import play.api.libs.json.{Json, Format}
 
-final case class PostcodeDate(value: String)
+final case class PostcodeDate(value: String) extends AnyVal
 
 object PostcodeDate {
-  implicit val format: Format[PostcodeDate] = Json.valueFormat
+  implicit val format: Format[PostcodeDate] = Json.valueFormat[PostcodeDate]
 }

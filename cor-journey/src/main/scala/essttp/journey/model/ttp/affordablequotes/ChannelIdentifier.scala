@@ -14,12 +14,25 @@
  * limitations under the License.
  */
 
-package essttp.journey.model.ttp
+package essttp.journey.model.ttp.affordablequotes
 
-import play.api.libs.json.{Json, Format}
+import play.api.libs.json.Format
 
-final case class TaxPeriodFrom(value: String) extends AnyVal
+import enumeratum._
+import essttp.utils.EnumFormat
+import play.api.libs.json.Format
 
-object TaxPeriodFrom {
-  implicit val format: Format[TaxPeriodFrom] = Json.valueFormat
+import scala.collection.immutable
+
+sealed trait ChannelIdentifier extends EnumEntry
+
+object ChannelIdentifier {
+  implicit val format: Format[ChannelIdentifier] = EnumFormat(ChannelIdentifiers)
+}
+
+object ChannelIdentifiers extends Enum[ChannelIdentifier] {
+
+  case object eSSTTP extends ChannelIdentifier
+
+  override val values: immutable.IndexedSeq[ChannelIdentifier] = findValues
 }

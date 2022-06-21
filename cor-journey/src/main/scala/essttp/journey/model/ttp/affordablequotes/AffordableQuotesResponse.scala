@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package essttp.journey.model.ttp
+package essttp.journey.model.ttp.affordablequotes
 
-import play.api.libs.json.{Json, Format}
+import play.api.libs.json.{Json, OFormat}
 
-final case class Postcode(value: String)
+final case class AffordableQuotesResponse(paymentPlans: List[PaymentPlan])
 
-object Postcode {
-  implicit val format: Format[Postcode] = Json.valueFormat
+object AffordableQuotesResponse {
+  implicit val format: OFormat[AffordableQuotesResponse] = Json.format[AffordableQuotesResponse]
 }

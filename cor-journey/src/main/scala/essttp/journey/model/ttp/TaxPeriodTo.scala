@@ -18,7 +18,7 @@ package essttp.journey.model.ttp
 
 import play.api.libs.json.{Json, Format}
 
-final case class TaxPeriodTo(value: String)
+final case class TaxPeriodTo(value: String) extends AnyVal
 
 object TaxPeriodTo {
   implicit val format: Format[TaxPeriodTo] = Json.valueFormat

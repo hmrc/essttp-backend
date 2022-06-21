@@ -17,7 +17,7 @@
 package essttp.journey.model.ttp
 
 import play.api.libs.json.{Json, Format}
-final case class OutstandingDebtAmount(value: Int)
+final case class OutstandingDebtAmount(value: Int) extends AnyVal
 
 object OutstandingDebtAmount {
   implicit val format: Format[OutstandingDebtAmount] = Json.valueFormat

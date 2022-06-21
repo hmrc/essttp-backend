@@ -23,5 +23,5 @@ import java.time.LocalDate
 final case class InitialPaymentDate(value: LocalDate)
 
 object InitialPaymentDate {
-  implicit val format: Format[InitialPaymentDate] = Json.valueFormat
+  implicit val format: Format[InitialPaymentDate] = Json.valueFormat[InitialPaymentDate]
 }

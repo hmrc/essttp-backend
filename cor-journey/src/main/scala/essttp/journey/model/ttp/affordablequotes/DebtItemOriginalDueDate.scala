@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package essttp.journey.model.ttp
+package essttp.journey.model.ttp.affordablequotes
 
-import play.api.libs.json.{Json, Format}
+import play.api.libs.json.{Format, Json}
 
-final case class TaxPeriodFrom(value: String) extends AnyVal
+import java.time.LocalDate
 
-object TaxPeriodFrom {
-  implicit val format: Format[TaxPeriodFrom] = Json.valueFormat
+final case class DebtItemOriginalDueDate(value: LocalDate) extends AnyVal
+
+object DebtItemOriginalDueDate {
+  implicit val format: Format[DebtItemOriginalDueDate] = Json.valueFormat[DebtItemOriginalDueDate]
 }

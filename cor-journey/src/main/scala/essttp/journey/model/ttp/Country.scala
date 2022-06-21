@@ -18,7 +18,7 @@ package essttp.journey.model.ttp
 
 import play.api.libs.json.{Json, Format}
 
-final case class Country(value: String)
+final case class Country(value: String) extends AnyVal
 
 object Country {
   implicit val format: Format[Country] = Json.valueFormat

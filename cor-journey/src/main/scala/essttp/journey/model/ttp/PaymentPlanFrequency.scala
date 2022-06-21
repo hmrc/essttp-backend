@@ -16,10 +16,21 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Json, Format}
+import enumeratum._
+import essttp.utils.EnumFormat
+import play.api.libs.json.Format
 
-final case class TaxPeriodFrom(value: String) extends AnyVal
+import scala.collection.immutable
 
-object TaxPeriodFrom {
-  implicit val format: Format[TaxPeriodFrom] = Json.valueFormat
+sealed trait PaymentPlanFrequency extends EnumEntry
+
+object PaymentPlanFrequency {
+  implicit val format: Format[PaymentPlanFrequency] = EnumFormat(PaymentPlanFrequencies)
+}
+
+object PaymentPlanFrequencies extends Enum[PaymentPlanFrequency] {
+
+  case object Monthly extends PaymentPlanFrequency
+
+  override val values: immutable.IndexedSeq[PaymentPlanFrequency] = findValues
 }

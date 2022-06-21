@@ -18,7 +18,7 @@ package essttp.journey.model.ttp
 
 import play.api.libs.json.{Json, Format}
 
-final case class MainTrans(value: String)
+final case class MainTrans(value: String) extends AnyVal
 
 object MainTrans {
   implicit val format: Format[MainTrans] = Json.valueFormat

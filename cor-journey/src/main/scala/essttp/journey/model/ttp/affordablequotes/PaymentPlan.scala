@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-package essttp.journey.model.ttp
+package essttp.journey.model.ttp.affordablequotes
 
-import play.api.libs.json.{Json, Format}
+import play.api.libs.json.{Json, OFormat}
 
-final case class TaxPeriodFrom(value: String) extends AnyVal
+final case class PaymentPlan(
+    numberOfInstalments: NumberOfInstalments,
+    planDuration:        PlanDuration,
+    totalDebt:           TotalDebt,
+    totalDebtIncInt:     TotalDebtIncludingInterest,
+    planInterest:        PlanInterest,
+    collections:         Collection,
+    instalments:         List[Instalment]
+)
 
-object TaxPeriodFrom {
-  implicit val format: Format[TaxPeriodFrom] = Json.valueFormat
+object PaymentPlan {
+  implicit val format: OFormat[PaymentPlan] = Json.format[PaymentPlan]
 }
