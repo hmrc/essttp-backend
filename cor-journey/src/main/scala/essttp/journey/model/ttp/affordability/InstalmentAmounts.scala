@@ -18,11 +18,11 @@ package essttp.journey.model.ttp.affordability
 
 import cats.Eq
 import essttp.rootmodel.AmountInPence
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{OFormat, Json}
 
 final case class InstalmentAmounts(minimumInstalmentAmount: AmountInPence, maximumInstalmentAmount: AmountInPence)
 
 object InstalmentAmounts {
   implicit val eqInstalmentAmounts: Eq[InstalmentAmounts] = Eq.fromUniversalEquals
-  implicit val format: Format[InstalmentAmounts] = Json.format[InstalmentAmounts]
+  implicit val format: OFormat[InstalmentAmounts] = Json.format[InstalmentAmounts]
 }

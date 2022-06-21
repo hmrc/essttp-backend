@@ -18,7 +18,7 @@ package essttp.journey.model.ttp.affordablequotes
 
 import play.api.libs.json.{Format, Json}
 
-final case class PaymentPlanMinLength(value: Int)
+final case class PaymentPlanMinLength(value: Int) extends AnyVal
 
 object PaymentPlanMinLength {
   implicit val format: Format[PaymentPlanMinLength] = Json.valueFormat[PaymentPlanMinLength]

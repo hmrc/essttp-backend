@@ -18,7 +18,7 @@ package essttp.journey.model.ttp.affordablequotes
 
 import play.api.libs.json.{Json, Format}
 
-final case class InstalmentNumber(value: Int)
+final case class InstalmentNumber(value: Int) extends AnyVal
 
 object InstalmentNumber {
   implicit val format: Format[InstalmentNumber] = Json.valueFormat[InstalmentNumber]

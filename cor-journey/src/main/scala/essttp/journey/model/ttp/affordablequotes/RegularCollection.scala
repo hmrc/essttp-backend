@@ -16,10 +16,10 @@
 
 package essttp.journey.model.ttp.affordablequotes
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{OFormat, Json}
 
 final case class RegularCollection(dueDate: DueDate, amountDue: AmountDue)
 
 object RegularCollection {
-  implicit val format: Format[RegularCollection] = Json.format[RegularCollection]
+  implicit val format: OFormat[RegularCollection] = Json.format[RegularCollection]
 }

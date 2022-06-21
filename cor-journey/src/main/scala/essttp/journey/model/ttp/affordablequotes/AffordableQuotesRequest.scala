@@ -38,6 +38,4 @@ final case class AffordableQuotesRequest(
 
 object AffordableQuotesRequest {
   implicit val format: OFormat[AffordableQuotesRequest] = Json.format[AffordableQuotesRequest]
-  val essttpIdentifier: ChannelIdentifier = ChannelIdentifier("eSSTTP")
-  val planFrequency: PaymentPlanFrequency = PaymentPlanFrequency("Monthly")
 }

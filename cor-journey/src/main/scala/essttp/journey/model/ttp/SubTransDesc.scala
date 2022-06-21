@@ -18,7 +18,7 @@ package essttp.journey.model.ttp
 
 import play.api.libs.json.{Json, Format}
 
-final case class SubTransDesc(value: String)
+final case class SubTransDesc(value: String) extends AnyVal
 
 object SubTransDesc {
   implicit val format: Format[SubTransDesc] = Json.valueFormat

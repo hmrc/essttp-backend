@@ -19,7 +19,7 @@ package essttp.journey.model.ttp.affordablequotes
 import essttp.rootmodel.AmountInPence
 import play.api.libs.json.{Json, Format}
 
-final case class TotalDebt(value: AmountInPence)
+final case class TotalDebt(value: AmountInPence) extends AnyVal
 
 object TotalDebt {
   implicit val format: Format[TotalDebt] = Json.valueFormat[TotalDebt]

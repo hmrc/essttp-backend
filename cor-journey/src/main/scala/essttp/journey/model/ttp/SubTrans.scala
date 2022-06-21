@@ -18,7 +18,7 @@ package essttp.journey.model.ttp
 
 import play.api.libs.json.{Json, Format}
 
-final case class SubTrans(value: String)
+final case class SubTrans(value: String) extends AnyVal
 
 object SubTrans {
   implicit val format: Format[SubTrans] = Json.valueFormat

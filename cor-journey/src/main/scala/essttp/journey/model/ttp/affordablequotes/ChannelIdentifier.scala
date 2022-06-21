@@ -16,10 +16,23 @@
 
 package essttp.journey.model.ttp.affordablequotes
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.Format
 
-final case class ChannelIdentifier(value: String)
+import enumeratum._
+import essttp.utils.EnumFormat
+import play.api.libs.json.Format
+
+import scala.collection.immutable
+
+sealed trait ChannelIdentifier extends EnumEntry
 
 object ChannelIdentifier {
-  implicit val format: Format[ChannelIdentifier] = Json.valueFormat[ChannelIdentifier]
+  implicit val format: Format[ChannelIdentifier] = EnumFormat(ChannelIdentifiers)
+}
+
+object ChannelIdentifiers extends Enum[ChannelIdentifier] {
+
+  case object eSSTTP extends ChannelIdentifier
+
+  override val values: immutable.IndexedSeq[ChannelIdentifier] = findValues
 }

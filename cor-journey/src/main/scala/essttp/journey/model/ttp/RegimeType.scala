@@ -18,7 +18,7 @@ package essttp.journey.model.ttp
 
 import play.api.libs.json.{Json, Format}
 
-final case class RegimeType(value: String)
+final case class RegimeType(value: String) extends AnyVal
 
 object RegimeType {
   implicit val format: Format[RegimeType] = Json.valueFormat

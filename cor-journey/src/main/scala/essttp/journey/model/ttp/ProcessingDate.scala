@@ -18,7 +18,7 @@ package essttp.journey.model.ttp
 
 import play.api.libs.json.{Json, Format}
 
-final case class ProcessingDate(value: String)
+final case class ProcessingDate(value: String) extends AnyVal
 
 object ProcessingDate {
   implicit val format: Format[ProcessingDate] = Json.valueFormat

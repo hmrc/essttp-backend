@@ -18,7 +18,7 @@ package essttp.journey.model.ttp
 
 import play.api.libs.json.{Json, Format}
 
-final case class ChargeId(value: String)
+final case class ChargeId(value: String) extends AnyVal
 
 object ChargeId {
   implicit val format: Format[ChargeId] = Json.valueFormat

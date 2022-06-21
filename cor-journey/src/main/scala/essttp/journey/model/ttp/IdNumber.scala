@@ -18,7 +18,7 @@ package essttp.journey.model.ttp
 
 import play.api.libs.json.{Json, Format}
 
-final case class IdNumber(value: String)
+final case class IdNumber(value: String) extends AnyVal
 
 object IdNumber {
   implicit val format: Format[IdNumber] = Json.valueFormat
