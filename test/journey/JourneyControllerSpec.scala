@@ -35,7 +35,9 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateExtremeDates]" +
       "[UpdateAffordabilityResult]" +
       "[UpdateMonthlyPaymentAmount]" +
-      "[UpdateDayOfMonth]"
+      "[UpdateDayOfMonth]" +
+      "[UpdateStartDatesResponse]" +
+      "[UpdateAffordableQuotes]"
 
   s"[Epaye.Bta][Happy path with upfront payment]$testNameJourneyStages" in {
     val tdAll = new TdAll {
@@ -80,6 +82,15 @@ class JourneyControllerSpec extends ItSpec {
     /** Update DayOfMonth */
     journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.EpayeBta.updateDayOfMonthRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterDayOfMonth
+
+    /** Update StartDates */
+    journeyConnector.updateStartDates(tdAll.journeyId, tdAll.EpayeBta.updateStartDatesResponseRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterStartDatesResponse
+
+    /** Update AffordableQuotes */
+    journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.EpayeBta.updateAffordableQuotesResponseRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAffordableQuotesResponse
+    /** Update Chosen Instalment plan */
   }
 
   s"[Epaye.GovUk][Happy path with upfront payment]$testNameJourneyStages" in {
@@ -125,6 +136,15 @@ class JourneyControllerSpec extends ItSpec {
     /** Update DayOfMonth */
     journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.EpayeGovUk.updateDayOfMonthRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterDayOfMonth
+
+    /** Update StartDates */
+    journeyConnector.updateStartDates(tdAll.journeyId, tdAll.EpayeGovUk.updateStartDatesResponseRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterStartDatesResponse
+
+    /** Update AffordableQuotes */
+    journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.EpayeGovUk.updateAffordableQuotesResponseRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterAffordableQuotesResponse
+    /** Update Chosen Instalment plan */
   }
 
   s"[Epaye.DetachedUrl][Happy path with upfront payment]$testNameJourneyStages" in {
@@ -170,5 +190,14 @@ class JourneyControllerSpec extends ItSpec {
     /** Update DayOfMonth */
     journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateDayOfMonthRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterDayOfMonth
+
+    /** Update StartDates */
+    journeyConnector.updateStartDates(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateStartDatesResponseRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterStartDatesResponse
+
+    /** Update AffordableQuotes */
+    journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateAffordableQuotesResponseRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterAffordableQuotesResponse
+    /** Update Chosen Instalment plan */
   }
 }

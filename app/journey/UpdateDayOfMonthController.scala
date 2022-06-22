@@ -67,8 +67,18 @@ class UpdateDayOfMonthController @Inject() (
       JourneyLogger.info("Day of month hasn't changed, nothing to update")
       Future.successful(())
     } else {
-      val updatedJourney: Epaye.EnteredDayOfMonth = journey match {
+      val updatedJourney: Journey.Stages.EnteredDayOfMonth = journey match {
         case j: Epaye.EnteredDayOfMonth => j.copy(dayOfMonth = dayOfMonth)
+        case j: Journey.Epaye.RetrievedStartDates =>
+          j.into[Journey.Epaye.EnteredDayOfMonth]
+            .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
+            .withFieldConst(_.dayOfMonth, dayOfMonth)
+            .transform
+        case j: Journey.Epaye.RetrievedAffordableQuotes =>
+          j.into[Journey.Epaye.EnteredDayOfMonth]
+            .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
+            .withFieldConst(_.dayOfMonth, dayOfMonth)
+            .transform
       }
       journeyService.upsert(updatedJourney)
     }

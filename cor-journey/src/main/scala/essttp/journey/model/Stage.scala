@@ -158,26 +158,38 @@ object Stage {
     case object EnteredDayOfMonth extends AfterEnteredDayOfMonth
   }
 
-  sealed trait AfterEnteredAmount extends Stage with EnumEntry
+  sealed trait AfterStartDatesResponse extends Stage with EnumEntry
 
   /**
-   * [[Journey]] has been orchestrated with affordable amount and available plans.
+   * [[Journey]] has been orchestrated with start dates api call
    */
-  object AfterEnteredAmount extends Enum[AfterEnteredAmount] {
-    implicit val format: OFormat[AfterEnteredAmount] = derived.oformat[AfterEnteredAmount]()
-    val values = findValues
+  object AfterStartDatesResponse extends Enum[AfterStartDatesResponse] {
+    implicit val format: OFormat[AfterStartDatesResponse] = derived.oformat[AfterStartDatesResponse]()
+    val values: immutable.IndexedSeq[AfterStartDatesResponse] = findValues
 
-    case object EnteredAmount extends AfterEnteredAmount
+    case object StartDatesResponseRetrieved extends AfterStartDatesResponse
+  }
+
+  sealed trait AfterAffordableQuotesResponse extends Stage with EnumEntry
+
+  /**
+   * [[Journey]] has been orchestrated with affordable quotes api call from ttp
+   */
+  object AfterAffordableQuotesResponse extends Enum[AfterAffordableQuotesResponse] {
+    implicit val format: OFormat[AfterAffordableQuotesResponse] = derived.oformat[AfterAffordableQuotesResponse]()
+    val values: immutable.IndexedSeq[AfterAffordableQuotesResponse] = findValues
+
+    case object AffordableQuotesRetrieved extends AfterAffordableQuotesResponse
   }
 
   sealed trait AfterSelectedPlan extends Stage with EnumEntry
 
   /**
-   * [[Journey]] has been orchestrated with affordable amount
+   * [[Journey]] has been orchestrated with selected instalment plan
    */
   object AfterSelectedPlan extends Enum[AfterSelectedPlan] {
     implicit val format: OFormat[AfterSelectedPlan] = derived.oformat[AfterSelectedPlan]()
-    val values = findValues
+    val values: immutable.IndexedSeq[AfterSelectedPlan] = findValues
 
     case object SelectedPlan extends AfterSelectedPlan
 

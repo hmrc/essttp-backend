@@ -16,6 +16,7 @@
 
 package essttp.rootmodel.dates.startdates
 
+import cats.Eq
 import essttp.rootmodel.dates.InitialPaymentDate
 import play.api.libs.json.{Format, Json}
 
@@ -23,4 +24,5 @@ final case class StartDatesResponse(initialPaymentDate: Option[InitialPaymentDat
 
 object StartDatesResponse {
   implicit val format: Format[StartDatesResponse] = Json.format[StartDatesResponse]
+  implicit val eq: Eq[StartDatesResponse] = Eq.fromUniversalEquals
 }

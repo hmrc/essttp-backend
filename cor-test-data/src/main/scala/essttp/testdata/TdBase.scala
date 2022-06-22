@@ -16,11 +16,14 @@
 
 package essttp.testdata
 
+import essttp.journey.model.ttp.{ChargeId, InterestAccrued}
 import essttp.journey.model.ttp.affordability.InstalmentAmounts
+import essttp.journey.model.ttp.affordablequotes.{AffordableQuotesResponse, AmountDue, Collection, DebtItemOriginalDueDate, DueDate, InitialCollection, Instalment, InstalmentBalance, InstalmentNumber, NumberOfInstalments, PaymentPlan, PlanDuration, PlanInterest, RegularCollection, TotalDebt, TotalDebtIncludingInterest}
 import essttp.journey.model.{JourneyId, UpfrontPaymentAnswers}
 import essttp.rootmodel._
 import essttp.rootmodel.dates.InitialPaymentDate
 import essttp.rootmodel.dates.extremedates.{EarliestPlanStartDate, ExtremeDatesResponse, LatestPlanStartDate}
+import essttp.rootmodel.dates.startdates.{InstalmentStartDate, StartDatesResponse}
 import essttp.utils.TdSupport.FakeRequestOps
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
@@ -47,6 +50,32 @@ trait TdBase {
   def extremeDatesWithoutUpfrontPayment: ExtremeDatesResponse = extremeDatesWithUpfrontPayment.copy(initialPaymentDate = None)
   def monthlyPaymentAmount: MonthlyPaymentAmount = MonthlyPaymentAmount(AmountInPence(20000))
   def dayOfMonth: DayOfMonth = DayOfMonth(1)
+  def startDatesResponseWithInitialPayment: StartDatesResponse = StartDatesResponse(Some(InitialPaymentDate(LocalDate.parse("2022-01-01"))), InstalmentStartDate(LocalDate.parse("2022-01-01")))
+  def startDatesResponseWithoutInitialPayment: StartDatesResponse = StartDatesResponse(None, InstalmentStartDate(LocalDate.parse("2022-01-01")))
+  def dueDate: DueDate = DueDate(LocalDate.parse("2022-02-01"))
+  def amountDue: AmountDue = AmountDue(amountInPence)
+  def paymentPlan(numberOfInstalments: Int): PaymentPlan = PaymentPlan(
+    numberOfInstalments = NumberOfInstalments(numberOfInstalments),
+    planDuration        = PlanDuration(numberOfInstalments),
+    totalDebt           = TotalDebt(amountInPence),
+    totalDebtIncInt     = TotalDebtIncludingInterest(amountInPence.+(amountInPence)),
+    planInterest        = PlanInterest(amountInPence),
+    collections         = Collection(
+      initialCollection  = Some(InitialCollection(dueDate   = dueDate, amountDue = amountDue)),
+      regularCollections = List(RegularCollection(dueDate   = dueDate, amountDue = amountDue))
+    ),
+    instalments         = List(Instalment(
+      instalmentNumber          = InstalmentNumber(numberOfInstalments),
+      dueDate                   = DueDate(LocalDate.parse("2022-02-01")),
+      instalmentInterestAccrued = InterestAccrued(amountInPence),
+      instalmentBalance         = InstalmentBalance(amountInPence),
+      debtItemChargeId          = ChargeId("testchargeid"),
+      amountDue                 = amountDue,
+      debtItemOriginalDueDate   = DebtItemOriginalDueDate(LocalDate.parse("2022-01-01"))
+    ))
+  )
+
+  def affordableQuotesResponse: AffordableQuotesResponse = AffordableQuotesResponse(List(paymentPlan(1)))
 
   def backUrl: BackUrl = BackUrl("https://www.tax.service.gov.uk/back-url")
   def returnUrl: ReturnUrl = ReturnUrl("https://www.tax.service.gov.uk/return-url")

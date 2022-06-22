@@ -18,8 +18,10 @@ package essttp.journey
 
 import essttp.journey.model.ttp.EligibilityCheckResult
 import essttp.journey.model.ttp.affordability.InstalmentAmounts
+import essttp.journey.model.ttp.affordablequotes.AffordableQuotesResponse
 import essttp.journey.model.{Journey, JourneyId, SjRequest, SjResponse}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
+import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.{CanPayUpfront, DayOfMonth, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
@@ -75,6 +77,14 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
 
   def updateDayOfMonth(journeyId: JourneyId, dayOfMonth: DayOfMonth)(implicit request: RequestHeader): Future[Unit] = {
     httpClient.POST[DayOfMonth, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-day-of-month", dayOfMonth)
+  }
+
+  def updateStartDates(journeyId: JourneyId, startDatesResponse: StartDatesResponse)(implicit request: RequestHeader): Future[Unit] = {
+    httpClient.POST[StartDatesResponse, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-start-dates", startDatesResponse)
+  }
+
+  def updateAffordableQuotes(journeyId: JourneyId, affordableQuotesResponse: AffordableQuotesResponse)(implicit request: RequestHeader): Future[Unit] = {
+    httpClient.POST[AffordableQuotesResponse, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-affordable-quotes", affordableQuotesResponse)
   }
 
   object Epaye {
