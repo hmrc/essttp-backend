@@ -16,9 +16,10 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Json, Format}
+import essttp.rootmodel.AmountInPence
+import play.api.libs.json.{Format, Json}
 
-final case class DebtTotalAmount(value: Int) extends AnyVal
+final case class DebtTotalAmount(value: AmountInPence) extends AnyVal
 
 object DebtTotalAmount {
   implicit val format: Format[DebtTotalAmount] = Json.valueFormat

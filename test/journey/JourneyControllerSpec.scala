@@ -37,7 +37,8 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateMonthlyPaymentAmount]" +
       "[UpdateDayOfMonth]" +
       "[UpdateStartDatesResponse]" +
-      "[UpdateAffordableQuotes]"
+      "[UpdateAffordableQuotes]" +
+      "[UpdateSelectedPaymentPlan]"
 
   s"[Epaye.Bta][Happy path with upfront payment]$testNameJourneyStages" in {
     val tdAll = new TdAll {
@@ -90,7 +91,10 @@ class JourneyControllerSpec extends ItSpec {
     /** Update AffordableQuotes */
     journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.EpayeBta.updateAffordableQuotesResponseRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAffordableQuotesResponse
+
     /** Update Chosen Instalment plan */
+    journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.EpayeBta.updateSelectedPaymentPlanRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
   }
 
   s"[Epaye.GovUk][Happy path with upfront payment]$testNameJourneyStages" in {
@@ -144,7 +148,10 @@ class JourneyControllerSpec extends ItSpec {
     /** Update AffordableQuotes */
     journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.EpayeGovUk.updateAffordableQuotesResponseRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterAffordableQuotesResponse
+
     /** Update Chosen Instalment plan */
+    journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.EpayeGovUk.updateSelectedPaymentPlanRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterSelectedPaymentPlan
   }
 
   s"[Epaye.DetachedUrl][Happy path with upfront payment]$testNameJourneyStages" in {
@@ -198,6 +205,9 @@ class JourneyControllerSpec extends ItSpec {
     /** Update AffordableQuotes */
     journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateAffordableQuotesResponseRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterAffordableQuotesResponse
+
     /** Update Chosen Instalment plan */
+    journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateSelectedPaymentPlanRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterSelectedPaymentPlan
   }
 }

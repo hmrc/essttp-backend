@@ -18,7 +18,7 @@ package essttp.journey
 
 import essttp.journey.model.ttp.EligibilityCheckResult
 import essttp.journey.model.ttp.affordability.InstalmentAmounts
-import essttp.journey.model.ttp.affordablequotes.AffordableQuotesResponse
+import essttp.journey.model.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.journey.model.{Journey, JourneyId, SjRequest, SjResponse}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
@@ -85,6 +85,10 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
 
   def updateAffordableQuotes(journeyId: JourneyId, affordableQuotesResponse: AffordableQuotesResponse)(implicit request: RequestHeader): Future[Unit] = {
     httpClient.POST[AffordableQuotesResponse, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-affordable-quotes", affordableQuotesResponse)
+  }
+
+  def updateChosenPaymentPlan(journeyId: JourneyId, paymentPlan: PaymentPlan)(implicit request: RequestHeader): Future[Unit] = {
+    httpClient.POST[PaymentPlan, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-selected-plan", paymentPlan)
   }
 
   object Epaye {

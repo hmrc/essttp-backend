@@ -68,7 +68,11 @@ class UpdateAffordableQuotesController @Inject() (
     } else {
       val newJourney: Journey.AfterAffordableQuotesResponse = journey match {
         case j: Journey.Epaye.RetrievedAffordableQuotes => j.copy(affordableQuotesResponse = affordableQuotesResponse)
-        // selected payment plan case
+        case j: Journey.Epaye.ChosenPaymentPlan =>
+          j.into[Journey.Epaye.RetrievedAffordableQuotes]
+            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+            .transform
       }
       journeyService.upsert(newJourney)
     }

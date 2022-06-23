@@ -192,16 +192,6 @@ object Stage {
     val values: immutable.IndexedSeq[AfterSelectedPlan] = findValues
 
     case object SelectedPlan extends AfterSelectedPlan
-
-    /**
-     * Journey has been finished. Now it's possible to make only Survey but no go back.
-     */
-    case object SubmittedDirectDebit extends AfterSelectedPlan
-
-    /**
-     * Journey has been finished and survey is completed. User should not re-take the survey.
-     */
-    case object SurveyComplete extends AfterSelectedPlan
   }
 
 }
