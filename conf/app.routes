@@ -13,6 +13,10 @@ POST        /journey/:journeyId/update-upfront-payment-amount    journey.UpdateU
 
 POST        /journey/:journeyId/update-extreme-dates             journey.UpdateDatesController.updateExtremeDates(journeyId: JourneyId)
 
-POST        /journey/:journeyId/update-affordability-result      journey.UpdateAffordabilityResultController.updateAffordabilityResultController(journeyId: JourneyId)
+POST        /journey/:journeyId/update-affordability-result      journey.UpdateAffordabilityResultController.updateAffordabilityResult(journeyId: JourneyId)
 POST        /journey/:journeyId/update-monthly-payment-amount    journey.UpdateMonthlyPaymentAmountController.updateMonthlyPaymentAmount(journeyId: JourneyId)
 POST        /journey/:journeyId/update-day-of-month              journey.UpdateDayOfMonthController.updateDayOfMonth(journeyId: JourneyId)
+
+POST        /journey/:journeyId/update-start-dates               journey.UpdateDatesController.updateStartDates(journeyId: JourneyId)
+POST        /journey/:journeyId/update-affordable-quotes         journey.UpdateAffordableQuotesController.updateAffordableQuotes(journeyId: JourneyId)
+POST        /journey/:journeyId/update-selected-plan             journey.UpdateInstalmentPlanController.updateChosenInstalmentPlan(journeyId: JourneyId)

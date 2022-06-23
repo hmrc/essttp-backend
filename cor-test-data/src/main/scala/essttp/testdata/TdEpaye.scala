@@ -17,7 +17,7 @@
 package essttp.testdata
 
 import essttp.journey.model.ttp._
-import essttp.rootmodel.{CanPayUpfront, EmpRef}
+import essttp.rootmodel.{AmountInPence, CanPayUpfront, EmpRef}
 import essttp.rootmodel.epaye.{Aor, TaxOfficeNumber, TaxOfficeReference}
 
 trait TdEpaye {
@@ -51,7 +51,7 @@ trait TdEpaye {
       ChargeTypeAssessment(
         taxPeriodFrom         = TaxPeriodFrom("2020-08-13"),
         taxPeriodTo           = TaxPeriodTo("2020-08-14"),
-        debtTotalAmount       = DebtTotalAmount(300000),
+        debtTotalAmount       = DebtTotalAmount(AmountInPence(300000)),
         disallowedChargeLocks = List(
           DisallowedChargeLocks(
             chargeId              = ChargeId("A00000000001"),
@@ -59,9 +59,9 @@ trait TdEpaye {
             mainTransDesc         = MainTransDesc("mainTransDesc"),
             subTrans              = SubTrans("subTrans"),
             subTransDesc          = SubTransDesc("subTransDesc"),
-            outstandingDebtAmount = OutstandingDebtAmount(100000),
+            outstandingDebtAmount = OutstandingDebtAmount(AmountInPence(100000)),
             interestStartDate     = InterestStartDate("2017-03-07"),
-            accruedInterestToDate = AccruedInterestToDate(15.97),
+            accruedInterestToDate = AccruedInterestToDate(AmountInPence(1597)),
             chargeLocks           = ChargeLocks(
               paymentLock  = PaymentLock(false, ""),
               clearingLock = PaymentLock(false, ""),

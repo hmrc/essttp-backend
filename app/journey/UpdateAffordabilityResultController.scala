@@ -32,7 +32,7 @@ class UpdateAffordabilityResultController @Inject() (
     journeyService: JourneyService,
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
-  def updateAffordabilityResultController(journeyId: JourneyId): Action[InstalmentAmounts] = Action.async(parse.json[InstalmentAmounts]) { implicit request =>
+  def updateAffordabilityResult(journeyId: JourneyId): Action[InstalmentAmounts] = Action.async(parse.json[InstalmentAmounts]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {
@@ -72,6 +72,21 @@ class UpdateAffordabilityResultController @Inject() (
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
         case j: Journey.Epaye.EnteredDayOfMonth =>
+          j.into[Journey.Epaye.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
+        case j: Journey.Epaye.RetrievedStartDates =>
+          j.into[Journey.Epaye.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
+        case j: Journey.Epaye.RetrievedAffordableQuotes =>
+          j.into[Journey.Epaye.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
+        case j: Journey.Epaye.ChosenPaymentPlan =>
           j.into[Journey.Epaye.RetrievedAffordabilityResult]
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)

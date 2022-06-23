@@ -18,8 +18,10 @@ package essttp.testdata
 
 import essttp.journey.model.ttp.EligibilityCheckResult
 import essttp.journey.model.ttp.affordability.InstalmentAmounts
+import essttp.journey.model.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.journey.model.{Journey, SjRequest, SjResponse}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
+import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.{CanPayUpfront, DayOfMonth, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import play.api.libs.json.JsObject
 
@@ -71,4 +73,16 @@ trait TdJourneyStructure {
   def updateDayOfMonthRequestJson(): JsObject
   def journeyAfterDayOfMonth: Journey
   def journeyAfterDayOfMonthJson: JsObject
+  def updateStartDatesResponseRequest(): StartDatesResponse
+  def updateStartDatesResponseRequestJson(): JsObject
+  def journeyAfterStartDatesResponse: Journey.AfterStartDatesResponse
+  def journeyAfterStartDatesResponseJson: JsObject
+  def updateAffordableQuotesResponseRequest(): AffordableQuotesResponse
+  def updateAffordableQuotesResponseRequestJson(): JsObject
+  def journeyAfterAffordableQuotesResponse: Journey.AfterAffordableQuotesResponse
+  def journeyAfterAffordableQuotesResponseJson: JsObject
+  def updateSelectedPaymentPlanRequest(): PaymentPlan
+  def updateSelectedPaymentPlanRequestJson(): JsObject
+  def journeyAfterSelectedPaymentPlan: Journey.AfterSelectedPaymentPlan
+  def journeyAfterSelectedPaymentPlanJson: JsObject
 }

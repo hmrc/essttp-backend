@@ -16,6 +16,7 @@
 
 package essttp.journey.model.ttp.affordablequotes
 
+import cats.Eq
 import play.api.libs.json.{Json, OFormat}
 
 final case class PaymentPlan(
@@ -30,4 +31,5 @@ final case class PaymentPlan(
 
 object PaymentPlan {
   implicit val format: OFormat[PaymentPlan] = Json.format[PaymentPlan]
+  implicit val eq: Eq[PaymentPlan] = Eq.fromUniversalEquals
 }

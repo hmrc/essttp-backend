@@ -16,9 +16,10 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Json, Format}
+import essttp.rootmodel.AmountInPence
+import play.api.libs.json.{Format, Json}
 
-final case class AccruedInterestToDate(value: Double) extends AnyVal
+final case class AccruedInterestToDate(value: AmountInPence) extends AnyVal
 
 object AccruedInterestToDate {
   implicit val format: Format[AccruedInterestToDate] = Json.valueFormat
