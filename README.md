@@ -29,6 +29,7 @@ graph TD;
     EnteredDayOfMonth --> SelectedInstalments;
     SelectedInstalments --> EnteredDirectDebitDetails;
     EnteredDirectDebitDetails --> SubmittedPaymentPlan;
+    SubmittedPaymentPlan --> CheckedPaymentPlan;
 ```
 To edit this, use [mermaid live editor](https://mermaid.live/)
 
