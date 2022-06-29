@@ -72,7 +72,8 @@ class UpdateEligibilityCheckResultController @Inject() (
       Future.successful(())
     } else {
       val updatedJourney: Journey.AfterEligibilityChecked = journey match {
-        case j: Epaye.EligibilityChecked => j.copy(eligibilityCheckResult = eligibilityCheckResult)
+        case j: Epaye.EligibilityChecked =>
+          j.copy(eligibilityCheckResult = eligibilityCheckResult)
         case j: Epaye.AnsweredCanPayUpfront =>
           j.into[Journey.Epaye.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
@@ -114,6 +115,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
         case j: Epaye.ChosenPaymentPlan =>
+          j.into[Journey.Epaye.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+        case j: Epaye.CheckedPaymentPlan =>
           j.into[Journey.Epaye.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)

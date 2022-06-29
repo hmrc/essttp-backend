@@ -68,7 +68,8 @@ class UpdateDayOfMonthController @Inject() (
       Future.successful(())
     } else {
       val updatedJourney: Journey.Stages.EnteredDayOfMonth = journey match {
-        case j: Epaye.EnteredDayOfMonth => j.copy(dayOfMonth = dayOfMonth)
+        case j: Epaye.EnteredDayOfMonth =>
+          j.copy(dayOfMonth = dayOfMonth)
         case j: Journey.Epaye.RetrievedStartDates =>
           j.into[Journey.Epaye.EnteredDayOfMonth]
             .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
@@ -80,6 +81,11 @@ class UpdateDayOfMonthController @Inject() (
             .withFieldConst(_.dayOfMonth, dayOfMonth)
             .transform
         case j: Journey.Epaye.ChosenPaymentPlan =>
+          j.into[Journey.Epaye.EnteredDayOfMonth]
+            .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
+            .withFieldConst(_.dayOfMonth, dayOfMonth)
+            .transform
+        case j: Journey.Epaye.CheckedPaymentPlan =>
           j.into[Journey.Epaye.EnteredDayOfMonth]
             .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
             .withFieldConst(_.dayOfMonth, dayOfMonth)

@@ -65,7 +65,8 @@ class UpdateAffordabilityResultController @Inject() (
       Future.successful(())
     } else {
       val newJourney: Journey.AfterRetrievedAffordabilityResult = journey match {
-        case j: Journey.Epaye.RetrievedAffordabilityResult => j.copy(instalmentAmounts = instalmentAmounts)
+        case j: Journey.Epaye.RetrievedAffordabilityResult =>
+          j.copy(instalmentAmounts = instalmentAmounts)
         case j: Journey.Epaye.EnteredMonthlyPaymentAmount =>
           j.into[Journey.Epaye.RetrievedAffordabilityResult]
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
@@ -87,6 +88,11 @@ class UpdateAffordabilityResultController @Inject() (
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
         case j: Journey.Epaye.ChosenPaymentPlan =>
+          j.into[Journey.Epaye.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
+        case j: Journey.Epaye.CheckedPaymentPlan =>
           j.into[Journey.Epaye.RetrievedAffordabilityResult]
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)

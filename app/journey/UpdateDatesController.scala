@@ -77,7 +77,8 @@ class UpdateDatesController @Inject() (
       Future.successful(())
     } else {
       val newJourney: Journey.AfterExtremeDatesResponse = journey match {
-        case j: Journey.Epaye.RetrievedExtremeDates => j.copy(extremeDatesResponse = extremeDatesResponse)
+        case j: Journey.Epaye.RetrievedExtremeDates =>
+          j.copy(extremeDatesResponse = extremeDatesResponse)
         case j: Journey.Epaye.RetrievedAffordabilityResult =>
           j.into[Journey.Epaye.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
@@ -104,6 +105,11 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
         case j: Journey.Epaye.ChosenPaymentPlan =>
+          j.into[Journey.Epaye.RetrievedExtremeDates]
+            .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+            .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+            .transform
+        case j: Journey.Epaye.CheckedPaymentPlan =>
           j.into[Journey.Epaye.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -147,13 +153,19 @@ class UpdateDatesController @Inject() (
       Future.successful(())
     } else {
       val newJourney: Journey.AfterStartDatesResponse = journey match {
-        case j: Journey.Epaye.RetrievedStartDates => j.copy(startDatesResponse = startDatesResponse)
+        case j: Journey.Epaye.RetrievedStartDates =>
+          j.copy(startDatesResponse = startDatesResponse)
         case j: Journey.Epaye.RetrievedAffordableQuotes =>
           j.into[Journey.Epaye.RetrievedStartDates]
             .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
             .withFieldConst(_.startDatesResponse, startDatesResponse)
             .transform
         case j: Journey.Epaye.ChosenPaymentPlan =>
+          j.into[Journey.Epaye.RetrievedStartDates]
+            .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
+            .withFieldConst(_.startDatesResponse, startDatesResponse)
+            .transform
+        case j: Journey.Epaye.CheckedPaymentPlan =>
           j.into[Journey.Epaye.RetrievedStartDates]
             .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
             .withFieldConst(_.startDatesResponse, startDatesResponse)

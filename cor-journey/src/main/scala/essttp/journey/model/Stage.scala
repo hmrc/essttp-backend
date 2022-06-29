@@ -194,4 +194,16 @@ object Stage {
     case object SelectedPlan extends AfterSelectedPlan
   }
 
+  sealed trait AfterCheckedPlan extends Stage with EnumEntry
+
+  /**
+   * [[Journey]] has been orchestrated to indicate the user has checked and accepted the a payment plan
+   */
+  object AfterCheckedPlan extends Enum[AfterCheckedPlan] {
+    implicit val format: OFormat[AfterCheckedPlan] = derived.oformat[AfterCheckedPlan]()
+    val values: immutable.IndexedSeq[AfterCheckedPlan] = findValues
+
+    case object AcceptedPlan extends AfterCheckedPlan
+  }
+
 }
