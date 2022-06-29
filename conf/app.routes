@@ -20,3 +20,5 @@ POST        /journey/:journeyId/update-day-of-month              journey.UpdateD
 POST        /journey/:journeyId/update-start-dates               journey.UpdateDatesController.updateStartDates(journeyId: JourneyId)
 POST        /journey/:journeyId/update-affordable-quotes         journey.UpdateAffordableQuotesController.updateAffordableQuotes(journeyId: JourneyId)
 POST        /journey/:journeyId/update-selected-plan             journey.UpdateInstalmentPlanController.updateChosenInstalmentPlan(journeyId: JourneyId)
+
+POST        /journey/:journeyId/update-has-checked-plan          journey.UpdateHasCheckedInstalmentPlanController.updateHasCheckedInstalmentPlan(journeyId: JourneyId)

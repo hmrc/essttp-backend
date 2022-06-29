@@ -238,9 +238,9 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
 
     def journeyAfterDayOfMonthJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterUpdateDayOfMonth.json").asJson
 
-    def updateStartDatesResponseRequest(): StartDatesResponse = dependencies.startDatesResponseWithInitialPayment
+    def updateStartDatesResponse(): StartDatesResponse = dependencies.startDatesResponseWithInitialPayment
 
-    def updateStartDatesResponseRequestJson(): JsObject = read("/testdata/epaye/govuk/UpdateStartDatesResponseRequest.json").asJson
+    def updateStartDatesResponseJson(): JsObject = read("/testdata/epaye/govuk/UpdateStartDatesResponse.json").asJson
 
     def journeyAfterStartDatesResponse: Journey.AfterStartDatesResponse = Journey.Epaye.RetrievedStartDates(
       _id                    = dependencies.journeyId,
@@ -261,9 +261,9 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
 
     def journeyAfterStartDatesResponseJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterUpdateStartDatesResponse.json").asJson
 
-    def updateAffordableQuotesResponseRequest(): AffordableQuotesResponse = dependencies.affordableQuotesResponse
+    def updateAffordableQuotesResponse(): AffordableQuotesResponse = dependencies.affordableQuotesResponse
 
-    def updateAffordableQuotesResponseRequestJson(): JsObject = read("/testdata/epaye/govuk/UpdateAffordableQuotesRequest.json").asJson
+    def updateAffordableQuotesResponseJson(): JsObject = read("/testdata/epaye/govuk/UpdateAffordableQuotesRequest.json").asJson
 
     def journeyAfterAffordableQuotesResponse: Journey.AfterAffordableQuotesResponse = Journey.Epaye.RetrievedAffordableQuotes(
       _id                      = dependencies.journeyId,
@@ -309,5 +309,27 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
     )
 
     def journeyAfterSelectedPaymentPlanJson: JsObject = read("/testdata/epaye/bta/JourneyAfterSelectedPaymentPlan.json").asJson
+
+    def journeyAfterCheckedPaymentPlan: Journey.AfterCheckedPaymentPlan = Journey.Epaye.CheckedPaymentPlan(
+      _id                      = dependencies.journeyId,
+      origin                   = Origins.Epaye.GovUk,
+      createdOn                = dependencies.createdOn,
+      sjRequest                = sjRequest,
+      sessionId                = dependencies.sessionId,
+      stage                    = Stage.AfterCheckedPlan.AcceptedPlan,
+      taxId                    = empRef,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts        = dependencies.instalmentAmounts,
+      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+      dayOfMonth               = dependencies.dayOfMonth,
+      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan      = dependencies.paymentPlan(1)
+    )
+
+    def journeyAfterCheckedPaymentPlanJson: JsObject = read("/testdata/epaye/bta/JourneyAfterCheckedPaymentPlan.json").asJson
+
   }
 }

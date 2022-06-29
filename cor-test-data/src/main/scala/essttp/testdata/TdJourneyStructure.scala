@@ -33,56 +33,84 @@ trait TdJourneyStructure {
   def sjResponse: SjResponse
   def postPath: String
   def sjRequestJson: JsObject
+
   def journeyAfterStarted: Journey
   def journeyAfterStartedJson: JsObject
+
   def updateTaxIdRequest(): TaxId
   def updateTaxIdRequestJson(): JsObject
+
   def journeyAfterDetermineTaxIds: Journey
   def journeyAfterDetermineTaxIdsJson: JsObject
+
   def updateEligibilityCheckRequest(): EligibilityCheckResult
   def updateEligibilityCheckRequestJson(): JsObject
+
   def journeyAfterEligibilityCheckEligible: Journey
   def journeyAfterEligibilityCheckEligibleJson: JsObject
+
   def journeyAfterEligibilityCheckNotEligible: Journey
   def journeyAfterEligibilityCheckNotEligibleJson: JsObject
+
   def updateCanPayUpfrontYesRequest(): CanPayUpfront
   def updateCanPayUpfrontNoRequest(): CanPayUpfront
   def updateCanPayUpfrontYesRequestJson(): JsObject
   def updateCanPayUpfrontNoRequestJson(): JsObject
+
   def journeyAfterCanPayUpfrontYes: Journey
   def journeyAfterCanPayUpfrontYesJson: JsObject
+
   def journeyAfterCanPayUpfrontNo: Journey
   def journeyAfterCanPayUpfrontNoJson: JsObject
+
   def updateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount
   def updateUpfrontPaymentAmountRequestJson(): JsObject
+
   def journeyAfterUpfrontPaymentAmount: Journey
   def journeyAfterUpfrontPaymentAmountJson: JsObject
+
   def updateExtremeDatesRequest(): ExtremeDatesResponse
   def updateExtremeDatesRequestJson(): JsObject
+
   def journeyAfterExtremeDates: Journey
   def journeyAfterExtremeDatesJson: JsObject
+
   def updateInstalmentAmountsRequest(): InstalmentAmounts
   def updateInstalmentAmountsRequestJson(): JsObject
+
   def journeyAfterInstalmentAmounts: Journey
   def journeyAfterInstalmentAmountsJson: JsObject
+
   def updateMonthlyPaymentAmountRequest(): MonthlyPaymentAmount
   def updateMonthlyPaymentAmountRequestJson(): JsObject
+
   def journeyAfterMonthlyPaymentAmount: Journey
   def journeyAfterMonthlyPaymentAmountJson: JsObject
+
   def updateDayOfMonthRequest(): DayOfMonth
   def updateDayOfMonthRequestJson(): JsObject
+
   def journeyAfterDayOfMonth: Journey
   def journeyAfterDayOfMonthJson: JsObject
-  def updateStartDatesResponseRequest(): StartDatesResponse
-  def updateStartDatesResponseRequestJson(): JsObject
+
+  def updateStartDatesResponse(): StartDatesResponse
+  def updateStartDatesResponseJson(): JsObject
+
   def journeyAfterStartDatesResponse: Journey.AfterStartDatesResponse
   def journeyAfterStartDatesResponseJson: JsObject
-  def updateAffordableQuotesResponseRequest(): AffordableQuotesResponse
-  def updateAffordableQuotesResponseRequestJson(): JsObject
+
+  def updateAffordableQuotesResponse(): AffordableQuotesResponse
+  def updateAffordableQuotesResponseJson(): JsObject
+
   def journeyAfterAffordableQuotesResponse: Journey.AfterAffordableQuotesResponse
   def journeyAfterAffordableQuotesResponseJson: JsObject
+
   def updateSelectedPaymentPlanRequest(): PaymentPlan
   def updateSelectedPaymentPlanRequestJson(): JsObject
+
   def journeyAfterSelectedPaymentPlan: Journey.AfterSelectedPaymentPlan
   def journeyAfterSelectedPaymentPlanJson: JsObject
+
+  def journeyAfterCheckedPaymentPlan: Journey.AfterCheckedPaymentPlan
+  def journeyAfterCheckedPaymentPlanJson: JsObject
 }
