@@ -18,8 +18,10 @@ package essttp.rootmodel.bank
 
 import play.api.libs.json.{Format, Json}
 
-final case class SortCode(value: String)
+final case class SortCode(value: String) extends AnyVal
 
 object SortCode {
+
   implicit val format: Format[SortCode] = Json.valueFormat
+
 }

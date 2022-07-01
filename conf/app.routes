@@ -22,3 +22,5 @@ POST        /journey/:journeyId/update-affordable-quotes         journey.UpdateA
 POST        /journey/:journeyId/update-selected-plan             journey.UpdateInstalmentPlanController.updateChosenInstalmentPlan(journeyId: JourneyId)
 
 POST        /journey/:journeyId/update-has-checked-plan          journey.UpdateHasCheckedInstalmentPlanController.updateHasCheckedInstalmentPlan(journeyId: JourneyId)
+
+POST        /journey/:journeyId/update-direct-debit-details      journey.UpdateDirectDebitDetailsController.updateDirectDebitDetails(journeyId: JourneyId)

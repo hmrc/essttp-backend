@@ -21,6 +21,7 @@ import essttp.journey.model.ttp.affordability.InstalmentAmounts
 import essttp.journey.model.ttp.affordablequotes.{AffordableQuotesResponse, AmountDue, Collection, DebtItemOriginalDueDate, DueDate, InitialCollection, Instalment, InstalmentBalance, InstalmentNumber, NumberOfInstalments, PaymentPlan, PlanDuration, PlanInterest, RegularCollection, TotalDebt, TotalDebtIncludingInterest}
 import essttp.journey.model.{JourneyId, UpfrontPaymentAnswers}
 import essttp.rootmodel._
+import essttp.rootmodel.bank.{AccountNumber, BankDetails, DirectDebitDetails, SortCode}
 import essttp.rootmodel.dates.InitialPaymentDate
 import essttp.rootmodel.dates.extremedates.{EarliestPlanStartDate, ExtremeDatesResponse, LatestPlanStartDate}
 import essttp.rootmodel.dates.startdates.{InstalmentStartDate, StartDatesResponse}
@@ -76,6 +77,15 @@ trait TdBase {
   )
 
   def affordableQuotesResponse: AffordableQuotesResponse = AffordableQuotesResponse(List(paymentPlan(1)))
+
+  def directDebitDetails(isAccountHolder: Boolean): DirectDebitDetails = DirectDebitDetails(
+    BankDetails(
+      "First Last",
+      SortCode("123456"),
+      AccountNumber("12345678")
+    ),
+    isAccountHolder
+  )
 
   def backUrl: BackUrl = BackUrl("https://www.tax.service.gov.uk/back-url")
   def returnUrl: ReturnUrl = ReturnUrl("https://www.tax.service.gov.uk/return-url")
