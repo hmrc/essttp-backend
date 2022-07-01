@@ -101,6 +101,10 @@ class JourneyControllerSpec extends ItSpec {
     journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCheckedPaymentPlan
 
+    /** Update Direct debit details */
+    journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeBta.updateDirectDebitDetailsRequest(isAccountHolder = false)).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterDirectDebitDetails(isAccountHolder = false)
+
   }
 
   s"[Epaye.GovUk][Happy path with upfront payment]$testNameJourneyStages" in {
@@ -162,6 +166,10 @@ class JourneyControllerSpec extends ItSpec {
     /** Update Checked Instalment plan */
     journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterCheckedPaymentPlan
+
+    /** Update Direct debit details */
+    journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeGovUk.updateDirectDebitDetailsRequest(isAccountHolder = true)).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterDirectDebitDetails(isAccountHolder = true)
 
   }
 
@@ -225,5 +233,8 @@ class JourneyControllerSpec extends ItSpec {
     journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterCheckedPaymentPlan
 
+    /** Update Direct debit details */
+    journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateDirectDebitDetailsRequest(isAccountHolder = false)).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterDirectDebitDetails(isAccountHolder = false)
   }
 }

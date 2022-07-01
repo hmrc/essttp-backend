@@ -16,12 +16,15 @@
 
 package essttp.rootmodel.bank
 
+import cats.Eq
 import play.api.libs.json.{Json, OFormat}
 
-final case class BankDetails(name: String, sortCode: SortCode, accountNumber: AccountNumber)
+final case class DirectDebitDetails(bankDetails: BankDetails, isAccountHolder: Boolean)
 
-object BankDetails {
+object DirectDebitDetails {
 
-  implicit val format: OFormat[BankDetails] = Json.format[BankDetails]
+  implicit val format: OFormat[DirectDebitDetails] = Json.format
+
+  implicit val eq: Eq[DirectDebitDetails] = Eq.fromUniversalEquals
 
 }

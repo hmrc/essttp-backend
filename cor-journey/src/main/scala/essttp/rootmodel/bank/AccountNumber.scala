@@ -18,8 +18,10 @@ package essttp.rootmodel.bank
 
 import play.api.libs.json.{Format, Json}
 
-final case class AccountNumber(value: String)
+final case class AccountNumber(value: String) extends AnyVal
 
 object AccountNumber {
+
   implicit val format: Format[AccountNumber] = Json.valueFormat
+
 }

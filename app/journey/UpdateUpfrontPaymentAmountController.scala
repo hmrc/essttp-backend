@@ -83,103 +83,78 @@ class UpdateUpfrontPaymentAmountController @Inject() (
           val updatedJourney: Epaye.EnteredUpfrontPaymentAmount = j.copy(upfrontPaymentAmount = upfrontPaymentAmount)
           journeyService.upsert(updatedJourney)
         }
-      case Right(j: Epaye.EnteredMonthlyPaymentAmount) =>
-        j.upfrontPaymentAnswers match {
-          case UpfrontPaymentAnswers.NoUpfrontPayment =>
-            Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible there is no upfront payment amount before...: [${j.stage}]")
-          case upfrontPaymentAmount: UpfrontPaymentAnswers.DeclaredUpfrontPayment =>
-            val updatedJourney = j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
-              .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-              .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
-              .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount.amount)
-              .transform
-            journeyService.upsert(updatedJourney)
-        }
-      case Right(j: Epaye.RetrievedExtremeDates) =>
-        j.upfrontPaymentAnswers match {
-          case UpfrontPaymentAnswers.NoUpfrontPayment =>
-            Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible there is no upfront payment amount before...: [${j.stage}]")
-          case upfrontPaymentAmount: UpfrontPaymentAnswers.DeclaredUpfrontPayment =>
-            val updatedJourney = j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
-              .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-              .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
-              .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount.amount)
-              .transform
-            journeyService.upsert(updatedJourney)
-        }
-      case Right(j: Epaye.RetrievedAffordabilityResult) =>
-        j.upfrontPaymentAnswers match {
-          case UpfrontPaymentAnswers.NoUpfrontPayment =>
-            Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible there is no upfront payment amount before...: [${j.stage}]")
-          case upfrontPaymentAmount: UpfrontPaymentAnswers.DeclaredUpfrontPayment =>
-            val updatedJourney = j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
-              .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-              .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
-              .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount.amount)
-              .transform
-            journeyService.upsert(updatedJourney)
-        }
-      case Right(j: Epaye.EnteredDayOfMonth) =>
-        j.upfrontPaymentAnswers match {
-          case UpfrontPaymentAnswers.NoUpfrontPayment =>
-            Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible there is no upfront payment amount before...: [${j.stage}]")
-          case upfrontPaymentAmount: UpfrontPaymentAnswers.DeclaredUpfrontPayment =>
-            val updatedJourney = j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
-              .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-              .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
-              .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount.amount)
-              .transform
-            journeyService.upsert(updatedJourney)
-        }
-      case Right(j: Epaye.RetrievedStartDates) =>
-        j.upfrontPaymentAnswers match {
-          case UpfrontPaymentAnswers.NoUpfrontPayment =>
-            Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible there is no upfront payment amount before...: [${j.stage}]")
-          case upfrontPaymentAmount: UpfrontPaymentAnswers.DeclaredUpfrontPayment =>
-            val updatedJourney = j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
-              .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-              .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
-              .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount.amount)
-              .transform
-            journeyService.upsert(updatedJourney)
-        }
-      case Right(j: Epaye.RetrievedAffordableQuotes) =>
-        j.upfrontPaymentAnswers match {
-          case UpfrontPaymentAnswers.NoUpfrontPayment =>
-            Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible there is no upfront payment amount before...: [${j.stage}]")
-          case upfrontPaymentAmount: UpfrontPaymentAnswers.DeclaredUpfrontPayment =>
-            val updatedJourney = j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
-              .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-              .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
-              .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount.amount)
-              .transform
-            journeyService.upsert(updatedJourney)
-        }
-      case Right(j: Epaye.ChosenPaymentPlan) =>
-        j.upfrontPaymentAnswers match {
-          case UpfrontPaymentAnswers.NoUpfrontPayment =>
-            Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible there is no upfront payment amount before...: [${j.stage}]")
-          case upfrontPaymentAmount: UpfrontPaymentAnswers.DeclaredUpfrontPayment =>
-            val updatedJourney = j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
-              .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-              .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
-              .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount.amount)
-              .transform
-            journeyService.upsert(updatedJourney)
-        }
-      case Right(j: Epaye.CheckedPaymentPlan) =>
-        j.upfrontPaymentAnswers match {
-          case UpfrontPaymentAnswers.NoUpfrontPayment =>
-            Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible there is no upfront payment amount before...: [${j.stage}]")
-          case upfrontPaymentAmount: UpfrontPaymentAnswers.DeclaredUpfrontPayment =>
-            val updatedJourney = j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
-              .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-              .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
-              .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount.amount)
-              .transform
-            journeyService.upsert(updatedJourney)
+
+      case Right(j) =>
+        withUpfrontPaymentAmount(j, j.upfrontPaymentAnswers){ amount =>
+          val updatedJourney = j match {
+            case j: Epaye.EnteredMonthlyPaymentAmount =>
+              j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
+                .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+                .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                .withFieldConst(_.upfrontPaymentAmount, amount)
+                .transform
+            case j: Epaye.RetrievedExtremeDates =>
+              j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
+                .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+                .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                .withFieldConst(_.upfrontPaymentAmount, amount)
+                .transform
+            case j: Epaye.RetrievedAffordabilityResult =>
+              j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
+                .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+                .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                .withFieldConst(_.upfrontPaymentAmount, amount)
+                .transform
+            case j: Epaye.EnteredDayOfMonth =>
+              j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
+                .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+                .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                .withFieldConst(_.upfrontPaymentAmount, amount)
+                .transform
+            case j: Epaye.RetrievedStartDates =>
+              j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
+                .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+                .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                .withFieldConst(_.upfrontPaymentAmount, amount)
+                .transform
+            case j: Epaye.RetrievedAffordableQuotes =>
+              j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
+                .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+                .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                .withFieldConst(_.upfrontPaymentAmount, amount)
+                .transform
+            case j: Epaye.ChosenPaymentPlan =>
+              j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
+                .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+                .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                .withFieldConst(_.upfrontPaymentAmount, amount)
+                .transform
+            case j: Epaye.CheckedPaymentPlan =>
+              j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
+                .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+                .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                .withFieldConst(_.upfrontPaymentAmount, amount)
+                .transform
+            case j: Epaye.EnteredDirectDebitDetails =>
+              j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
+                .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+                .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                .withFieldConst(_.upfrontPaymentAmount, amount)
+                .transform
+          }
+
+          journeyService.upsert(updatedJourney)
         }
 
     }
   }
+
+  private def withUpfrontPaymentAmount[A](j: Journey, upfrontPaymentAnswers: UpfrontPaymentAnswers)(f: UpfrontPaymentAmount => Future[A]): Future[A] =
+    upfrontPaymentAnswers match {
+      case UpfrontPaymentAnswers.NoUpfrontPayment =>
+        Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible there is no upfront payment amount before...: [${j.stage}]")
+
+      case UpfrontPaymentAnswers.DeclaredUpfrontPayment(amount) =>
+        f(amount)
+    }
 }

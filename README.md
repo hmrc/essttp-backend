@@ -30,6 +30,7 @@ graph TD;
     SelectedInstalments --> EnteredDirectDebitDetails;
     EnteredDirectDebitDetails --> SubmittedPaymentPlan;
     SubmittedPaymentPlan --> CheckedPaymentPlan;
+    SubmittedPaymentPlan --> EnteredDirectDebitDetails;
 ```
 To edit this, use [mermaid live editor](https://mermaid.live/)
 
