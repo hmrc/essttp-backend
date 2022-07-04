@@ -19,9 +19,9 @@ val majorVer = 1
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-val appScalaVersion = "2.12.12"
+val appScalaVersion = "2.12.15"
 
-val silencerVersion = "1.7.1"
+val silencerVersion = "1.7.7"
 
 lazy val appDependencies : Seq[ModuleID] = AppDependencies()
 lazy val playSettings : Seq[Setting[_]] = Seq.empty

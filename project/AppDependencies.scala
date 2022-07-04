@@ -14,7 +14,7 @@ object AppDependencies {
     "com.beachape"            %% "enumeratum"                 % "1.6.1",
 //    "org.julienrf"            %% "play-json-derived-codecs" % "6.0.0", //choose carefully
     "io.scalaland"            %% "chimney" % "0.6.1",
-    "org.typelevel"              %% "cats-core"                     % "2.7.0"
+    "org.typelevel"           %% "cats-core"                  % "2.7.0"
   )
 
   val test = Seq(
