@@ -811,7 +811,7 @@ object Journey {
       with Journey.Epaye
 
     /**
-     * [[Journey]] after bank deatils have been entered
+     * [[Journey]] after bank details have been confirmed
      * Epaye
      */
     final case class ConfirmedDirectDebitDetails(
