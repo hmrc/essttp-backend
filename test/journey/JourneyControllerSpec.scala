@@ -39,7 +39,9 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateStartDatesResponse]" +
       "[UpdateAffordableQuotes]" +
       "[UpdateSelectedPaymentPlan]" +
-      "[UpdateHasCheckedPaymentPlan]"
+      "[UpdateHasCheckedPaymentPlan]" +
+      "[UpdateEnteredDirectDebitDetails]" +
+      "[UpdateConfirmedDirectDebitDetails]"
 
   s"[Epaye.Bta][Happy path with upfront payment]$testNameJourneyStages" in {
     val tdAll = new TdAll {
@@ -102,8 +104,12 @@ class JourneyControllerSpec extends ItSpec {
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCheckedPaymentPlan
 
     /** Update Direct debit details */
-    journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeBta.updateDirectDebitDetailsRequest(isAccountHolder = false)).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterDirectDebitDetails(isAccountHolder = false)
+    journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeBta.updateDirectDebitDetailsRequest(isAccountHolder = true)).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails(isAccountHolder = true)
+
+    /** Update Confirm Direct debit details */
+    journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails
 
   }
 
@@ -115,19 +121,19 @@ class JourneyControllerSpec extends ItSpec {
     implicit val request: Request[_] = tdAll.request
     val response: SjResponse = journeyConnector.Epaye.startJourneyGovUk(tdAll.EpayeGovUk.sjRequest).futureValue
 
-    /** Start journey * */
+    /** Start journey */
     response shouldBe tdAll.EpayeGovUk.sjResponse
     journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterStarted
 
-    /** Update tax id * */
+    /** Update tax id */
     journeyConnector.updateTaxId(tdAll.journeyId, tdAll.EpayeGovUk.updateTaxIdRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterDetermineTaxIds
 
-    /** Update eligibility result * */
+    /** Update eligibility result */
     journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeGovUk.updateEligibilityCheckRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterEligibilityCheckEligible
 
-    /** Update CanPayUpfront * */
+    /** Update CanPayUpfront */
     journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeGovUk.updateCanPayUpfrontYesRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterCanPayUpfrontYes
 
@@ -169,8 +175,11 @@ class JourneyControllerSpec extends ItSpec {
 
     /** Update Direct debit details */
     journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeGovUk.updateDirectDebitDetailsRequest(isAccountHolder = true)).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterDirectDebitDetails(isAccountHolder = true)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterEnteredDirectDebitDetails(isAccountHolder = true)
 
+    /** Update Confirm Direct debit details */
+    journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterConfirmedDirectDebitDetails
   }
 
   s"[Epaye.DetachedUrl][Happy path with upfront payment]$testNameJourneyStages" in {
@@ -234,7 +243,11 @@ class JourneyControllerSpec extends ItSpec {
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterCheckedPaymentPlan
 
     /** Update Direct debit details */
-    journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateDirectDebitDetailsRequest(isAccountHolder = false)).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterDirectDebitDetails(isAccountHolder = false)
+    journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateDirectDebitDetailsRequest(isAccountHolder = true)).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterEnteredDirectDebitDetails(isAccountHolder = true)
+
+    /** Update Confirm Direct debit details */
+    journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterConfirmedDirectDebitDetails
   }
 }

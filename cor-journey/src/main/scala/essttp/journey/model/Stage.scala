@@ -220,4 +220,16 @@ object Stage {
     case object IsNotAccountHolder extends AfterEnteredDirectDebitDetails
   }
 
+  sealed trait AfterConfirmedDirectDebitDetails extends Stage with EnumEntry
+
+  /**
+   * [[Journey]] has been orchestrated to indicate the user has checked and confirmed their direct debit details
+   */
+  object AfterConfirmedDirectDebitDetails extends Enum[AfterConfirmedDirectDebitDetails] {
+    implicit val format: OFormat[AfterConfirmedDirectDebitDetails] = derived.oformat[AfterConfirmedDirectDebitDetails]()
+    val values: immutable.IndexedSeq[AfterConfirmedDirectDebitDetails] = findValues
+
+    case object ConfirmedDetails extends AfterConfirmedDirectDebitDetails
+  }
+
 }
