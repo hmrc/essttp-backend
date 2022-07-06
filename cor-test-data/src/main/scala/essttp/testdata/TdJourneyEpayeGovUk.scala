@@ -27,7 +27,7 @@ import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.{CanPayUpfront, DayOfMonth, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import essttp.utils.JsonSyntax._
 import essttp.utils.ResourceReader._
-import play.api.libs.json.JsObject
+import play.api.libs.json.{JsNull, JsObject}
 
 import scala.language.reflectiveCalls
 
@@ -309,7 +309,11 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
       selectedPaymentPlan      = dependencies.paymentPlan(1)
     )
 
-    def journeyAfterSelectedPaymentPlanJson: JsObject = read("/testdata/epaye/bta/JourneyAfterSelectedPaymentPlan.json").asJson
+    def journeyAfterSelectedPaymentPlanJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterSelectedPaymentPlan.json").asJson
+
+    def updateCheckedPaymentPlanRequest(): JsNull.type = JsNull
+
+    def updateCheckedPaymentPlanRequestJson(): JsObject = read("/testdata/epaye/govuk/UpdateCheckedPaymentPlanRequest.json").asJson
 
     def journeyAfterCheckedPaymentPlan: Journey.AfterCheckedPaymentPlan = Journey.Epaye.CheckedPaymentPlan(
       _id                      = dependencies.journeyId,
@@ -330,11 +334,13 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
       selectedPaymentPlan      = dependencies.paymentPlan(1)
     )
 
-    def journeyAfterCheckedPaymentPlanJson: JsObject = read("/testdata/epaye/bta/JourneyAfterCheckedPaymentPlan.json").asJson
+    def journeyAfterCheckedPaymentPlanJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterCheckedPaymentPlan.json").asJson
 
     def updateDirectDebitDetailsRequest(isAccountHolder: Boolean): DirectDebitDetails = dependencies.directDebitDetails(isAccountHolder)
 
-    def journeyAfterDirectDebitDetails(isAccountHolder: Boolean): Journey.AfterEnteredDirectDebitDetails = Journey.Epaye.EnteredDirectDebitDetails(
+    def updateDirectDebitDetailsRequestJson(): JsObject = read("/testdata/epaye/govuk/UpdateDirectDebitDetailsRequest.json").asJson
+
+    def journeyAfterEnteredDirectDebitDetails(isAccountHolder: Boolean): Journey.AfterEnteredDirectDebitDetails = Journey.Epaye.EnteredDirectDebitDetails(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Epaye.GovUk,
       createdOn                = dependencies.createdOn,
@@ -354,5 +360,32 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
       directDebitDetails       = directDebitDetails(isAccountHolder)
     )
 
+    override def journeyAfterEnteredDirectDebitDetailsJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterUpdateDirectDebitDetails.json").asJson
+
+    override def updateConfirmedDirectDebitDetailsRequest(): JsNull.type = JsNull
+
+    override def updateConfirmedDirectDebitDetailsJson(): JsObject = read("/testdata/epaye/govuk/UpdateConfirmedDirectDebitDetailsRequest.json").asJson
+
+    override def journeyAfterConfirmedDirectDebitDetails: Journey.AfterConfirmedDirectDebitDetails = Journey.Epaye.ConfirmedDirectDebitDetails(
+      _id                      = dependencies.journeyId,
+      origin                   = Origins.Epaye.GovUk,
+      createdOn                = dependencies.createdOn,
+      sjRequest                = sjRequest,
+      sessionId                = dependencies.sessionId,
+      stage                    = Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails,
+      taxId                    = empRef,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts        = dependencies.instalmentAmounts,
+      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+      dayOfMonth               = dependencies.dayOfMonth,
+      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan      = dependencies.paymentPlan(1),
+      directDebitDetails       = directDebitDetails(true)
+    )
+
+    override def journeyAfterConfirmedDirectDebitDetailsJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterUpdateConfirmedDirectDebitDetails.json").asJson
   }
 }

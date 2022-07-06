@@ -26,32 +26,31 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UpdateHasCheckedInstalmentPlanController @Inject() (
+class UpdateHasConfirmedDirectDebitDetailsController @Inject() (
     journeyService: JourneyService,
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
 
-  def updateHasCheckedInstalmentPlan(journeyId: JourneyId): Action[AnyContent] = Action.async { implicit request =>
+  def updateConfirmedDirectDebitDetails(journeyId: JourneyId): Action[AnyContent] = Action.async { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {
-        case j: Journey.BeforeSelectedPaymentPlan => Errors.throwBadRequestExceptionF(s"UpdateHasCheckedInstalmentPlan is not possible in that state: [${j.stage}]")
-        case j: Journey.Stages.ChosenPaymentPlan  => updateJourneyWithNewValue(j)
-        case _: Journey.AfterCheckedPaymentPlan   => Future.successful(())
+        case j: Journey.BeforeEnteredDirectDebitDetails  => Errors.throwBadRequestExceptionF(s"UpdateHasConfirmedDirectDebitDetails is not possible in that state: [${j.stage}]")
+        case j: Journey.Stages.EnteredDirectDebitDetails => updateJourneyWithNewValue(j)
+        case _: Journey.AfterConfirmedDirectDebitDetails => Future.successful(())
       }
     } yield Ok
   }
 
   private def updateJourneyWithNewValue(
-      journey: Journey.Stages.ChosenPaymentPlan
+      journey: Journey.Stages.EnteredDirectDebitDetails
   )(implicit request: Request[_]): Future[Unit] = {
-    val newJourney: Journey.AfterCheckedPaymentPlan = journey match {
-      case j: Journey.Epaye.ChosenPaymentPlan =>
-        j.into[Journey.Epaye.CheckedPaymentPlan]
-          .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
+    val newJourney: Journey.AfterConfirmedDirectDebitDetails = journey match {
+      case j: Journey.Epaye.EnteredDirectDebitDetails =>
+        j.into[Journey.Epaye.ConfirmedDirectDebitDetails]
+          .withFieldConst(_.stage, Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails)
           .transform
     }
     journeyService.upsert(newJourney)
   }
-
 }

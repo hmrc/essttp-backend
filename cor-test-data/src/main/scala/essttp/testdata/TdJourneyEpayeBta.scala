@@ -29,7 +29,7 @@ import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.utils.JsonSyntax._
 import essttp.utils.ResourceReader._
-import play.api.libs.json.JsObject
+import play.api.libs.json.{JsNull, JsObject}
 
 import scala.language.reflectiveCalls
 
@@ -321,6 +321,10 @@ trait TdJourneyEpayeBta {
 
     def journeyAfterSelectedPaymentPlanJson: JsObject = read("/testdata/epaye/bta/JourneyAfterSelectedPaymentPlan.json").asJson
 
+    def updateCheckedPaymentPlanRequest(): JsNull.type = JsNull
+
+    def updateCheckedPaymentPlanRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateCheckedPaymentPlanRequest.json").asJson
+
     def journeyAfterCheckedPaymentPlan: Journey.AfterCheckedPaymentPlan = Journey.Epaye.CheckedPaymentPlan(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Epaye.Bta,
@@ -344,7 +348,9 @@ trait TdJourneyEpayeBta {
 
     def updateDirectDebitDetailsRequest(isAccountHolder: Boolean): DirectDebitDetails = dependencies.directDebitDetails(isAccountHolder)
 
-    def journeyAfterDirectDebitDetails(isAccountHolder: Boolean): Journey.AfterEnteredDirectDebitDetails = Journey.Epaye.EnteredDirectDebitDetails(
+    def updateDirectDebitDetailsRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateDirectDebitDetailsRequest.json").asJson
+
+    def journeyAfterEnteredDirectDebitDetails(isAccountHolder: Boolean): Journey.AfterEnteredDirectDebitDetails = Journey.Epaye.EnteredDirectDebitDetails(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Epaye.Bta,
       createdOn                = dependencies.createdOn,
@@ -364,5 +370,32 @@ trait TdJourneyEpayeBta {
       directDebitDetails       = directDebitDetails(isAccountHolder)
     )
 
+    def journeyAfterEnteredDirectDebitDetailsJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateDirectDebitDetails.json").asJson
+
+    def updateConfirmedDirectDebitDetailsRequest(): JsNull.type = JsNull
+
+    def updateConfirmedDirectDebitDetailsJson(): JsObject = read("/testdata/epaye/bta/UpdateConfirmedDirectDebitDetailsRequest.json").asJson
+
+    def journeyAfterConfirmedDirectDebitDetails: Journey.AfterConfirmedDirectDebitDetails = Journey.Epaye.ConfirmedDirectDebitDetails(
+      _id                      = dependencies.journeyId,
+      origin                   = Origins.Epaye.Bta,
+      createdOn                = dependencies.createdOn,
+      sjRequest                = sjRequest,
+      sessionId                = dependencies.sessionId,
+      stage                    = Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails,
+      taxId                    = empRef,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts        = dependencies.instalmentAmounts,
+      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+      dayOfMonth               = dependencies.dayOfMonth,
+      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan      = dependencies.paymentPlan(1),
+      directDebitDetails       = directDebitDetails(true)
+    )
+
+    def journeyAfterConfirmedDirectDebitDetailsJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateConfirmedDirectDebitDetails.json").asJson
   }
 }

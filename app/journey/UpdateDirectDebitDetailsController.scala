@@ -17,7 +17,7 @@
 package journey
 
 import cats.syntax.eq._
-import com.google.inject.Inject
+import com.google.inject.{Inject, Singleton}
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.bank.DirectDebitDetails
 import essttp.utils.Errors
@@ -27,6 +27,7 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class UpdateDirectDebitDetailsController @Inject() (
     journeyService: JourneyService,
     cc:             ControllerComponents
@@ -71,6 +72,10 @@ class UpdateDirectDebitDetailsController @Inject() (
             directDebitDetails = directDebitDetails,
             stage              = determineStage(directDebitDetails)
           )
+        case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
+          j.into[Journey.Epaye.EnteredDirectDebitDetails]
+            .withFieldConst(_.stage, determineStage(directDebitDetails))
+            .transform
       }
 
       journeyService.upsert(updatedJourney)

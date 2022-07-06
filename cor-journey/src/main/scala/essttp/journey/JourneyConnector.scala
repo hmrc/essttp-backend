@@ -88,6 +88,9 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
   def updateDirectDebitDetails(journeyId: JourneyId, directDebitDetails: DirectDebitDetails)(implicit request: RequestHeader): Future[Unit] =
     httpClient.POST[DirectDebitDetails, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-direct-debit-details", directDebitDetails)
 
+  def updateHasConfirmedDirectDebitDetails(journeyId: JourneyId)(implicit request: RequestHeader): Future[Unit] =
+    httpClient.POST[JsNull.type, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-has-confirmed-direct-debit-details", JsNull)
+
   object Epaye {
 
     def startJourneyBta(sjRequest: SjRequest.Epaye.Simple)(implicit request: RequestHeader): Future[SjResponse] =

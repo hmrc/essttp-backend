@@ -20,10 +20,11 @@ import essttp.journey.model.ttp.EligibilityCheckResult
 import essttp.journey.model.ttp.affordability.InstalmentAmounts
 import essttp.journey.model.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.journey.model.{Journey, SjRequest, SjResponse}
+import essttp.rootmodel.bank.DirectDebitDetails
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.{CanPayUpfront, DayOfMonth, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
-import play.api.libs.json.JsObject
+import play.api.libs.json.{JsNull, JsObject}
 
 trait TdJourneyStructure {
   /**
@@ -111,6 +112,21 @@ trait TdJourneyStructure {
   def journeyAfterSelectedPaymentPlan: Journey.AfterSelectedPaymentPlan
   def journeyAfterSelectedPaymentPlanJson: JsObject
 
+  def updateCheckedPaymentPlanRequest(): JsNull.type
+  def updateCheckedPaymentPlanRequestJson(): JsObject
+
   def journeyAfterCheckedPaymentPlan: Journey.AfterCheckedPaymentPlan
   def journeyAfterCheckedPaymentPlanJson: JsObject
+
+  def updateDirectDebitDetailsRequest(isAccountHolder: Boolean): DirectDebitDetails
+  def updateDirectDebitDetailsRequestJson(): JsObject
+
+  def journeyAfterEnteredDirectDebitDetails(isAccountHolder: Boolean): Journey.AfterEnteredDirectDebitDetails
+  def journeyAfterEnteredDirectDebitDetailsJson: JsObject
+
+  def updateConfirmedDirectDebitDetailsRequest(): JsNull.type
+  def updateConfirmedDirectDebitDetailsJson(): JsObject
+
+  def journeyAfterConfirmedDirectDebitDetails: Journey.AfterConfirmedDirectDebitDetails
+  def journeyAfterConfirmedDirectDebitDetailsJson: JsObject
 }
