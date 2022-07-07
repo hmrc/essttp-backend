@@ -397,5 +397,30 @@ trait TdJourneyEpayeBta {
     )
 
     def journeyAfterConfirmedDirectDebitDetailsJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateConfirmedDirectDebitDetails.json").asJson
+
+    def updateAgreedTermsAndConditionsRequest(): JsNull.type = JsNull
+
+    def updateAgreedTermsAndConditionsJson(): JsObject = read("/testdata/epaye/bta/UpdateAgreedTermsAndConditions.json").asJson
+
+    def journeyAfterAgreedTermsAndConditions: Journey.AfterAgreedTermsAndConditions = Journey.Epaye.AgreedTermsAndConditions(
+      _id                      = dependencies.journeyId,
+      origin                   = Origins.Epaye.Bta,
+      createdOn                = dependencies.createdOn,
+      sjRequest                = sjRequest,
+      sessionId                = dependencies.sessionId,
+      stage                    = Stage.AfterAgreedTermsAndConditions.Agreed,
+      taxId                    = empRef,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts        = dependencies.instalmentAmounts,
+      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+      dayOfMonth               = dependencies.dayOfMonth,
+      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan      = dependencies.paymentPlan(1),
+      directDebitDetails       = directDebitDetails(true)
+    )
+    def journeyAfterAgreedTermsAndConditionsJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateAgreedTermsAndConditions.json").asJson
   }
 }

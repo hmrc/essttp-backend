@@ -100,6 +100,11 @@ class UpdateDayOfMonthController @Inject() (
             .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
             .withFieldConst(_.dayOfMonth, dayOfMonth)
             .transform
+        case j: Journey.Epaye.AgreedTermsAndConditions =>
+          j.into[Journey.Epaye.EnteredDayOfMonth]
+            .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
+            .withFieldConst(_.dayOfMonth, dayOfMonth)
+            .transform
       }
       journeyService.upsert(updatedJourney)
     }

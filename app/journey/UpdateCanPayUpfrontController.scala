@@ -138,6 +138,11 @@ class UpdateCanPayUpfrontController @Inject() (
               .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
               .withFieldConst(_.canPayUpfront, canPayUpfront)
               .transform
+          case j1: Journey.Epaye.AgreedTermsAndConditions =>
+            j1.into[Journey.Epaye.AnsweredCanPayUpfront]
+              .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              .withFieldConst(_.canPayUpfront, canPayUpfront)
+              .transform
         }
 
         journeyService.upsert(updatedJourney)

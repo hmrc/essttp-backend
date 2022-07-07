@@ -129,4 +129,10 @@ trait TdJourneyStructure {
 
   def journeyAfterConfirmedDirectDebitDetails: Journey.AfterConfirmedDirectDebitDetails
   def journeyAfterConfirmedDirectDebitDetailsJson: JsObject
+
+  def updateAgreedTermsAndConditionsRequest(): JsNull.type
+  def updateAgreedTermsAndConditionsJson(): JsObject
+
+  def journeyAfterAgreedTermsAndConditions: Journey.AfterAgreedTermsAndConditions
+  def journeyAfterAgreedTermsAndConditionsJson: JsObject
 }

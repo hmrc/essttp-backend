@@ -91,6 +91,9 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
   def updateHasConfirmedDirectDebitDetails(journeyId: JourneyId)(implicit request: RequestHeader): Future[Unit] =
     httpClient.POST[JsNull.type, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-has-confirmed-direct-debit-details", JsNull)
 
+  def updateHasAgreedTermsAndConditions(journeyId: JourneyId)(implicit request: RequestHeader): Future[Unit] =
+    httpClient.POST[JsNull.type, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-has-agreed-terms-and-conditions", JsNull)
+
   object Epaye {
 
     def startJourneyBta(sjRequest: SjRequest.Epaye.Simple)(implicit request: RequestHeader): Future[SjResponse] =
