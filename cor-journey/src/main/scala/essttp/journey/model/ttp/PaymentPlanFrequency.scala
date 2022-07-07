@@ -18,6 +18,8 @@ package essttp.journey.model.ttp
 
 import enumeratum._
 import essttp.utils.EnumFormat
+import essttp.utils.EnumFormat.Transformation
+import org.apache.commons.lang3.StringUtils
 import play.api.libs.json.Format
 
 import scala.collection.immutable
@@ -25,7 +27,10 @@ import scala.collection.immutable
 sealed trait PaymentPlanFrequency extends EnumEntry
 
 object PaymentPlanFrequency {
-  implicit val format: Format[PaymentPlanFrequency] = EnumFormat(PaymentPlanFrequencies)
+
+  implicit val format: Format[PaymentPlanFrequency] =
+    EnumFormat(PaymentPlanFrequencies, Transformation(StringUtils.uncapitalize, StringUtils.capitalize))
+
 }
 
 object PaymentPlanFrequencies extends Enum[PaymentPlanFrequency] {

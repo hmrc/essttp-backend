@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.arrangement
+package essttp.journey.model.ttp
 
-import essttp.rootmodel.Identification
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{JsString, JsSuccess, Json}
+import testsupport.UnitSpec
 
-final case class ArrangementRequest(identification: List[Identification])
+class PaymentPlanFrequencySpec extends UnitSpec {
 
-object ArrangementRequest {
+  "Serialise with decapitilisation" in {
+    Json.toJson(PaymentPlanFrequencies.Monthly: PaymentPlanFrequency) shouldBe JsString("monthly")
+  }
 
-  implicit val format: OFormat[ArrangementRequest] = Json.format
+  "Deserialise with capitilisation" in {
+    JsString("monthly").validate[PaymentPlanFrequency] shouldBe JsSuccess(PaymentPlanFrequencies.Monthly)
+  }
 
 }
