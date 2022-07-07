@@ -232,4 +232,16 @@ object Stage {
     case object ConfirmedDetails extends AfterConfirmedDirectDebitDetails
   }
 
+  sealed trait AfterAgreedTermsAndConditions extends Stage with EnumEntry
+
+  /**
+   * [[Journey]] has been orchestrated to indicate the user has agreed to terms and conditions
+   */
+  object AfterAgreedTermsAndConditions extends Enum[AfterAgreedTermsAndConditions] {
+    implicit val format: OFormat[AfterAgreedTermsAndConditions] = derived.oformat[AfterAgreedTermsAndConditions]()
+    val values: immutable.IndexedSeq[AfterAgreedTermsAndConditions] = findValues
+
+    case object Agreed extends AfterAgreedTermsAndConditions
+  }
+
 }

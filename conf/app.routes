@@ -25,3 +25,4 @@ POST        /journey/:journeyId/update-has-checked-plan                     jour
 
 POST        /journey/:journeyId/update-direct-debit-details                 journey.UpdateDirectDebitDetailsController.updateDirectDebitDetails(journeyId: JourneyId)
 POST        /journey/:journeyId/update-has-confirmed-direct-debit-details   journey.UpdateHasConfirmedDirectDebitDetailsController.updateConfirmedDirectDebitDetails(journeyId: JourneyId)
+POST        /journey/:journeyId/update-has-agreed-terms-and-conditions      journey.UpdateHasAgreedTermsAndConditionsController.updateAgreedTermsAndConditions(journeyId: JourneyId)

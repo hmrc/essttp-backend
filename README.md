@@ -22,15 +22,17 @@ graph TD;
     EligibilityCheck.Eligible --> AnsweredCanPayUpfront.Yes;
     EligibilityCheck.Eligible --> AnsweredCanPayUpfront.No;
     AnsweredCanPayUpfront.No --> RetrievedExtremeDates;
-    AnsweredCanPayUpfront.Yes --> RetrievedExtremeDates;
+    AnsweredCanPayUpfront.Yes --> EnteredUpfrontPaymentAmount --> RetrievedExtremeDates;
     RetrievedExtremeDates --> RetrievedAffordabilityResult;
     RetrievedAffordabilityResult --> EnteredMonthlyPaymentAmount;
     EnteredMonthlyPaymentAmount --> EnteredDayOfMonth;
-    EnteredDayOfMonth --> SelectedInstalments;
-    SelectedInstalments --> EnteredDirectDebitDetails;
-    EnteredDirectDebitDetails --> SubmittedPaymentPlan;
-    SubmittedPaymentPlan --> CheckedPaymentPlan;
-    SubmittedPaymentPlan --> EnteredDirectDebitDetails;
+    EnteredDayOfMonth --> RetrievedStartDates;
+    RetrievedStartDates --> RetrievedAffordableQuotes;
+    RetrievedAffordableQuotes --> ChosenPaymentPlan;
+    ChosenPaymentPlan --> CheckedPaymentPlan;
+    CheckedPaymentPlan --> EnteredDirectDebitDetails;
+    EnteredDirectDebitDetails --> ConfirmedDirectDebitDetails;
+    ConfirmedDirectDebitDetails --> AgreedTermsAndConditions;
 ```
 To edit this, use [mermaid live editor](https://mermaid.live/)
 

@@ -111,6 +111,10 @@ class JourneyControllerSpec extends ItSpec {
     journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails
 
+    /** Update Agreed terms and conditions */
+    journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions
+
   }
 
   s"[Epaye.GovUk][Happy path with upfront payment]$testNameJourneyStages" in {
@@ -180,6 +184,10 @@ class JourneyControllerSpec extends ItSpec {
     /** Update Confirm Direct debit details */
     journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterConfirmedDirectDebitDetails
+
+    /** Update Agreed terms and conditions */
+    journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterAgreedTermsAndConditions
   }
 
   s"[Epaye.DetachedUrl][Happy path with upfront payment]$testNameJourneyStages" in {
@@ -249,5 +257,9 @@ class JourneyControllerSpec extends ItSpec {
     /** Update Confirm Direct debit details */
     journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterConfirmedDirectDebitDetails
+
+    /** Update Agreed terms and conditions */
+    journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterAgreedTermsAndConditions
   }
 }

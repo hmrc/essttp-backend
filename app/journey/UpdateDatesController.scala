@@ -124,6 +124,11 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
+        case j: Journey.Epaye.AgreedTermsAndConditions =>
+          j.into[Journey.Epaye.RetrievedExtremeDates]
+            .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+            .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+            .transform
       }
       journeyService.upsert(newJourney)
     }
@@ -186,6 +191,11 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.startDatesResponse, startDatesResponse)
             .transform
         case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
+          j.into[Journey.Epaye.RetrievedStartDates]
+            .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
+            .withFieldConst(_.startDatesResponse, startDatesResponse)
+            .transform
+        case j: Journey.Epaye.AgreedTermsAndConditions =>
           j.into[Journey.Epaye.RetrievedStartDates]
             .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
             .withFieldConst(_.startDatesResponse, startDatesResponse)

@@ -76,6 +76,10 @@ class UpdateDirectDebitDetailsController @Inject() (
           j.into[Journey.Epaye.EnteredDirectDebitDetails]
             .withFieldConst(_.stage, determineStage(directDebitDetails))
             .transform
+        case j: Journey.Epaye.AgreedTermsAndConditions =>
+          j.into[Journey.Epaye.EnteredDirectDebitDetails]
+            .withFieldConst(_.stage, determineStage(directDebitDetails))
+            .transform
       }
 
       journeyService.upsert(updatedJourney)
