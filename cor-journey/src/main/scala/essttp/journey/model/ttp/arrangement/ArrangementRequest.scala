@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel
+package essttp.journey.model.ttp.arrangement
 
+import essttp.journey.model.ttp.Identification
 import play.api.libs.json.{Json, OFormat}
 
-final case class Identification(idType: String, idValue: String)
+final case class ArrangementRequest(identification: List[Identification])
 
-object Identification {
+object ArrangementRequest {
 
-  implicit val format: OFormat[Identification] = Json.format
+  implicit val format: OFormat[ArrangementRequest] = Json.format
 
 }

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.arrangement
+package essttp.journey.model.ttp.arrangement
 
+import essttp.journey.model.ttp.{CustomerReference, ProcessingDate}
 import play.api.libs.json.{Json, OFormat}
 
-final case class ArrangementResponse(processingDateTime: String, customerReference: String)
+final case class ArrangementResponse(processingDateTime: ProcessingDate, customerReference: CustomerReference)
 
 object ArrangementResponse {
 
