@@ -135,6 +135,12 @@ class UpdateUpfrontPaymentAmountController @Inject() (
                 .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
                 .withFieldConst(_.upfrontPaymentAmount, amount)
                 .transform
+            case j: Epaye.ChosenTypeOfBankAccount =>
+              j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
+                .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+                .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                .withFieldConst(_.upfrontPaymentAmount, amount)
+                .transform
             case j: Epaye.EnteredDirectDebitDetails =>
               j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                 .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)

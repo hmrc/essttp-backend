@@ -206,6 +206,19 @@ object Stage {
     case object AcceptedPlan extends AfterCheckedPlan
   }
 
+  sealed trait AfterChosenTypeOfBankAccount extends Stage with EnumEntry
+
+  /**
+   * [[Journey]] has been orchestrated to with the users type of bank account
+   */
+  object AfterChosenTypeOfBankAccount extends Enum[AfterChosenTypeOfBankAccount] {
+    implicit val format: OFormat[AfterChosenTypeOfBankAccount] = derived.oformat[AfterChosenTypeOfBankAccount]()
+    val values: immutable.IndexedSeq[AfterChosenTypeOfBankAccount] = findValues
+
+    case object Business extends AfterChosenTypeOfBankAccount
+    case object Personal extends AfterChosenTypeOfBankAccount
+  }
+
   sealed trait AfterEnteredDirectDebitDetails extends Stage with EnumEntry
 
   /**

@@ -24,7 +24,7 @@ import essttp.journey.model.ttp.affordablequotes.{AffordableQuotesResponse, Paym
 
 import scala.language.reflectiveCalls
 import essttp.rootmodel._
-import essttp.rootmodel.bank.DirectDebitDetails
+import essttp.rootmodel.bank.{DirectDebitDetails, TypeOfBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.utils.JsonSyntax._
@@ -346,6 +346,32 @@ trait TdJourneyEpayeBta {
 
     def journeyAfterCheckedPaymentPlanJson: JsObject = read("/testdata/epaye/bta/JourneyAfterCheckedPaymentPlan.json").asJson
 
+    def updateChosenTypeOfBankAccountRequest(): TypeOfBankAccount = dependencies.businessBankAccount
+
+    def updateChosenTypeOfBankAccountRequestJson(): JsObject = read("/testdata/epaye/bta/JourneyAfterChosenTypeOfBankAccount.json").asJson
+
+    def journeyAfterChosenTypeOfBankAccount: Journey.AfterChosenTypeOfBankAccount = Journey.Epaye.ChosenTypeOfBankAccount(
+      _id                      = dependencies.journeyId,
+      origin                   = Origins.Epaye.Bta,
+      createdOn                = dependencies.createdOn,
+      sjRequest                = sjRequest,
+      sessionId                = dependencies.sessionId,
+      stage                    = Stage.AfterChosenTypeOfBankAccount.Business,
+      taxId                    = empRef,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts        = dependencies.instalmentAmounts,
+      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+      dayOfMonth               = dependencies.dayOfMonth,
+      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan      = dependencies.paymentPlan(1),
+      typeOfBankAccount        = dependencies.businessBankAccount
+    )
+
+    def journeyAfterChosenTypeOfBankAccountJson: JsObject = read("/testdata/epaye/bta/UpdateTypeOfBankAccountRequest.json").asJson
+
     def updateDirectDebitDetailsRequest(isAccountHolder: Boolean): DirectDebitDetails = dependencies.directDebitDetails(isAccountHolder)
 
     def updateDirectDebitDetailsRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateDirectDebitDetailsRequest.json").asJson
@@ -367,6 +393,7 @@ trait TdJourneyEpayeBta {
       startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
       affordableQuotesResponse = dependencies.affordableQuotesResponse,
       selectedPaymentPlan      = dependencies.paymentPlan(1),
+      typeOfBankAccount        = dependencies.businessBankAccount,
       directDebitDetails       = directDebitDetails(isAccountHolder)
     )
 
@@ -393,6 +420,7 @@ trait TdJourneyEpayeBta {
       startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
       affordableQuotesResponse = dependencies.affordableQuotesResponse,
       selectedPaymentPlan      = dependencies.paymentPlan(1),
+      typeOfBankAccount        = dependencies.businessBankAccount,
       directDebitDetails       = directDebitDetails(true)
     )
 
@@ -419,6 +447,7 @@ trait TdJourneyEpayeBta {
       startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
       affordableQuotesResponse = dependencies.affordableQuotesResponse,
       selectedPaymentPlan      = dependencies.paymentPlan(1),
+      typeOfBankAccount        = dependencies.businessBankAccount,
       directDebitDetails       = directDebitDetails(true)
     )
     def journeyAfterAgreedTermsAndConditionsJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateAgreedTermsAndConditions.json").asJson
