@@ -40,6 +40,7 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateAffordableQuotes]" +
       "[UpdateSelectedPaymentPlan]" +
       "[UpdateHasCheckedPaymentPlan]" +
+      "[UpdateChosenTypeOfBankAccount]" +
       "[UpdateEnteredDirectDebitDetails]" +
       "[UpdateConfirmedDirectDebitDetails]"
 
@@ -102,6 +103,10 @@ class JourneyControllerSpec extends ItSpec {
     /** Update Checked Instalment plan */
     journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCheckedPaymentPlan
+
+    /** Update Type of Bank Account */
+    journeyConnector.updateChosenTypeOfBankAccount(tdAll.journeyId, tdAll.EpayeBta.updateChosenTypeOfBankAccountRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterChosenTypeOfBankAccount
 
     /** Update Direct debit details */
     journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeBta.updateDirectDebitDetailsRequest(isAccountHolder = true)).futureValue
@@ -177,6 +182,10 @@ class JourneyControllerSpec extends ItSpec {
     journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterCheckedPaymentPlan
 
+    /** Update Type of Bank Account */
+    journeyConnector.updateChosenTypeOfBankAccount(tdAll.journeyId, tdAll.EpayeGovUk.updateChosenTypeOfBankAccountRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterChosenTypeOfBankAccount
+
     /** Update Direct debit details */
     journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeGovUk.updateDirectDebitDetailsRequest(isAccountHolder = true)).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterEnteredDirectDebitDetails(isAccountHolder = true)
@@ -249,6 +258,10 @@ class JourneyControllerSpec extends ItSpec {
     /** Update Checked Instalment plan */
     journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterCheckedPaymentPlan
+
+    /** Update Type of Bank Account */
+    journeyConnector.updateChosenTypeOfBankAccount(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateChosenTypeOfBankAccountRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterChosenTypeOfBankAccount
 
     /** Update Direct debit details */
     journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateDirectDebitDetailsRequest(isAccountHolder = true)).futureValue

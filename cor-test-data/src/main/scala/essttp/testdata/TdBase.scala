@@ -21,7 +21,7 @@ import essttp.journey.model.ttp.affordability.InstalmentAmounts
 import essttp.journey.model.ttp.affordablequotes.{AffordableQuotesResponse, AmountDue, Collection, DebtItemOriginalDueDate, DueDate, InitialCollection, Instalment, InstalmentBalance, InstalmentNumber, NumberOfInstalments, PaymentPlan, PlanDuration, PlanInterest, RegularCollection, TotalDebt, TotalDebtIncludingInterest}
 import essttp.journey.model.{JourneyId, UpfrontPaymentAnswers}
 import essttp.rootmodel._
-import essttp.rootmodel.bank.{AccountNumber, BankDetails, DirectDebitDetails, SortCode}
+import essttp.rootmodel.bank.{AccountNumber, BankDetails, DirectDebitDetails, SortCode, TypeOfBankAccount, TypesOfBankAccount}
 import essttp.rootmodel.dates.InitialPaymentDate
 import essttp.rootmodel.dates.extremedates.{EarliestPlanStartDate, ExtremeDatesResponse, LatestPlanStartDate}
 import essttp.rootmodel.dates.startdates.{InstalmentStartDate, StartDatesResponse}
@@ -77,6 +77,9 @@ trait TdBase {
   )
 
   def affordableQuotesResponse: AffordableQuotesResponse = AffordableQuotesResponse(List(paymentPlan(1)))
+
+  def businessBankAccount: TypeOfBankAccount = TypesOfBankAccount.Business
+  def personalBankAccount: TypeOfBankAccount = TypesOfBankAccount.Personal
 
   def directDebitDetails(isAccountHolder: Boolean): DirectDebitDetails = DirectDebitDetails(
     BankDetails(

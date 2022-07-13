@@ -90,6 +90,11 @@ class UpdateMonthlyPaymentAmountController @Inject() (
           .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
           .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
           .transform
+      case j: Epaye.ChosenTypeOfBankAccount =>
+        j.into[Epaye.EnteredMonthlyPaymentAmount]
+          .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+          .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+          .transform
       case j: Epaye.EnteredDirectDebitDetails =>
         j.into[Epaye.EnteredMonthlyPaymentAmount]
           .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)

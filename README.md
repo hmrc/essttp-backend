@@ -30,7 +30,8 @@ graph TD;
     RetrievedStartDates --> RetrievedAffordableQuotes;
     RetrievedAffordableQuotes --> ChosenPaymentPlan;
     ChosenPaymentPlan --> CheckedPaymentPlan;
-    CheckedPaymentPlan --> EnteredDirectDebitDetails;
+    CheckedPaymentPlan --> ChosenTypeOfBankAccount;
+    ChosenTypeOfBankAccount --> EnteredDirectDebitDetails;
     EnteredDirectDebitDetails --> ConfirmedDirectDebitDetails;
     ConfirmedDirectDebitDetails --> AgreedTermsAndConditions;
 ```
