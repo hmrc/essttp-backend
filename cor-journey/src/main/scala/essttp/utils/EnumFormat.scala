@@ -17,31 +17,14 @@
 package essttp.utils
 
 import enumeratum.{Enum, EnumEntry}
-import org.apache.commons.lang3.StringUtils
 import play.api.libs.json._
 
 object EnumFormat {
-
-  final case class Transformation(writesTransformation: String => String, readsTransformation: String => String)
-
-  object Transformation {
-
-    val identityTransformation: Transformation = Transformation(identity, identity)
-
-    val lowercaseTransformation: Transformation = Transformation(StringUtils.uncapitalize, StringUtils.capitalize)
-  }
-
-  def apply[T <: EnumEntry](e: Enum[T], transformation: Transformation = Transformation.identityTransformation): Format[T] = Format(
+  def apply[T <: EnumEntry](e: Enum[T]): Format[T] = Format(
     Reads {
-      case JsString(value) =>
-        e.withNameOption(transformation.readsTransformation(value))
-          .map[JsResult[T]](JsSuccess(_))
-          .getOrElse(JsError(s"Unknown ${e.getClass.getSimpleName} value: $value"))
-
-      case _ =>
-        JsError("Can only parse String")
+      case JsString(value) => e.withNameOption(value).map[JsResult[T]](JsSuccess(_)).getOrElse(JsError(s"Unknown ${e.getClass.getSimpleName} value: $value"))
+      case _               => JsError("Can only parse String")
     },
-    Writes(v => JsString(transformation.writesTransformation(v.entryName)))
+    Writes(v => JsString(v.entryName))
   )
-
 }
