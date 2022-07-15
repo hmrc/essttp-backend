@@ -16,7 +16,7 @@
 
 package essttp.journey.model.ttp.affordability
 
-import essttp.journey.model.ttp.{ChargeId, InterestStartDate, MainTrans, SubTrans}
+import essttp.journey.model.ttp.{ChargeReference, InterestStartDate, MainTrans, SubTrans}
 import essttp.rootmodel.AmountInPence
 import play.api.libs.json.{Json, OFormat}
 //todo, we need to check whether we can combine/remove this with DebtItemCharges case class, have ttp updated their debt item charge used in affordability call too?
@@ -24,7 +24,7 @@ final case class DebtItemCharge(
     outstandingDebtAmount: AmountInPence,
     mainTrans:             MainTrans,
     subTrans:              SubTrans,
-    debtItemChargeId:      ChargeId,
+    debtItemChargeId:      ChargeReference,
     interestStartDate:     InterestStartDate
 )
 

@@ -18,7 +18,9 @@ package essttp.journey.model.ttp
 
 import play.api.libs.json.{Format, Json}
 
-final case class InterestStartDate(value: String) extends AnyVal
+import java.time.LocalDate
+
+final case class InterestStartDate(value: LocalDate) extends AnyVal
 
 object InterestStartDate {
   implicit val format: Format[InterestStartDate] = Json.valueFormat

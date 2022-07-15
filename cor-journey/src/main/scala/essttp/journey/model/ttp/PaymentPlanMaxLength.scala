@@ -16,17 +16,10 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{JsString, JsSuccess, Json}
-import testsupport.UnitSpec
+import play.api.libs.json.{Json, Format}
 
-class PaymentPlanFrequencySpec extends UnitSpec {
+final case class PaymentPlanMaxLength(value: Int) extends AnyVal
 
-  "Serialise" in {
-    Json.toJson(PaymentPlanFrequencies.Monthly: PaymentPlanFrequency) shouldBe JsString("Monthly")
-  }
-
-  "Deserialise" in {
-    JsString("Monthly").validate[PaymentPlanFrequency] shouldBe JsSuccess(PaymentPlanFrequencies.Monthly)
-  }
-
+object PaymentPlanMaxLength {
+  implicit val format: Format[PaymentPlanMaxLength] = Json.valueFormat
 }

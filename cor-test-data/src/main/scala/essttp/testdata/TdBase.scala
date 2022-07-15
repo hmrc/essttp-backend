@@ -16,7 +16,7 @@
 
 package essttp.testdata
 
-import essttp.journey.model.ttp.{ChargeId, InterestAccrued}
+import essttp.journey.model.ttp.{ChargeReference, InterestAccrued}
 import essttp.journey.model.ttp.affordability.InstalmentAmounts
 import essttp.journey.model.ttp.affordablequotes.{AffordableQuotesResponse, AmountDue, Collection, DebtItemOriginalDueDate, DueDate, InitialCollection, Instalment, InstalmentBalance, InstalmentNumber, NumberOfInstalments, PaymentPlan, PlanDuration, PlanInterest, RegularCollection, TotalDebt, TotalDebtIncludingInterest}
 import essttp.journey.model.{JourneyId, UpfrontPaymentAnswers}
@@ -70,7 +70,7 @@ trait TdBase {
       dueDate                   = DueDate(LocalDate.parse("2022-02-01")),
       instalmentInterestAccrued = InterestAccrued(amountInPence),
       instalmentBalance         = InstalmentBalance(amountInPence),
-      debtItemChargeId          = ChargeId("testchargeid"),
+      debtItemChargeId          = ChargeReference("testchargeid"),
       amountDue                 = amountDue,
       debtItemOriginalDueDate   = DebtItemOriginalDueDate(LocalDate.parse("2022-01-01"))
     ))

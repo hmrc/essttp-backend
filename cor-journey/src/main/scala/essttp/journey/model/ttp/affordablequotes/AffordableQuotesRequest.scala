@@ -16,7 +16,7 @@
 
 package essttp.journey.model.ttp.affordablequotes
 
-import essttp.journey.model.ttp.{CustomerPostcode, PaymentPlanFrequency}
+import essttp.journey.model.ttp.{CustomerPostcode, PaymentPlanFrequency, PaymentPlanMaxLength, PaymentPlanMinLength}
 import essttp.rootmodel.dates.InitialPaymentDate
 import essttp.rootmodel.dates.startdates.InstalmentStartDate
 import essttp.rootmodel.UpfrontPaymentAmount

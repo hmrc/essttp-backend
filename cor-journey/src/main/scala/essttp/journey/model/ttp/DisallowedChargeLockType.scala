@@ -16,10 +16,10 @@
 
 package essttp.journey.model.ttp
 
-import essttp.rootmodel.AmountInPence
-import play.api.libs.json.{Format, Json}
-final case class OutstandingDebtAmount(value: AmountInPence) extends AnyVal
+import play.api.libs.json.{Json, Format}
 
-object OutstandingDebtAmount {
-  implicit val format: Format[OutstandingDebtAmount] = Json.valueFormat
+final case class DisallowedChargeLockType(value: Boolean) extends AnyVal
+
+object DisallowedChargeLockType {
+  implicit val format: Format[DisallowedChargeLockType] = Json.valueFormat
 }

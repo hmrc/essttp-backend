@@ -29,8 +29,6 @@ import play.api.libs.json.{Json, OFormat, OWrites}
 
 import java.time.LocalDateTime
 
-sealed trait DdDetails
-
 sealed trait Journey {
   def _id: JourneyId
   def origin: Origin

@@ -17,6 +17,7 @@
 package essttp.utils
 
 import enumeratum.{Enum, EnumEntry}
+import org.apache.commons.lang3.StringUtils
 import play.api.libs.json._
 
 object EnumFormat {
@@ -27,6 +28,7 @@ object EnumFormat {
 
     val identityTransformation: Transformation = Transformation(identity, identity)
 
+    val lowercaseTransformation: Transformation = Transformation(StringUtils.uncapitalize, StringUtils.capitalize)
   }
 
   def apply[T <: EnumEntry](e: Enum[T], transformation: Transformation = Transformation.identityTransformation): Format[T] = Format(

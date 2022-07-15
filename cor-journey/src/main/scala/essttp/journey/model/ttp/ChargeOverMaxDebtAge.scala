@@ -16,15 +16,10 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Json, Format}
 
-final case class ChargeLocks(
-    paymentLock:  PaymentLock,
-    clearingLock: PaymentLock,
-    interestLock: PaymentLock,
-    dunningLock:  PaymentLock
-)
+final case class ChargeOverMaxDebtAge(value: Boolean) extends AnyVal
 
-object ChargeLocks {
-  implicit val format: OFormat[ChargeLocks] = Json.format[ChargeLocks]
+object ChargeOverMaxDebtAge {
+  implicit val format: Format[ChargeOverMaxDebtAge] = Json.valueFormat
 }

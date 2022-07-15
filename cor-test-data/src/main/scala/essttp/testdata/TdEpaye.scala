@@ -17,8 +17,11 @@
 package essttp.testdata
 
 import essttp.journey.model.ttp._
+import essttp.journey.model.ttp.affordablequotes.DueDate
 import essttp.rootmodel.{AmountInPence, CanPayUpfront, EmpRef}
 import essttp.rootmodel.epaye.{Aor, TaxOfficeNumber, TaxOfficeReference}
+
+import java.time.LocalDate
 
 trait TdEpaye {
   dependencies: TdBase =>
@@ -27,46 +30,60 @@ trait TdEpaye {
 
   val taxOfficeReference: TaxOfficeReference = TaxOfficeReference("GZ00064")
 
-  val empRef: EmpRef = EmpRef("840/GZ00064")
+  val empRef: EmpRef = EmpRef("864FZ00049")
 
-  val aor: Aor = Aor("840PZ00002232")
+  val aor: Aor = Aor("123PA44545546")
 
-  val reusableDate: String = "2022-05-17"
+  val reusableDateAsString: String = "2022-05-17"
+  val reusableDate: LocalDate = LocalDate.parse(reusableDateAsString)
 
-  val eligibleEligibilityRules: EligibilityRules = EligibilityRules(hasRlsOnAddress            = false, markedAsInsolvent = false, isLessThanMinDebtAllowance = false, isMoreThanMaxDebtAllowance = false, disallowedChargeLocks = false, existingTTP = false, exceedsMaxDebtAge = false, eligibleChargeType = false, missingFiledReturns = false)
+  val eligibleEligibilityRules: EligibilityRules = EligibilityRules(hasRlsOnAddress            = false, markedAsInsolvent = false, isLessThanMinDebtAllowance = false, isMoreThanMaxDebtAllowance = false, disallowedChargeLocks = false, existingTTP = false, chargesOverMaxDebtAge = false, ineligibleChargeTypes = false, missingFiledReturns = false)
 
-  val hasRlsAddressOn: EligibilityRules = eligibleEligibilityRules.copy(true)
+  val hasRlsAddressOn: EligibilityRules = eligibleEligibilityRules.copy(hasRlsOnAddress = true)
 
   val eligibleEligibilityCheckResult: EligibilityCheckResult = EligibilityCheckResult(
-    idType               = IdType("SSTTP"),
-    idNumber             = IdNumber(empRef.value),
-    regimeType           = RegimeType("PAYE"),
-    processingDate       = ProcessingDate(reusableDate),
-    customerPostcodes    = List(CustomerPostcode(Postcode("AA11AA"), PostcodeDate("2020-01-01"))),
-    minPlanLengthMonths  = MinPlanLengthMonths(1),
-    maxPlanLengthMonths  = MaxPlanLengthMonths(3),
-    eligibilityStatus    = EligibilityStatus(OverallEligibilityStatus(true)),
-    eligibilityRules     = eligibleEligibilityRules,
-    chargeTypeAssessment = List(
+    processingDateTime     = ProcessingDateTime(reusableDateAsString),
+    identification         = List(
+      Identification(
+        idType  = IdType("EMPREF"),
+        idValue = IdValue(empRef.value)
+      ),
+      Identification(
+        idType  = IdType("BROCS"),
+        idValue = IdValue("123PA44545546")
+      )
+    ),
+    customerPostcodes      = List(CustomerPostcode(Postcode("AA11AA"), PostcodeDate("2020-01-01"))),
+    regimePaymentFrequency = PaymentPlanFrequencies.Monthly,
+    paymentPlanFrequency   = PaymentPlanFrequencies.Monthly,
+    paymentPlanMinLength   = PaymentPlanMinLength(1),
+    paymentPlanMaxLength   = PaymentPlanMaxLength(6),
+    eligibilityStatus      = EligibilityStatus(OverallEligibilityStatus(true)),
+    eligibilityRules       = eligibleEligibilityRules,
+    chargeTypeAssessment   = List(
       ChargeTypeAssessment(
-        taxPeriodFrom         = TaxPeriodFrom("2020-08-13"),
-        taxPeriodTo           = TaxPeriodTo("2020-08-14"),
-        debtTotalAmount       = DebtTotalAmount(AmountInPence(300000)),
-        disallowedChargeLocks = List(
-          DisallowedChargeLocks(
-            chargeId              = ChargeId("A00000000001"),
-            mainTrans             = MainTrans("mainTrans"),
-            mainTransDesc         = MainTransDesc("mainTransDesc"),
-            subTrans              = SubTrans("subTrans"),
-            subTransDesc          = SubTransDesc("subTransDesc"),
-            outstandingDebtAmount = OutstandingDebtAmount(AmountInPence(100000)),
-            interestStartDate     = InterestStartDate("2017-03-07"),
-            accruedInterestToDate = AccruedInterestToDate(AmountInPence(1597)),
-            chargeLocks           = ChargeLocks(
-              paymentLock  = PaymentLock(false, ""),
-              clearingLock = PaymentLock(false, ""),
-              interestLock = PaymentLock(false, ""),
-              dunningLock  = PaymentLock(false, "")
+        taxPeriodFrom   = TaxPeriodFrom("2020-08-13"),
+        taxPeriodTo     = TaxPeriodTo("2020-08-14"),
+        debtTotalAmount = DebtTotalAmount(AmountInPence(300000)),
+        charges         = List(
+          Charges(
+            chargeType           = ChargeType("InYearRTICharge-Tax"),
+            mainType             = MainType("InYearRTICharge(FPS)"),
+            chargeReference      = ChargeReference("A00000000001"),
+            mainTrans            = MainTrans("mainTrans"),
+            subTrans             = SubTrans("subTrans"),
+            outstandingAmount    = OutstandingAmount(AmountInPence(100000)),
+            dueDate              = DueDate(reusableDate),
+            interestStartDate    = InterestStartDate(reusableDate),
+            accruedInterest      = AccruedInterest(AmountInPence(1597)),
+            ineligibleChargeType = IneligibleChargeType(false),
+            chargeOverMaxDebtAge = ChargeOverMaxDebtAge(false),
+            locks                = List(
+              Lock(
+                lockType                 = LockType("Payment"),
+                lockReason               = LockReason("Risk/Fraud"),
+                disallowedChargeLockType = DisallowedChargeLockType(false)
+              )
             )
           )
         )

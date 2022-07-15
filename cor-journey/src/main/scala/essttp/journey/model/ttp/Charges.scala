@@ -16,15 +16,24 @@
 
 package essttp.journey.model.ttp
 
+import essttp.journey.model.ttp.affordablequotes.DueDate
 import play.api.libs.json.{Json, OFormat}
 
-final case class ChargeTypeAssessment(
-    taxPeriodFrom:   TaxPeriodFrom,
-    taxPeriodTo:     TaxPeriodTo,
-    debtTotalAmount: DebtTotalAmount,
-    charges:         List[Charges]
+final case class Charges(
+    chargeType:           ChargeType,
+    mainType:             MainType,
+    chargeReference:      ChargeReference,
+    mainTrans:            MainTrans,
+    subTrans:             SubTrans,
+    outstandingAmount:    OutstandingAmount,
+    interestStartDate:    InterestStartDate,
+    dueDate:              DueDate,
+    accruedInterest:      AccruedInterest,
+    ineligibleChargeType: IneligibleChargeType,
+    chargeOverMaxDebtAge: ChargeOverMaxDebtAge,
+    locks:                List[Lock]
 )
 
-object ChargeTypeAssessment {
-  implicit val format: OFormat[ChargeTypeAssessment] = Json.format[ChargeTypeAssessment]
+object Charges {
+  implicit val format: OFormat[Charges] = Json.format[Charges]
 }

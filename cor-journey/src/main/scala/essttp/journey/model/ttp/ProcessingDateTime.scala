@@ -17,8 +17,9 @@
 package essttp.journey.model.ttp
 
 import play.api.libs.json.{Json, Format}
-final case class MinPlanLengthMonths(value: Int) extends AnyVal
 
-object MinPlanLengthMonths {
-  implicit val format: Format[MinPlanLengthMonths] = Json.valueFormat
+final case class ProcessingDateTime(value: String) extends AnyVal
+
+object ProcessingDateTime {
+  implicit val format: Format[ProcessingDateTime] = Json.valueFormat
 }

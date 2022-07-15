@@ -18,9 +18,8 @@ package essttp.journey.model.ttp
 
 import essttp.rootmodel.AmountInPence
 import play.api.libs.json.{Format, Json}
+final case class OutstandingAmount(value: AmountInPence) extends AnyVal
 
-final case class AccruedInterestToDate(value: AmountInPence) extends AnyVal
-
-object AccruedInterestToDate {
-  implicit val format: Format[AccruedInterestToDate] = Json.valueFormat
+object OutstandingAmount {
+  implicit val format: Format[OutstandingAmount] = Json.valueFormat
 }
