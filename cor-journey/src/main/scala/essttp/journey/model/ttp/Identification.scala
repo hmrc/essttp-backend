@@ -18,7 +18,7 @@ package essttp.journey.model.ttp
 
 import play.api.libs.json.{Json, OFormat}
 
-final case class Identification(idType: IdType, idValue: IdNumber)
+final case class Identification(idType: IdType, idValue: IdValue)
 
 object Identification {
 

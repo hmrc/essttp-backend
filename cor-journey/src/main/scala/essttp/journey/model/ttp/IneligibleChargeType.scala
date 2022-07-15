@@ -18,8 +18,8 @@ package essttp.journey.model.ttp
 
 import play.api.libs.json.{Json, Format}
 
-final case class MaxPlanLengthMonths(value: Int) extends AnyVal
+final case class IneligibleChargeType(value: Boolean) extends AnyVal
 
-object MaxPlanLengthMonths {
-  implicit val format: Format[MaxPlanLengthMonths] = Json.valueFormat
+object IneligibleChargeType {
+  implicit val format: Format[IneligibleChargeType] = Json.valueFormat
 }

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package essttp.journey.model.ttp.affordablequotes
+package essttp.journey.model.ttp
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Json, Format}
 
-final case class PaymentPlanMinLength(value: Int) extends AnyVal
+final case class LockType(value: String) extends AnyVal
 
-object PaymentPlanMinLength {
-  implicit val format: Format[PaymentPlanMinLength] = Json.valueFormat[PaymentPlanMinLength]
+object LockType {
+  implicit val format: Format[LockType] = Json.valueFormat
 }

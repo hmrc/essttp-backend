@@ -18,18 +18,12 @@ package essttp.journey.model.ttp
 
 import play.api.libs.json.{Json, OFormat}
 
-final case class DisallowedChargeLocks(
-    chargeId:              ChargeId,
-    mainTrans:             MainTrans,
-    mainTransDesc:         MainTransDesc,
-    subTrans:              SubTrans,
-    subTransDesc:          SubTransDesc,
-    outstandingDebtAmount: OutstandingDebtAmount,
-    interestStartDate:     InterestStartDate,
-    accruedInterestToDate: AccruedInterestToDate,
-    chargeLocks:           ChargeLocks
+final case class Lock(
+    lockType:                 LockType,
+    lockReason:               LockReason,
+    disallowedChargeLockType: DisallowedChargeLockType
 )
 
-object DisallowedChargeLocks {
-  implicit val format: OFormat[DisallowedChargeLocks] = Json.format[DisallowedChargeLocks]
+object Lock {
+  implicit val format: OFormat[Lock] = Json.format[Lock]
 }

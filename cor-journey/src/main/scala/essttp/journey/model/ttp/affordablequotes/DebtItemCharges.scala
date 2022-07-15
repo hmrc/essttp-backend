@@ -16,7 +16,7 @@
 
 package essttp.journey.model.ttp.affordablequotes
 
-import essttp.journey.model.ttp.{ChargeId, InterestStartDate, MainTrans, SubTrans}
+import essttp.journey.model.ttp.{ChargeReference, InterestStartDate, MainTrans, SubTrans}
 import essttp.rootmodel.AmountInPence
 import play.api.libs.json.{Json, OFormat}
 
@@ -25,7 +25,7 @@ final case class DebtItemCharges(
     outstandingDebtAmount:   AmountInPence,
     mainTrans:               MainTrans,
     subTrans:                SubTrans,
-    debtItemChargeId:        ChargeId,
+    debtItemChargeId:        ChargeReference,
     interestStartDate:       InterestStartDate,
     debtItemOriginalDueDate: DebtItemOriginalDueDate
 )

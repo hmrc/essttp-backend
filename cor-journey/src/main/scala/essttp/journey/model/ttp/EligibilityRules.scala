@@ -25,8 +25,8 @@ final case class EligibilityRules(
     isMoreThanMaxDebtAllowance: Boolean,
     disallowedChargeLocks:      Boolean,
     existingTTP:                Boolean,
-    exceedsMaxDebtAge:          Boolean,
-    eligibleChargeType:         Boolean,
+    chargesOverMaxDebtAge:      Boolean,
+    ineligibleChargeTypes:      Boolean,
     missingFiledReturns:        Boolean
 ) {
 
@@ -38,8 +38,8 @@ final case class EligibilityRules(
       isMoreThanMaxDebtAllowance,
       disallowedChargeLocks,
       existingTTP,
-      exceedsMaxDebtAge,
-      eligibleChargeType,
+      chargesOverMaxDebtAge,
+      ineligibleChargeTypes,
       missingFiledReturns
     ).map{ if (_) 1 else 0 }.sum > 1
   }
@@ -52,8 +52,8 @@ final case class EligibilityRules(
       isMoreThanMaxDebtAllowance,
       disallowedChargeLocks,
       existingTTP,
-      exceedsMaxDebtAge,
-      eligibleChargeType,
+      chargesOverMaxDebtAge,
+      ineligibleChargeTypes,
       missingFiledReturns
     ).forall(flag => !flag) //if all flags are false then isEligible is true
   }

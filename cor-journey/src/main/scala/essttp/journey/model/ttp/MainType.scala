@@ -16,13 +16,10 @@
 
 package essttp.journey.model.ttp
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Json, Format}
 
-final case class PaymentLock(
-    status: Boolean,
-    reason: String
-)
+final case class MainType(value: String) extends AnyVal
 
-object PaymentLock {
-  implicit val format: OFormat[PaymentLock] = Json.format[PaymentLock]
+object MainType {
+  implicit val format: Format[MainType] = Json.valueFormat
 }

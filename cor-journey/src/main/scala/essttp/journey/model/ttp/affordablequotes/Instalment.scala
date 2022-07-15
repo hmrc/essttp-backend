@@ -16,7 +16,7 @@
 
 package essttp.journey.model.ttp.affordablequotes
 
-import essttp.journey.model.ttp.{ChargeId, InterestAccrued}
+import essttp.journey.model.ttp.{ChargeReference, InterestAccrued}
 import play.api.libs.json.{Json, OFormat}
 
 final case class Instalment(
@@ -24,7 +24,7 @@ final case class Instalment(
     dueDate:                   DueDate,
     instalmentInterestAccrued: InterestAccrued,
     instalmentBalance:         InstalmentBalance,
-    debtItemChargeId:          ChargeId,
+    debtItemChargeId:          ChargeReference,
     amountDue:                 AmountDue,
     debtItemOriginalDueDate:   DebtItemOriginalDueDate
 )

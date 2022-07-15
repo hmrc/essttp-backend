@@ -16,10 +16,10 @@
 
 package essttp.journey.model.ttp.arrangement
 
-import essttp.journey.model.ttp.{CustomerReference, ProcessingDate}
+import essttp.journey.model.ttp.{CustomerReference, ProcessingDateTime}
 import play.api.libs.json.{Json, OFormat}
 
-final case class ArrangementResponse(processingDateTime: ProcessingDate, customerReference: CustomerReference)
+final case class ArrangementResponse(processingDateTime: ProcessingDateTime, customerReference: CustomerReference)
 
 object ArrangementResponse {
 

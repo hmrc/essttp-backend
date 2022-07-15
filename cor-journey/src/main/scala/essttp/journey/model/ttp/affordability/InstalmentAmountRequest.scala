@@ -16,15 +16,15 @@
 
 package essttp.journey.model.ttp.affordability
 
-import essttp.journey.model.ttp.{CustomerPostcode, MaxPlanLengthMonths, MinPlanLengthMonths, PaymentPlanFrequency}
+import essttp.journey.model.ttp.{CustomerPostcode, PaymentPlanMaxLength, PaymentPlanMinLength, PaymentPlanFrequency}
 import essttp.rootmodel.AmountInPence
 import essttp.rootmodel.dates.InitialPaymentDate
 import essttp.rootmodel.dates.extremedates.{EarliestPlanStartDate, LatestPlanStartDate}
 import play.api.libs.json.{Json, OFormat}
 
 final case class InstalmentAmountRequest(
-    minPlanLength:         MinPlanLengthMonths,
-    maxPlanLength:         MaxPlanLengthMonths,
+    minPlanLength:         PaymentPlanMinLength,
+    maxPlanLength:         PaymentPlanMaxLength,
     interestAccrued:       AmountInPence,
     frequency:             PaymentPlanFrequency,
     earliestPlanStartDate: EarliestPlanStartDate,

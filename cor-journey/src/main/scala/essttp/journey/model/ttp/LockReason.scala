@@ -18,8 +18,8 @@ package essttp.journey.model.ttp
 
 import play.api.libs.json.{Json, Format}
 
-final case class MainTransDesc(value: String) extends AnyVal
+final case class LockReason(value: String) extends AnyVal
 
-object MainTransDesc {
-  implicit val format: Format[MainTransDesc] = Json.valueFormat
+object LockReason {
+  implicit val format: Format[LockReason] = Json.valueFormat
 }

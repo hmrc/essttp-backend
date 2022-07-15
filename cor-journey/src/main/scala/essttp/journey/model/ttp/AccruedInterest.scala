@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package essttp.journey.model.ttp.affordablequotes
+package essttp.journey.model.ttp
 
+import essttp.rootmodel.AmountInPence
 import play.api.libs.json.{Format, Json}
 
-final case class PaymentPlanMaxLength(value: Int) extends AnyVal
+final case class AccruedInterest(value: AmountInPence) extends AnyVal
 
-object PaymentPlanMaxLength {
-  implicit val format: Format[PaymentPlanMaxLength] = Json.valueFormat[PaymentPlanMaxLength]
+object AccruedInterest {
+  implicit val format: Format[AccruedInterest] = Json.valueFormat
 }
