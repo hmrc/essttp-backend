@@ -16,23 +16,24 @@
 
 package essttp.journey.model.ttp.affordability
 
-import essttp.journey.model.ttp.{CustomerPostcode, PaymentPlanMaxLength, PaymentPlanMinLength, PaymentPlanFrequency}
+import essttp.journey.model.ttp.affordablequotes.{AccruedDebtInterest, ChannelIdentifier, DebtItemCharge}
+import essttp.journey.model.ttp.{PaymentPlanFrequency, PaymentPlanMaxLength, PaymentPlanMinLength}
 import essttp.rootmodel.AmountInPence
 import essttp.rootmodel.dates.InitialPaymentDate
-import essttp.rootmodel.dates.extremedates.{EarliestPlanStartDate, LatestPlanStartDate}
+import essttp.rootmodel.dates.extremedates.{EarliestPaymentPlanStartDate, LatestPaymentPlanStartDate}
 import play.api.libs.json.{Json, OFormat}
 
 final case class InstalmentAmountRequest(
-    minPlanLength:         PaymentPlanMinLength,
-    maxPlanLength:         PaymentPlanMaxLength,
-    interestAccrued:       AmountInPence,
-    frequency:             PaymentPlanFrequency,
-    earliestPlanStartDate: EarliestPlanStartDate,
-    latestPlanStartDate:   LatestPlanStartDate,
-    initialPaymentDate:    Option[InitialPaymentDate],
-    initialPaymentAmount:  Option[AmountInPence],
-    debtItemCharges:       List[DebtItemCharge],
-    customerPostcodes:     List[CustomerPostcode]
+    channelIdentifier:            ChannelIdentifier,
+    paymentPlanFrequency:         PaymentPlanFrequency,
+    paymentPlanMinLength:         PaymentPlanMinLength,
+    paymentPlanMaxLength:         PaymentPlanMaxLength,
+    earliestPaymentPlanStartDate: EarliestPaymentPlanStartDate,
+    latestPaymentPlanStartDate:   LatestPaymentPlanStartDate,
+    initialPaymentDate:           Option[InitialPaymentDate],
+    initialPaymentAmount:         Option[AmountInPence],
+    accruedDebtInterest:          AccruedDebtInterest,
+    debtItemCharges:              List[DebtItemCharge]
 )
 
 object InstalmentAmountRequest {

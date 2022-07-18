@@ -17,7 +17,7 @@
 package essttp.dates
 
 import essttp.rootmodel.dates.{InitialPayment, InitialPaymentDate}
-import essttp.rootmodel.dates.extremedates.{EarliestPlanStartDate, ExtremeDatesRequest, ExtremeDatesResponse, LatestPlanStartDate}
+import essttp.rootmodel.dates.extremedates.{EarliestPaymentPlanStartDate, ExtremeDatesRequest, ExtremeDatesResponse, LatestPaymentPlanStartDate}
 import essttp.rootmodel.dates.startdates.{InstalmentStartDate, PreferredDayOfMonth, StartDatesRequest, StartDatesResponse}
 import play.api.libs.json.{JsValue, Json}
 
@@ -62,8 +62,8 @@ object DatesTdAll {
   val extremeDatesRequest: ExtremeDatesRequest = ExtremeDatesRequest(initialPaymentTrue)
   val extremeDatesRequestJson: JsValue = Json.parse("""{"initialPayment": true}""")
 
-  val extremeDatesResponse: ExtremeDatesResponse = ExtremeDatesResponse(Some(initialPaymentDate), EarliestPlanStartDate(testDate), LatestPlanStartDate(testDate))
-  val extremeDatesNoUpfrontPaymentResponse: ExtremeDatesResponse = ExtremeDatesResponse(None, EarliestPlanStartDate(testDate), LatestPlanStartDate(testDate))
+  val extremeDatesResponse: ExtremeDatesResponse = ExtremeDatesResponse(Some(initialPaymentDate), EarliestPaymentPlanStartDate(testDate), LatestPaymentPlanStartDate(testDate))
+  val extremeDatesNoUpfrontPaymentResponse: ExtremeDatesResponse = ExtremeDatesResponse(None, EarliestPaymentPlanStartDate(testDate), LatestPaymentPlanStartDate(testDate))
   val extremeDatesResponseJson: JsValue = Json.parse("""{"initialPaymentDate":"2022-01-01","earliestPlanStartDate":"2022-01-01","latestPlanStartDate":"2022-01-01"}""")
   val extremeDatesNoUpfrontPaymentResponseJson: JsValue = Json.parse("""{"earliestPlanStartDate":"2022-01-01","latestPlanStartDate":"2022-01-01"}""")
 

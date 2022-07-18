@@ -32,7 +32,7 @@ final case class AffordableQuotesRequest(
     paymentPlanStartDate:        InstalmentStartDate,
     initialPaymentDate:          Option[InitialPaymentDate],
     initialPaymentAmount:        Option[UpfrontPaymentAmount],
-    debtItemCharges:             List[DebtItemCharges],
+    debtItemCharges:             List[DebtItemCharge],
     customerPostcodes:           List[CustomerPostcode]
 )
 

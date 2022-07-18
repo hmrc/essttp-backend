@@ -20,8 +20,8 @@ import play.api.libs.json.{Format, Json}
 
 import java.time.LocalDate
 
-final case class LatestPlanStartDate(value: LocalDate)
+final case class LatestPaymentPlanStartDate(value: LocalDate)
 
-object LatestPlanStartDate {
-  implicit val format: Format[LatestPlanStartDate] = Json.valueFormat
+object LatestPaymentPlanStartDate {
+  implicit val format: Format[LatestPaymentPlanStartDate] = Json.valueFormat
 }

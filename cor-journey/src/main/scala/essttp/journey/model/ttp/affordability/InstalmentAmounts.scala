@@ -17,10 +17,15 @@
 package essttp.journey.model.ttp.affordability
 
 import cats.Eq
+import essttp.journey.model.ttp.ProcessingDateTime
 import essttp.rootmodel.AmountInPence
-import play.api.libs.json.{OFormat, Json}
+import play.api.libs.json.{Json, OFormat}
 
-final case class InstalmentAmounts(minimumInstalmentAmount: AmountInPence, maximumInstalmentAmount: AmountInPence)
+final case class InstalmentAmounts(
+    processingDateTime:      ProcessingDateTime,
+    minimumInstalmentAmount: AmountInPence,
+    maximumInstalmentAmount: AmountInPence
+)
 
 object InstalmentAmounts {
   implicit val eqInstalmentAmounts: Eq[InstalmentAmounts] = Eq.fromUniversalEquals
