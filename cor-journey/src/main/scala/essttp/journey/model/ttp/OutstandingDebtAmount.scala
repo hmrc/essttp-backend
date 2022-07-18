@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.dates.extremedates
+package essttp.journey.model.ttp
 
+import essttp.rootmodel.AmountInPence
 import play.api.libs.json.{Format, Json}
 
-import java.time.LocalDate
+final case class OutstandingDebtAmount(value: AmountInPence) extends AnyVal
 
-final case class EarliestPlanStartDate(value: LocalDate)
-
-object EarliestPlanStartDate {
-  implicit val format: Format[EarliestPlanStartDate] = Json.valueFormat
+object OutstandingDebtAmount {
+  implicit val format: Format[OutstandingDebtAmount] = Json.valueFormat
 }
+

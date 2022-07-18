@@ -16,14 +16,14 @@
 
 package essttp.testdata
 
-import essttp.journey.model.ttp.{ChargeReference, InterestAccrued}
+import essttp.journey.model.ttp.{ChargeReference, InterestAccrued, ProcessingDateTime}
 import essttp.journey.model.ttp.affordability.InstalmentAmounts
 import essttp.journey.model.ttp.affordablequotes.{AffordableQuotesResponse, AmountDue, Collection, DebtItemOriginalDueDate, DueDate, InitialCollection, Instalment, InstalmentBalance, InstalmentNumber, NumberOfInstalments, PaymentPlan, PlanDuration, PlanInterest, RegularCollection, TotalDebt, TotalDebtIncludingInterest}
 import essttp.journey.model.{JourneyId, UpfrontPaymentAnswers}
 import essttp.rootmodel._
 import essttp.rootmodel.bank.{AccountNumber, BankDetails, DirectDebitDetails, SortCode, TypeOfBankAccount, TypesOfBankAccount}
 import essttp.rootmodel.dates.InitialPaymentDate
-import essttp.rootmodel.dates.extremedates.{EarliestPlanStartDate, ExtremeDatesResponse, LatestPlanStartDate}
+import essttp.rootmodel.dates.extremedates.{EarliestPaymentPlanStartDate, ExtremeDatesResponse, LatestPaymentPlanStartDate}
 import essttp.rootmodel.dates.startdates.{InstalmentStartDate, StartDatesResponse}
 import essttp.utils.TdSupport.FakeRequestOps
 import play.api.mvc.AnyContentAsEmpty
@@ -41,12 +41,12 @@ trait TdBase {
   def amountInPence: AmountInPence = AmountInPence(1000)
   def upfrontPaymentAmount: UpfrontPaymentAmount = UpfrontPaymentAmount(amountInPence)
   def anotherUpfrontPaymentAmount: UpfrontPaymentAmount = UpfrontPaymentAmount(amountInPence.copy(value = 1001))
-  def instalmentAmounts: InstalmentAmounts = InstalmentAmounts(AmountInPence(1000), AmountInPence(2000))
+  def instalmentAmounts: InstalmentAmounts = InstalmentAmounts(ProcessingDateTime("2022-01-01"), AmountInPence(1000), AmountInPence(2000))
   def upfrontPaymentAnswersDeclared: UpfrontPaymentAnswers = UpfrontPaymentAnswers.DeclaredUpfrontPayment(upfrontPaymentAmount)
   def upfrontPaymentAnswersNoUpfrontPayment: UpfrontPaymentAnswers = UpfrontPaymentAnswers.NoUpfrontPayment
   def initialPaymentDate: InitialPaymentDate = InitialPaymentDate(LocalDate.parse("2022-01-01"))
-  def earliestPlanStartDate: EarliestPlanStartDate = EarliestPlanStartDate(LocalDate.parse("2022-02-01"))
-  def latestPlanStartDate: LatestPlanStartDate = LatestPlanStartDate(LocalDate.parse("2022-03-01"))
+  def earliestPlanStartDate: EarliestPaymentPlanStartDate = EarliestPaymentPlanStartDate(LocalDate.parse("2022-02-01"))
+  def latestPlanStartDate: LatestPaymentPlanStartDate = LatestPaymentPlanStartDate(LocalDate.parse("2022-03-01"))
   def extremeDatesWithUpfrontPayment: ExtremeDatesResponse = ExtremeDatesResponse(Some(initialPaymentDate), earliestPlanStartDate, latestPlanStartDate)
   def extremeDatesWithoutUpfrontPayment: ExtremeDatesResponse = extremeDatesWithUpfrontPayment.copy(initialPaymentDate = None)
   def monthlyPaymentAmount: MonthlyPaymentAmount = MonthlyPaymentAmount(AmountInPence(20000))
