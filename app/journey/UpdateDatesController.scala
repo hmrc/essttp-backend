@@ -42,8 +42,11 @@ class UpdateDatesController @Inject() (
       _ <- journey match {
         case j: Journey.Stages.EnteredUpfrontPaymentAmount => updateJourneyWithNewExtremeDatesValue(Right(j), request.body)
         case j: Journey.Stages.AnsweredCanPayUpfront       => updateJourneyWithNewExtremeDatesValue(Left(j), request.body)
-        case j: Journey.AfterExtremeDatesResponse          => updateJourneyWithExistingExtremeDatesValue(j, request.body)
-        case j: Journey.BeforeUpfrontPaymentAnswers        => Errors.throwBadRequestExceptionF(s"UpdateExtremeDatesResponse update is not possible in that state: [${j.stage}]")
+        case j: Journey.AfterExtremeDatesResponse => j match {
+          case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingExtremeDatesValue (j, request.body)
+          case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update ExtremeDates when journey is in completed state")
+        }
+        case j: Journey.BeforeUpfrontPaymentAnswers => Errors.throwBadRequestExceptionF(s"UpdateExtremeDatesResponse update is not possible in that state: [${j.stage}]")
       }
     } yield Ok
   }
@@ -134,6 +137,8 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
+        case _: Journey.Epaye.SubmittedArrangement =>
+          Errors.throwBadRequestException("Cannot update ExtremeDates when journey is in completed state")
       }
       journeyService.upsert(newJourney)
     }
@@ -145,7 +150,11 @@ class UpdateDatesController @Inject() (
       _ <- journey match {
         case j: Journey.BeforeEnteredDayOfMonth  => Errors.throwBadRequestExceptionF(s"UpdateStartDates is not possible when we don't have a chosen day of month, stage: [ ${j.stage} ]")
         case j: Journey.Stages.EnteredDayOfMonth => updateJourneyWithNewStartDatesValue(j, request.body)
-        case j: Journey.AfterStartDatesResponse  => updateJourneyWithExistingStartDatesValue(j, request.body)
+        case j: Journey.AfterStartDatesResponse => j match {
+          case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingStartDatesValue(j, request.body)
+          case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update StartDates when journey is in completed state")
+        }
+
       }
     } yield Ok
   }
@@ -210,6 +219,8 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
             .withFieldConst(_.startDatesResponse, startDatesResponse)
             .transform
+        case _: Journey.Epaye.SubmittedArrangement =>
+          Errors.throwBadRequestException("Cannot update StartDates when journey is in completed state")
       }
       journeyService.upsert(newJourney)
     }

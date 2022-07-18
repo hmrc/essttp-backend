@@ -16,19 +16,10 @@
 
 package essttp.journey.model.ttp.arrangement
 
-import essttp.journey.model.ttp.{Identification, RegimeType}
-import essttp.journey.model.ttp.affordablequotes.ChannelIdentifier
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json}
 
-final case class ArrangementRequest(
-    channelIdentifier:      ChannelIdentifier,
-    regimeType:             RegimeType,
-    arrangementAgreedDate:  ArrangementAgreedDate,
-    identification:         List[Identification],
-    directDebitInstruction: DirectDebitInstruction,
-    paymentPlan:            EnactPaymentPlan
-)
+final case class ArrangementAgreedDate(value: String) extends AnyVal
 
-object ArrangementRequest {
-  implicit val format: OFormat[ArrangementRequest] = Json.format
+object ArrangementAgreedDate {
+  implicit val format: Format[ArrangementAgreedDate] = Json.valueFormat
 }

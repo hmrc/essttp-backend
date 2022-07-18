@@ -21,6 +21,7 @@ import essttp.journey.model._
 import essttp.journey.model.ttp.EligibilityCheckResult
 import essttp.journey.model.ttp.affordability.InstalmentAmounts
 import essttp.journey.model.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
+import essttp.journey.model.ttp.arrangement.ArrangementResponse
 import essttp.rootmodel.bank.{DirectDebitDetails, TypeOfBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
@@ -440,6 +441,34 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
       typeOfBankAccount        = dependencies.businessBankAccount,
       directDebitDetails       = directDebitDetails(true)
     )
+
     def journeyAfterAgreedTermsAndConditionsJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterUpdateAgreedTermsAndConditions.json").asJson
+
+    def updateArrangementRequest(): ArrangementResponse = dependencies.arrangementResponse
+
+    def updateArrangementRequestJson(): JsObject = read("/testdata/epaye/govuk/UpdateSubmittedArrangementRequest.json").asJson
+
+    def journeyAfterSubmittedArrangement: Journey.AfterArrangementSubmitted = Journey.Epaye.SubmittedArrangement(
+      _id                      = dependencies.journeyId,
+      origin                   = Origins.Epaye.GovUk,
+      createdOn                = dependencies.createdOn,
+      sjRequest                = sjRequest,
+      sessionId                = dependencies.sessionId,
+      stage                    = Stage.AfterSubmittedArrangement.Submitted,
+      taxId                    = empRef,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts        = dependencies.instalmentAmounts,
+      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+      dayOfMonth               = dependencies.dayOfMonth,
+      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan      = dependencies.paymentPlan(1),
+      typeOfBankAccount        = dependencies.businessBankAccount,
+      directDebitDetails       = directDebitDetails(true),
+      arrangementResponse      = dependencies.arrangementResponse
+    )
+    def journeyAfterSubmittedArrangementJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterUpdateSubmittedArrangement.json").asJson
   }
 }

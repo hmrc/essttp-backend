@@ -37,7 +37,10 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
       _ <- journey match {
         case j: Journey.BeforeConfirmedDirectDebitDetails  => Errors.throwBadRequestExceptionF(s"UpdateAgreedTermsAndConditions is not possible in that state: [${j.stage}]")
         case j: Journey.Stages.ConfirmedDirectDebitDetails => updateJourneyWithNewValue(j)
-        case _: Journey.AfterAgreedTermsAndConditions      => Future.successful(())
+        case j: Journey.AfterAgreedTermsAndConditions => j match {
+          case _: Journey.BeforeArrangementSubmitted => Future.successful(())
+          case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update AgreedTermsAndConditions when journey is in completed state")
+        }
       }
     } yield Ok
   }

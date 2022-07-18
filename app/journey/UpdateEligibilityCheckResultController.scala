@@ -41,9 +41,12 @@ class UpdateEligibilityCheckResultController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {
-        case _: Journey.BeforeComputedTaxId     => Errors.throwBadRequestExceptionF("EligibilityCheckResult update is not possible in that state.")
-        case j: Journey.Stages.ComputedTaxId    => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterEligibilityChecked => updateJourneyWithExistingValue(j, request.body)
+        case _: Journey.BeforeComputedTaxId  => Errors.throwBadRequestExceptionF("EligibilityCheckResult update is not possible in that state.")
+        case j: Journey.Stages.ComputedTaxId => updateJourneyWithNewValue(j, request.body)
+        case j: Journey.AfterEligibilityChecked => j match {
+          case j: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(j, request.body)
+          case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update EligibilityCheckResult when journey is in completed state")
+        }
       }
     } yield Ok
   }
@@ -144,7 +147,10 @@ class UpdateEligibilityCheckResultController @Inject() (
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
+        case _: Epaye.SubmittedArrangement =>
+          Errors.throwBadRequestException("Cannot update Eligibility when journey is in completed state")
       }
+
       journeyService.upsert(updatedJourney)
     }
   }

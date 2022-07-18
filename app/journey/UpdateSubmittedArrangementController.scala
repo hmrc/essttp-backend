@@ -17,43 +17,47 @@
 package journey
 
 import com.google.inject.{Inject, Singleton}
+import essttp.journey.model.ttp.arrangement.ArrangementResponse
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformerOps
-import play.api.mvc.{Action, AnyContent, ControllerComponents, Request}
+import play.api.mvc.{Action, ControllerComponents, Request}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UpdateHasConfirmedDirectDebitDetailsController @Inject() (
+class UpdateSubmittedArrangementController @Inject() (
     journeyService: JourneyService,
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
 
-  def updateConfirmedDirectDebitDetails(journeyId: JourneyId): Action[AnyContent] = Action.async { implicit request =>
+  def updateArrangement(journeyId: JourneyId): Action[ArrangementResponse] = Action.async(parse.json[ArrangementResponse]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {
-        case j: Journey.BeforeEnteredDirectDebitDetails  => Errors.throwBadRequestExceptionF(s"UpdateHasConfirmedDirectDebitDetails is not possible in that state: [${j.stage}]")
-        case j: Journey.Stages.EnteredDirectDebitDetails => updateJourneyWithNewValue(j)
-        case j: Journey.AfterConfirmedDirectDebitDetails => j match {
-          case _: Journey.BeforeArrangementSubmitted => Future.successful(())
-          case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update ConfirmedDirectDebitDetails when journey is in completed state")
-        }
+        case j: Journey.BeforeAgreedTermsAndConditions  => Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user hasn't agreed to the terms and conditions, state: [${j.stage}]")
+        case j: Journey.Stages.AgreedTermsAndConditions => updateJourneyWithNewValue(j, request.body)
+        case _: Journey.AfterArrangementSubmitted       => updateJourneyWithExistingValue()
       }
     } yield Ok
   }
 
   private def updateJourneyWithNewValue(
-      journey: Journey.Stages.EnteredDirectDebitDetails
+      journey:             Journey.Stages.AgreedTermsAndConditions,
+      arrangementResponse: ArrangementResponse
   )(implicit request: Request[_]): Future[Unit] = {
-    val newJourney: Journey.AfterConfirmedDirectDebitDetails = journey match {
-      case j: Journey.Epaye.EnteredDirectDebitDetails =>
-        j.into[Journey.Epaye.ConfirmedDirectDebitDetails]
-          .withFieldConst(_.stage, Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails)
+    val newJourney: Journey.AfterArrangementSubmitted = journey match {
+      case j: Journey.Epaye.AgreedTermsAndConditions =>
+        j.into[Journey.Epaye.SubmittedArrangement]
+          .withFieldConst(_.stage, Stage.AfterSubmittedArrangement.Submitted)
+          .withFieldConst(_.arrangementResponse, arrangementResponse)
           .transform
     }
     journeyService.upsert(newJourney)
+  }
+
+  private def updateJourneyWithExistingValue(): Future[Unit] = {
+    Errors.throwBadRequestExceptionF("Cannot update SubmittedArrangement when journey is in completed state")
   }
 }

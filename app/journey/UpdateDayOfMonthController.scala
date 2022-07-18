@@ -40,7 +40,10 @@ class UpdateDayOfMonthController @Inject() (
       _ <- journey match {
         case j: Journey.BeforeEnteredMonthlyPaymentAmount  => Errors.throwBadRequestExceptionF(s"UpdateDayOfMonth update is not possible in that state: [${j.stage}]")
         case j: Journey.Stages.EnteredMonthlyPaymentAmount => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterEnteredDayOfMonth             => updateJourneyWithExistingValue(j, request.body)
+        case j: Journey.AfterEnteredDayOfMonth => j match {
+          case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(j, request.body)
+          case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update DayOfMonth when journey is in completed state")
+        }
       }
     } yield Ok
   }
@@ -110,6 +113,8 @@ class UpdateDayOfMonthController @Inject() (
             .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
             .withFieldConst(_.dayOfMonth, dayOfMonth)
             .transform
+        case _: Journey.Epaye.SubmittedArrangement =>
+          Errors.throwBadRequestException("Cannot update DayOfMonth when journey is in completed state")
       }
       journeyService.upsert(updatedJourney)
     }

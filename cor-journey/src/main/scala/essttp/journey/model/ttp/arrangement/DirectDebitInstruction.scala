@@ -16,19 +16,18 @@
 
 package essttp.journey.model.ttp.arrangement
 
-import essttp.journey.model.ttp.{Identification, RegimeType}
-import essttp.journey.model.ttp.affordablequotes.ChannelIdentifier
+import essttp.rootmodel.bank.{AccountName, AccountNumber, SortCode}
 import play.api.libs.json.{Json, OFormat}
 
-final case class ArrangementRequest(
-    channelIdentifier:      ChannelIdentifier,
-    regimeType:             RegimeType,
-    arrangementAgreedDate:  ArrangementAgreedDate,
-    identification:         List[Identification],
-    directDebitInstruction: DirectDebitInstruction,
-    paymentPlan:            EnactPaymentPlan
+final case class DirectDebitInstruction(
+    sortCode:       SortCode,
+    accountNumber:  AccountNumber,
+    accountName:    AccountName,
+    paperAuditFlag: PaperAuditFlag
 )
 
-object ArrangementRequest {
-  implicit val format: OFormat[ArrangementRequest] = Json.format
+object DirectDebitInstruction {
+
+  implicit val format: OFormat[DirectDebitInstruction] = Json.format
+
 }

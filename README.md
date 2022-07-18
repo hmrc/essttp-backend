@@ -34,6 +34,7 @@ graph TD;
     ChosenTypeOfBankAccount --> EnteredDirectDebitDetails;
     EnteredDirectDebitDetails --> ConfirmedDirectDebitDetails;
     ConfirmedDirectDebitDetails --> AgreedTermsAndConditions;
+    AgreedTermsAndConditions --> SubmittedArrangement;
 ```
 To edit this, use [mermaid live editor](https://mermaid.live/)
 
