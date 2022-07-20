@@ -20,10 +20,10 @@ import essttp.rootmodel.bank.{AccountName, AccountNumber, SortCode}
 import play.api.libs.json.{Json, OFormat}
 
 final case class DirectDebitInstruction(
-    sortCode:       SortCode,
-    accountNumber:  AccountNumber,
-    accountName:    AccountName,
-    paperAuditFlag: PaperAuditFlag
+    sortCode:        SortCode,
+    accountNumber:   AccountNumber,
+    accountName:     AccountName,
+    paperAuddisFlag: PaperAuddisFlag
 )
 
 object DirectDebitInstruction {
