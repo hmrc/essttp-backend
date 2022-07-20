@@ -37,9 +37,12 @@ class UpdateTypeOfBankAccountController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {
-        case j: Journey.BeforeCheckedPaymentPlan     => Errors.throwBadRequestExceptionF(s"UpdateTypeOfBankAccount is not possible in that state: [${j.stage}]")
-        case j: Journey.Stages.CheckedPaymentPlan    => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterChosenTypeOfBankAccount => updateJourneyWithExistingValue(j, request.body)
+        case j: Journey.BeforeCheckedPaymentPlan  => Errors.throwBadRequestExceptionF(s"UpdateTypeOfBankAccount is not possible in that state: [${j.stage}]")
+        case j: Journey.Stages.CheckedPaymentPlan => updateJourneyWithNewValue(j, request.body)
+        case j: Journey.AfterChosenTypeOfBankAccount => j match {
+          case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(j, request.body)
+          case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update TypeOfBankAccount when journey is in completed state")
+        }
       }
     } yield Ok
   }
@@ -84,6 +87,8 @@ class UpdateTypeOfBankAccountController @Inject() (
           j.into[Journey.Epaye.ChosenTypeOfBankAccount]
             .withFieldConst(_.stage, determineStage(typeOfBankAccount))
             .transform
+        case _: Journey.Epaye.SubmittedArrangement =>
+          Errors.throwBadRequestException("Cannot update TypeOfBankAccount when journey is in completed state")
       }
 
       journeyService.upsert(updatedJourney)

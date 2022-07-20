@@ -37,9 +37,12 @@ class UpdateDirectDebitDetailsController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {
-        case j: Journey.BeforeChosenTypeOfBankAccount  => Errors.throwBadRequestExceptionF(s"UpdateBankDetails is not possible in that state: [${j.stage}]")
+        case j: Journey.BeforeChosenTypeOfBankAccount  => Errors.throwBadRequestExceptionF(s"UpdateDirectDebitDetails is not possible in that state: [${j.stage}]")
         case j: Journey.Stages.ChosenTypeOfBankAccount => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterEnteredDirectDebitDetails => updateJourneyWithExistingValue(j, request.body)
+        case j: Journey.AfterEnteredDirectDebitDetails => j match {
+          case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(j, request.body)
+          case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update DirectDebitDetails when journey is in completed state")
+        }
       }
     } yield Ok
   }
@@ -80,6 +83,8 @@ class UpdateDirectDebitDetailsController @Inject() (
           j.into[Journey.Epaye.EnteredDirectDebitDetails]
             .withFieldConst(_.stage, determineStage(directDebitDetails))
             .transform
+        case _: Journey.Epaye.SubmittedArrangement =>
+          Errors.throwBadRequestException("Cannot update DirectDebitDetails when journey is in completed state")
       }
 
       journeyService.upsert(updatedJourney)

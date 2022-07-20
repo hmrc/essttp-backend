@@ -19,6 +19,7 @@ package essttp.journey
 import essttp.journey.model.ttp.EligibilityCheckResult
 import essttp.journey.model.ttp.affordability.InstalmentAmounts
 import essttp.journey.model.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
+import essttp.journey.model.ttp.arrangement.ArrangementResponse
 import essttp.journey.model.{Journey, JourneyId, SjRequest, SjResponse}
 import essttp.rootmodel.bank.{DirectDebitDetails, TypeOfBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
@@ -96,6 +97,9 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
 
   def updateHasAgreedTermsAndConditions(journeyId: JourneyId)(implicit request: RequestHeader): Future[Unit] =
     httpClient.POST[JsNull.type, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-has-agreed-terms-and-conditions", JsNull)
+
+  def updateArrangement(journeyId: JourneyId, arrangementResponse: ArrangementResponse)(implicit request: RequestHeader): Future[Unit] =
+    httpClient.POST[ArrangementResponse, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-arrangement", arrangementResponse)
 
   object Epaye {
 

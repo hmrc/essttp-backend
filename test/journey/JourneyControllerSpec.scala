@@ -42,7 +42,8 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateHasCheckedPaymentPlan]" +
       "[UpdateChosenTypeOfBankAccount]" +
       "[UpdateEnteredDirectDebitDetails]" +
-      "[UpdateConfirmedDirectDebitDetails]"
+      "[UpdateConfirmedDirectDebitDetails]" +
+      "[UpdateSubmittedArrangement]"
 
   s"[Epaye.Bta][Happy path with upfront payment]$testNameJourneyStages" in {
     val tdAll = new TdAll {
@@ -120,6 +121,9 @@ class JourneyControllerSpec extends ItSpec {
     journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions
 
+    /** Update Arrangement (journey completed) */
+    journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeBta.updateArrangementRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSubmittedArrangement
   }
 
   s"[Epaye.GovUk][Happy path with upfront payment]$testNameJourneyStages" in {
@@ -197,6 +201,10 @@ class JourneyControllerSpec extends ItSpec {
     /** Update Agreed terms and conditions */
     journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterAgreedTermsAndConditions
+
+    /** Update Arrangement (journey completed) */
+    journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeGovUk.updateArrangementRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterSubmittedArrangement
   }
 
   s"[Epaye.DetachedUrl][Happy path with upfront payment]$testNameJourneyStages" in {
@@ -274,5 +282,9 @@ class JourneyControllerSpec extends ItSpec {
     /** Update Agreed terms and conditions */
     journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterAgreedTermsAndConditions
+
+    /** Update Arrangement (journey completed) */
+    journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateArrangementRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterSubmittedArrangement
   }
 }

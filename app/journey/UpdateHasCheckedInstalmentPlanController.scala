@@ -37,7 +37,10 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
       _ <- journey match {
         case j: Journey.BeforeSelectedPaymentPlan => Errors.throwBadRequestExceptionF(s"UpdateHasCheckedInstalmentPlan is not possible in that state: [${j.stage}]")
         case j: Journey.Stages.ChosenPaymentPlan  => updateJourneyWithNewValue(j)
-        case _: Journey.AfterCheckedPaymentPlan   => Future.successful(())
+        case j: Journey.AfterCheckedPaymentPlan => j match {
+          case _: Journey.BeforeArrangementSubmitted => Future.successful(())
+          case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update HasCheckedPaymentPlan when journey is in completed state")
+        }
       }
     } yield Ok
   }

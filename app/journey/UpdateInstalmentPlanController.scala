@@ -39,7 +39,10 @@ class UpdateInstalmentPlanController @Inject() (
       _ <- journey match {
         case j: Journey.BeforeAffordableQuotesResponse   => Errors.throwBadRequestExceptionF(s"UpdateSelectedPaymentPlan is not possible in that state: [${j.stage}]")
         case j: Journey.Stages.RetrievedAffordableQuotes => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterSelectedPaymentPlan         => updateJourneyWithExistingValue(j, request.body)
+        case j: Journey.AfterSelectedPaymentPlan => j match {
+          case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(j, request.body)
+          case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update ChosenPlan when journey is in completed state")
+        }
       }
     } yield Ok
   }
@@ -94,6 +97,8 @@ class UpdateInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
             .withFieldConst(_.selectedPaymentPlan, paymentPlan)
             .transform
+        case _: Journey.Epaye.SubmittedArrangement =>
+          Errors.throwBadRequestException("Cannot update ChosenPlan when journey is in completed state")
       }
 
       journeyService.upsert(newJourney)

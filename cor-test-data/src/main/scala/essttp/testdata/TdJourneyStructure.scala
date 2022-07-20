@@ -19,6 +19,7 @@ package essttp.testdata
 import essttp.journey.model.ttp.EligibilityCheckResult
 import essttp.journey.model.ttp.affordability.InstalmentAmounts
 import essttp.journey.model.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
+import essttp.journey.model.ttp.arrangement.ArrangementResponse
 import essttp.journey.model.{Journey, SjRequest, SjResponse}
 import essttp.rootmodel.bank.{DirectDebitDetails, TypeOfBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
@@ -141,4 +142,11 @@ trait TdJourneyStructure {
 
   def journeyAfterAgreedTermsAndConditions: Journey.AfterAgreedTermsAndConditions
   def journeyAfterAgreedTermsAndConditionsJson: JsObject
+
+  def updateArrangementRequest(): ArrangementResponse
+  def updateArrangementRequestJson(): JsObject
+
+  def journeyAfterSubmittedArrangement: Journey.AfterArrangementSubmitted
+  def journeyAfterSubmittedArrangementJson: JsObject
+
 }

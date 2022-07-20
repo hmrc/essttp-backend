@@ -257,4 +257,16 @@ object Stage {
     case object Agreed extends AfterAgreedTermsAndConditions
   }
 
+  sealed trait AfterSubmittedArrangement extends Stage with EnumEntry
+
+  /**
+   * [[Journey]] has been orchestrated to indicate the user has submitted their arrangement to ttp api
+   */
+  object AfterSubmittedArrangement extends Enum[AfterSubmittedArrangement] {
+    implicit val format: OFormat[AfterSubmittedArrangement] = derived.oformat[AfterSubmittedArrangement]()
+    val values: immutable.IndexedSeq[AfterSubmittedArrangement] = findValues
+
+    case object Submitted extends AfterSubmittedArrangement
+  }
+
 }

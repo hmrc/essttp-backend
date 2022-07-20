@@ -148,6 +148,8 @@ class UpdateCanPayUpfrontController @Inject() (
               .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
               .withFieldConst(_.canPayUpfront, canPayUpfront)
               .transform
+          case _: Journey.Epaye.SubmittedArrangement =>
+            Errors.throwBadRequestException("Cannot update AnsweredCanPayUpFront when journey is in completed state")
         }
 
         journeyService.upsert(updatedJourney)

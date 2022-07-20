@@ -18,6 +18,7 @@ package essttp.testdata
 
 import essttp.journey.model.ttp._
 import essttp.journey.model.ttp.affordablequotes.DueDate
+import essttp.journey.model.ttp.arrangement.ArrangementResponse
 import essttp.rootmodel.{AmountInPence, CanPayUpfront, EmpRef}
 import essttp.rootmodel.epaye.{Aor, TaxOfficeNumber, TaxOfficeReference}
 
@@ -99,5 +100,7 @@ trait TdEpaye {
   val canPayUpfrontYes: CanPayUpfront = CanPayUpfront(true)
 
   val canPayUpfrontNo: CanPayUpfront = CanPayUpfront(false)
+
+  val arrangementResponse: ArrangementResponse = ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(aor.value))
 
 }

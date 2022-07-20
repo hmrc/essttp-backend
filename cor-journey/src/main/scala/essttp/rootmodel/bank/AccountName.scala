@@ -16,12 +16,10 @@
 
 package essttp.rootmodel.bank
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json}
 
-final case class BankDetails(name: AccountName, sortCode: SortCode, accountNumber: AccountNumber)
+final case class AccountName(value: String) extends AnyVal
 
-object BankDetails {
-
-  implicit val format: OFormat[BankDetails] = Json.format[BankDetails]
-
+object AccountName {
+  implicit val format: Format[AccountName] = Json.valueFormat
 }

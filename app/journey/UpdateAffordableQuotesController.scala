@@ -37,9 +37,12 @@ class UpdateAffordableQuotesController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {
-        case j: Journey.BeforeStartDatesResponse      => Errors.throwBadRequestExceptionF(s"UpdateAffordableQuotes is not possible in that state: [${j.stage}]")
-        case j: Journey.Stages.RetrievedStartDates    => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterAffordableQuotesResponse => updateJourneyWithExistingValue(j, request.body)
+        case j: Journey.BeforeStartDatesResponse   => Errors.throwBadRequestExceptionF(s"UpdateAffordableQuotes is not possible in that state: [${j.stage}]")
+        case j: Journey.Stages.RetrievedStartDates => updateJourneyWithNewValue(j, request.body)
+        case j: Journey.AfterAffordableQuotesResponse => j match {
+          case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(j, request.body)
+          case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update AffordableQuotes when journey is in completed state")
+        }
       }
     } yield Ok
   }
@@ -99,6 +102,8 @@ class UpdateAffordableQuotesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
             .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
             .transform
+        case _: Journey.Epaye.SubmittedArrangement =>
+          Errors.throwBadRequestException("Cannot update AffordableQuotes when journey is in completed state")
       }
 
       journeyService.upsert(newJourney)
