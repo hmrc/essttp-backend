@@ -18,10 +18,10 @@ package essttp.journey.model.ttp.arrangement
 
 import play.api.libs.json.{Format, Json}
 
-final case class PaperAuditFlag(value: Boolean) extends AnyVal
+final case class PaperAuddisFlag(value: Boolean) extends AnyVal
 
-object PaperAuditFlag {
+object PaperAuddisFlag {
 
-  implicit val format: Format[PaperAuditFlag] = Json.valueFormat
+  implicit val format: Format[PaperAuddisFlag] = Json.valueFormat
 
 }
