@@ -51,10 +51,11 @@ class UpdateAffordabilityResultController @Inject() (
       instalmentAmounts: InstalmentAmounts
   )(implicit request: Request[_]): Future[Unit] = {
     val newJourney: Journey.Epaye.RetrievedAffordabilityResult = journey match {
-      case j: Journey.Epaye.RetrievedExtremeDates => j.into[Journey.Epaye.RetrievedAffordabilityResult]
-        .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
-        .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-        .transform
+      case j: Journey.Epaye.RetrievedExtremeDates =>
+        j.into[Journey.Epaye.RetrievedAffordabilityResult]
+          .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+          .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+          .transform
     }
     journeyService.upsert(newJourney)
   }

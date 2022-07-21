@@ -28,12 +28,13 @@ import essttp.utils.Errors
 import julienrf.json.derived
 import play.api.libs.json.{Json, OFormat, OWrites}
 
-import java.time.LocalDateTime
+import java.time.{Clock, Instant}
 
 sealed trait Journey {
   def _id: JourneyId
   def origin: Origin
-  def createdOn: LocalDateTime
+  def createdOn: Instant
+  val lastUpdated: Instant = Instant.now(Clock.systemUTC())
   def sjRequest: SjRequest
   def sessionId: SessionId
   def taxRegime: TaxRegime
@@ -55,6 +56,7 @@ sealed trait Journey {
 
   def backUrl: Option[BackUrl]
   def returnUrl: Option[ReturnUrl]
+
 }
 
 object Journey {
@@ -68,7 +70,8 @@ object Journey {
     val customWrites = OWrites[Journey](j =>
       defaultFormat.writes(j) ++ Json.obj(
         "sessionId" -> j.sessionId,
-        "createdAt" -> j.createdOn
+        "createdAt" -> j.createdOn,
+        "lastUpdated" -> j.lastUpdated
       ))
     OFormat(
       defaultFormat,
@@ -642,7 +645,7 @@ object Journey {
     final case class Started(
         override val _id:       JourneyId,
         override val origin:    Origins.Epaye,
-        override val createdOn: LocalDateTime,
+        override val createdOn: Instant,
         override val sjRequest: SjRequest.Epaye,
         override val sessionId: SessionId,
         override val stage:     Stage.AfterStarted
@@ -658,7 +661,7 @@ object Journey {
     final case class ComputedTaxId(
         override val _id:       JourneyId,
         override val origin:    Origins.Epaye,
-        override val createdOn: LocalDateTime,
+        override val createdOn: Instant,
         override val sjRequest: SjRequest.Epaye,
         override val sessionId: SessionId,
         override val stage:     Stage.AfterComputedTaxId,
@@ -675,7 +678,7 @@ object Journey {
     final case class EligibilityChecked(
         override val _id:                    JourneyId,
         override val origin:                 Origins.Epaye,
-        override val createdOn:              LocalDateTime,
+        override val createdOn:              Instant,
         override val sjRequest:              SjRequest.Epaye,
         override val sessionId:              SessionId,
         override val stage:                  Stage.AfterEligibilityCheck,
@@ -693,7 +696,7 @@ object Journey {
     final case class AnsweredCanPayUpfront(
         override val _id:                    JourneyId,
         override val origin:                 Origins.Epaye,
-        override val createdOn:              LocalDateTime,
+        override val createdOn:              Instant,
         override val sjRequest:              SjRequest.Epaye,
         override val sessionId:              SessionId,
         override val stage:                  Stage.AfterCanPayUpfront,
@@ -712,7 +715,7 @@ object Journey {
     final case class EnteredUpfrontPaymentAmount(
         override val _id:                    JourneyId,
         override val origin:                 Origins.Epaye,
-        override val createdOn:              LocalDateTime,
+        override val createdOn:              Instant,
         override val sjRequest:              SjRequest.Epaye,
         override val sessionId:              SessionId,
         override val stage:                  Stage.AfterUpfrontPaymentAmount,
@@ -732,7 +735,7 @@ object Journey {
     final case class RetrievedExtremeDates(
         override val _id:                    JourneyId,
         override val origin:                 Origins.Epaye,
-        override val createdOn:              LocalDateTime,
+        override val createdOn:              Instant,
         override val sjRequest:              SjRequest.Epaye,
         override val sessionId:              SessionId,
         override val stage:                  Stage.AfterExtremeDatesResponse,
@@ -752,7 +755,7 @@ object Journey {
     final case class RetrievedAffordabilityResult(
         override val _id:                    JourneyId,
         override val origin:                 Origins.Epaye,
-        override val createdOn:              LocalDateTime,
+        override val createdOn:              Instant,
         override val sjRequest:              SjRequest.Epaye,
         override val sessionId:              SessionId,
         override val stage:                  Stage.AfterAffordabilityResult,
@@ -773,7 +776,7 @@ object Journey {
     final case class EnteredMonthlyPaymentAmount(
         override val _id:                    JourneyId,
         override val origin:                 Origins.Epaye,
-        override val createdOn:              LocalDateTime,
+        override val createdOn:              Instant,
         override val sjRequest:              SjRequest.Epaye,
         override val sessionId:              SessionId,
         override val stage:                  Stage.AfterMonthlyPaymentAmount,
@@ -795,7 +798,7 @@ object Journey {
     final case class EnteredDayOfMonth(
         override val _id:                    JourneyId,
         override val origin:                 Origins.Epaye,
-        override val createdOn:              LocalDateTime,
+        override val createdOn:              Instant,
         override val sjRequest:              SjRequest.Epaye,
         override val sessionId:              SessionId,
         override val stage:                  Stage.AfterEnteredDayOfMonth,
@@ -818,7 +821,7 @@ object Journey {
     final case class RetrievedStartDates(
         override val _id:                    JourneyId,
         override val origin:                 Origins.Epaye,
-        override val createdOn:              LocalDateTime,
+        override val createdOn:              Instant,
         override val sjRequest:              SjRequest.Epaye,
         override val sessionId:              SessionId,
         override val stage:                  Stage.AfterStartDatesResponse,
@@ -842,7 +845,7 @@ object Journey {
     final case class RetrievedAffordableQuotes(
         override val _id:                      JourneyId,
         override val origin:                   Origins.Epaye,
-        override val createdOn:                LocalDateTime,
+        override val createdOn:                Instant,
         override val sjRequest:                SjRequest.Epaye,
         override val sessionId:                SessionId,
         override val stage:                    Stage.AfterAffordableQuotesResponse,
@@ -867,7 +870,7 @@ object Journey {
     final case class ChosenPaymentPlan(
         override val _id:                      JourneyId,
         override val origin:                   Origins.Epaye,
-        override val createdOn:                LocalDateTime,
+        override val createdOn:                Instant,
         override val sjRequest:                SjRequest.Epaye,
         override val sessionId:                SessionId,
         override val stage:                    Stage.AfterSelectedPlan,
@@ -893,7 +896,7 @@ object Journey {
     final case class CheckedPaymentPlan(
         override val _id:                      JourneyId,
         override val origin:                   Origins.Epaye,
-        override val createdOn:                LocalDateTime,
+        override val createdOn:                Instant,
         override val sjRequest:                SjRequest.Epaye,
         override val sessionId:                SessionId,
         override val stage:                    Stage.AfterCheckedPlan,
@@ -919,7 +922,7 @@ object Journey {
     final case class ChosenTypeOfBankAccount(
         override val _id:                      JourneyId,
         override val origin:                   Origins.Epaye,
-        override val createdOn:                LocalDateTime,
+        override val createdOn:                Instant,
         override val sjRequest:                SjRequest.Epaye,
         override val sessionId:                SessionId,
         override val stage:                    Stage.AfterChosenTypeOfBankAccount,
@@ -946,7 +949,7 @@ object Journey {
     final case class EnteredDirectDebitDetails(
         override val _id:                      JourneyId,
         override val origin:                   Origins.Epaye,
-        override val createdOn:                LocalDateTime,
+        override val createdOn:                Instant,
         override val sjRequest:                SjRequest.Epaye,
         override val sessionId:                SessionId,
         override val stage:                    Stage.AfterEnteredDirectDebitDetails,
@@ -974,7 +977,7 @@ object Journey {
     final case class ConfirmedDirectDebitDetails(
         override val _id:                      JourneyId,
         override val origin:                   Origins.Epaye,
-        override val createdOn:                LocalDateTime,
+        override val createdOn:                Instant,
         override val sjRequest:                SjRequest.Epaye,
         override val sessionId:                SessionId,
         override val stage:                    Stage.AfterConfirmedDirectDebitDetails,
@@ -1002,7 +1005,7 @@ object Journey {
     final case class AgreedTermsAndConditions(
         override val _id:                      JourneyId,
         override val origin:                   Origins.Epaye,
-        override val createdOn:                LocalDateTime,
+        override val createdOn:                Instant,
         override val sjRequest:                SjRequest.Epaye,
         override val sessionId:                SessionId,
         override val stage:                    Stage.AfterAgreedTermsAndConditions,
@@ -1030,7 +1033,7 @@ object Journey {
     final case class SubmittedArrangement(
         override val _id:                      JourneyId,
         override val origin:                   Origins.Epaye,
-        override val createdOn:                LocalDateTime,
+        override val createdOn:                Instant,
         override val sjRequest:                SjRequest.Epaye,
         override val sessionId:                SessionId,
         override val stage:                    Stage.AfterSubmittedArrangement,

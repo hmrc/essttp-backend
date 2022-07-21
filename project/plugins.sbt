@@ -7,10 +7,10 @@ resolvers += Resolver.typesafeRepo("releases")
 
 addSbtPlugin("uk.gov.hmrc"       % "sbt-auto-build"     % "3.7.0")
 addSbtPlugin("uk.gov.hmrc"       % "sbt-distributables" % "2.1.0")
-addSbtPlugin("com.typesafe.play" % "sbt-plugin"         % "2.8.8")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin"         % "2.8.13")
 
-addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.8.2")
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.6.1")
-addSbtPlugin("org.wartremover" % "sbt-wartremover" % "2.4.13")
+addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.8.3")
+addSbtPlugin("org.scoverage"   % "sbt-scoverage"   % "2.0.0")
+addSbtPlugin("org.wartremover" % "sbt-wartremover" % "3.0.5")
 
-addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.5.1")
+addSbtPlugin("com.timushev.sbt" % "sbt-updates" % "0.6.3")

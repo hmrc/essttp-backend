@@ -19,7 +19,7 @@ package journey
 import essttp.journey.model.{Journey, JourneyId}
 import essttp.rootmodel.SessionId
 import play.api.mvc.Request
-import repository.RepoResultChecker._
+import repository.JourneyRepo
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -45,8 +45,7 @@ class JourneyService @Inject() (
 
   def upsert(journey: Journey)(implicit request: Request[_]): Future[Unit] = {
     JourneyLogger.debug("Upserting new journey")
-    journeyRepo
-      .upsert(journey._id, journey)
-      .checkResult
+    journeyRepo.upsert(journey)
+
   }
 }
