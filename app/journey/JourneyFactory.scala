@@ -19,7 +19,7 @@ package journey
 import essttp.journey.model.{Journey, OriginatedSjRequest, Stage}
 import essttp.rootmodel.SessionId
 
-import java.time.{Clock, LocalDateTime}
+import java.time.{Clock, Instant}
 import javax.inject.{Inject, Singleton}
 
 @Singleton
@@ -38,7 +38,7 @@ class JourneyFactory @Inject() (
         _id       = journeyIdGenerator.nextJourneyId(),
         origin    = origin,
         sjRequest = sjRequest,
-        createdOn = LocalDateTime.now(clock),
+        createdOn = Instant.now(clock),
         sessionId = sessionId,
         stage     = Stage.AfterStarted.Started
       )

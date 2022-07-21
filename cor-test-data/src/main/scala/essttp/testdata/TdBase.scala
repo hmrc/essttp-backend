@@ -29,14 +29,14 @@ import essttp.utils.TdSupport.FakeRequestOps
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{Instant, LocalDate, LocalDateTime, ZoneOffset}
 
 trait TdBase {
   def journeyId: JourneyId = JourneyId("b6217497-ab5b-4e93-855a-afc9f9e933b6")
   def traceId: TraceId = TraceId(journeyId)
   def sessionId: SessionId = SessionId("session-2082fcd4-70f6-49cc-a4bf-845917981cd7")
 
-  def createdOn: LocalDateTime = LocalDateTime.parse("2057-11-02T16:28:55.185")
+  def createdOn: Instant = LocalDateTime.parse("2057-11-02T16:28:55.185").toInstant(ZoneOffset.UTC)
   def amountToUpdate: AmountInPence = AmountInPence(123499)
   def amountInPence: AmountInPence = AmountInPence(1000)
   def upfrontPaymentAmount: UpfrontPaymentAmount = UpfrontPaymentAmount(amountInPence)

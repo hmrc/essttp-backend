@@ -16,51 +16,65 @@
 
 package repository
 
+import org.bson.codecs.Codec
+import org.mongodb.scala.model.{Filters, IndexModel, ReplaceOptions}
 import play.api.libs.json._
-import play.modules.reactivemongo.ReactiveMongoComponent
-import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
-import uk.gov.hmrc.mongo.ReactiveRepository
+import repository.Repo.{Id, IdExtractor}
+import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
+import uk.gov.hmrc.mongo.MongoComponent
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
 
-abstract class Repo[A, ID](
-    collectionName:         String,
-    reactiveMongoComponent: ReactiveMongoComponent
+@SuppressWarnings(Array("org.wartremover.warts.Any"))
+abstract class Repo[ID, A: ClassTag](
+    collectionName: String,
+    mongoComponent: MongoComponent,
+    indexes:        Seq[IndexModel],
+    extraCodecs:    Seq[Codec[_]],
+    replaceIndexes: Boolean         = false
 )(implicit
     domainFormat: OFormat[A],
-  idFormat:         Format[ID],
-  executionContext: ExecutionContext
+  executionContext: ExecutionContext,
+  id:               Id[ID],
+  idExtractor:      IdExtractor[A, ID]
 )
-  extends ReactiveRepository[A, ID](
-    collectionName,
-    reactiveMongoComponent.mongoConnector.db,
-    domainFormat,
-    idFormat
+  extends PlayMongoRepository[A](
+    mongoComponent = mongoComponent,
+    collectionName = collectionName,
+    domainFormat   = domainFormat,
+    indexes        = indexes,
+    replaceIndexes = replaceIndexes,
+    extraCodecs    = extraCodecs
   ) {
-
-  implicit val f: OWrites[JsObject] = new OWrites[JsObject] {
-    override def writes(o: JsObject): JsObject = o
-  }
-
-  def update(id: ID, a: A): Future[UpdateWriteResult] = collection.update(ordered = false).one(_id(id), a)
 
   /**
    * Update or Insert (UpSert)
    */
-  def upsert(id: ID, a: A): Future[UpdateWriteResult] = collection.update(ordered = false).one(
-    _id(id),
-    a,
-    upsert = true
-  )
+  def upsert(a: A): Future[Unit] = collection
+    .replaceOne(
+      filter      = Filters.eq("_id", id.value(idExtractor.id(a))),
+      replacement = a,
+      options     = ReplaceOptions().upsert(true)
+    )
+    .toFuture()
+    .map(_ => ())
 
-  protected implicit class WriteResultChecker(future: Future[WriteResult]) {
-    def checkResult: Future[Unit] = future.map { writeResult =>
-      if (hasAnyConcerns(writeResult)) throw new RuntimeException(writeResult.toString)
-      else ()
-    }
-  }
-
-  private def hasAnyConcerns(writeResult: WriteResult): Boolean = !writeResult.ok || writeResult.writeErrors.nonEmpty || writeResult.writeConcernError.isDefined
-
+  def findById(i: ID): Future[Option[A]] = collection
+    .find(
+      filter = Filters.eq("_id", id.value(i))
+    )
+    .headOption()
 }
 
+object Repo {
+
+  trait Id[I] {
+    def value(i: I): String
+  }
+
+  trait IdExtractor[A, ID] {
+    def id(a: A): ID
+  }
+
+}

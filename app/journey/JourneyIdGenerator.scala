@@ -17,11 +17,11 @@
 package journey
 
 import essttp.journey.model.JourneyId
-import reactivemongo.bson.BSONObjectID
+import org.bson.types.ObjectId
 
 import javax.inject.Singleton
 
 @Singleton
 class JourneyIdGenerator {
-  def nextJourneyId(): JourneyId = JourneyId(BSONObjectID.generate.stringify)
+  def nextJourneyId(): JourneyId = JourneyId(ObjectId.get().toHexString)
 }

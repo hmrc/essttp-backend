@@ -11,7 +11,7 @@ import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
 import uk.gov.hmrc.versioning.SbtGitVersioning
 import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 import wartremover.Wart
-import wartremover.WartRemover.autoImport.{wartremoverErrors, wartremoverExcluded, wartremoverWarnings}
+import wartremover.WartRemover.autoImport.{wartremoverErrors, wartremoverExcluded}
 import uk.gov.hmrc.ShellPrompt
 
 val appName = "essttp-backend"
@@ -19,9 +19,9 @@ val majorVer = 1
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-val appScalaVersion = "2.12.12"
+val appScalaVersion = "2.12.15"
 
-val silencerVersion = "1.7.1"
+val silencerVersion = "1.7.8"
 
 lazy val appDependencies : Seq[ModuleID] = AppDependencies()
 lazy val playSettings : Seq[Setting[_]] = Seq.empty
@@ -60,7 +60,7 @@ lazy val scalariformSettings =
 lazy val scoverageSettings =
   Seq(
     ScoverageKeys.coverageExcludedPackages := """uk\.gov\.hmrc\.BuildInfo;.*\.Routes;.*\.RoutesPrefix;.*\.Reverse[^.]*;testonly""",
-    ScoverageKeys.coverageMinimum := 70.00,
+    ScoverageKeys.coverageMinimumStmtTotal := 70.00,
     ScoverageKeys.coverageExcludedFiles := "<empty>;.*javascript.*;.*models.*;.*Routes.*;.*testonly.*",
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true

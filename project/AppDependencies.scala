@@ -6,15 +6,15 @@ import sbt._
 object AppDependencies {
 
   //https://github.com/hmrc/bootstrap-play
-  val bootstrapVersion = "5.20.0"
+  val bootstrapVersion = "6.3.0"
 
   val compile = Seq(
     "uk.gov.hmrc"             %% "bootstrap-backend-play-28"  % bootstrapVersion,
-    "uk.gov.hmrc"             %% "simple-reactivemongo"       % "8.0.0-play-28",
+    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-play-28"         % "0.66.0",
     "com.beachape"            %% "enumeratum"                 % "1.6.1",
-//    "org.julienrf"            %% "play-json-derived-codecs" % "6.0.0", //choose carefully
-    "io.scalaland"            %% "chimney" % "0.6.1",
-    "org.typelevel"              %% "cats-core"                     % "2.7.0"
+    "org.julienrf"            %% "play-json-derived-codecs"   % "7.0.0", //choose carefully
+    "io.scalaland"            %% "chimney"                    % "0.6.1",
+    "org.typelevel"           %% "cats-core"                  % "2.7.0"
   )
 
   val test = Seq(
