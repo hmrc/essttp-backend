@@ -27,6 +27,7 @@ import scala.reflect.ClassTag
 
 object CodecUtils {
 
+  // recursively builds up a SumCodecsBuilder for the Coproduct
   trait CoproductCodecsBuilder[A, C <: Coproduct] {
     def builder: SumCodecsBuilder[A]
   }
@@ -48,12 +49,14 @@ object CodecUtils {
       }
   }
 
+
   trait CoproductsCodecs[A] {
     def codecs: Seq[Codec[_]]
   }
 
   object CoproductsCodecs {
 
+    // decomposes A into a Coproduct and summons a builder for that Coproduct
     @silent // for unused parameters warnings
     implicit def fromCoproductCodecsBuilder[A, C <: Coproduct](implicit
         gen: Generic.Aux[A, C],
@@ -64,6 +67,12 @@ object CodecUtils {
       }
   }
 
+  /**
+   * Provides a `Seq` of `Codec` if `A` is a sealed trait. This requires a `OFormat` instance for the type `A`
+   * that can be found implicitly. The returned codecs will consist of one `Codec` per subtype of `A` with that
+   * codec corresponding to subtype.
+   * @tparam A - must be a sealed trait
+   */
   def coproductCodecs[T](implicit ev: CoproductsCodecs[T]): Seq[Codec[_]] = ev.codecs
 
 }
