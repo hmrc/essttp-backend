@@ -24,6 +24,7 @@ import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, Indexes}
 import repository.Repo.{Id, IdExtractor}
 import repository.JourneyRepo._
 import uk.gov.hmrc.mongo.MongoComponent
+import uk.gov.hmrc.mongo.play.json.Codecs
 
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
@@ -39,7 +40,7 @@ final class JourneyRepo @Inject() (
     collectionName = "journey",
     mongoComponent = mongoComponent,
     indexes        = JourneyRepo.indexes(30.minutes.toSeconds),
-    CodecUtils.coproductCodecs[Journey],
+    Codecs.playFormatSumCodecs(Journey.format),
     replaceIndexes = true
   ) {
 
