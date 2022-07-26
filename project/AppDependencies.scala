@@ -8,16 +8,16 @@ object AppDependencies {
   //https://github.com/hmrc/bootstrap-play
   val bootstrapVersion = "6.3.0"
 
-  val compile = Seq(
+  val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"             %% "bootstrap-backend-play-28"  % bootstrapVersion,
-    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-play-28"         % "0.67.0",
+    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-play-28"         % "0.68.0",
     "com.beachape"            %% "enumeratum"                 % "1.6.1",
     "org.julienrf"            %% "play-json-derived-codecs"   % "7.0.0", //choose carefully
     "io.scalaland"            %% "chimney"                    % "0.6.1",
     "org.typelevel"           %% "cats-core"                  % "2.7.0"
   )
 
-  val test = Seq(
+  val test: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"             %% "bootstrap-test-play-28"     % bootstrapVersion,
     "com.vladsch.flexmark"    %  "flexmark-all"               % "0.36.8",
     "org.scalatestplus.play"  %% "scalatestplus-play"         % "5.1.0" ,
