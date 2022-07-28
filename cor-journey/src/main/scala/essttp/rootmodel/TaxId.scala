@@ -41,7 +41,7 @@ object EmpRef {
   implicit val format: OFormat[EmpRef] = derived.oformat[EmpRef]()
 
   def makeEmpRef(taxOfficeNumber: TaxOfficeNumber, taxOfficeReference: TaxOfficeReference): EmpRef = EmpRef(
-    s"${taxOfficeNumber.value}/${taxOfficeReference.value}"
+    s"${taxOfficeNumber.value}${taxOfficeReference.value}"
   )
 }
 
