@@ -17,7 +17,7 @@
 package journey
 
 import essttp.journey.JourneyConnector
-import essttp.journey.model.{JourneyId, SjResponse}
+import essttp.journey.model.{CorrelationId, JourneyId, SjResponse}
 import essttp.testdata.TdAll
 import play.api.mvc.Request
 import testsupport.ItSpec
@@ -48,6 +48,7 @@ class JourneyControllerSpec extends ItSpec {
   s"[Epaye.Bta][Happy path with upfront payment]$testNameJourneyStages" in {
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
+      override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
 
     implicit val request: Request[_] = tdAll.request
@@ -129,6 +130,7 @@ class JourneyControllerSpec extends ItSpec {
   s"[Epaye.GovUk][Happy path with upfront payment]$testNameJourneyStages" in {
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
+      override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
 
     implicit val request: Request[_] = tdAll.request
@@ -210,6 +212,7 @@ class JourneyControllerSpec extends ItSpec {
   s"[Epaye.DetachedUrl][Happy path with upfront payment]$testNameJourneyStages" in {
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
+      override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
 
     implicit val request: Request[_] = tdAll.request

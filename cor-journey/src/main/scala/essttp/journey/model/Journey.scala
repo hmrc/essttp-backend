@@ -39,6 +39,7 @@ sealed trait Journey {
   def sessionId: SessionId
   def taxRegime: TaxRegime
   def stage: Stage
+  def correlationId: CorrelationId
 
   /* derived stuff: */
 
@@ -71,7 +72,8 @@ object Journey {
       defaultFormat.writes(j) ++ Json.obj(
         "sessionId" -> j.sessionId,
         "createdAt" -> j.createdOn,
-        "lastUpdated" -> j.lastUpdated
+        "lastUpdated" -> j.lastUpdated,
+        "correlationId" -> j.correlationId
       ))
     OFormat(
       defaultFormat,
@@ -643,12 +645,13 @@ object Journey {
      * Epaye
      */
     final case class Started(
-        override val _id:       JourneyId,
-        override val origin:    Origins.Epaye,
-        override val createdOn: Instant,
-        override val sjRequest: SjRequest.Epaye,
-        override val sessionId: SessionId,
-        override val stage:     Stage.AfterStarted
+        override val _id:           JourneyId,
+        override val origin:        Origins.Epaye,
+        override val createdOn:     Instant,
+        override val sjRequest:     SjRequest.Epaye,
+        override val sessionId:     SessionId,
+        override val correlationId: CorrelationId,
+        override val stage:         Stage.AfterStarted
     )
       extends Journey
       with Journey.Stages.Started
@@ -659,13 +662,14 @@ object Journey {
      * Epaye
      */
     final case class ComputedTaxId(
-        override val _id:       JourneyId,
-        override val origin:    Origins.Epaye,
-        override val createdOn: Instant,
-        override val sjRequest: SjRequest.Epaye,
-        override val sessionId: SessionId,
-        override val stage:     Stage.AfterComputedTaxId,
-        override val taxId:     EmpRef
+        override val _id:           JourneyId,
+        override val origin:        Origins.Epaye,
+        override val createdOn:     Instant,
+        override val sjRequest:     SjRequest.Epaye,
+        override val sessionId:     SessionId,
+        override val correlationId: CorrelationId,
+        override val stage:         Stage.AfterComputedTaxId,
+        override val taxId:         EmpRef
     )
       extends Journey
       with Journey.Stages.ComputedTaxId
@@ -681,6 +685,7 @@ object Journey {
         override val createdOn:              Instant,
         override val sjRequest:              SjRequest.Epaye,
         override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
         override val stage:                  Stage.AfterEligibilityCheck,
         override val taxId:                  EmpRef,
         override val eligibilityCheckResult: EligibilityCheckResult
@@ -699,6 +704,7 @@ object Journey {
         override val createdOn:              Instant,
         override val sjRequest:              SjRequest.Epaye,
         override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
         override val stage:                  Stage.AfterCanPayUpfront,
         override val taxId:                  EmpRef,
         override val eligibilityCheckResult: EligibilityCheckResult,
@@ -718,6 +724,7 @@ object Journey {
         override val createdOn:              Instant,
         override val sjRequest:              SjRequest.Epaye,
         override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
         override val stage:                  Stage.AfterUpfrontPaymentAmount,
         override val taxId:                  EmpRef,
         override val eligibilityCheckResult: EligibilityCheckResult,
@@ -738,6 +745,7 @@ object Journey {
         override val createdOn:              Instant,
         override val sjRequest:              SjRequest.Epaye,
         override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
         override val stage:                  Stage.AfterExtremeDatesResponse,
         override val taxId:                  EmpRef,
         override val eligibilityCheckResult: EligibilityCheckResult,
@@ -758,6 +766,7 @@ object Journey {
         override val createdOn:              Instant,
         override val sjRequest:              SjRequest.Epaye,
         override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
         override val stage:                  Stage.AfterAffordabilityResult,
         override val taxId:                  EmpRef,
         override val eligibilityCheckResult: EligibilityCheckResult,
@@ -779,6 +788,7 @@ object Journey {
         override val createdOn:              Instant,
         override val sjRequest:              SjRequest.Epaye,
         override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
         override val stage:                  Stage.AfterMonthlyPaymentAmount,
         override val taxId:                  EmpRef,
         override val eligibilityCheckResult: EligibilityCheckResult,
@@ -801,6 +811,7 @@ object Journey {
         override val createdOn:              Instant,
         override val sjRequest:              SjRequest.Epaye,
         override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
         override val stage:                  Stage.AfterEnteredDayOfMonth,
         override val taxId:                  EmpRef,
         override val eligibilityCheckResult: EligibilityCheckResult,
@@ -824,6 +835,7 @@ object Journey {
         override val createdOn:              Instant,
         override val sjRequest:              SjRequest.Epaye,
         override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
         override val stage:                  Stage.AfterStartDatesResponse,
         override val taxId:                  EmpRef,
         override val eligibilityCheckResult: EligibilityCheckResult,
@@ -848,6 +860,7 @@ object Journey {
         override val createdOn:                Instant,
         override val sjRequest:                SjRequest.Epaye,
         override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
         override val stage:                    Stage.AfterAffordableQuotesResponse,
         override val taxId:                    EmpRef,
         override val eligibilityCheckResult:   EligibilityCheckResult,
@@ -873,6 +886,7 @@ object Journey {
         override val createdOn:                Instant,
         override val sjRequest:                SjRequest.Epaye,
         override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
         override val stage:                    Stage.AfterSelectedPlan,
         override val taxId:                    EmpRef,
         override val eligibilityCheckResult:   EligibilityCheckResult,
@@ -899,6 +913,7 @@ object Journey {
         override val createdOn:                Instant,
         override val sjRequest:                SjRequest.Epaye,
         override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
         override val stage:                    Stage.AfterCheckedPlan,
         override val taxId:                    EmpRef,
         override val eligibilityCheckResult:   EligibilityCheckResult,
@@ -925,6 +940,7 @@ object Journey {
         override val createdOn:                Instant,
         override val sjRequest:                SjRequest.Epaye,
         override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
         override val stage:                    Stage.AfterChosenTypeOfBankAccount,
         override val taxId:                    EmpRef,
         override val eligibilityCheckResult:   EligibilityCheckResult,
@@ -952,6 +968,7 @@ object Journey {
         override val createdOn:                Instant,
         override val sjRequest:                SjRequest.Epaye,
         override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
         override val stage:                    Stage.AfterEnteredDirectDebitDetails,
         override val taxId:                    EmpRef,
         override val eligibilityCheckResult:   EligibilityCheckResult,
@@ -980,6 +997,7 @@ object Journey {
         override val createdOn:                Instant,
         override val sjRequest:                SjRequest.Epaye,
         override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
         override val stage:                    Stage.AfterConfirmedDirectDebitDetails,
         override val taxId:                    EmpRef,
         override val eligibilityCheckResult:   EligibilityCheckResult,
@@ -1008,6 +1026,7 @@ object Journey {
         override val createdOn:                Instant,
         override val sjRequest:                SjRequest.Epaye,
         override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
         override val stage:                    Stage.AfterAgreedTermsAndConditions,
         override val taxId:                    EmpRef,
         override val eligibilityCheckResult:   EligibilityCheckResult,
@@ -1036,6 +1055,7 @@ object Journey {
         override val createdOn:                Instant,
         override val sjRequest:                SjRequest.Epaye,
         override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
         override val stage:                    Stage.AfterSubmittedArrangement,
         override val taxId:                    EmpRef,
         override val eligibilityCheckResult:   EligibilityCheckResult,

@@ -18,8 +18,8 @@ package testsupport
 
 import com.github.ghik.silencer.silent
 import com.google.inject.{AbstractModule, Provides}
-import essttp.journey.model.JourneyId
-import journey.JourneyIdGenerator
+import essttp.journey.model.{CorrelationId, JourneyId}
+import journey.{CorrelationIdGenerator, JourneyIdGenerator}
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.TestData
@@ -79,9 +79,24 @@ trait ItSpec
       val journeyIdPrefix: TestJourneyIdPrefix = TestJourneyIdPrefix(s"TestJourneyId-$randomPart-")
       new TestJourneyIdGenerator(journeyIdPrefix)
     }
+
+    @Provides
+    @Singleton
+    @silent // silence "method never used" warning
+    def testCorrelationIdGenerator(testCorrelationIdGenerator: TestCorrelationIdGenerator): CorrelationIdGenerator = testCorrelationIdGenerator
+
+    @Provides
+    @Singleton
+    @silent // silence "method never used" warning
+    def testCorrelationIdGenerator(): TestCorrelationIdGenerator = {
+      val randomPart: String = Random.alphanumeric.take(5).mkString
+      val correlationIdPrefix: TestCorrelationIdPrefix = TestCorrelationIdPrefix(s"TestCorrelationId-$randomPart-")
+      new TestCorrelationIdGenerator(correlationIdPrefix)
+    }
   }
 
   def journeyIdGenerator: TestJourneyIdGenerator = app.injector.instanceOf[TestJourneyIdGenerator]
+  def correlationIdGenerator: TestCorrelationIdGenerator = app.injector.instanceOf[TestCorrelationIdGenerator]
 
   implicit def hc: HeaderCarrier = HeaderCarrier()
 
@@ -124,5 +139,18 @@ class TestJourneyIdGenerator(testJourneyIdPrefix: TestJourneyIdPrefix) extends J
 
   override def nextJourneyId(): JourneyId = {
     nextJourneyIdCached.getAndSet(idIterator.next())
+  }
+}
+
+final case class TestCorrelationIdPrefix(value: String)
+
+class TestCorrelationIdGenerator(testCorrelationIdPrefix: TestCorrelationIdPrefix) extends CorrelationIdGenerator {
+  private val correlationIdIterator: Iterator[CorrelationId] = Stream.from(0).map(i => CorrelationId(s"${testCorrelationIdPrefix.value}$i")).iterator
+  private val nextCorrelationIdCached = new AtomicReference[CorrelationId](correlationIdIterator.next())
+
+  def readNextCorrelationId(): CorrelationId = nextCorrelationIdCached.get()
+
+  override def nextCorrelationId(): CorrelationId = {
+    nextCorrelationIdCached.getAndSet(correlationIdIterator.next())
   }
 }

@@ -17,7 +17,7 @@
 package journey
 
 import essttp.journey.JourneyConnector
-import essttp.journey.model.JourneyId
+import essttp.journey.model.{CorrelationId, JourneyId}
 import essttp.testdata.TdAll
 import journey.JourneyInFinalStateSpec.TestScenario
 import org.scalatest.Assertion
@@ -34,6 +34,7 @@ class JourneyInFinalStateSpec extends ItSpec {
   "should not be able to update journey once it is completed" in {
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
+      override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
     implicit val request: Request[_] = tdAll.request
     val httpClient = app.injector.instanceOf[HttpClient]
