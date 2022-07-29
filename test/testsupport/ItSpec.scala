@@ -49,7 +49,7 @@ trait ItSpec
 
   lazy val frozenZonedDateTime: ZonedDateTime = {
     val formatter = DateTimeFormatter.ISO_DATE_TIME
-    //the frozen time has to be in future otherwise the journeys will dissapear from mongodb because of expiry index
+    //the frozen time has to be in future otherwise the journeys will disappear from mongodb because of expiry index
     LocalDateTime.parse("2057-11-02T16:28:55.185", formatter).atZone(ZoneId.of("Europe/London"))
   }
 
@@ -90,7 +90,7 @@ trait ItSpec
     @Singleton
     @silent // silence "method never used" warning
     def testCorrelationIdGenerator(): TestCorrelationIdGenerator = {
-      val randomPart: String = UUID.randomUUID().toString.take(5)
+      val randomPart: String = UUID.randomUUID().toString.take(8)
       val correlationIdPrefix: TestCorrelationIdPrefix = TestCorrelationIdPrefix(s"$randomPart-843f-4988-89c6-d4d3e2e91e26")
       new TestCorrelationIdGenerator(correlationIdPrefix)
     }
