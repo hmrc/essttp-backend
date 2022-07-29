@@ -21,7 +21,7 @@ import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.journey.model.Journey.{Epaye, Stages}
 import essttp.journey.model._
-import essttp.journey.model.ttp.EligibilityCheckResult
+import essttp.rootmodel.ttp.EligibilityCheckResult
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl._
 import play.api.mvc._

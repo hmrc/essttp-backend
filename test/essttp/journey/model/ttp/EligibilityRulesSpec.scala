@@ -16,6 +16,7 @@
 
 package essttp.journey.model.ttp
 
+import essttp.rootmodel.ttp.EligibilityRules
 import testsupport.UnitSpec
 
 class EligibilityRulesSpec extends UnitSpec {

@@ -18,8 +18,8 @@ package journey
 
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
-import essttp.journey.model.ttp.affordablequotes.PaymentPlan
 import essttp.journey.model.{Journey, JourneyId, Stage}
+import essttp.rootmodel.ttp.affordablequotes.PaymentPlan
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformerOps
 import play.api.mvc.{Action, ControllerComponents, Request}

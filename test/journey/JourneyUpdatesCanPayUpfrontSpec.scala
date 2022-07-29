@@ -17,7 +17,7 @@
 package journey
 
 import essttp.journey.JourneyConnector
-import essttp.journey.model.{JourneyId, SjResponse}
+import essttp.journey.model.{CorrelationId, JourneyId, SjResponse}
 import essttp.rootmodel.{AmountInPence, UpfrontPaymentAmount}
 import essttp.testdata.TdAll
 import play.api.mvc.Request
@@ -34,6 +34,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
   "[Epaye.Bta][Update CanPayUpfront from yes to no to yes, round trip]" in {
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
+      override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
 
     implicit val request: Request[_] = tdAll.request
@@ -57,6 +58,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
   "[Epaye.Bta][CanPayUpfront.Yes, Update UpfrontPaymentAmount with value, then change to CanPayFrontNo]" in {
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
+      override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
 
     implicit val request: Request[_] = tdAll.request
@@ -80,6 +82,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
   "[Epaye.Bta][Update UpfrontPaymentAmount with new value]" in {
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
+      override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
 
     implicit val request: Request[_] = tdAll.request

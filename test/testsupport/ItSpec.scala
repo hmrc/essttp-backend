@@ -18,20 +18,21 @@ package testsupport
 
 import com.github.ghik.silencer.silent
 import com.google.inject.{AbstractModule, Provides}
-import essttp.journey.model.JourneyId
-import journey.JourneyIdGenerator
+import essttp.journey.model.{CorrelationId, JourneyId}
+import journey.{CorrelationIdGenerator, JourneyIdGenerator}
+import org.scalatest.TestData
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.TestData
 import org.scalatestplus.play.guice.GuiceOneServerPerTest
-import play.api.{Application, Mode}
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.test.{DefaultTestServerFactory, RunningServer}
+import play.api.{Application, Mode}
 import play.core.server.ServerConfig
 import uk.gov.hmrc.http.HeaderCarrier
 
-import java.time.{Clock, LocalDateTime, ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
+import java.time.{Clock, LocalDateTime, ZoneId, ZonedDateTime}
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Singleton
 import scala.util.Random
@@ -48,7 +49,7 @@ trait ItSpec
 
   lazy val frozenZonedDateTime: ZonedDateTime = {
     val formatter = DateTimeFormatter.ISO_DATE_TIME
-    //the frozen time has to be in future otherwise the journeys will dissapear from mongodb because of expiry index
+    //the frozen time has to be in future otherwise the journeys will disappear from mongodb because of expiry index
     LocalDateTime.parse("2057-11-02T16:28:55.185", formatter).atZone(ZoneId.of("Europe/London"))
   }
 
@@ -79,9 +80,24 @@ trait ItSpec
       val journeyIdPrefix: TestJourneyIdPrefix = TestJourneyIdPrefix(s"TestJourneyId-$randomPart-")
       new TestJourneyIdGenerator(journeyIdPrefix)
     }
+
+    @Provides
+    @Singleton
+    @silent // silence "method never used" warning
+    def testCorrelationIdGenerator(testCorrelationIdGenerator: TestCorrelationIdGenerator): CorrelationIdGenerator = testCorrelationIdGenerator
+
+    @Provides
+    @Singleton
+    @silent // silence "method never used" warning
+    def testCorrelationIdGenerator(): TestCorrelationIdGenerator = {
+      val randomPart: String = UUID.randomUUID().toString.take(8)
+      val correlationIdPrefix: TestCorrelationIdPrefix = TestCorrelationIdPrefix(s"$randomPart-843f-4988-89c6-d4d3e2e91e26")
+      new TestCorrelationIdGenerator(correlationIdPrefix)
+    }
   }
 
   def journeyIdGenerator: TestJourneyIdGenerator = app.injector.instanceOf[TestJourneyIdGenerator]
+  def correlationIdGenerator: TestCorrelationIdGenerator = app.injector.instanceOf[TestCorrelationIdGenerator]
 
   implicit def hc: HeaderCarrier = HeaderCarrier()
 
@@ -124,5 +140,18 @@ class TestJourneyIdGenerator(testJourneyIdPrefix: TestJourneyIdPrefix) extends J
 
   override def nextJourneyId(): JourneyId = {
     nextJourneyIdCached.getAndSet(idIterator.next())
+  }
+}
+
+final case class TestCorrelationIdPrefix(value: String)
+
+class TestCorrelationIdGenerator(testCorrelationIdPrefix: TestCorrelationIdPrefix) extends CorrelationIdGenerator {
+  private val correlationIdIterator: Iterator[CorrelationId] = Stream.from(0).map(i => CorrelationId(UUID.fromString(s"${testCorrelationIdPrefix.value}$i"))).iterator
+  private val nextCorrelationIdCached = new AtomicReference[CorrelationId](correlationIdIterator.next())
+
+  def readNextCorrelationId(): CorrelationId = nextCorrelationIdCached.get()
+
+  override def nextCorrelationId(): CorrelationId = {
+    nextCorrelationIdCached.getAndSet(correlationIdIterator.next())
   }
 }

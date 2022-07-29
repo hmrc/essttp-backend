@@ -18,16 +18,16 @@ package essttp.testdata
 
 import essttp.journey.model.SjRequest.Epaye
 import essttp.journey.model._
-import essttp.journey.model.ttp.EligibilityCheckResult
-import essttp.journey.model.ttp.affordability.InstalmentAmounts
-import essttp.journey.model.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
-import essttp.journey.model.ttp.arrangement.ArrangementResponse
 
 import scala.language.reflectiveCalls
 import essttp.rootmodel._
 import essttp.rootmodel.bank.{DirectDebitDetails, TypeOfBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
+import essttp.rootmodel.ttp.EligibilityCheckResult
+import essttp.rootmodel.ttp.affordability.InstalmentAmounts
+import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
+import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.utils.JsonSyntax._
 import essttp.utils.ResourceReader._
 import play.api.libs.json.{JsNull, JsObject}
@@ -54,12 +54,13 @@ trait TdJourneyEpayeBta {
     def sjRequestJson: JsObject = read("/testdata/epaye/bta/SjRequest.json").asJson
 
     def journeyAfterStarted: Journey.Epaye.Started = Journey.Epaye.Started(
-      _id       = dependencies.journeyId,
-      origin    = Origins.Epaye.Bta,
-      createdOn = dependencies.createdOn,
-      sjRequest = sjRequest,
-      sessionId = dependencies.sessionId,
-      stage     = Stage.AfterStarted.Started
+      _id           = dependencies.journeyId,
+      origin        = Origins.Epaye.Bta,
+      createdOn     = dependencies.createdOn,
+      sjRequest     = sjRequest,
+      sessionId     = dependencies.sessionId,
+      stage         = Stage.AfterStarted.Started,
+      correlationId = dependencies.correlationId,
     )
 
     def journeyAfterStartedJson: JsObject = read("/testdata/epaye/bta/JourneyAfterStarted.json").asJson
@@ -69,13 +70,14 @@ trait TdJourneyEpayeBta {
     def updateTaxIdRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateTaxIdRequest.json").asJson
 
     def journeyAfterDetermineTaxIds: Journey.Epaye.ComputedTaxId = Journey.Epaye.ComputedTaxId(
-      _id       = dependencies.journeyId,
-      origin    = Origins.Epaye.Bta,
-      createdOn = dependencies.createdOn,
-      sjRequest = sjRequest,
-      sessionId = dependencies.sessionId,
-      stage     = Stage.AfterComputedTaxId.ComputedTaxId,
-      taxId     = empRef
+      _id           = dependencies.journeyId,
+      origin        = Origins.Epaye.Bta,
+      createdOn     = dependencies.createdOn,
+      sjRequest     = sjRequest,
+      sessionId     = dependencies.sessionId,
+      stage         = Stage.AfterComputedTaxId.ComputedTaxId,
+      correlationId = dependencies.correlationId,
+      taxId         = empRef
     )
 
     def journeyAfterDetermineTaxIdsJson: JsObject = read("testdata/epaye/bta/JourneyAfterComputedTaxIds.json").asJson
@@ -91,6 +93,7 @@ trait TdJourneyEpayeBta {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterEligibilityCheck.Eligible,
+      correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult
     )
@@ -104,6 +107,7 @@ trait TdJourneyEpayeBta {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterEligibilityCheck.Ineligible,
+      correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = ineligibleEligibilityCheckResult
     )
@@ -125,6 +129,7 @@ trait TdJourneyEpayeBta {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterCanPayUpfront.Yes,
+      correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       canPayUpfront          = canPayUpfrontYes
@@ -139,6 +144,7 @@ trait TdJourneyEpayeBta {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterCanPayUpfront.No,
+      correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       canPayUpfront          = canPayUpfrontNo
@@ -160,6 +166,7 @@ trait TdJourneyEpayeBta {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
+      correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       canPayUpfront          = canPayUpfrontYes,
@@ -179,6 +186,7 @@ trait TdJourneyEpayeBta {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved,
+      correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
@@ -198,6 +206,7 @@ trait TdJourneyEpayeBta {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterAffordabilityResult.RetrievedAffordabilityResult,
+      correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
@@ -218,6 +227,7 @@ trait TdJourneyEpayeBta {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount,
+      correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
@@ -239,6 +249,7 @@ trait TdJourneyEpayeBta {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth,
+      correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
@@ -261,6 +272,7 @@ trait TdJourneyEpayeBta {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterStartDatesResponse.StartDatesResponseRetrieved,
+      correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
@@ -284,6 +296,7 @@ trait TdJourneyEpayeBta {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved,
+      correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
@@ -308,6 +321,7 @@ trait TdJourneyEpayeBta {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterSelectedPlan.SelectedPlan,
+      correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
@@ -333,6 +347,7 @@ trait TdJourneyEpayeBta {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterCheckedPlan.AcceptedPlan,
+      correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
@@ -358,6 +373,7 @@ trait TdJourneyEpayeBta {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterChosenTypeOfBankAccount.Business,
+      correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
@@ -384,6 +400,7 @@ trait TdJourneyEpayeBta {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = if (isAccountHolder) Stage.AfterEnteredDirectDebitDetails.IsAccountHolder else Stage.AfterEnteredDirectDebitDetails.IsNotAccountHolder,
+      correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
@@ -411,6 +428,7 @@ trait TdJourneyEpayeBta {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails,
+      correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
@@ -438,6 +456,7 @@ trait TdJourneyEpayeBta {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterAgreedTermsAndConditions.Agreed,
+      correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
@@ -465,6 +484,7 @@ trait TdJourneyEpayeBta {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterSubmittedArrangement.Submitted,
+      correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResult,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
