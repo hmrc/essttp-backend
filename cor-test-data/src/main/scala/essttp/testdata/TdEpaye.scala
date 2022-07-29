@@ -16,11 +16,11 @@
 
 package essttp.testdata
 
-import essttp.journey.model.ttp._
-import essttp.journey.model.ttp.affordablequotes.DueDate
-import essttp.journey.model.ttp.arrangement.ArrangementResponse
 import essttp.rootmodel.{AmountInPence, CanPayUpfront, EmpRef}
 import essttp.rootmodel.epaye.{Aor, TaxOfficeNumber, TaxOfficeReference}
+import essttp.rootmodel.ttp._
+import essttp.rootmodel.ttp.affordablequotes.DueDate
+import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 
 import java.time.LocalDate
 

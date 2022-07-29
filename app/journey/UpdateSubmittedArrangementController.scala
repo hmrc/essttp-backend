@@ -17,8 +17,8 @@
 package journey
 
 import com.google.inject.{Inject, Singleton}
-import essttp.journey.model.ttp.arrangement.ArrangementResponse
 import essttp.journey.model.{Journey, JourneyId, Stage}
+import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformerOps
 import play.api.mvc.{Action, ControllerComponents, Request}
