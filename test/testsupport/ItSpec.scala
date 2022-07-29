@@ -90,7 +90,7 @@ trait ItSpec
     @Singleton
     @silent // silence "method never used" warning
     def testCorrelationIdGenerator(): TestCorrelationIdGenerator = {
-      val randomPart: String = UUID.randomUUID().toString.take(5) //Random.alphanumeric.take(5).mkString.toLowerCase(Locale.UK)
+      val randomPart: String = UUID.randomUUID().toString.take(5)
       val correlationIdPrefix: TestCorrelationIdPrefix = TestCorrelationIdPrefix(s"$randomPart-843f-4988-89c6-d4d3e2e91e26")
       new TestCorrelationIdGenerator(correlationIdPrefix)
     }
