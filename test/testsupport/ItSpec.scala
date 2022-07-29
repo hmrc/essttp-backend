@@ -20,18 +20,19 @@ import com.github.ghik.silencer.silent
 import com.google.inject.{AbstractModule, Provides}
 import essttp.journey.model.{CorrelationId, JourneyId}
 import journey.{CorrelationIdGenerator, JourneyIdGenerator}
+import org.scalatest.TestData
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.TestData
 import org.scalatestplus.play.guice.GuiceOneServerPerTest
-import play.api.{Application, Mode}
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.test.{DefaultTestServerFactory, RunningServer}
+import play.api.{Application, Mode}
 import play.core.server.ServerConfig
 import uk.gov.hmrc.http.HeaderCarrier
 
-import java.time.{Clock, LocalDateTime, ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
+import java.time.{Clock, LocalDateTime, ZoneId, ZonedDateTime}
+import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Singleton
 import scala.util.Random
@@ -89,8 +90,8 @@ trait ItSpec
     @Singleton
     @silent // silence "method never used" warning
     def testCorrelationIdGenerator(): TestCorrelationIdGenerator = {
-      val randomPart: String = Random.alphanumeric.take(5).mkString
-      val correlationIdPrefix: TestCorrelationIdPrefix = TestCorrelationIdPrefix(s"TestCorrelationId-$randomPart-")
+      val randomPart: String = UUID.randomUUID().toString.take(5) //Random.alphanumeric.take(5).mkString.toLowerCase(Locale.UK)
+      val correlationIdPrefix: TestCorrelationIdPrefix = TestCorrelationIdPrefix(s"$randomPart-843f-4988-89c6-d4d3e2e91e26")
       new TestCorrelationIdGenerator(correlationIdPrefix)
     }
   }
@@ -145,7 +146,7 @@ class TestJourneyIdGenerator(testJourneyIdPrefix: TestJourneyIdPrefix) extends J
 final case class TestCorrelationIdPrefix(value: String)
 
 class TestCorrelationIdGenerator(testCorrelationIdPrefix: TestCorrelationIdPrefix) extends CorrelationIdGenerator {
-  private val correlationIdIterator: Iterator[CorrelationId] = Stream.from(0).map(i => CorrelationId(s"${testCorrelationIdPrefix.value}$i")).iterator
+  private val correlationIdIterator: Iterator[CorrelationId] = Stream.from(0).map(i => CorrelationId(UUID.fromString(s"${testCorrelationIdPrefix.value}$i"))).iterator
   private val nextCorrelationIdCached = new AtomicReference[CorrelationId](correlationIdIterator.next())
 
   def readNextCorrelationId(): CorrelationId = nextCorrelationIdCached.get()

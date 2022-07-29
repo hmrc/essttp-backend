@@ -18,11 +18,13 @@ package essttp.journey.model
 
 import play.api.libs.json.{Format, Json}
 
+import java.util.UUID
+
 /**
  * Used in the audit events to allow people making reports to link up journey with ttp audit events.
  */
 
-final case class CorrelationId(value: String) extends AnyVal
+final case class CorrelationId(value: UUID) extends AnyVal
 
 object CorrelationId {
   implicit val format: Format[CorrelationId] = Json.valueFormat

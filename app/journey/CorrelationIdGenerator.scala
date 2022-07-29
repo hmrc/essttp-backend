@@ -21,5 +21,5 @@ import essttp.journey.model.CorrelationId
 
 @Singleton
 class CorrelationIdGenerator {
-  def nextCorrelationId(): CorrelationId = CorrelationId(java.util.UUID.randomUUID().toString)
+  def nextCorrelationId(): CorrelationId = CorrelationId(java.util.UUID.randomUUID())
 }

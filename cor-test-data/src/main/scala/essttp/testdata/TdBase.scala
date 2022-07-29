@@ -30,12 +30,13 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 
 import java.time.{Instant, LocalDate, LocalDateTime, ZoneOffset}
+import java.util.UUID
 
 trait TdBase {
   def journeyId: JourneyId = JourneyId("b6217497-ab5b-4e93-855a-afc9f9e933b6")
   def traceId: TraceId = TraceId(journeyId)
   def sessionId: SessionId = SessionId("session-2082fcd4-70f6-49cc-a4bf-845917981cd7")
-  def correlationId: CorrelationId = CorrelationId("5838794a-5419-496c-a5dd-e807f91d6da6")
+  def correlationId: CorrelationId = CorrelationId(UUID.fromString("5838794a-5419-496c-a5dd-e807f91d6da6"))
 
   def createdOn: Instant = LocalDateTime.parse("2057-11-02T16:28:55.185").toInstant(ZoneOffset.UTC)
   def amountToUpdate: AmountInPence = AmountInPence(123499)
