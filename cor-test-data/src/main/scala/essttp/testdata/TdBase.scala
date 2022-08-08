@@ -79,6 +79,7 @@ trait TdBase {
   )
 
   def affordableQuotesResponse: AffordableQuotesResponse = AffordableQuotesResponse(List(paymentPlan(1)))
+  def affordableQuotesResponseWith2Plans: AffordableQuotesResponse = AffordableQuotesResponse(List(paymentPlan(2)))
 
   def businessBankAccount: TypeOfBankAccount = TypesOfBankAccount.Business
   def personalBankAccount: TypeOfBankAccount = TypesOfBankAccount.Personal

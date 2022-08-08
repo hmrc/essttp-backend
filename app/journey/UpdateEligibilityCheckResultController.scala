@@ -77,6 +77,7 @@ class UpdateEligibilityCheckResultController @Inject() (
       val updatedJourney: Journey.AfterEligibilityChecked = journey match {
         case j: Epaye.EligibilityChecked =>
           j.copy(eligibilityCheckResult = eligibilityCheckResult)
+            .copy(stage = deriveEligibilityEnum(eligibilityCheckResult))
         case j: Epaye.AnsweredCanPayUpfront =>
           j.into[Journey.Epaye.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))

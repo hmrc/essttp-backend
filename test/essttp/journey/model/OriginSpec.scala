@@ -70,13 +70,4 @@ class OriginSpec extends UnitSpec {
     }
   }
 
-  "toString" in {
-    withClue("it has better name then just 'Bta' so it's easier to distinguish between Bta in Epaye and Bta in Vat") {
-      //just few examples
-      // TODO: Uncomment once Vat is enabled
-      //      Origins.Vat.Bta.toString() shouldBe "Origins.Vat.Bta"
-      //      Origins.Epaye.Bta.toString() shouldBe "Origins.Epaye.Bta"
-    }
-  }
-
 }
