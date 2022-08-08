@@ -25,6 +25,7 @@ import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.utils.Errors
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 import julienrf.json.derived
 import play.api.libs.json.{Json, OFormat, OWrites}
 
@@ -71,8 +72,8 @@ object Journey {
     val customWrites = OWrites[Journey](j =>
       defaultFormat.writes(j) ++ Json.obj(
         "sessionId" -> j.sessionId,
-        "createdAt" -> j.createdOn,
-        "lastUpdated" -> j.lastUpdated,
+        "createdAt" -> MongoJavatimeFormats.instantFormat.writes(j.createdOn),
+        "lastUpdated" -> MongoJavatimeFormats.instantFormat.writes(j.lastUpdated),
         "correlationId" -> j.correlationId
       ))
     OFormat(

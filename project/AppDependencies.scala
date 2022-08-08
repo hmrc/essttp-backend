@@ -5,16 +5,19 @@ import sbt._
 
 object AppDependencies {
 
-  //https://github.com/hmrc/bootstrap-play
   val bootstrapVersion = "6.3.0"
+  val hmrcMongoVersion = "0.68.0"
+  val chimneyVersion = "0.6.1"
+  val catsVersion = "2.7.0"
+  val playJsonDerivedCodesVersion = "7.0.0"
 
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"             %% "bootstrap-backend-play-28"  % bootstrapVersion,
-    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-play-28"         % "0.68.0",
+    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-play-28"         % hmrcMongoVersion,
     "com.beachape"            %% "enumeratum"                 % "1.6.1",
-    "org.julienrf"            %% "play-json-derived-codecs"   % "7.0.0", //choose carefully
-    "io.scalaland"            %% "chimney"                    % "0.6.1",
-    "org.typelevel"           %% "cats-core"                  % "2.7.0"
+    "org.julienrf"            %% "play-json-derived-codecs"   % playJsonDerivedCodesVersion, //choose carefully
+    "io.scalaland"            %% "chimney"                    % chimneyVersion,
+    "org.typelevel"           %% "cats-core"                  % catsVersion
   )
 
   val test: Seq[ModuleID] = Seq(
