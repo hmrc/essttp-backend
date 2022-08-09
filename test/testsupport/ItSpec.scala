@@ -18,16 +18,19 @@ package testsupport
 
 import com.github.ghik.silencer.silent
 import com.google.inject.{AbstractModule, Provides}
-import essttp.journey.model.{CorrelationId, JourneyId}
+import essttp.journey.model.{CorrelationId, Journey, JourneyId}
+import essttp.testdata.TdAll
 import journey.{CorrelationIdGenerator, JourneyIdGenerator}
 import org.scalatest.TestData
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatestplus.play.guice.GuiceOneServerPerTest
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
+import play.api.mvc.Request
 import play.api.test.{DefaultTestServerFactory, RunningServer}
 import play.api.{Application, Mode}
 import play.core.server.ServerConfig
+import repository.JourneyRepo
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.format.DateTimeFormatter
@@ -125,6 +128,18 @@ trait ItSpec
       val sc = ServerConfig(port    = Some(testServerPort), sslPort = Some(0), mode = Mode.Test, rootDir = app.path)
       sc.copy(configuration = sc.configuration.withFallback(overrideServerConfiguration(app)))
     }
+  }
+
+  trait JourneyItTest {
+    val tdAll: TdAll = new TdAll {
+      override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
+      override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
+    }
+    implicit val request: Request[_] = tdAll.request
+
+    private def journeyRepo: JourneyRepo = app.injector.instanceOf[JourneyRepo]
+
+    def insertJourneyForTest(journey: Journey): Unit = journeyRepo.upsert(journey).futureValue
   }
 
 }

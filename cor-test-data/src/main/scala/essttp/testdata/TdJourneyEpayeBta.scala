@@ -265,7 +265,7 @@ trait TdJourneyEpayeBta {
 
     def updateStartDatesResponseJson(): JsObject = read("/testdata/epaye/bta/UpdateStartDatesResponse.json").asJson
 
-    def journeyAfterStartDatesResponse: Journey.AfterStartDatesResponse = Journey.Epaye.RetrievedStartDates(
+    def journeyAfterStartDatesResponse: Journey.Epaye.RetrievedStartDates = Journey.Epaye.RetrievedStartDates(
       _id                    = dependencies.journeyId,
       origin                 = Origins.Epaye.Bta,
       createdOn              = dependencies.createdOn,
@@ -289,7 +289,7 @@ trait TdJourneyEpayeBta {
 
     def updateAffordableQuotesResponseJson(): JsObject = read("/testdata/epaye/bta/UpdateAffordableQuotesRequest.json").asJson
 
-    def journeyAfterAffordableQuotesResponse: Journey.AfterAffordableQuotesResponse = Journey.Epaye.RetrievedAffordableQuotes(
+    def journeyAfterAffordableQuotesResponse: Journey.Epaye.RetrievedAffordableQuotes = Journey.Epaye.RetrievedAffordableQuotes(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Epaye.Bta,
       createdOn                = dependencies.createdOn,
@@ -314,7 +314,7 @@ trait TdJourneyEpayeBta {
 
     def updateSelectedPaymentPlanRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateSelectedPaymentPlanRequest.json").asJson
 
-    def journeyAfterSelectedPaymentPlan: Journey.AfterSelectedPaymentPlan = Journey.Epaye.ChosenPaymentPlan(
+    def journeyAfterSelectedPaymentPlan: Journey.Epaye.ChosenPaymentPlan = Journey.Epaye.ChosenPaymentPlan(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Epaye.Bta,
       createdOn                = dependencies.createdOn,
@@ -340,7 +340,7 @@ trait TdJourneyEpayeBta {
 
     def updateCheckedPaymentPlanRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateCheckedPaymentPlanRequest.json").asJson
 
-    def journeyAfterCheckedPaymentPlan: Journey.AfterCheckedPaymentPlan = Journey.Epaye.CheckedPaymentPlan(
+    def journeyAfterCheckedPaymentPlan: Journey.Epaye.CheckedPaymentPlan = Journey.Epaye.CheckedPaymentPlan(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Epaye.Bta,
       createdOn                = dependencies.createdOn,
@@ -366,7 +366,7 @@ trait TdJourneyEpayeBta {
 
     def updateChosenTypeOfBankAccountRequestJson(): JsObject = read("/testdata/epaye/bta/JourneyAfterChosenTypeOfBankAccount.json").asJson
 
-    def journeyAfterChosenTypeOfBankAccount: Journey.AfterChosenTypeOfBankAccount = Journey.Epaye.ChosenTypeOfBankAccount(
+    def journeyAfterChosenTypeOfBankAccount: Journey.Epaye.ChosenTypeOfBankAccount = Journey.Epaye.ChosenTypeOfBankAccount(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Epaye.Bta,
       createdOn                = dependencies.createdOn,
@@ -393,7 +393,7 @@ trait TdJourneyEpayeBta {
 
     def updateDirectDebitDetailsRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateDirectDebitDetailsRequest.json").asJson
 
-    def journeyAfterEnteredDirectDebitDetails(isAccountHolder: Boolean): Journey.AfterEnteredDirectDebitDetails = Journey.Epaye.EnteredDirectDebitDetails(
+    def journeyAfterEnteredDirectDebitDetails(isAccountHolder: Boolean): Journey.Epaye.EnteredDirectDebitDetails = Journey.Epaye.EnteredDirectDebitDetails(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Epaye.Bta,
       createdOn                = dependencies.createdOn,
@@ -421,7 +421,7 @@ trait TdJourneyEpayeBta {
 
     def updateConfirmedDirectDebitDetailsJson(): JsObject = read("/testdata/epaye/bta/UpdateConfirmedDirectDebitDetailsRequest.json").asJson
 
-    def journeyAfterConfirmedDirectDebitDetails: Journey.AfterConfirmedDirectDebitDetails = Journey.Epaye.ConfirmedDirectDebitDetails(
+    def journeyAfterConfirmedDirectDebitDetails: Journey.Epaye.ConfirmedDirectDebitDetails = Journey.Epaye.ConfirmedDirectDebitDetails(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Epaye.Bta,
       createdOn                = dependencies.createdOn,
@@ -449,7 +449,7 @@ trait TdJourneyEpayeBta {
 
     def updateAgreedTermsAndConditionsJson(): JsObject = read("/testdata/epaye/bta/UpdateAgreedTermsAndConditions.json").asJson
 
-    def journeyAfterAgreedTermsAndConditions: Journey.AfterAgreedTermsAndConditions = Journey.Epaye.AgreedTermsAndConditions(
+    def journeyAfterAgreedTermsAndConditions: Journey.Epaye.AgreedTermsAndConditions = Journey.Epaye.AgreedTermsAndConditions(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Epaye.Bta,
       createdOn                = dependencies.createdOn,
@@ -477,7 +477,7 @@ trait TdJourneyEpayeBta {
 
     def updateArrangementRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateSubmittedArrangementRequest.json").asJson
 
-    def journeyAfterSubmittedArrangement: Journey.AfterArrangementSubmitted = Journey.Epaye.SubmittedArrangement(
+    def journeyAfterSubmittedArrangement: Journey.Epaye.SubmittedArrangement = Journey.Epaye.SubmittedArrangement(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Epaye.Bta,
       createdOn                = dependencies.createdOn,

@@ -27,7 +27,7 @@ sealed trait Origin extends EnumEntry {
   /**
    * Better toString which shows portion of a package
    */
-  override def toString(): String = {
+  override def toString: String = {
     val packageName: String = this.getClass.getPackage.getName
     val className: String = this.getClass.getName
     className
@@ -39,7 +39,6 @@ sealed trait Origin extends EnumEntry {
 
 object Origin {
   implicit val format: Format[Origin] = EnumFormat(Origins)
-
 }
 
 object Origins extends Enum[Origin] {
@@ -51,16 +50,16 @@ object Origins extends Enum[Origin] {
   object Epaye extends Enum[Epaye] {
     implicit val format: Format[Epaye] = EnumFormat(Epaye)
 
-    case object Bta extends Origin with Epaye with BetterName { def show: String = "Origin.Epaye.Bta" }
-    case object GovUk extends Origin with Epaye { def show: String = "Origin.Epaye.GovUk" }
+    case object Bta extends Origin with Epaye with BetterName
+    case object GovUk extends Origin with Epaye with BetterName
 
     /**
      * This represents situation when user receives link to the application in watsapp/email/etc and it's not clear
      * where the journey actually started from.
      */
-    case object DetachedUrl extends Origin with Epaye { def show: String = "Origin.Epaye.DetachedUrl" }
+    case object DetachedUrl extends Origin with Epaye with BetterName
 
-    override def values = findValues
+    override def values: immutable.IndexedSeq[Epaye] = findValues
   }
 
   /**
@@ -72,7 +71,7 @@ object Origins extends Enum[Origin] {
     implicit val format: Format[Vat] = EnumFormat(Vat)
     //TODO: Uncomment once Vat is enabled
     //    case object Bta extends Origin with Vat with BetterName { def show = "Origin.Vat.Bta" }
-    override def values = findValues
+    override def values: immutable.IndexedSeq[Vat] = findValues
   }
 
   override def values: immutable.IndexedSeq[Origin] = Epaye.values ++ Vat.values

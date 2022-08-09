@@ -17,60 +17,37 @@
 package journey
 
 import essttp.journey.JourneyConnector
-import essttp.journey.model.{CorrelationId, JourneyId}
 import essttp.testdata.TdAll
 import journey.JourneyInFinalStateSpec.TestScenario
 import org.scalatest.Assertion
 import play.api.libs.json.{JsNull, Writes}
-import play.api.mvc.Request
 import testsupport.ItSpec
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HttpClient, HttpResponse}
+
+import scala.collection.immutable
 
 class JourneyInFinalStateSpec extends ItSpec {
 
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
-  "should not be able to update journey once it is completed" in {
-    val tdAll = new TdAll {
-      override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
-      override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
+  "should not be able to update journey once it is completed" in new JourneyItTest {
+    val httpClient: HttpClient = app.injector.instanceOf[HttpClient]
+
+    def makeUpdate[A](url: String, payload: A)(implicit writes: Writes[A]): HttpResponse =
+      httpClient.POST[A, HttpResponse](
+        url  = s"$baseUrl/essttp-backend/journey/${tdAll.journeyId.value}$url",
+        body = payload
+      ).futureValue
+
+    def extractAndAssert(testScenario: TestScenario): Assertion = {
+      testScenario.httpResponse.status shouldBe testScenario.expectedStatusCode withClue s"Response body wasn't ${testScenario.expectedMessage}"
+      testScenario.httpResponse.body shouldBe testScenario.expectedMessage withClue s"Response body wasn't ${testScenario.expectedMessage}"
     }
-    implicit val request: Request[_] = tdAll.request
-    val httpClient = app.injector.instanceOf[HttpClient]
 
-      def makeUpdate[A](url: String, payload: A)(implicit writes: Writes[A]): HttpResponse =
-        httpClient.POST[A, HttpResponse](
-          url  = s"$baseUrl/essttp-backend/journey/${tdAll.journeyId.value}$url",
-          body = payload
-        ).futureValue
+    insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
-      def extractAndAssert(testScenario: TestScenario): Assertion = {
-        testScenario.httpResponse.status shouldBe testScenario.expectedStatusCode withClue s"Response body wasn't ${testScenario.expectedMessage}"
-        testScenario.httpResponse.body shouldBe testScenario.expectedMessage withClue s"Response body wasn't ${testScenario.expectedMessage}"
-      }
-
-    journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
-    journeyConnector.updateTaxId(tdAll.journeyId, tdAll.EpayeBta.updateTaxIdRequest()).futureValue
-    journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).futureValue
-    journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
-    journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
-    journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.EpayeBta.updateExtremeDatesRequest()).futureValue
-    journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.EpayeBta.updateInstalmentAmountsRequest()).futureValue
-    journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateMonthlyPaymentAmountRequest()).futureValue
-    journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.EpayeBta.updateDayOfMonthRequest()).futureValue
-    journeyConnector.updateStartDates(tdAll.journeyId, tdAll.EpayeBta.updateStartDatesResponse()).futureValue
-    journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.EpayeBta.updateAffordableQuotesResponse()).futureValue
-    journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.EpayeBta.updateSelectedPaymentPlanRequest()).futureValue
-    journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
-    journeyConnector.updateChosenTypeOfBankAccount(tdAll.journeyId, tdAll.EpayeBta.updateChosenTypeOfBankAccountRequest()).futureValue
-    journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeBta.updateDirectDebitDetailsRequest(isAccountHolder = true)).futureValue
-    journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-    journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId).futureValue
-    journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeBta.updateArrangementRequest()).futureValue
-    // journey complete
-
-    val scenarios = List(
+    val scenarios: immutable.Seq[TestScenario] = List(
       TestScenario(
         httpResponse       = makeUpdate("/update-eligibility-result", tdAll.EpayeBta.updateEligibilityCheckRequest()),
         expectedStatusCode = 400,
