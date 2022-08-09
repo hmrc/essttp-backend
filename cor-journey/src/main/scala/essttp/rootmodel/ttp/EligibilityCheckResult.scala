@@ -34,7 +34,7 @@ final case class EligibilityCheckResult(
     eligibilityRules:       EligibilityRules,
     chargeTypeAssessment:   List[ChargeTypeAssessment]
 ) {
-  val isEligible: Boolean = eligibilityStatus.overallEligibilityStatus.value
+  val isEligible: Boolean = eligibilityStatus.eligibilityPass.value
 }
 
 object EligibilityCheckResult {

@@ -18,9 +18,7 @@ package essttp.rootmodel.ttp
 
 import play.api.libs.json.{Json, OFormat}
 
-final case class EligibilityStatus(
-    overallEligibilityStatus: OverallEligibilityStatus
-)
+final case class EligibilityStatus(eligibilityPass: EligibilityPass)
 
 object EligibilityStatus {
   implicit val format: OFormat[EligibilityStatus] = Json.format[EligibilityStatus]

@@ -59,7 +59,7 @@ trait TdEpaye {
     paymentPlanFrequency   = PaymentPlanFrequencies.Monthly,
     paymentPlanMinLength   = PaymentPlanMinLength(1),
     paymentPlanMaxLength   = PaymentPlanMaxLength(6),
-    eligibilityStatus      = EligibilityStatus(OverallEligibilityStatus(true)),
+    eligibilityStatus      = EligibilityStatus(EligibilityPass(true)),
     eligibilityRules       = eligibleEligibilityRules,
     chargeTypeAssessment   = List(
       ChargeTypeAssessment(
@@ -93,7 +93,7 @@ trait TdEpaye {
   )
 
   def ineligibleEligibilityCheckResult: EligibilityCheckResult = eligibleEligibilityCheckResult.copy(
-    eligibilityStatus = EligibilityStatus(OverallEligibilityStatus(false)),
+    eligibilityStatus = EligibilityStatus(EligibilityPass(false)),
     eligibilityRules  = hasRlsAddressOn
   )
 
