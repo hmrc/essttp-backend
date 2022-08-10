@@ -25,7 +25,7 @@ X-Session-ID: sialalalabta
     "markedAsInsolvent": false,
     "isLessThanMinDebtAllowance": false,
     "isMoreThanMaxDebtAllowance": false,
-    "disallowedChargeLocks": false,
+    "disallowedChargeLockTypes": false,
     "existingTTP": false,
     "exceedsMaxDebtAge": false,
     "eligibleChargeType": false,
@@ -36,7 +36,7 @@ X-Session-ID: sialalalabta
       "taxPeriodFrom": "2020-08-13",
       "taxPeriodTo": "2020-08-14",
       "debtTotalAmount": 300000,
-      "disallowedChargeLocks": [
+      "disallowedChargeLockTypes": [
         {
           "chargeId": "A00000000001",
           "mainTrans": "mainTrans",
