@@ -38,7 +38,7 @@ trait TdEpaye {
   val reusableDateAsString: String = "2022-05-17"
   val reusableDate: LocalDate = LocalDate.parse(reusableDateAsString)
 
-  val eligibleEligibilityRules: EligibilityRules = EligibilityRules(hasRlsOnAddress            = false, markedAsInsolvent = false, isLessThanMinDebtAllowance = false, isMoreThanMaxDebtAllowance = false, disallowedChargeLocks = false, existingTTP = false, chargesOverMaxDebtAge = false, ineligibleChargeTypes = false, missingFiledReturns = false)
+  val eligibleEligibilityRules: EligibilityRules = EligibilityRules(hasRlsOnAddress            = false, markedAsInsolvent = false, isLessThanMinDebtAllowance = false, isMoreThanMaxDebtAllowance = false, disallowedChargeLockTypes = false, existingTTP = false, chargesOverMaxDebtAge = false, ineligibleChargeTypes = false, missingFiledReturns = false)
 
   val hasRlsAddressOn: EligibilityRules = eligibleEligibilityRules.copy(hasRlsOnAddress = true)
 
