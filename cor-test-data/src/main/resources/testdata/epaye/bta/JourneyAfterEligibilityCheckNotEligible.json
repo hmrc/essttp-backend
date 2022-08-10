@@ -28,7 +28,7 @@
       "minPlanLengthMonths": 1,
       "maxPlanLengthMonths": 3,
       "eligibilityStatus": {
-        "overallEligibilityStatus": false
+        "eligibilityPass": false
       },
       "eligibilityRules": {
         "hasRlsOnAddress": true,
