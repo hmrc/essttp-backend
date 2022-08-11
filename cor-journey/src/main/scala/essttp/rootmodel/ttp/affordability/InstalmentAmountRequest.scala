@@ -34,7 +34,7 @@ final case class InstalmentAmountRequest(
     initialPaymentAmount:         Option[AmountInPence],
     accruedDebtInterest:          AccruedDebtInterest,
     debtItemCharges:              List[DebtItemCharge],
-    customerPostCodes:            List[CustomerPostcode]
+    customerPostcodes:            List[CustomerPostcode]
 )
 
 object InstalmentAmountRequest {
