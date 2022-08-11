@@ -18,13 +18,13 @@ package essttp.testdata
 
 import essttp.journey.model.{CorrelationId, JourneyId, UpfrontPaymentAnswers}
 import essttp.rootmodel._
-import essttp.rootmodel.bank.{AccountName, AccountNumber, BankDetails, DirectDebitDetails, SortCode, TypeOfBankAccount, TypesOfBankAccount}
+import essttp.rootmodel.bank._
 import essttp.rootmodel.dates.InitialPaymentDate
 import essttp.rootmodel.dates.extremedates.{EarliestPaymentPlanStartDate, ExtremeDatesResponse, LatestPaymentPlanStartDate}
 import essttp.rootmodel.dates.startdates.{InstalmentStartDate, StartDatesResponse}
-import essttp.rootmodel.ttp.{ChargeReference, InterestAccrued, ProcessingDateTime}
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
-import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, AmountDue, Collection, DebtItemOriginalDueDate, DueDate, InitialCollection, Instalment, InstalmentBalance, InstalmentNumber, NumberOfInstalments, PaymentPlan, PlanDuration, PlanInterest, RegularCollection, TotalDebt, TotalDebtIncludingInterest}
+import essttp.rootmodel.ttp.affordablequotes._
+import essttp.rootmodel.ttp.{ChargeReference, InterestAccrued}
 import essttp.utils.TdSupport.FakeRequestOps
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
@@ -43,7 +43,7 @@ trait TdBase {
   def amountInPence: AmountInPence = AmountInPence(1000)
   def upfrontPaymentAmount: UpfrontPaymentAmount = UpfrontPaymentAmount(amountInPence)
   def anotherUpfrontPaymentAmount: UpfrontPaymentAmount = UpfrontPaymentAmount(amountInPence.copy(value = 1001))
-  def instalmentAmounts: InstalmentAmounts = InstalmentAmounts(ProcessingDateTime("2022-01-01"), AmountInPence(1000), AmountInPence(2000))
+  def instalmentAmounts: InstalmentAmounts = InstalmentAmounts(AmountInPence(1000), AmountInPence(2000))
   def upfrontPaymentAnswersDeclared: UpfrontPaymentAnswers = UpfrontPaymentAnswers.DeclaredUpfrontPayment(upfrontPaymentAmount)
   def upfrontPaymentAnswersNoUpfrontPayment: UpfrontPaymentAnswers = UpfrontPaymentAnswers.NoUpfrontPayment
   def initialPaymentDate: InitialPaymentDate = InitialPaymentDate(LocalDate.parse("2022-01-01"))

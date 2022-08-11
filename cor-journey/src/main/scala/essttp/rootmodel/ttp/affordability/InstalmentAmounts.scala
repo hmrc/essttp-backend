@@ -18,11 +18,9 @@ package essttp.rootmodel.ttp.affordability
 
 import cats.Eq
 import essttp.rootmodel.AmountInPence
-import essttp.rootmodel.ttp.ProcessingDateTime
 import play.api.libs.json.{Json, OFormat}
 
 final case class InstalmentAmounts(
-    processingDateTime:      ProcessingDateTime,
     minimumInstalmentAmount: AmountInPence,
     maximumInstalmentAmount: AmountInPence
 )
