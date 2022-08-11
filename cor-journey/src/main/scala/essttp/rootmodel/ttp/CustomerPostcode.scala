@@ -24,7 +24,5 @@ final case class CustomerPostcode(
 )
 
 object CustomerPostcode {
-
   implicit val format: OFormat[CustomerPostcode] = Json.format[CustomerPostcode]
-
 }
