@@ -17,7 +17,6 @@
 package essttp.utils
 
 import enumeratum.{Enum, EnumEntry}
-import org.apache.commons.lang3.StringUtils
 import play.api.libs.json._
 
 object EnumFormat {
