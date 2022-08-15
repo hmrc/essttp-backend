@@ -77,14 +77,17 @@ class UpdateTypeOfBankAccountController @Inject() (
           )
         case j: Journey.Epaye.EnteredDirectDebitDetails =>
           j.into[Journey.Epaye.ChosenTypeOfBankAccount]
+            .withFieldConst(_.typeOfBankAccount, typeOfBankAccount)
             .withFieldConst(_.stage, determineStage(typeOfBankAccount))
             .transform
         case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
           j.into[Journey.Epaye.ChosenTypeOfBankAccount]
+            .withFieldConst(_.typeOfBankAccount, typeOfBankAccount)
             .withFieldConst(_.stage, determineStage(typeOfBankAccount))
             .transform
         case j: Journey.Epaye.AgreedTermsAndConditions =>
           j.into[Journey.Epaye.ChosenTypeOfBankAccount]
+            .withFieldConst(_.typeOfBankAccount, typeOfBankAccount)
             .withFieldConst(_.stage, determineStage(typeOfBankAccount))
             .transform
         case _: Journey.Epaye.SubmittedArrangement =>
