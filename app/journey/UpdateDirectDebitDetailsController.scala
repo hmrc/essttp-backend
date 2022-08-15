@@ -77,10 +77,12 @@ class UpdateDirectDebitDetailsController @Inject() (
           )
         case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
           j.into[Journey.Epaye.EnteredDirectDebitDetails]
+            .withFieldConst(_.directDebitDetails, directDebitDetails)
             .withFieldConst(_.stage, determineStage(directDebitDetails))
             .transform
         case j: Journey.Epaye.AgreedTermsAndConditions =>
           j.into[Journey.Epaye.EnteredDirectDebitDetails]
+            .withFieldConst(_.directDebitDetails, directDebitDetails)
             .withFieldConst(_.stage, determineStage(directDebitDetails))
             .transform
         case _: Journey.Epaye.SubmittedArrangement =>
