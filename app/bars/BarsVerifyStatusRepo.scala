@@ -19,8 +19,6 @@ package bars
 import bars.BarsVerifyStatusRepo._
 import config.AppConfig
 import essttp.bars.model.{BarsVerifyStatus, TaxIdIndex}
-
-import scala.concurrent.duration.DurationInt
 import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
 import repository.Repo
 import repository.Repo.{Id, IdExtractor}
@@ -39,7 +37,7 @@ final class BarsVerifyStatusRepo @Inject() (
   extends Repo[TaxIdIndex, BarsVerifyStatus](
     collectionName = "bars",
     mongoComponent = mongoComponent,
-    indexes        = BarsVerifyStatusRepo.indexes(config.barsVerifyRepoTtlMinutes.minutes.toSeconds),
+    indexes        = BarsVerifyStatusRepo.indexes(config.barsVerifyRepoTtl.toSeconds),
     extraCodecs    = Codecs.playFormatCodecsBuilder(BarsVerifyStatus.format).build,
     replaceIndexes = true
   )

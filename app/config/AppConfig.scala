@@ -20,10 +20,12 @@ import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import scala.concurrent.duration.FiniteDuration
+
 @Singleton
 class AppConfig @Inject() (
     config: Configuration, servicesConfig: ServicesConfig
 ) {
-  val barsVerifyRepoTtlMinutes: Int = config.get[Int]("bars.verify.repoTtlMinutes")
-  val barsVerifyMaxAttempts: Int = config.get[Int]("bars.verify.max-attempts")
+  val barsVerifyRepoTtl: FiniteDuration = config.get[FiniteDuration]("bars.verify.repoTtl")
+  val barsVerifyMaxAttempts: Int = config.get[Int]("bars.verify.maxAttempts")
 }
