@@ -143,7 +143,7 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= appDependencies,
     Test / parallelExecution := false,
     Test / fork := false,
-    routesImport ++= Seq("essttp.journey.model._", "essttp.rootmodel._"),
+    routesImport ++= Seq("essttp.journey.model._"),
     wartremoverExcluded ++= (Compile / routes).value,
     scalacOptions += "-P:silencer:pathFilters=routes"
   )

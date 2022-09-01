@@ -68,7 +68,7 @@ class BarsVerifyStatusService @Inject() (
   private def find(taxId: TaxId): Future[Option[BarsVerifyStatus]] =
     barsRepo.findById(TaxIdIndex(taxId))
 
-  def upsert(barsStatus: BarsVerifyStatus): Future[Unit] =
+  private def upsert(barsStatus: BarsVerifyStatus): Future[Unit] =
     barsRepo.upsert(barsStatus)
 
 }
