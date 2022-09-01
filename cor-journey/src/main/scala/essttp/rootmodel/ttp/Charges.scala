@@ -26,7 +26,7 @@ final case class Charges(
     mainTrans:            MainTrans,
     subTrans:             SubTrans,
     outstandingAmount:    OutstandingAmount,
-    interestStartDate:    InterestStartDate,
+    interestStartDate:    Option[InterestStartDate],
     dueDate:              DueDate,
     accruedInterest:      AccruedInterest,
     ineligibleChargeType: IneligibleChargeType,

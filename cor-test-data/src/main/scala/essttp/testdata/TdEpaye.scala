@@ -75,7 +75,7 @@ trait TdEpaye {
             subTrans             = SubTrans("subTrans"),
             outstandingAmount    = OutstandingAmount(AmountInPence(100000)),
             dueDate              = DueDate(reusableDate),
-            interestStartDate    = InterestStartDate(reusableDate),
+            interestStartDate    = Some(InterestStartDate(reusableDate)),
             accruedInterest      = AccruedInterest(AmountInPence(1597)),
             ineligibleChargeType = IneligibleChargeType(false),
             chargeOverMaxDebtAge = ChargeOverMaxDebtAge(false),
