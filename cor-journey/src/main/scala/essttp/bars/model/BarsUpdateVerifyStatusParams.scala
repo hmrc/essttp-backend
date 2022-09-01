@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package config
+package essttp.bars.model
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import essttp.rootmodel.TaxId
+import play.api.libs.json.{Format, Json}
 
-import scala.concurrent.duration.FiniteDuration
+final case class BarsUpdateVerifyStatusParams(taxId: TaxId)
 
-@Singleton
-class AppConfig @Inject() (
-    config: Configuration, servicesConfig: ServicesConfig
-) {
-  val barsVerifyRepoTtl: FiniteDuration = config.get[FiniteDuration]("bars.verify.repoTtl")
-  val barsVerifyMaxAttempts: Int = config.get[Int]("bars.verify.maxAttempts")
+object BarsUpdateVerifyStatusParams {
+  implicit val format: Format[BarsUpdateVerifyStatusParams] = Json.format
 }
+

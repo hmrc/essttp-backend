@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package config
+package essttp.bars.model
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import essttp.rootmodel.{EmpRef, TaxId, Vrn}
+import play.api.libs.json.{Format, Json}
 
-import scala.concurrent.duration.FiniteDuration
+final case class TaxIdIndex(value: String)
 
-@Singleton
-class AppConfig @Inject() (
-    config: Configuration, servicesConfig: ServicesConfig
-) {
-  val barsVerifyRepoTtl: FiniteDuration = config.get[FiniteDuration]("bars.verify.repoTtl")
-  val barsVerifyMaxAttempts: Int = config.get[Int]("bars.verify.maxAttempts")
+object TaxIdIndex {
+  implicit val format: Format[TaxIdIndex] = Json.valueFormat
+
+  def apply(taxId: TaxId): TaxIdIndex = taxId match {
+    case EmpRef(value) => TaxIdIndex(s"EmpRef-$value")
+    case Vrn(value)    => TaxIdIndex(s"Vrn-$value")
+  }
 }

@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package config
+package essttp.bars.model
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import play.api.libs.json.{Json, OFormat}
 
-import scala.concurrent.duration.FiniteDuration
+import java.time.Instant
 
-@Singleton
-class AppConfig @Inject() (
-    config: Configuration, servicesConfig: ServicesConfig
-) {
-  val barsVerifyRepoTtl: FiniteDuration = config.get[FiniteDuration]("bars.verify.repoTtl")
-  val barsVerifyMaxAttempts: Int = config.get[Int]("bars.verify.maxAttempts")
+final case class BarsVerifyStatusResponse(attempts: Int, lockoutExpiryDateTime: Option[Instant])
+
+object BarsVerifyStatusResponse {
+  implicit val format: OFormat[BarsVerifyStatusResponse] = Json.format
+
+  def apply(status: BarsVerifyStatus): BarsVerifyStatusResponse =
+    BarsVerifyStatusResponse(status.verifyCalls, status.lockoutExpiryDateTime)
 }
