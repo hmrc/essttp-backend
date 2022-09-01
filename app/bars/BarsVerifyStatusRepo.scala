@@ -16,12 +16,11 @@
 
 package bars
 
-import bars.BarsRepo._
+import bars.BarsVerifyStatusRepo._
 import config.AppConfig
 import essttp.bars.model.{BarsVerifyStatus, TaxIdIndex}
 
 import scala.concurrent.duration.DurationInt
-//import essttp.rootmodel.TaxId
 import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
 import repository.Repo
 import repository.Repo.{Id, IdExtractor}
@@ -33,24 +32,20 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
-final class BarsRepo @Inject() (
+final class BarsVerifyStatusRepo @Inject() (
     mongoComponent: MongoComponent,
     config:         AppConfig
 )(implicit ec: ExecutionContext)
   extends Repo[TaxIdIndex, BarsVerifyStatus](
     collectionName = "bars",
     mongoComponent = mongoComponent,
-    indexes        = BarsRepo.indexes(10.minutes.toSeconds), // TODO config (default 24 hours)?
+    indexes        = BarsVerifyStatusRepo.indexes(config.barsVerifyRepoTtlMinutes.minutes.toSeconds),
     extraCodecs    = Codecs.playFormatCodecsBuilder(BarsVerifyStatus.format).build,
     replaceIndexes = true
-  ) {
+  )
 
-}
-
-object BarsRepo {
-
+object BarsVerifyStatusRepo {
   implicit val taxId: Id[TaxIdIndex] = (i: TaxIdIndex) => i.value
-
   implicit val taxIdExtractor: IdExtractor[BarsVerifyStatus, TaxIdIndex] = (b: BarsVerifyStatus) => b._id
 
   def indexes(cacheTtlInSeconds: Long): Seq[IndexModel] = Seq(
@@ -59,6 +54,5 @@ object BarsRepo {
       indexOptions = IndexOptions().expireAfter(cacheTtlInSeconds, TimeUnit.SECONDS).name("lastUpdatedIdx")
     )
   )
-
 }
 

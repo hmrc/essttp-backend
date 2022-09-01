@@ -20,7 +20,6 @@ import cats.Eq
 import essttp.rootmodel.epaye.{TaxOfficeNumber, TaxOfficeReference}
 import julienrf.json.derived
 import play.api.libs.json.OFormat
-import play.api.mvc.QueryStringBindable
 
 sealed trait TaxId {
   val value: String
@@ -30,8 +29,6 @@ object TaxId {
   implicit val format: OFormat[TaxId] = derived.oformat[TaxId]()
 
   implicit val eq: Eq[TaxId] = Eq.fromUniversalEquals
-
-  implicit val taxIdBinder: QueryStringBindable[TaxId] = essttp.utils.ValueClassBinder.bindableA(_.value)
 }
 
 final case class EmpRef(value: String) extends TaxId

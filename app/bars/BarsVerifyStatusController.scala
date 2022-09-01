@@ -17,7 +17,7 @@
 package bars
 
 import com.google.inject.{Inject, Singleton}
-import essttp.bars.model.{BarsGetStatusParams, BarsUpdateStatusParams}
+import essttp.bars.model.BarsUpdateVerifyStatusParams
 import play.api.libs.json.Json
 import play.api.mvc._
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -25,21 +25,21 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class BarsController @Inject() (
-    barsService: BarsService,
+class BarsVerifyStatusController @Inject() (
+    barsService: BarsVerifyStatusService,
     cc:          ControllerComponents
 )
   (implicit exec: ExecutionContext)
   extends BackendController(cc) {
 
-  def status(): Action[BarsGetStatusParams] = Action.async(parse.json[BarsGetStatusParams]) { implicit request =>
+  def status(): Action[BarsUpdateVerifyStatusParams] = Action.async(parse.json[BarsUpdateVerifyStatusParams]) { implicit request =>
     barsService.status(request.body.taxId)
-      .map { count => Ok(Json.toJson(count)) }
+      .map { resp => Ok(Json.toJson(resp)) }
   }
 
-  def update(): Action[BarsUpdateStatusParams] = Action.async(parse.json[BarsUpdateStatusParams]) { implicit request =>
-    barsService.update(request.body)
-      .map { _ => Ok }
+  def update(): Action[BarsUpdateVerifyStatusParams] = Action.async(parse.json[BarsUpdateVerifyStatusParams]) { implicit request =>
+    barsService.update(request.body.taxId)
+      .map { resp => Ok(Json.toJson(resp)) }
   }
 
 }

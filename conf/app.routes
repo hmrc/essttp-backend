@@ -3,8 +3,8 @@ POST        /epaye/bta/journey/start                                        jour
 POST        /epaye/gov-uk/journey/start                                     journey.SjController.startJourneyEpayeFromGovUk()
 POST        /epaye/detached-url/journey/start                               journey.SjController.startJourneyEpayeFromDetachedUrl()
 
-POST        /bars/verify/status                                             bars.BarsController.status()
-POST        /bars/verify/update                                             bars.BarsController.update()
+POST        /bars/verify/status                                             bars.BarsVerifyStatusController.status()
+POST        /bars/verify/update                                             bars.BarsVerifyStatusController.update()
 
 GET         /journey/find-latest-by-session-id                              journey.JourneyController.findLatestJourneyBySessionId()
 

@@ -16,12 +16,12 @@
 
 package essttp.bars
 
-import essttp.bars.model.{BarsGetStatusParams, BarsUpdateStatusParams, BarsVerifyStatusResponse}
+import essttp.bars.model.{BarsUpdateVerifyStatusParams, BarsVerifyStatusResponse}
+import essttp.rootmodel.TaxId
 import essttp.utils.RequestSupport._
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HttpClient
-import uk.gov.hmrc.http.HttpReads.Implicits.{readUnit => _, _}
-import essttp.utils.HttpReadsUnitThrowingException.readUnit
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
@@ -30,11 +30,11 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class BarsVerifyStatusConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: ExecutionContext) {
 
-  def status(params: BarsGetStatusParams)(implicit request: RequestHeader): Future[BarsVerifyStatusResponse] =
-    httpClient.POST[BarsGetStatusParams, BarsVerifyStatusResponse](s"$baseUrl/essttp-backend/bars/verify/status", params)
+  def status(taxId: TaxId)(implicit request: RequestHeader): Future[BarsVerifyStatusResponse] =
+    httpClient.POST[BarsUpdateVerifyStatusParams, BarsVerifyStatusResponse](s"$baseUrl/essttp-backend/bars/verify/status", BarsUpdateVerifyStatusParams(taxId))
 
-  def update(params: BarsUpdateStatusParams)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[BarsUpdateStatusParams, Unit](s"$baseUrl/essttp-backend/bars/verify/update", params)
+  def update(taxId: TaxId)(implicit request: RequestHeader): Future[BarsVerifyStatusResponse] =
+    httpClient.POST[BarsUpdateVerifyStatusParams, BarsVerifyStatusResponse](s"$baseUrl/essttp-backend/bars/verify/update", BarsUpdateVerifyStatusParams(taxId))
 
   @Inject()
   def this(httpClient: HttpClient, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext) = this(

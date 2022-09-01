@@ -24,5 +24,6 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 class AppConfig @Inject() (
     config: Configuration, servicesConfig: ServicesConfig
 ) {
-
+  val barsVerifyRepoTtlMinutes: Int = config.get[Int]("bars.verify.repoTtlMinutes")
+  val barsVerifyMaxAttempts: Int = config.get[Int]("bars.verify.max-attempts")
 }

@@ -17,7 +17,8 @@
 package bars
 
 import cats.data.OptionT
-import essttp.bars.model.{BarsUpdateStatusParams, BarsVerifyStatus, BarsVerifyStatusResponse, TaxIdIndex}
+import config.AppConfig
+import essttp.bars.model._
 import essttp.rootmodel.TaxId
 
 import java.time.Instant
@@ -26,15 +27,16 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BarsService @Inject() (
-    barsRepo: BarsRepo
+class BarsVerifyStatusService @Inject() (
+    barsRepo:  BarsVerifyStatusRepo,
+    appConfig: AppConfig
 )(implicit ec: ExecutionContext) {
 
   /*
    * get current count of calls to verify endpoint for this taxId
    */
-  def status(id: TaxId): Future[BarsVerifyStatusResponse] =
-    find(id).map {
+  def status(taxId: TaxId): Future[BarsVerifyStatusResponse] =
+    find(taxId).map {
       case Some(barsStatus) => BarsVerifyStatusResponse(barsStatus)
       case None =>
         BarsVerifyStatusResponse(
@@ -47,11 +49,11 @@ class BarsService @Inject() (
    * increment the verify call count for this taxId
    * and if it exceeds maxAttempts then set the expiryDateTime field
    */
-  def update(params: BarsUpdateStatusParams): Future[Unit] =
-    OptionT[Future, BarsVerifyStatus](find(params.taxId))
-      .fold(BarsVerifyStatus(params.taxId)) { status =>
+  def update(taxId: TaxId): Future[BarsVerifyStatusResponse] =
+    OptionT[Future, BarsVerifyStatus](find(taxId))
+      .fold(BarsVerifyStatus(taxId)) { status =>
         val expiry: Option[Instant] =
-          if (status.verifyCalls >= params.maxAttempts)
+          if (status.verifyCalls >= appConfig.barsVerifyMaxAttempts)
             Some(Instant.now.plus(24, ChronoUnit.HOURS))
           else None
 
@@ -61,7 +63,7 @@ class BarsService @Inject() (
           lockoutExpiryDateTime = expiry
         )
       }
-      .flatMap(upsert)
+      .flatMap(status => upsert(status).map(_ => BarsVerifyStatusResponse(status)))
 
   private def find(taxId: TaxId): Future[Option[BarsVerifyStatus]] =
     barsRepo.findById(TaxIdIndex(taxId))

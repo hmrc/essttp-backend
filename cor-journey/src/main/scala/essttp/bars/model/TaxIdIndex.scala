@@ -16,7 +16,7 @@
 
 package essttp.bars.model
 
-import essttp.rootmodel.TaxId
+import essttp.rootmodel.{EmpRef, TaxId, Vrn}
 import play.api.libs.json.{Format, Json}
 
 final case class TaxIdIndex(value: String)
@@ -24,5 +24,8 @@ final case class TaxIdIndex(value: String)
 object TaxIdIndex {
   implicit val format: Format[TaxIdIndex] = Json.valueFormat
 
-  def apply(taxId: TaxId): TaxIdIndex = TaxIdIndex(taxId.value)
+  def apply(taxId: TaxId): TaxIdIndex = taxId match {
+    case EmpRef(value) => TaxIdIndex(s"EmpRef-$value")
+    case Vrn(value)    => TaxIdIndex(s"Vrn-$value")
+  }
 }

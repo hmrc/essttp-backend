@@ -19,9 +19,9 @@ package essttp.bars.model
 import essttp.rootmodel.TaxId
 import play.api.libs.json.{Format, Json}
 
-final case class BarsGetStatusParams(taxId: TaxId)
+final case class BarsUpdateVerifyStatusParams(taxId: TaxId)
 
-object BarsGetStatusParams {
-  implicit val format: Format[BarsGetStatusParams] = Json.format
+object BarsUpdateVerifyStatusParams {
+  implicit val format: Format[BarsUpdateVerifyStatusParams] = Json.format
 }
 
