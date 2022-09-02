@@ -21,8 +21,6 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 
 val appScalaVersion = "2.12.15"
 
-val silencerVersion = "1.7.8"
-
 lazy val appDependencies : Seq[ModuleID] = AppDependencies()
 lazy val playSettings : Seq[Setting[_]] = Seq.empty
 
@@ -85,9 +83,7 @@ lazy val wartRemoverSettings =
       Wart.NonUnitStatements,
       Wart.PublicInference
     ),
-    wartremoverExcluded ++= (
-        (baseDirectory.value ** "*.sc").get
-      )
+    wartremoverExcluded ++= (baseDirectory.value ** "*.sc").get
   )
 
 lazy val scalaCompilerOptions = Seq(
@@ -100,7 +96,9 @@ lazy val scalaCompilerOptions = Seq(
   "-feature",
   "-unchecked",
   "-language:implicitConversions",
-  "-Ypartial-unification" //required by cats
+  "-Ypartial-unification", //required by cats
+  "-Wconf:cat=unused-imports&src=html/.*:s",
+  "-Wconf:src=routes/.*:s"
 )
 
 def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = {
@@ -126,12 +124,6 @@ lazy val commonSettings = Seq(
   .++(scoverageSettings)
   .++(scalaSettings)
   .++(uk.gov.hmrc.DefaultBuildSettings.defaultSettings())
-  .++(
-    libraryDependencies ++= Seq(
-      compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
-      "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
-    )
-  )
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin, SbtAutoBuildPlugin, SbtGitVersioning)
@@ -144,8 +136,7 @@ lazy val microservice = Project(appName, file("."))
     Test / parallelExecution := false,
     Test / fork := false,
     routesImport ++= Seq("essttp.journey.model._"),
-    wartremoverExcluded ++= (Compile / routes).value,
-    scalacOptions += "-P:silencer:pathFilters=routes"
+    wartremoverExcluded ++= (Compile / routes).value
   )
   .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)
   .settings(
@@ -180,12 +171,12 @@ lazy val corJourney = Project(appName + "-cor-journey", file("cor-journey"))
       //run `essttp-backend/dependencyTree::toFile deps.txt -f` and look for that line:
       // +-uk.gov.hmrc:auth-client_2.12:3.0.0-play-27 (evicted by: 5.1.0-play-27)
       //the correct version in this time was `3.0.0`
-      "uk.gov.hmrc"           %% "auth-client"              % "5.10.0-play-28",
+      "uk.gov.hmrc"           %% "auth-client"              % "5.14.0-play-28",
       "uk.gov.hmrc"           %% "bootstrap-common-play-28" % AppDependencies.bootstrapVersion % Provided,
       "org.julienrf"          %% "play-json-derived-codecs" % AppDependencies.playJsonDerivedCodesVersion, //choose carefully
-      "com.github.kxbmap"     %% "configs"                  % "0.4.4",
-      "com.github.pureconfig" %% "pureconfig"               % "0.12.2",
-      "com.beachape"          %% "enumeratum-play"          % "1.5.15",
+      "com.github.kxbmap"     %% "configs"                  % "0.6.1",
+      "com.github.pureconfig" %% "pureconfig"               % "0.17.1",
+      "com.beachape"          %% "enumeratum-play"          % AppDependencies.enumeratumVersion,
       "com.typesafe.play"     %% "play"                     % play.core.PlayVersion.current % Provided,
       "io.scalaland"          %% "chimney"                  % AppDependencies.chimneyVersion,
       "org.typelevel"         %% "cats-core"                % AppDependencies.catsVersion,

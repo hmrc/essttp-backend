@@ -16,7 +16,6 @@
 
 package testsupport
 
-import com.github.ghik.silencer.silent
 import com.google.inject.{AbstractModule, Provides}
 import essttp.journey.model.{CorrelationId, Journey, JourneyId}
 import essttp.testdata.TdAll
@@ -38,6 +37,7 @@ import java.time.{Clock, LocalDateTime, ZoneId, ZonedDateTime}
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Singleton
+import scala.annotation.nowarn
 import scala.util.Random
 
 trait ItSpec
@@ -63,7 +63,7 @@ trait ItSpec
 
     @Provides
     @Singleton
-    @silent // silence "method never used" warning
+    @nowarn // silence "method never used" warning
     def clock: Clock = self.clock
 
     /**
@@ -72,12 +72,12 @@ trait ItSpec
      */
     @Provides
     @Singleton
-    @silent // silence "method never used" warning
+    @nowarn // silence "method never used" warning
     def journeyIdGenerator(testJourneyIdGenerator: TestJourneyIdGenerator): JourneyIdGenerator = testJourneyIdGenerator
 
     @Provides
     @Singleton
-    @silent // silence "method never used" warning
+    @nowarn // silence "method never used" warning
     def testJourneyIdGenerator(): TestJourneyIdGenerator = {
       val randomPart: String = Random.alphanumeric.take(5).mkString
       val journeyIdPrefix: TestJourneyIdPrefix = TestJourneyIdPrefix(s"TestJourneyId-$randomPart-")
@@ -86,12 +86,12 @@ trait ItSpec
 
     @Provides
     @Singleton
-    @silent // silence "method never used" warning
+    @nowarn // silence "method never used" warning
     def testCorrelationIdGenerator(testCorrelationIdGenerator: TestCorrelationIdGenerator): CorrelationIdGenerator = testCorrelationIdGenerator
 
     @Provides
     @Singleton
-    @silent // silence "method never used" warning
+    @nowarn // silence "method never used" warning
     def testCorrelationIdGenerator(): TestCorrelationIdGenerator = {
       val randomPart: String = UUID.randomUUID().toString.take(8)
       val correlationIdPrefix: TestCorrelationIdPrefix = TestCorrelationIdPrefix(s"$randomPart-843f-4988-89c6-d4d3e2e91e26")
