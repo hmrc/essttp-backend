@@ -21,6 +21,8 @@ import essttp.bars.model.BarsVerifyStatusResponse
 import essttp.rootmodel.EmpRef
 import testsupport.ItSpec
 
+import java.time.temporal.ChronoUnit
+
 class BarsVerifyStatusControllerSpec extends ItSpec {
 
   def connector: BarsVerifyStatusConnector = app.injector.instanceOf[BarsVerifyStatusConnector]
@@ -73,7 +75,7 @@ class BarsVerifyStatusControllerSpec extends ItSpec {
         val result: BarsVerifyStatusResponse = connector.status(EmpRef("empRef")).futureValue
 
         result.attempts shouldBe 3
-        result.lockoutExpiryDateTime.isDefined shouldBe true
+        result.lockoutExpiryDateTime shouldBe Some(frozenZonedDateTime.toInstant.plus(24, ChronoUnit.HOURS))
       }
     }
   }
@@ -88,7 +90,7 @@ class BarsVerifyStatusControllerSpec extends ItSpec {
         val result: BarsVerifyStatusResponse = connector.status(EmpRef("empRef")).futureValue
 
         result.attempts shouldBe 4
-        result.lockoutExpiryDateTime.isDefined shouldBe true
+        result.lockoutExpiryDateTime shouldBe Some(frozenZonedDateTime.toInstant.plus(24, ChronoUnit.HOURS))
       }
     }
   }
