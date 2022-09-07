@@ -19,6 +19,7 @@ package controllers.bars
 import essttp.bars.BarsVerifyStatusConnector
 import essttp.bars.model.BarsVerifyStatusResponse
 import essttp.rootmodel.EmpRef
+import org.scalatest.Assertion
 import testsupport.ItSpec
 
 import java.time.temporal.ChronoUnit
@@ -27,70 +28,69 @@ class BarsVerifyStatusControllerSpec extends ItSpec {
 
   def connector: BarsVerifyStatusConnector = app.injector.instanceOf[BarsVerifyStatusConnector]
 
+  abstract class Setup(numberUpdates: Int) extends BarsVerifyStatusItTest {
+    private val empRef = "123XYZ456"
+    private val expectedExpiry = frozenZonedDateTime.toInstant.plus(24, ChronoUnit.HOURS)
+
+    for(n <- 1 to numberUpdates) {
+      connector.update(EmpRef(empRef)).futureValue
+    }
+
+    def assertBarsVerifyStatusResponse(): Assertion = {
+      val result = connector.status(EmpRef(empRef)).futureValue
+      if (numberUpdates < 3) {
+        result shouldBe BarsVerifyStatusResponse(attempts = numberUpdates, lockoutExpiryDateTime = None)
+      } else  {
+        result.attempts shouldBe numberUpdates
+        result.lockoutExpiryDateTime shouldBe Some(expectedExpiry)
+      }
+    }
+  }
+
   "POST /bars/verify/status" - {
     "when no BARs verify calls have been made" - {
-      "should return the empty BarsVerifyStatusResponse" in new BarsVerifyStatusItTest {
-        val result = connector.status(EmpRef("empRef")).futureValue
-        result shouldBe BarsVerifyStatusResponse(attempts              = 0, lockoutExpiryDateTime = None)
+      "should return the empty BarsVerifyStatusResponse" in new Setup(0) {
+        assertBarsVerifyStatusResponse()
       }
     }
   }
 
   "POST /bars/verify/update" - {
     "when no BARs verify call updates have been made" - {
-      "should return BarsVerifyStatusResponse with a count of 1" in new BarsVerifyStatusItTest {
-        val result = connector.update(EmpRef("empRef")).futureValue
-        result shouldBe BarsVerifyStatusResponse(attempts              = 1, lockoutExpiryDateTime = None)
+      "should return BarsVerifyStatusResponse with a count of 1" in new Setup(0) {
+        assertBarsVerifyStatusResponse()
       }
     }
   }
 
   "POST /bars/verify/status" - {
     "after one BARs verify call update has been made" - {
-      "should return BarsVerifyStatusResponse with a count of 1" in new BarsVerifyStatusItTest {
-        connector.update(EmpRef("empRef")).futureValue
-        val result = connector.status(EmpRef("empRef")).futureValue
-        result shouldBe BarsVerifyStatusResponse(attempts              = 1, lockoutExpiryDateTime = None)
+      "should return BarsVerifyStatusResponse with a count of 1" in new Setup(1) {
+        assertBarsVerifyStatusResponse()
       }
     }
   }
 
   "POST /bars/verify/status" - {
     "after two BARs verify call updates have been made" - {
-      "should return BarsVerifyStatusResponse with a count of 2" in new BarsVerifyStatusItTest {
-        connector.update(EmpRef("empRef")).futureValue
-        connector.update(EmpRef("empRef")).futureValue
-        val result = connector.status(EmpRef("empRef")).futureValue
-        result shouldBe BarsVerifyStatusResponse(attempts              = 2, lockoutExpiryDateTime = None)
+      "should return BarsVerifyStatusResponse with a count of 2" in new Setup(2) {
+        assertBarsVerifyStatusResponse()
       }
     }
   }
 
   "POST /bars/verify/status" - {
     "after three BARs verify call updates have been made" - {
-      "should return BarsVerifyStatusResponse with a count of 3 and an expiry time" in new BarsVerifyStatusItTest {
-        connector.update(EmpRef("empRef")).futureValue
-        connector.update(EmpRef("empRef")).futureValue
-        connector.update(EmpRef("empRef")).futureValue
-        val result: BarsVerifyStatusResponse = connector.status(EmpRef("empRef")).futureValue
-
-        result.attempts shouldBe 3
-        result.lockoutExpiryDateTime shouldBe Some(frozenZonedDateTime.toInstant.plus(24, ChronoUnit.HOURS))
+      "should return BarsVerifyStatusResponse with a count of 3 and an expiry time" in new Setup(3) {
+        assertBarsVerifyStatusResponse()
       }
     }
   }
 
   "POST /bars/verify/status" - {
     "after four BARs verify call updates have been made" - {
-      "should return BarsVerifyStatusResponse with a count of 4 and an expiry time" in new BarsVerifyStatusItTest {
-        connector.update(EmpRef("empRef")).futureValue
-        connector.update(EmpRef("empRef")).futureValue
-        connector.update(EmpRef("empRef")).futureValue
-        connector.update(EmpRef("empRef")).futureValue
-        val result: BarsVerifyStatusResponse = connector.status(EmpRef("empRef")).futureValue
-
-        result.attempts shouldBe 4
-        result.lockoutExpiryDateTime shouldBe Some(frozenZonedDateTime.toInstant.plus(24, ChronoUnit.HOURS))
+      "should return BarsVerifyStatusResponse with a count of 4 and an expiry time" in new Setup(4) {
+        assertBarsVerifyStatusResponse()
       }
     }
   }
