@@ -1,0 +1,10 @@
+POST http://localhost:9216/essttp-backend/journey/6318908dbd07605ea537cdbb/update-arrangement
+Accept: */*
+Cache-Control: no-cache
+Content-Type: Application/Json
+X-Session-ID: sialalalabta
+
+{
+  "processingDateTime": "2022-03-23T13:49:51.141Z",
+  "customerReference": "123PA44545546"
+}

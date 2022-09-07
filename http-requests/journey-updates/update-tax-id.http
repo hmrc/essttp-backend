@@ -1,4 +1,4 @@
-POST http://localhost:9216/essttp-backend/journey/62a9c845e10000b0c5082d67/update-tax-id
+POST http://localhost:9216/essttp-backend/journey/6318908dbd07605ea537cdbb/update-tax-id
 Accept: */*
 Cache-Control: no-cache
 Content-Type: Application/Json
@@ -6,6 +6,6 @@ X-Session-ID: sialalalabta
 
 {
   "EmpRef": {
-    "value": "016/GZ91926"
+    "value": "016GZ91926"
   }
 }

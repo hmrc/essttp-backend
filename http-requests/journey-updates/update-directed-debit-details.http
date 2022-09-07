@@ -1,0 +1,14 @@
+POST http://localhost:9216/essttp-backend/journey/6318908dbd07605ea537cdbb/update-direct-debit-details
+Accept: */*
+Cache-Control: no-cache
+Content-Type: Application/Json
+X-Session-ID: sialalalabta
+
+{
+  "bankDetails": {
+    "name": "Bob Ross",
+    "sortCode": "123456",
+    "accountNumber": "12345678"
+  },
+  "isAccountHolder": true
+}

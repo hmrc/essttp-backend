@@ -1,22 +1,23 @@
-POST http://localhost:9216/essttp-backend/journey/62a9c845e10000b0c5082d67/update-eligibility-result
+POST http://localhost:9216/essttp-backend/journey/6318908dbd07605ea537cdbb/update-eligibility-result
 Accept: */*
 Cache-Control: no-cache
 Content-Type: Application/Json
 X-Session-ID: sialalalabta
 
 {
-  "idType": "SSTTP",
-  "idNumber": "016/GZ91926",
-  "regimeType": "PAYE",
-  "processingDate": "2022-05-17",
-  "customerPostcodes": [
-    {
-      "addressPostcode": "AA11AA",
-      "postcodeDate": "2022-01-31"
-    }
-  ],
-  "minPlanLengthMonths": 1,
-  "maxPlanLengthMonths": 3,
+  "processingDateTime": "test-processingDate",
+  "identification": [{
+    "idType": "EMPREF",
+    "idValue": "016GZ91926"
+  }],
+  "customerPostcodes": [{
+    "addressPostcode": "test-postcode",
+    "postcodeDate": "2022-01-01"
+  }],
+  "regimePaymentFrequency": "Monthly",
+  "paymentPlanFrequency": "Monthly",
+  "paymentPlanMinLength": 1,
+  "paymentPlanMaxLength": 6,
   "eligibilityStatus": {
     "eligibilityPass": true
   },
@@ -27,45 +28,31 @@ X-Session-ID: sialalalabta
     "isMoreThanMaxDebtAllowance": false,
     "disallowedChargeLockTypes": false,
     "existingTTP": false,
-    "exceedsMaxDebtAge": false,
-    "eligibleChargeType": false,
+    "chargesOverMaxDebtAge": false,
+    "ineligibleChargeTypes": false,
     "missingFiledReturns": false
   },
-  "chargeTypeAssessment": [
-    {
-      "taxPeriodFrom": "2020-08-13",
-      "taxPeriodTo": "2020-08-14",
-      "debtTotalAmount": 300000,
-      "disallowedChargeLockTypes": [
-        {
-          "chargeId": "A00000000001",
-          "mainTrans": "mainTrans",
-          "mainTransDesc": "mainTransDesc",
-          "subTrans": "subTrans",
-          "subTransDesc": "subTransDesc",
-          "outstandingDebtAmount": 100000,
-          "interestStartDate": "2017-03-07",
-          "accruedInterestToDate": 15.97,
-          "chargeLocks": {
-            "paymentLock": {
-              "status": false,
-              "reason": ""
-            },
-            "clearingLock": {
-              "status": false,
-              "reason": ""
-            },
-            "interestLock": {
-              "status": false,
-              "reason": ""
-            },
-            "dunningLock": {
-              "status": false,
-              "reason": ""
-            }
-          }
-        }
-      ]
-    }
-  ]
+  "chargeTypeAssessment": [{
+    "taxPeriodFrom": "2022-04-27",
+    "taxPeriodTo": "2022-04-27",
+    "debtTotalAmount": 100,
+    "charges": [{
+      "chargeType": "test-chargeId",
+      "mainType": "test-mainType",
+      "chargeReference": "test-chargeReference",
+      "mainTrans": "test-mainTrans",
+      "subTrans": "test-subTrans",
+      "outstandingAmount": 10,
+      "interestStartDate": "2022-04-27",
+      "dueDate": "2022-04-27",
+      "accruedInterest": 1,
+      "ineligibleChargeType": false,
+      "chargeOverMaxDebtAge": false,
+      "locks": [{
+        "lockType": "testLockType",
+        "lockReason": "testLockReason",
+        "disallowedChargeLockType": false
+      }]
+    }]
+  }]
 }

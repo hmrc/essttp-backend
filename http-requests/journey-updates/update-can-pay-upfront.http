@@ -1,9 +1,7 @@
-POST http://localhost:9216/essttp-backend/journey/62a9c845e10000b0c5082d67/update-can-pay-upfront
+POST http://localhost:9216/essttp-backend/journey/6318908dbd07605ea537cdbb/update-can-pay-upfront
 Accept: */*
 Cache-Control: no-cache
 Content-Type: Application/Json
 X-Session-ID: sialalalabta
 
-{
-  "canPayUpfront": true
-}
+true
