@@ -32,15 +32,15 @@ class BarsVerifyStatusControllerSpec extends ItSpec {
     private val empRef = "123XYZ456"
     private val expectedExpiry = frozenZonedDateTime.toInstant.plus(24, ChronoUnit.HOURS)
 
-    for(n <- 1 to numberUpdates) {
+    for (n <- 1 to numberUpdates) {
       connector.update(EmpRef(empRef)).futureValue
     }
 
     def assertBarsVerifyStatusResponse(): Assertion = {
       val result = connector.status(EmpRef(empRef)).futureValue
       if (numberUpdates < 3) {
-        result shouldBe BarsVerifyStatusResponse(attempts = numberUpdates, lockoutExpiryDateTime = None)
-      } else  {
+        result shouldBe BarsVerifyStatusResponse(attempts              = numberUpdates, lockoutExpiryDateTime = None)
+      } else {
         result.attempts shouldBe numberUpdates
         result.lockoutExpiryDateTime shouldBe Some(expectedExpiry)
       }
@@ -92,6 +92,34 @@ class BarsVerifyStatusControllerSpec extends ItSpec {
       "should return BarsVerifyStatusResponse with a count of 4 and an expiry time" in new Setup(4) {
         assertBarsVerifyStatusResponse()
       }
+    }
+  }
+
+  "POST /bars/verify/status" - {
+    "is dependent on taxId" in new BarsVerifyStatusItTest {
+      private val taxIdUnderTest = "taxId"
+      // initial status
+      connector.status(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe 0
+      // after other update
+      connector.update(EmpRef("taxId-OTHER")).futureValue
+      connector.status(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe 0
+      // after correct update
+      connector.update(EmpRef(taxIdUnderTest)).futureValue
+      connector.status(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe 1
+    }
+  }
+
+  "POST /bars/verify/update" - {
+    "is dependent on taxId" in new BarsVerifyStatusItTest {
+      private val taxIdUnderTest = "taxId"
+      // first update for taxId under test
+      connector.update(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe 1
+      // other updates
+      connector.update(EmpRef("taxId-OTHER")).futureValue
+      connector.update(EmpRef("taxId-OTHER")).futureValue
+
+      // second update for taxId under test
+      connector.update(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe 2
     }
   }
 }
