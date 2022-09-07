@@ -1,0 +1,49 @@
+POST http://localhost:9216/essttp-backend/journey/6318908dbd07605ea537cdbb/update-selected-plan
+Accept: */*
+Cache-Control: no-cache
+Content-Type: Application/Json
+X-Session-ID: sialalalabta
+
+{
+  "numberOfInstalments": 2,
+  "planDuration": 2,
+  "totalDebt": 111141,
+  "totalDebtIncInt": 111147,
+  "planInterest": 6,
+  "collections": {
+    "initialCollection": {
+      "dueDate": "2022-07-03",
+      "amountDue": 12312
+    },
+    "regularCollections": [
+      {
+        "dueDate": "2022-08-28",
+        "amountDue": 55573
+      },
+      {
+        "dueDate": "2022-09-28",
+        "amountDue": 55573
+      }
+    ]
+  },
+  "instalments": [
+    {
+      "instalmentNumber": 2,
+      "dueDate": "2022-09-28",
+      "instalmentInterestAccrued": 3,
+      "instalmentBalance": 55571,
+      "debtItemChargeId": "A00000000001",
+      "amountDue": 55570,
+      "debtItemOriginalDueDate": "2021-07-28"
+    },
+    {
+      "instalmentNumber": 1,
+      "dueDate": "2022-08-28",
+      "instalmentInterestAccrued": 3,
+      "instalmentBalance": 111141,
+      "debtItemChargeId": "A00000000001",
+      "amountDue": 55570,
+      "debtItemOriginalDueDate": "2021-07-28"
+    }
+  ]
+}

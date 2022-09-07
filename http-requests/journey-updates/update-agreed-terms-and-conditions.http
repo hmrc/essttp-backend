@@ -1,0 +1,5 @@
+POST http://localhost:9216/essttp-backend/journey/6318908dbd07605ea537cdbb/update-has-agreed-terms-and-conditions
+Accept: */*
+Cache-Control: no-cache
+Content-Type: Application/Json
+X-Session-ID: sialalalabta

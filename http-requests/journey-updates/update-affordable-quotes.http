@@ -1,0 +1,178 @@
+POST http://localhost:9216/essttp-backend/journey/6318908dbd07605ea537cdbb/update-affordable-quotes
+Cache-Control: no-cache
+Content-Type: Application/Json
+X-Session-ID: sialalalabta
+
+
+{
+    "paymentPlans": [
+      {
+        "numberOfInstalments": 2,
+        "planDuration": 2,
+        "totalDebt": 111141,
+        "totalDebtIncInt": 111147,
+        "planInterest": 6,
+        "collections": {
+          "initialCollection": {
+            "dueDate": "2022-07-03",
+            "amountDue": 12312
+          },
+          "regularCollections": [
+            {
+              "dueDate": "2022-08-28",
+              "amountDue": 55573
+            },
+            {
+              "dueDate": "2022-09-28",
+              "amountDue": 55573
+            }
+          ]
+        },
+        "instalments": [
+          {
+            "instalmentNumber": 2,
+            "dueDate": "2022-09-28",
+            "instalmentInterestAccrued": 3,
+            "instalmentBalance": 55571,
+            "debtItemChargeId": "A00000000001",
+            "amountDue": 55570,
+            "debtItemOriginalDueDate": "2021-07-28"
+          },
+          {
+            "instalmentNumber": 1,
+            "dueDate": "2022-08-28",
+            "instalmentInterestAccrued": 3,
+            "instalmentBalance": 111141,
+            "debtItemChargeId": "A00000000001",
+            "amountDue": 55570,
+            "debtItemOriginalDueDate": "2021-07-28"
+          }
+        ]
+      },
+      {
+        "numberOfInstalments": 3,
+        "planDuration": 3,
+        "totalDebt": 111141,
+        "totalDebtIncInt": 111150,
+        "planInterest": 9,
+        "collections": {
+          "initialCollection": {
+            "dueDate": "2022-07-03",
+            "amountDue": 12312
+          },
+          "regularCollections": [
+            {
+              "dueDate": "2022-08-28",
+              "amountDue": 37050
+            },
+            {
+              "dueDate": "2022-09-28",
+              "amountDue": 37050
+            },
+            {
+              "dueDate": "2022-10-28",
+              "amountDue": 37050
+            }
+          ]
+        },
+        "instalments": [
+          {
+            "instalmentNumber": 3,
+            "dueDate": "2022-10-28",
+            "instalmentInterestAccrued": 3,
+            "instalmentBalance": 37047,
+            "debtItemChargeId": "A00000000001",
+            "amountDue": 37047,
+            "debtItemOriginalDueDate": "2021-07-28"
+          },
+          {
+            "instalmentNumber": 2,
+            "dueDate": "2022-09-28",
+            "instalmentInterestAccrued": 3,
+            "instalmentBalance": 74094,
+            "debtItemChargeId": "A00000000001",
+            "amountDue": 37047,
+            "debtItemOriginalDueDate": "2021-07-28"
+          },
+          {
+            "instalmentNumber": 1,
+            "dueDate": "2022-08-28",
+            "instalmentInterestAccrued": 3,
+            "instalmentBalance": 111141,
+            "debtItemChargeId": "A00000000001",
+            "amountDue": 37047,
+            "debtItemOriginalDueDate": "2021-07-28"
+          }
+        ]
+      },
+      {
+        "numberOfInstalments": 4,
+        "planDuration": 4,
+        "totalDebt": 111141,
+        "totalDebtIncInt": 111153,
+        "planInterest": 12,
+        "collections": {
+          "initialCollection": {
+            "dueDate": "2022-07-03",
+            "amountDue": 12312
+          },
+          "regularCollections": [
+            {
+              "dueDate": "2022-08-28",
+              "amountDue": 27788
+            },
+            {
+              "dueDate": "2022-09-28",
+              "amountDue": 27788
+            },
+            {
+              "dueDate": "2022-10-28",
+              "amountDue": 27788
+            },
+            {
+              "dueDate": "2022-11-28",
+              "amountDue": 27788
+            }
+          ]
+        },
+        "instalments": [
+          {
+            "instalmentNumber": 4,
+            "dueDate": "2022-11-28",
+            "instalmentInterestAccrued": 3,
+            "instalmentBalance": 27786,
+            "debtItemChargeId": "A00000000001",
+            "amountDue": 27785,
+            "debtItemOriginalDueDate": "2021-07-28"
+          },
+          {
+            "instalmentNumber": 3,
+            "dueDate": "2022-10-28",
+            "instalmentInterestAccrued": 3,
+            "instalmentBalance": 55571,
+            "debtItemChargeId": "A00000000001",
+            "amountDue": 27785,
+            "debtItemOriginalDueDate": "2021-07-28"
+          },
+          {
+            "instalmentNumber": 2,
+            "dueDate": "2022-09-28",
+            "instalmentInterestAccrued": 3,
+            "instalmentBalance": 83356,
+            "debtItemChargeId": "A00000000001",
+            "amountDue": 27785,
+            "debtItemOriginalDueDate": "2021-07-28"
+          },
+          {
+            "instalmentNumber": 1,
+            "dueDate": "2022-08-28",
+            "instalmentInterestAccrued": 3,
+            "instalmentBalance": 111141,
+            "debtItemChargeId": "A00000000001",
+            "amountDue": 27785,
+            "debtItemOriginalDueDate": "2021-07-28"
+          }
+        ]
+      }
+    ]
+  }
