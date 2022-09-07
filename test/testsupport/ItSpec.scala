@@ -16,17 +16,19 @@
 
 package testsupport
 
+import bars.BarsVerifyStatusRepo
 import com.google.inject.{AbstractModule, Provides}
 import essttp.journey.model.{CorrelationId, Journey, JourneyId}
 import essttp.testdata.TdAll
 import journey.{CorrelationIdGenerator, JourneyIdGenerator}
+import org.mongodb.scala.bson.BsonDocument
 import org.scalatest.TestData
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatestplus.play.guice.GuiceOneServerPerTest
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.mvc.Request
-import play.api.test.{DefaultTestServerFactory, RunningServer}
+import play.api.test.{DefaultTestServerFactory, FakeRequest, RunningServer}
 import play.api.{Application, Mode}
 import play.core.server.ServerConfig
 import repository.JourneyRepo
@@ -140,6 +142,22 @@ trait ItSpec
     private def journeyRepo: JourneyRepo = app.injector.instanceOf[JourneyRepo]
 
     def insertJourneyForTest(journey: Journey): Unit = journeyRepo.upsert(journey).futureValue
+  }
+
+  trait BarsVerifyStatusItTest {
+    import essttp.utils.TdSupport._
+
+    implicit val request: Request[_] = FakeRequest()
+      .withSessionId()
+      .withAuthToken()
+      .withAkamaiReputationHeader()
+      .withRequestId()
+      .withTrueClientIp()
+      .withTrueClientPort()
+      .withDeviceId()
+
+    private def barsRepo: BarsVerifyStatusRepo = app.injector.instanceOf[BarsVerifyStatusRepo]
+    barsRepo.collection.deleteMany(BsonDocument("{}")).toFuture().futureValue
   }
 
 }

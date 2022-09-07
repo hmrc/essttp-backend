@@ -21,7 +21,7 @@ import config.AppConfig
 import essttp.bars.model._
 import essttp.rootmodel.TaxId
 
-import java.time.Instant
+import java.time.{Clock, Instant}
 import java.time.temporal.ChronoUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -29,7 +29,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class BarsVerifyStatusService @Inject() (
     barsRepo:  BarsVerifyStatusRepo,
-    appConfig: AppConfig
+    appConfig: AppConfig,
+    clock:     Clock
 )(implicit ec: ExecutionContext) {
 
   /*
@@ -51,18 +52,19 @@ class BarsVerifyStatusService @Inject() (
    */
   def update(taxId: TaxId): Future[BarsVerifyStatusResponse] =
     OptionT[Future, BarsVerifyStatus](find(taxId))
-      .fold(BarsVerifyStatus(taxId)) { status =>
-        val newVerifyCalls = status.verifyCalls + 1
-        val expiry: Option[Instant] =
-          if (newVerifyCalls >= appConfig.barsVerifyMaxAttempts)
-            Some(Instant.now.plus(24, ChronoUnit.HOURS))
-          else None
+      .fold(BarsVerifyStatus(taxId)) {
+        status =>
+          val newVerifyCalls = status.verifyCalls + 1
+          val expiry: Option[Instant] =
+            if (newVerifyCalls >= appConfig.barsVerifyMaxAttempts)
+              Some(Instant.now(clock).plus(24, ChronoUnit.HOURS))
+            else None
 
-        status.copy(
-          verifyCalls           = newVerifyCalls,
-          lastUpdated           = Instant.now,
-          lockoutExpiryDateTime = expiry
-        )
+          status.copy(
+            verifyCalls           = newVerifyCalls,
+            lastUpdated           = Instant.now,
+            lockoutExpiryDateTime = expiry
+          )
       }
       .flatMap(status => upsert(status).map(_ => BarsVerifyStatusResponse(status)))
 
