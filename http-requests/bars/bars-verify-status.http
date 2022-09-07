@@ -1,0 +1,27 @@
+# STATUS
+POST http://localhost:9216/essttp-backend/bars/verify/status
+Content-Type: application/json
+
+{
+  "taxId": {
+    "EmpRef": {
+      "value": "047GZ00583"
+    }
+  }
+}
+
+###
+
+# UPDATE
+POST http://localhost:9216/essttp-backend/bars/verify/update
+Content-Type: application/json
+
+{
+  "taxId": {
+    "EmpRef": {
+      "value": "047GZ00583"
+    }
+  }
+}
+
+###
