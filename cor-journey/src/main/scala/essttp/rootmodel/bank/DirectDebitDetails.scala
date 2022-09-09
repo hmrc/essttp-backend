@@ -18,12 +18,13 @@ package essttp.rootmodel.bank
 
 import cats.Eq
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.crypto.{Encrypter, Decrypter}
 
 final case class DirectDebitDetails(bankDetails: BankDetails, isAccountHolder: Boolean)
 
 object DirectDebitDetails {
 
-  implicit val format: OFormat[DirectDebitDetails] = Json.format
+  implicit def format(implicit crypto: Encrypter with Decrypter): OFormat[DirectDebitDetails] = Json.format
 
   implicit val eq: Eq[DirectDebitDetails] = Eq.fromUniversalEquals
 

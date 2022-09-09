@@ -1,4 +1,5 @@
-POST http://localhost:9216/essttp-backend/epaye/bta/journey/start
+### just a placeholder for now
+POST http://localhost:9216/essttp-backend/vat/bta/journey/start
 Accept: */*
 Cache-Control: no-cache
 Content-Type: Application/Json
@@ -9,9 +10,9 @@ X-Session-ID: sialalalabta
   "backUrl":   "http://localhost:9066/back"
 }
 
-###
 
-POST http://localhost:9216/essttp-backend/epaye/gov-uk/journey/start
+### just a placeholder for now
+POST http://localhost:9216/essttp-backend/vat/gov-uk/journey/start
 Accept: */*
 Cache-Control: no-cache
 Content-Type: Application/Json
@@ -19,9 +20,8 @@ X-Session-ID: sialalalagovuk
 
 {}
 
-###
-
-POST http://localhost:9216/essttp-backend/epaye/detached-url/journey/start
+### just a placeholder for now
+POST http://localhost:9216/essttp-backend/vat/detached-url/journey/start
 Accept: */*
 Cache-Control: no-cache
 Content-Type: Application/Json

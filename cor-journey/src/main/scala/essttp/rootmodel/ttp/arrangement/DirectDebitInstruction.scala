@@ -18,6 +18,7 @@ package essttp.rootmodel.ttp.arrangement
 
 import essttp.rootmodel.bank.{AccountName, AccountNumber, SortCode}
 import play.api.libs.json.{Json, OFormat}
+import uk.gov.hmrc.crypto.{Encrypter, Decrypter}
 
 final case class DirectDebitInstruction(
     sortCode:        SortCode,
@@ -28,6 +29,6 @@ final case class DirectDebitInstruction(
 
 object DirectDebitInstruction {
 
-  implicit val format: OFormat[DirectDebitInstruction] = Json.format
+  implicit def format(implicit crypto: Encrypter with Decrypter): OFormat[DirectDebitInstruction] = Json.format
 
 }

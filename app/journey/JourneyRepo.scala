@@ -17,6 +17,7 @@
 package repository
 
 import config.AppConfig
+import essttp.crypto.Crypto
 import essttp.journey.model.{Journey, JourneyId}
 import essttp.rootmodel.SessionId
 import org.mongodb.scala.bson.BsonDocument
@@ -35,12 +36,12 @@ import scala.concurrent.duration.DurationInt
 final class JourneyRepo @Inject() (
     mongoComponent: MongoComponent,
     config:         AppConfig
-)(implicit ec: ExecutionContext)
+)(implicit ec: ExecutionContext, crypto: Crypto)
   extends Repo[JourneyId, Journey](
     collectionName = "journey",
     mongoComponent = mongoComponent,
     indexes        = JourneyRepo.indexes(30.minutes.toSeconds),
-    Codecs.playFormatSumCodecs(Journey.format),
+    extraCodecs    = Codecs.playFormatSumCodecs(Journey.format),
     replaceIndexes = true
   ) {
 

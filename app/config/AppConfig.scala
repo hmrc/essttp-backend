@@ -28,4 +28,5 @@ class AppConfig @Inject() (
 ) {
   val barsVerifyRepoTtl: FiniteDuration = config.get[FiniteDuration]("bars.verify.repoTtl")
   val barsVerifyMaxAttempts: Int = config.get[Int]("bars.verify.maxAttempts")
+
 }

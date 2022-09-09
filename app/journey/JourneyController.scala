@@ -17,6 +17,7 @@
 package journey
 
 import com.google.inject.Inject
+import essttp.crypto.Crypto
 import essttp.journey.model._
 import essttp.rootmodel.SessionId
 import play.api.libs.json.Json
@@ -33,7 +34,7 @@ import scala.concurrent.ExecutionContext
 class JourneyController @Inject() (
     journeyService: JourneyService,
     cc:             ControllerComponents
-)(implicit exec: ExecutionContext) extends BackendController(cc) {
+)(implicit exec: ExecutionContext, myCrypto: Crypto) extends BackendController(cc) {
 
   def getJourney(journeyId: JourneyId): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     journeyService

@@ -28,6 +28,7 @@ import essttp.utils.Errors
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 import julienrf.json.derived
 import play.api.libs.json.{Json, OFormat, OWrites}
+import uk.gov.hmrc.crypto.{Encrypter, Decrypter}
 
 import java.time.{Clock, Instant}
 
@@ -63,7 +64,7 @@ sealed trait Journey {
 
 object Journey {
 
-  implicit val format: OFormat[Journey] = {
+  implicit def format(implicit crypto: Encrypter with Decrypter): OFormat[Journey] = {
 
     val defaultFormat: OFormat[Journey] = derived.oformat[Journey]()
 
