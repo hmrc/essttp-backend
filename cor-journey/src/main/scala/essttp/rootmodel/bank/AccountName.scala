@@ -16,19 +16,14 @@
 
 package essttp.rootmodel.bank
 
-import play.api.libs.functional.syntax.toInvariantFunctorOps
-import play.api.libs.json.{Format, Json, __}
+import play.api.libs.json.{Format, Json}
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.crypto.json.JsonEncryption
-import uk.gov.hmrc.crypto.{Decrypter, Encrypter, PlainText}
+import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 
 final case class AccountName(value: SensitiveString) extends AnyVal
 
 object AccountName {
-
-  implicit val plainTextFormat: Format[PlainText] = {
-    (__ \ "value").format[String].inmap(value => PlainText(value), (plainText: PlainText) => plainText.value)
-  }
 
   implicit def format(implicit crypto: Encrypter with Decrypter): Format[AccountName] = {
     implicit val sensitiveStringFormat: Format[SensitiveString] = JsonEncryption.sensitiveEncrypterDecrypter(SensitiveString.apply)
