@@ -24,7 +24,6 @@ import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 final case class AccountName(value: SensitiveString) extends AnyVal
 
 object AccountName {
-
   implicit def format(implicit crypto: Encrypter with Decrypter): Format[AccountName] = {
     implicit val sensitiveStringFormat: Format[SensitiveString] = JsonEncryption.sensitiveEncrypterDecrypter(SensitiveString.apply)
     Json.valueFormat

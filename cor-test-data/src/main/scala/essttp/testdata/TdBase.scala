@@ -88,8 +88,8 @@ trait TdBase {
   def directDebitDetails(isAccountHolder: Boolean): DirectDebitDetails = DirectDebitDetails(
     BankDetails(
       AccountName(SensitiveString("First Last")),
-      SortCode("123456"),
-      AccountNumber("12345678")
+      SortCode(SensitiveString("123456")),
+      AccountNumber(SensitiveString("12345678"))
     ),
     isAccountHolder
   )
