@@ -17,7 +17,7 @@
 package repository
 
 import config.AppConfig
-import essttp.crypto.Crypto
+import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{Journey, JourneyId}
 import essttp.rootmodel.SessionId
 import org.mongodb.scala.bson.BsonDocument
@@ -36,7 +36,7 @@ import scala.concurrent.duration.DurationInt
 final class JourneyRepo @Inject() (
     mongoComponent: MongoComponent,
     config:         AppConfig
-)(implicit ec: ExecutionContext, crypto: Crypto)
+)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
   extends Repo[JourneyId, Journey](
     collectionName = "journey",
     mongoComponent = mongoComponent,

@@ -16,13 +16,13 @@
 
 package essttp.rootmodel.bank
 
+import essttp.crypto.CryptoFormat
 import play.api.libs.json.{Json, OFormat}
-import uk.gov.hmrc.crypto.{Encrypter, Decrypter}
 
 final case class BankDetails(name: AccountName, sortCode: SortCode, accountNumber: AccountNumber)
 
 object BankDetails {
 
-  implicit def format(implicit crypto: Encrypter with Decrypter): OFormat[BankDetails] = Json.format[BankDetails]
+  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[BankDetails] = Json.format[BankDetails]
 
 }

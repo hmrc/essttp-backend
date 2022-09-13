@@ -16,7 +16,7 @@
 
 package journey
 
-import essttp.crypto.Crypto
+import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.JourneyConnector
 import essttp.testdata.TdAll
 import journey.JourneyInFinalStateSpec.TestScenario
@@ -34,7 +34,7 @@ class JourneyInFinalStateSpec extends ItSpec {
 
   "should not be able to update journey once it is completed" in new JourneyItTest {
     val httpClient: HttpClient = app.injector.instanceOf[HttpClient]
-    implicit val crypto: Crypto = app.injector.instanceOf[Crypto]
+    implicit val cryptoFormat: OperationalCryptoFormat = app.injector.instanceOf[OperationalCryptoFormat]
 
     def makeUpdate[A](url: String, payload: A)(implicit writes: Writes[A]): HttpResponse =
       httpClient.POST[A, HttpResponse](
