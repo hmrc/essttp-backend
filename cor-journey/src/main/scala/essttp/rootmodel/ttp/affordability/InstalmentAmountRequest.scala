@@ -16,6 +16,7 @@
 
 package essttp.rootmodel.ttp.affordability
 
+import essttp.crypto.CryptoFormat
 import essttp.rootmodel.AmountInPence
 import essttp.rootmodel.dates.InitialPaymentDate
 import essttp.rootmodel.dates.extremedates.{EarliestPaymentPlanStartDate, LatestPaymentPlanStartDate}
@@ -38,5 +39,5 @@ final case class InstalmentAmountRequest(
 )
 
 object InstalmentAmountRequest {
-  implicit val format: OFormat[InstalmentAmountRequest] = Json.format[InstalmentAmountRequest]
+  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[InstalmentAmountRequest] = Json.format[InstalmentAmountRequest]
 }

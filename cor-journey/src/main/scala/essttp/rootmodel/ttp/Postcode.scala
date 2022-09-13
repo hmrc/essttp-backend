@@ -16,10 +16,17 @@
 
 package essttp.rootmodel.ttp
 
-import play.api.libs.json.{Json, Format}
+import essttp.crypto.CryptoFormat
+import play.api.libs.json.{Format, Json}
+import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
-final case class Postcode(value: String) extends AnyVal
+final case class Postcode(value: SensitiveString) extends AnyVal
 
 object Postcode {
-  implicit val format: Format[Postcode] = Json.valueFormat[Postcode]
+
+  implicit def format(implicit cryptoFormat: CryptoFormat): Format[Postcode] = {
+    implicit val sensitiveStringFormat: Format[SensitiveString] = essttp.crypto.sensitiveStringFormat(cryptoFormat)
+    Json.valueFormat
+  }
+
 }
