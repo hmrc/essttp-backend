@@ -16,8 +16,7 @@ class CryptoFormatsSpec extends UnitSpec {
       val encryptedAccountName = AccountName(SensitiveString(stringToBeEncrypted))
 
       val jsValue = Json.toJson(encryptedAccountName)
-      jsValue shouldNot be("Bob Ross")
-      jsValue shouldNot be(JsString("Bob Ross"))
+      jsValue.toString shouldNot include("Bob Ross")
 
       // encrypted strings seem to always be length 58
       jsValue.toString().length shouldBe 58
