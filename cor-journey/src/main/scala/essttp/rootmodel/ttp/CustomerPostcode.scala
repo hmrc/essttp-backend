@@ -16,6 +16,7 @@
 
 package essttp.rootmodel.ttp
 
+import essttp.crypto.CryptoFormat
 import play.api.libs.json.{Json, OFormat}
 
 final case class CustomerPostcode(
@@ -24,5 +25,5 @@ final case class CustomerPostcode(
 )
 
 object CustomerPostcode {
-  implicit val format: OFormat[CustomerPostcode] = Json.format[CustomerPostcode]
+  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[CustomerPostcode] = Json.format[CustomerPostcode]
 }

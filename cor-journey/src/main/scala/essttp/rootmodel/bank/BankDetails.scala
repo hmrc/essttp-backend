@@ -16,12 +16,13 @@
 
 package essttp.rootmodel.bank
 
+import essttp.crypto.CryptoFormat
 import play.api.libs.json.{Json, OFormat}
 
 final case class BankDetails(name: AccountName, sortCode: SortCode, accountNumber: AccountNumber)
 
 object BankDetails {
 
-  implicit val format: OFormat[BankDetails] = Json.format[BankDetails]
+  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[BankDetails] = Json.format[BankDetails]
 
 }

@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.ttp.arrangement
+package essttp.module
 
-import essttp.crypto.CryptoFormat
-import essttp.rootmodel.bank.{AccountName, AccountNumber, SortCode}
-import play.api.libs.json.{Json, OFormat}
-final case class DirectDebitInstruction(
-    sortCode:        SortCode,
-    accountNumber:   AccountNumber,
-    accountName:     AccountName,
-    paperAuddisFlag: PaperAuddisFlag
-)
+import essttp.crypto.Crypto
+import play.api.inject.{Binding, Module}
+import play.api.{Configuration, Environment}
+import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 
-object DirectDebitInstruction {
-
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[DirectDebitInstruction] = Json.format
-
+class CryptoModule extends Module {
+  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] =
+    Seq(
+      bind[Encrypter with Decrypter].to[Crypto]
+    )
 }

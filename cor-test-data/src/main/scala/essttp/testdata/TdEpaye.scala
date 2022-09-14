@@ -21,6 +21,7 @@ import essttp.rootmodel.epaye.{Aor, TaxOfficeNumber, TaxOfficeReference}
 import essttp.rootmodel.ttp._
 import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
+import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
 import java.time.LocalDate
 
@@ -54,7 +55,7 @@ trait TdEpaye {
         idValue = IdValue("123PA44545546")
       )
     ),
-    customerPostcodes      = List(CustomerPostcode(Postcode("AA11AA"), PostcodeDate("2020-01-01"))),
+    customerPostcodes      = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate("2020-01-01"))),
     regimePaymentFrequency = PaymentPlanFrequencies.Monthly,
     paymentPlanFrequency   = PaymentPlanFrequencies.Monthly,
     paymentPlanMinLength   = PaymentPlanMinLength(1),

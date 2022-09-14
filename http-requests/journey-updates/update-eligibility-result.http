@@ -1,4 +1,4 @@
-POST http://localhost:9216/essttp-backend/journey/6318908dbd07605ea537cdbb/update-eligibility-result
+POST http://localhost:9216/essttp-backend/journey/631a0f4be737ab7d2fd83d90/update-eligibility-result
 Accept: */*
 Cache-Control: no-cache
 Content-Type: Application/Json

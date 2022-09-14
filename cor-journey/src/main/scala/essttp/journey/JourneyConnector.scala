@@ -16,6 +16,7 @@
 
 package essttp.journey
 
+import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{Journey, JourneyId, SjRequest, SjResponse}
 import essttp.rootmodel.bank.{DirectDebitDetails, TypeOfBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
@@ -37,7 +38,7 @@ import essttp.utils.HttpReadsUnitThrowingException.readUnit
 import play.api.libs.json.JsNull
 
 @Singleton
-class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: ExecutionContext) {
+class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) {
 
   def getJourney(journeyId: JourneyId)(implicit request: RequestHeader): Future[Journey] = {
     httpClient.GET[Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}")
@@ -123,7 +124,7 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
   }
 
   @Inject()
-  def this(httpClient: HttpClient, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext) = this(
+  def this(httpClient: HttpClient, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) = this(
     httpClient,
     servicesConfig.baseUrl("essttp-backend")
   )

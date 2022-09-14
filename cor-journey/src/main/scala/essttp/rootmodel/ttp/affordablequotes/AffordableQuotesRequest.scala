@@ -16,6 +16,7 @@
 
 package essttp.rootmodel.ttp.affordablequotes
 
+import essttp.crypto.CryptoFormat
 import essttp.rootmodel.dates.InitialPaymentDate
 import essttp.rootmodel.dates.startdates.InstalmentStartDate
 import essttp.rootmodel.UpfrontPaymentAmount
@@ -37,5 +38,5 @@ final case class AffordableQuotesRequest(
 )
 
 object AffordableQuotesRequest {
-  implicit val format: OFormat[AffordableQuotesRequest] = Json.format[AffordableQuotesRequest]
+  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[AffordableQuotesRequest] = Json.format[AffordableQuotesRequest]
 }

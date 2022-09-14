@@ -180,7 +180,10 @@ lazy val corJourney = Project(appName + "-cor-journey", file("cor-journey"))
       "com.typesafe.play"     %% "play"                     % play.core.PlayVersion.current % Provided,
       "io.scalaland"          %% "chimney"                  % AppDependencies.chimneyVersion,
       "org.typelevel"         %% "cats-core"                % AppDependencies.catsVersion,
-      "uk.gov.hmrc.mongo"     %% "hmrc-mongo-play-28"       % AppDependencies.hmrcMongoVersion
+      "uk.gov.hmrc.mongo"     %% "hmrc-mongo-play-28"       % AppDependencies.hmrcMongoVersion,
+      "uk.gov.hmrc"           %% "crypto-json-play-28"      % AppDependencies.bootstrapVersion,
+      "uk.gov.hmrc"           %% "crypto"                   % AppDependencies.bootstrapVersion,
+      "uk.gov.hmrc"           %% "json-encryption"          % "5.1.0-play-28"
     )
   )
 

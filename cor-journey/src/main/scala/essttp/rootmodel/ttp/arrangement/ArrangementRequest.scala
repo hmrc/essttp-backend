@@ -16,6 +16,7 @@
 
 package essttp.rootmodel.ttp.arrangement
 
+import essttp.crypto.CryptoFormat
 import essttp.rootmodel.ttp.{Identification, PaymentPlanFrequency, RegimeType}
 import essttp.rootmodel.ttp.affordablequotes.ChannelIdentifier
 import play.api.libs.json.{Json, OFormat}
@@ -31,5 +32,7 @@ final case class ArrangementRequest(
 )
 
 object ArrangementRequest {
-  implicit val format: OFormat[ArrangementRequest] = Json.format
+
+  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[ArrangementRequest] = Json.format
+
 }

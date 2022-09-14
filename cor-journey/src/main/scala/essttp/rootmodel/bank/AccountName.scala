@@ -16,10 +16,17 @@
 
 package essttp.rootmodel.bank
 
+import essttp.crypto.CryptoFormat
 import play.api.libs.json.{Format, Json}
+import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
-final case class AccountName(value: String) extends AnyVal
+final case class AccountName(value: SensitiveString) extends AnyVal
 
 object AccountName {
-  implicit val format: Format[AccountName] = Json.valueFormat
+
+  implicit def format(implicit cryptoFormat: CryptoFormat): Format[AccountName] = {
+    implicit val sensitiveStringFormat: Format[SensitiveString] = essttp.crypto.sensitiveStringFormat(cryptoFormat)
+    Json.valueFormat
+  }
+
 }

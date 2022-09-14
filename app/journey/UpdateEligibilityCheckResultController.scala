@@ -19,6 +19,7 @@ package journey
 import cats.Eq
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
+import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.Journey.{Epaye, Stages}
 import essttp.journey.model._
 import essttp.rootmodel.ttp.EligibilityCheckResult
@@ -33,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class UpdateEligibilityCheckResultController @Inject() (
     journeyService: JourneyService,
     cc:             ControllerComponents
-)(implicit exec: ExecutionContext) extends BackendController(cc) {
+)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
   implicit val eq: Eq[EligibilityCheckResult] = Eq.fromUniversalEquals
 

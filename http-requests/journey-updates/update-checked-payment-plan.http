@@ -1,7 +1,5 @@
-POST http://localhost:9216/essttp-backend/journey/6318908dbd07605ea537cdbb/update-chosen-type-of-bank-account
+POST http://localhost:9216/essttp-backend/journey/6318c23ea8af8d36bce6f38d/update-has-checked-plan
 Accept: */*
 Cache-Control: no-cache
 Content-Type: Application/Json
 X-Session-ID: sialalalabta
-
-"Business"

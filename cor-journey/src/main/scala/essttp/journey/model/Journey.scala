@@ -16,6 +16,7 @@
 
 package essttp.journey.model
 
+import essttp.crypto.CryptoFormat
 import essttp.rootmodel._
 import essttp.rootmodel.bank.{DirectDebitDetails, TypeOfBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
@@ -63,7 +64,7 @@ sealed trait Journey {
 
 object Journey {
 
-  implicit val format: OFormat[Journey] = {
+  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[Journey] = {
 
     val defaultFormat: OFormat[Journey] = derived.oformat[Journey]()
 

@@ -16,6 +16,7 @@
 
 package essttp.rootmodel.ttp
 
+import essttp.crypto.CryptoFormat
 import play.api.libs.json.{Json, OFormat}
 
 /**
@@ -38,6 +39,6 @@ final case class EligibilityCheckResult(
 }
 
 object EligibilityCheckResult {
-  implicit val format: OFormat[EligibilityCheckResult] = Json.format[EligibilityCheckResult]
+  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[EligibilityCheckResult] = Json.format[EligibilityCheckResult]
 
 }

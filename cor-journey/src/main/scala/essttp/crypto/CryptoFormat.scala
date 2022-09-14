@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.ttp.arrangement
+package essttp.crypto
 
-import essttp.crypto.CryptoFormat
-import essttp.rootmodel.bank.{AccountName, AccountNumber, SortCode}
-import play.api.libs.json.{Json, OFormat}
-final case class DirectDebitInstruction(
-    sortCode:        SortCode,
-    accountNumber:   AccountNumber,
-    accountName:     AccountName,
-    paperAuddisFlag: PaperAuddisFlag
-)
+import com.google.inject.{Inject, Singleton}
+import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 
-object DirectDebitInstruction {
+sealed trait CryptoFormat
 
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[DirectDebitInstruction] = Json.format
+object CryptoFormat {
+
+  @Singleton
+  final case class OperationalCryptoFormat @Inject() (crypto: Encrypter with Decrypter) extends CryptoFormat
+
+  case object NoOpCryptoFormat extends CryptoFormat
 
 }

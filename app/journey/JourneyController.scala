@@ -17,6 +17,7 @@
 package journey
 
 import com.google.inject.Inject
+import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model._
 import essttp.rootmodel.SessionId
 import play.api.libs.json.Json
@@ -33,13 +34,13 @@ import scala.concurrent.ExecutionContext
 class JourneyController @Inject() (
     journeyService: JourneyService,
     cc:             ControllerComponents
-)(implicit exec: ExecutionContext) extends BackendController(cc) {
+)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
   def getJourney(journeyId: JourneyId): Action[AnyContent] = Action.async { implicit request: Request[AnyContent] =>
     journeyService
       .get(journeyId).map(journey => Ok(Json.toJson(journey)))
       .recover {
-        case e: NotFoundException =>
+        case _: NotFoundException =>
           notFound(journeyId)
       }
   }

@@ -28,6 +28,7 @@ import essttp.rootmodel.ttp.{ChargeReference, InterestAccrued}
 import essttp.utils.TdSupport.FakeRequestOps
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
+import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
 import java.time.{Instant, LocalDate, LocalDateTime, ZoneOffset}
 import java.util.UUID
@@ -86,9 +87,9 @@ trait TdBase {
 
   def directDebitDetails(isAccountHolder: Boolean): DirectDebitDetails = DirectDebitDetails(
     BankDetails(
-      AccountName("First Last"),
-      SortCode("123456"),
-      AccountNumber("12345678")
+      AccountName(SensitiveString("First Last")),
+      SortCode(SensitiveString("123456")),
+      AccountNumber(SensitiveString("12345678"))
     ),
     isAccountHolder
   )

@@ -17,13 +17,14 @@
 package essttp.rootmodel.bank
 
 import cats.Eq
+import essttp.crypto.CryptoFormat
 import play.api.libs.json.{Json, OFormat}
 
 final case class DirectDebitDetails(bankDetails: BankDetails, isAccountHolder: Boolean)
 
 object DirectDebitDetails {
 
-  implicit val format: OFormat[DirectDebitDetails] = Json.format
+  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[DirectDebitDetails] = Json.format
 
   implicit val eq: Eq[DirectDebitDetails] = Eq.fromUniversalEquals
 
