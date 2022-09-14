@@ -23,7 +23,7 @@ import uk.gov.hmrc.crypto.json.JsonEncryption
 package object crypto {
 
   val noOpSensitiveStringFormat: Format[SensitiveString] = Format(
-    Reads{
+    Reads {
       case JsString(s) => JsSuccess(SensitiveString(s))
       case other       => JsError(s"Expected JsString but got ${other.getClass.getSimpleName}")
     },
