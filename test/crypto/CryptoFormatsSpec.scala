@@ -28,7 +28,6 @@ class CryptoFormatsSpec extends UnitSpec {
     "CryptoFormat.NoOpCryptoFormat should return a JsString" in {
       implicit val cryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
       val encryptedAccountName = AccountName(SensitiveString("Bob Ross"))
-      println(encryptedAccountName)
       Json.toJson(encryptedAccountName) shouldBe JsString("Bob Ross")
       encryptedAccountName.value.decryptedValue shouldBe "Bob Ross"
     }
