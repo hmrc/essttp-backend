@@ -1,15 +1,10 @@
-import _root_.play.sbt.routes.RoutesKeys._
 import com.typesafe.sbt.SbtScalariform.ScalariformKeys
-import play.sbt.PlayImport.PlayKeys
-import sbt.Keys._
 import sbt.Tests.{Group, SubProcess}
 import scalariform.formatter.preferences._
 import scoverage.ScoverageKeys
 import uk.gov.hmrc.DefaultBuildSettings.{scalaSettings, targetJvm}
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
-import uk.gov.hmrc.versioning.SbtGitVersioning
-import uk.gov.hmrc.versioning.SbtGitVersioning.autoImport.majorVersion
 import wartremover.Wart
 import wartremover.WartRemover.autoImport.{wartremoverErrors, wartremoverExcluded}
 import uk.gov.hmrc.ShellPrompt
@@ -86,6 +81,22 @@ lazy val wartRemoverSettings =
     wartremoverExcluded ++= (baseDirectory.value ** "*.sc").get
   )
 
+lazy val sbtUpdatesSettings = Seq(
+  dependencyUpdatesFailBuild := true,
+  (Compile / compile) := ((Compile / compile) dependsOn dependencyUpdates).value,
+  dependencyUpdatesFilter -= moduleFilter("org.scala-lang"),
+  dependencyUpdatesFilter -= moduleFilter("com.typesafe.play"),
+  // later versions result in this error:
+  // ---
+  // java.lang.UnsupportedClassVersionError: com/vladsch/flexmark/util/ast/Node has been
+  // compiled by a more recent version of the Java Runtime (class file version 55.0), this
+  // version of the Java Runtime only recognizes class file versions up to 52.0
+  // ---
+  dependencyUpdatesFilter -= moduleFilter("com.vladsch.flexmark", "flexmark-all"),
+  // locked to the version of play
+  dependencyUpdatesFilter -= moduleFilter("org.julienrf", "play-json-derived-codecs")
+)
+
 lazy val scalaCompilerOptions = Seq(
   "-Xfatal-warnings",
   "-Xlint:-missing-interpolator,_",
@@ -124,6 +135,7 @@ lazy val commonSettings = Seq(
   .++(scoverageSettings)
   .++(scalaSettings)
   .++(uk.gov.hmrc.DefaultBuildSettings.defaultSettings())
+  .++(sbtUpdatesSettings)
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin, SbtAutoBuildPlugin, SbtGitVersioning)
@@ -181,8 +193,8 @@ lazy val corJourney = Project(appName + "-cor-journey", file("cor-journey"))
       "io.scalaland"          %% "chimney"                  % AppDependencies.chimneyVersion,
       "org.typelevel"         %% "cats-core"                % AppDependencies.catsVersion,
       "uk.gov.hmrc.mongo"     %% "hmrc-mongo-play-28"       % AppDependencies.hmrcMongoVersion,
-      "uk.gov.hmrc"           %% "crypto-json-play-28"      % AppDependencies.bootstrapVersion,
-      "uk.gov.hmrc"           %% "crypto"                   % AppDependencies.bootstrapVersion,
+      "uk.gov.hmrc"           %% "crypto-json-play-28"      % AppDependencies.cryptoVersion,
+      "uk.gov.hmrc"           %% "crypto"                   % AppDependencies.cryptoVersion,
       "uk.gov.hmrc"           %% "json-encryption"          % "5.1.0-play-28"
     )
   )

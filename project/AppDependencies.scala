@@ -5,12 +5,13 @@ import sbt._
 
 object AppDependencies {
 
-  val bootstrapVersion = "7.1.0"
-  val hmrcMongoVersion = "0.71.0"
+  val bootstrapVersion = "7.3.0"
+  val hmrcMongoVersion = "0.73.0"
   val chimneyVersion = "0.6.2"
   val catsVersion = "2.8.0"
   val playJsonDerivedCodesVersion = "7.0.0"
   val enumeratumVersion = "1.7.0"
+  val cryptoVersion = "7.2.0"
 
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"             %% "bootstrap-backend-play-28"  % bootstrapVersion,
@@ -19,8 +20,8 @@ object AppDependencies {
     "org.julienrf"            %% "play-json-derived-codecs"   % playJsonDerivedCodesVersion, //choose carefully
     "io.scalaland"            %% "chimney"                    % chimneyVersion,
     "org.typelevel"           %% "cats-core"                  % catsVersion,
-    "uk.gov.hmrc"             %% "crypto-json-play-28"        % bootstrapVersion,
-    "uk.gov.hmrc"             %% "crypto"                     % bootstrapVersion,
+    "uk.gov.hmrc"             %% "crypto-json-play-28"        % cryptoVersion,
+    "uk.gov.hmrc"             %% "crypto"                     % cryptoVersion,
     "uk.gov.hmrc"             %% "json-encryption"            % "5.1.0-play-28"
   )
 
