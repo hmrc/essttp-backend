@@ -18,6 +18,7 @@ package journey
 
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.JourneyConnector
+import essttp.rootmodel.AmountInPence
 import essttp.testdata.TdAll
 import journey.JourneyInFinalStateSpec.TestScenario
 import org.scalatest.Assertion
@@ -61,7 +62,7 @@ class JourneyInFinalStateSpec extends ItSpec {
         expectedMessage    = """{"statusCode":400,"message":"Cannot update AnsweredCanPayUpFront when journey is in completed state"}"""
       ),
       TestScenario(
-        httpResponse       = makeUpdate("/update-upfront-payment-amount", tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()),
+        httpResponse       = makeUpdate("/update-upfront-payment-amount", tdAll.EpayeBta.updateUpfrontPaymentAmountRequest().copy(AmountInPence(13))),
         expectedStatusCode = 400,
         expectedMessage    = """{"statusCode":400,"message":"Cannot update UpfrontPaymentAmount when journey is in completed state"}"""
       ),

@@ -17,7 +17,7 @@
 package controllers
 
 import essttp.journey.JourneyConnector
-import essttp.journey.model.JourneyId
+import essttp.journey.model.{JourneyId, UpfrontPaymentAnswers}
 import essttp.rootmodel.{AmountInPence, UpfrontPaymentAmount}
 import essttp.testdata.TdAll
 import play.api.mvc.RequestHeader
@@ -40,23 +40,80 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec {
       val result: Throwable = journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"UpdateUpfrontPaymentAmount update is not possible in that state: [Started]"}""")
     }
-    "should not update the journey when upfront amount choice hasn't changed" in new JourneyItTest {
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterCanPayUpfrontYes.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
-      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
+
+    "when the journey stage is AnsweredCanPayUpfront" - {
+      "should not update the journey when upfront amount choice hasn't changed" in new JourneyItTest {
+        insertJourneyForTest(TdAll.EpayeBta.journeyAfterCanPayUpfrontYes.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
+        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
+      }
+      "should update the journey when upfront payment amount has changed" in new JourneyItTest {
+        insertJourneyForTest(TdAll.EpayeBta.journeyAfterCanPayUpfrontYes.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
+        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest().copy(AmountInPence(9999))).futureValue
+        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = UpfrontPaymentAmount(AmountInPence(9999)))
+      }
     }
-    "should update the journey when upfront payment amount has changed" in new JourneyItTest {
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterCanPayUpfrontYes.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
-      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest().copy(AmountInPence(9999))).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = UpfrontPaymentAmount(AmountInPence(9999)))
+
+    "when the journey stage is AfterEnteredUpfrontPaymentAmount" - {
+      "should not update the journey when upfront amount choice hasn't changed" in new JourneyItTest {
+        insertJourneyForTest(TdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
+        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
+      }
+      "should update the journey when upfront payment amount has changed" in new JourneyItTest {
+        insertJourneyForTest(TdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
+        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest().copy(AmountInPence(9999))).futureValue
+        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = UpfrontPaymentAmount(AmountInPence(9999)))
+      }
     }
+
+    "when the journey stage is AfterUpfrontPaymentAnswers" - {
+
+      "should return a BadRequest if the user has said they cannot make an upfront payment" in new JourneyItTest {
+        insertJourneyForTest(TdAll.EpayeBta.journeyAfterExtremeDates.copy(
+          _id                   = tdAll.journeyId,
+          correlationId         = tdAll.correlationId,
+          upfrontPaymentAnswers = UpfrontPaymentAnswers.NoUpfrontPayment
+        ))
+
+        val result: Throwable =
+          journeyConnector.updateUpfrontPaymentAmount(
+            tdAll.journeyId,
+            tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()
+          ).failed.futureValue
+
+        result.getMessage should include("""{"statusCode":400,"message":"UpdateUpfrontPaymentAmount update is not possible when an upfront payment has not been chosen"}""")
+      }
+
+      "should not update the journey when upfront amount choice hasn't changed" in new JourneyItTest {
+        insertJourneyForTest(TdAll.EpayeBta.journeyAfterExtremeDates.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterExtremeDates
+        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterExtremeDates
+      }
+      "should update the journey when upfront payment amount has changed" in new JourneyItTest {
+        insertJourneyForTest(TdAll.EpayeBta.journeyAfterExtremeDates.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterExtremeDates
+        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest().copy(AmountInPence(9999))).futureValue
+        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(
+          upfrontPaymentAmount = UpfrontPaymentAmount(AmountInPence(9999))
+        )
+      }
+    }
+
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      val result: Throwable = journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).failed.futureValue
+      val result: Throwable = journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest().copy(AmountInPence(12))).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"Cannot update UpfrontPaymentAmount when journey is in completed state"}""")
     }
   }
