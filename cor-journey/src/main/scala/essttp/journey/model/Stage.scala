@@ -206,17 +206,20 @@ object Stage {
     case object AcceptedPlan extends AfterCheckedPlan
   }
 
-  sealed trait AfterChosenTypeOfBankAccount extends Stage with EnumEntry
+  sealed trait AfterEnteredDetailsAboutBankAccount extends Stage with EnumEntry
 
   /**
-   * [[Journey]] has been orchestrated to with the users type of bank account
+   * [[Journey]] has been orchestrated with details about the user's bank account
    */
-  object AfterChosenTypeOfBankAccount extends Enum[AfterChosenTypeOfBankAccount] {
-    implicit val format: OFormat[AfterChosenTypeOfBankAccount] = derived.oformat[AfterChosenTypeOfBankAccount]()
-    val values: immutable.IndexedSeq[AfterChosenTypeOfBankAccount] = findValues
+  object AfterEnteredDetailsAboutBankAccount extends Enum[AfterEnteredDetailsAboutBankAccount] {
+    implicit val format: OFormat[AfterEnteredDetailsAboutBankAccount] = derived.oformat[AfterEnteredDetailsAboutBankAccount]()
+    val values: immutable.IndexedSeq[AfterEnteredDetailsAboutBankAccount] = findValues
 
-    case object Business extends AfterChosenTypeOfBankAccount
-    case object Personal extends AfterChosenTypeOfBankAccount
+    case object Business extends AfterEnteredDetailsAboutBankAccount
+
+    case object Personal extends AfterEnteredDetailsAboutBankAccount
+
+    case object IsNotAccountHolder extends AfterEnteredDetailsAboutBankAccount
   }
 
   sealed trait AfterEnteredDirectDebitDetails extends Stage with EnumEntry
@@ -228,9 +231,8 @@ object Stage {
     implicit val format: OFormat[AfterEnteredDirectDebitDetails] = derived.oformat[AfterEnteredDirectDebitDetails]()
     val values: immutable.IndexedSeq[AfterEnteredDirectDebitDetails] = findValues
 
-    case object IsAccountHolder extends AfterEnteredDirectDebitDetails
+    case object EnteredDirectDebitDetails extends AfterEnteredDirectDebitDetails
 
-    case object IsNotAccountHolder extends AfterEnteredDirectDebitDetails
   }
 
   sealed trait AfterConfirmedDirectDebitDetails extends Stage with EnumEntry

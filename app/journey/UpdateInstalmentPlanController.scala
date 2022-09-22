@@ -77,7 +77,7 @@ class UpdateInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
             .withFieldConst(_.selectedPaymentPlan, paymentPlan)
             .transform
-        case j: Journey.Epaye.ChosenTypeOfBankAccount =>
+        case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
           j.into[Journey.Epaye.ChosenPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
             .withFieldConst(_.selectedPaymentPlan, paymentPlan)

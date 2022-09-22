@@ -31,7 +31,7 @@ class UpdateHasConfirmedDirectDebitDetailsControllerSpec extends ItSpec {
       result.getMessage should include("""{"statusCode":400,"message":"UpdateHasConfirmedDirectDebitDetails is not possible in that state: [Started]"}""")
     }
     "should return Unit when Direct debit details have already been confirmed" in new JourneyItTest {
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails(true).copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails
       val result = journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId)

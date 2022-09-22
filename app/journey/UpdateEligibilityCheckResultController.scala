@@ -129,7 +129,7 @@ class UpdateEligibilityCheckResultController @Inject() (
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
-        case j: Epaye.ChosenTypeOfBankAccount =>
+        case j: Epaye.EnteredDetailsAboutBankAccount =>
           j.into[Journey.Epaye.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)

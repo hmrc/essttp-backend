@@ -18,7 +18,7 @@ package essttp.journey
 
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{Journey, JourneyId, SjRequest, SjResponse}
-import essttp.rootmodel.bank.{DirectDebitDetails, TypeOfBankAccount}
+import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.ttp.EligibilityCheckResult
@@ -87,11 +87,11 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
   def updateHasCheckedPaymentPlan(journeyId: JourneyId)(implicit request: RequestHeader): Future[Unit] =
     httpClient.POST[JsNull.type, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-has-checked-plan", JsNull)
 
-  def updateChosenTypeOfBankAccount(journeyId: JourneyId, typeOfBankAccount: TypeOfBankAccount)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[TypeOfBankAccount, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-chosen-type-of-bank-account", typeOfBankAccount)
+  def updateDetailsAboutBankAccount(journeyId: JourneyId, detailsAboutBankAccount: DetailsAboutBankAccount)(implicit request: RequestHeader): Future[Unit] =
+    httpClient.POST[DetailsAboutBankAccount, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-details-about-bank-account", detailsAboutBankAccount)
 
-  def updateDirectDebitDetails(journeyId: JourneyId, directDebitDetails: DirectDebitDetails)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[DirectDebitDetails, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-direct-debit-details", directDebitDetails)
+  def updateDirectDebitDetails(journeyId: JourneyId, directDebitDetails: BankDetails)(implicit request: RequestHeader): Future[Unit] =
+    httpClient.POST[BankDetails, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-direct-debit-details", directDebitDetails)
 
   def updateHasConfirmedDirectDebitDetails(journeyId: JourneyId)(implicit request: RequestHeader): Future[Unit] =
     httpClient.POST[JsNull.type, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-has-confirmed-direct-debit-details", JsNull)

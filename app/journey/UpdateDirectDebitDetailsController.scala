@@ -20,7 +20,7 @@ import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{Journey, JourneyId, Stage}
-import essttp.rootmodel.bank.DirectDebitDetails
+import essttp.rootmodel.bank.BankDetails
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformerOps
 import play.api.mvc.{Action, ControllerComponents, Request}
@@ -34,12 +34,12 @@ class UpdateDirectDebitDetailsController @Inject() (
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
-  def updateDirectDebitDetails(journeyId: JourneyId): Action[DirectDebitDetails] = Action.async(parse.json[DirectDebitDetails]) { implicit request =>
+  def updateDirectDebitDetails(journeyId: JourneyId): Action[BankDetails] = Action.async(parse.json[BankDetails]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {
-        case j: Journey.BeforeChosenTypeOfBankAccount  => Errors.throwBadRequestExceptionF(s"UpdateDirectDebitDetails is not possible in that state: [${j.stage}]")
-        case j: Journey.Stages.ChosenTypeOfBankAccount => updateJourneyWithNewValue(j, request.body)
+        case j: Journey.BeforeEnteredDetailsAboutBankAccount  => Errors.throwBadRequestExceptionF(s"UpdateDirectDebitDetails is not possible in that state: [${j.stage}]")
+        case j: Journey.Stages.EnteredDetailsAboutBankAccount => updateJourneyWithNewValue(j, request.body)
         case j: Journey.AfterEnteredDirectDebitDetails => j match {
           case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(j, request.body)
           case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update DirectDebitDetails when journey is in completed state")
@@ -49,13 +49,13 @@ class UpdateDirectDebitDetailsController @Inject() (
   }
 
   private def updateJourneyWithNewValue(
-      journey:            Journey.Stages.ChosenTypeOfBankAccount,
-      directDebitDetails: DirectDebitDetails
+      journey:            Journey.Stages.EnteredDetailsAboutBankAccount,
+      directDebitDetails: BankDetails
   )(implicit request: Request[_]): Future[Unit] = {
     val newJourney: Journey.AfterEnteredDirectDebitDetails = journey match {
-      case j: Journey.Epaye.ChosenTypeOfBankAccount =>
+      case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
         j.into[Journey.Epaye.EnteredDirectDebitDetails]
-          .withFieldConst(_.stage, determineStage(directDebitDetails))
+          .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
           .withFieldConst(_.directDebitDetails, directDebitDetails)
           .transform
     }
@@ -64,7 +64,7 @@ class UpdateDirectDebitDetailsController @Inject() (
 
   private def updateJourneyWithExistingValue(
       journey:            Journey.AfterEnteredDirectDebitDetails,
-      directDebitDetails: DirectDebitDetails
+      directDebitDetails: BankDetails
   )(implicit request: Request[_]): Future[Unit] = {
     if (journey.directDebitDetails === directDebitDetails) {
       JourneyLogger.info("Direct debit details haven't changed, nothing to update")
@@ -74,17 +74,17 @@ class UpdateDirectDebitDetailsController @Inject() (
         case j: Journey.Epaye.EnteredDirectDebitDetails =>
           j.copy(
             directDebitDetails = directDebitDetails,
-            stage              = determineStage(directDebitDetails)
+            stage              = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails
           )
         case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
           j.into[Journey.Epaye.EnteredDirectDebitDetails]
             .withFieldConst(_.directDebitDetails, directDebitDetails)
-            .withFieldConst(_.stage, determineStage(directDebitDetails))
+            .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
             .transform
         case j: Journey.Epaye.AgreedTermsAndConditions =>
           j.into[Journey.Epaye.EnteredDirectDebitDetails]
             .withFieldConst(_.directDebitDetails, directDebitDetails)
-            .withFieldConst(_.stage, determineStage(directDebitDetails))
+            .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
             .transform
         case _: Journey.Epaye.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update DirectDebitDetails when journey is in completed state")
@@ -94,9 +94,5 @@ class UpdateDirectDebitDetailsController @Inject() (
     }
 
   }
-
-  private def determineStage(directDebitDetails: DirectDebitDetails): Stage.AfterEnteredDirectDebitDetails =
-    if (directDebitDetails.isAccountHolder) Stage.AfterEnteredDirectDebitDetails.IsAccountHolder
-    else Stage.AfterEnteredDirectDebitDetails.IsNotAccountHolder
 
 }

@@ -82,7 +82,7 @@ class UpdateAffordableQuotesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
             .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
             .transform
-        case j: Journey.Epaye.ChosenTypeOfBankAccount =>
+        case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
           j.into[Journey.Epaye.RetrievedAffordableQuotes]
             .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
             .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
