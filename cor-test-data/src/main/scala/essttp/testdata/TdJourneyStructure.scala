@@ -17,7 +17,7 @@
 package essttp.testdata
 
 import essttp.journey.model.{Journey, SjRequest, SjResponse}
-import essttp.rootmodel.bank.{DirectDebitDetails, TypeOfBankAccount}
+import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.ttp.EligibilityCheckResult
@@ -119,16 +119,16 @@ trait TdJourneyStructure {
   def journeyAfterCheckedPaymentPlan: Journey.AfterCheckedPaymentPlan
   def journeyAfterCheckedPaymentPlanJson: JsObject
 
-  def updateChosenTypeOfBankAccountRequest(): TypeOfBankAccount
-  def updateChosenTypeOfBankAccountRequestJson(): JsObject
+  def updateDetailsAboutBankAccountRequest(isAccountHolder: Boolean): DetailsAboutBankAccount
+  def updateDetailsAboutBankAccountRequestJson(): JsObject
 
-  def journeyAfterChosenTypeOfBankAccount: Journey.AfterChosenTypeOfBankAccount
-  def journeyAfterChosenTypeOfBankAccountJson: JsObject
+  def journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder: Boolean): Journey.AfterEnteredDetailsAboutBankAccount
+  def journeyAfterEnteredDetailsAboutBankAccountJson: JsObject
 
-  def updateDirectDebitDetailsRequest(isAccountHolder: Boolean): DirectDebitDetails
+  def updateDirectDebitDetailsRequest(): BankDetails
   def updateDirectDebitDetailsRequestJson(): JsObject
 
-  def journeyAfterEnteredDirectDebitDetails(isAccountHolder: Boolean): Journey.AfterEnteredDirectDebitDetails
+  def journeyAfterEnteredDirectDebitDetails(): Journey.AfterEnteredDirectDebitDetails
   def journeyAfterEnteredDirectDebitDetailsJson: JsObject
 
   def updateConfirmedDirectDebitDetailsRequest(): JsNull.type

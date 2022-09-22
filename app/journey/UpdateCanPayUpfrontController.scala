@@ -128,7 +128,7 @@ class UpdateCanPayUpfrontController @Inject() (
               .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
               .withFieldConst(_.canPayUpfront, canPayUpfront)
               .transform
-          case j1: Journey.Epaye.ChosenTypeOfBankAccount =>
+          case j1: Journey.Epaye.EnteredDetailsAboutBankAccount =>
             j1.into[Journey.Epaye.AnsweredCanPayUpfront]
               .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
               .withFieldConst(_.canPayUpfront, canPayUpfront)

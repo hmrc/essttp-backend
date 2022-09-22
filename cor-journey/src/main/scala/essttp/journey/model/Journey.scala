@@ -18,7 +18,7 @@ package essttp.journey.model
 
 import essttp.crypto.CryptoFormat
 import essttp.rootmodel._
-import essttp.rootmodel.bank.{DirectDebitDetails, TypeOfBankAccount}
+import essttp.rootmodel.bank.{DetailsAboutBankAccount, BankDetails}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.ttp.EligibilityCheckResult
@@ -159,16 +159,16 @@ object Journey {
 
   sealed trait AfterCheckedPaymentPlan extends Journey
 
-  sealed trait BeforeChosenTypeOfBankAccount extends Journey with Stages.JourneyStage
+  sealed trait BeforeEnteredDetailsAboutBankAccount extends Journey with Stages.JourneyStage
 
-  sealed trait AfterChosenTypeOfBankAccount extends Journey {
-    def typeOfBankAccount: TypeOfBankAccount
+  sealed trait AfterEnteredDetailsAboutBankAccount extends Journey {
+    def detailsAboutBankAccount: DetailsAboutBankAccount
   }
 
   sealed trait BeforeEnteredDirectDebitDetails extends Journey with Stages.JourneyStage
 
   sealed trait AfterEnteredDirectDebitDetails extends Journey {
-    def directDebitDetails: DirectDebitDetails
+    def directDebitDetails: BankDetails
   }
 
   sealed trait BeforeConfirmedDirectDebitDetails extends Journey with Stages.JourneyStage
@@ -216,7 +216,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeChosenTypeOfBankAccount
+      with BeforeEnteredDetailsAboutBankAccount
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -241,7 +241,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeChosenTypeOfBankAccount
+      with BeforeEnteredDetailsAboutBankAccount
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -266,7 +266,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeChosenTypeOfBankAccount
+      with BeforeEnteredDetailsAboutBankAccount
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -291,7 +291,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeChosenTypeOfBankAccount
+      with BeforeEnteredDetailsAboutBankAccount
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -316,7 +316,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeChosenTypeOfBankAccount
+      with BeforeEnteredDetailsAboutBankAccount
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -339,7 +339,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeChosenTypeOfBankAccount
+      with BeforeEnteredDetailsAboutBankAccount
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -362,7 +362,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeChosenTypeOfBankAccount
+      with BeforeEnteredDetailsAboutBankAccount
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -385,7 +385,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeChosenTypeOfBankAccount
+      with BeforeEnteredDetailsAboutBankAccount
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -408,7 +408,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeChosenTypeOfBankAccount
+      with BeforeEnteredDetailsAboutBankAccount
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -431,7 +431,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeChosenTypeOfBankAccount
+      with BeforeEnteredDetailsAboutBankAccount
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -454,7 +454,7 @@ object Journey {
       with AfterAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeChosenTypeOfBankAccount
+      with BeforeEnteredDetailsAboutBankAccount
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -477,7 +477,7 @@ object Journey {
       with AfterAffordableQuotesResponse
       with AfterSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeChosenTypeOfBankAccount
+      with BeforeEnteredDetailsAboutBankAccount
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -500,7 +500,7 @@ object Journey {
       with AfterAffordableQuotesResponse
       with AfterSelectedPaymentPlan
       with AfterCheckedPaymentPlan
-      with BeforeChosenTypeOfBankAccount
+      with BeforeEnteredDetailsAboutBankAccount
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -509,7 +509,7 @@ object Journey {
       def stage: Stage.AfterCheckedPlan
     }
 
-    sealed trait ChosenTypeOfBankAccount
+    sealed trait EnteredDetailsAboutBankAccount
       extends Journey
       with JourneyStage
       with AfterComputedTaxId
@@ -523,13 +523,13 @@ object Journey {
       with AfterAffordableQuotesResponse
       with AfterSelectedPaymentPlan
       with AfterCheckedPaymentPlan
-      with AfterChosenTypeOfBankAccount
+      with AfterEnteredDetailsAboutBankAccount
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
       with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterChosenTypeOfBankAccount.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterChosenTypeOfBankAccount
+      Errors.sanityCheck(Stage.AfterEnteredDetailsAboutBankAccount.values.contains(stage), sanityMessage)
+      def stage: Stage.AfterEnteredDetailsAboutBankAccount
     }
 
     sealed trait EnteredDirectDebitDetails
@@ -546,7 +546,7 @@ object Journey {
       with AfterAffordableQuotesResponse
       with AfterSelectedPaymentPlan
       with AfterCheckedPaymentPlan
-      with AfterChosenTypeOfBankAccount
+      with AfterEnteredDetailsAboutBankAccount
       with AfterEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -569,7 +569,7 @@ object Journey {
       with AfterAffordableQuotesResponse
       with AfterSelectedPaymentPlan
       with AfterCheckedPaymentPlan
-      with AfterChosenTypeOfBankAccount
+      with AfterEnteredDetailsAboutBankAccount
       with AfterEnteredDirectDebitDetails
       with AfterConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -592,7 +592,7 @@ object Journey {
       with AfterAffordableQuotesResponse
       with AfterSelectedPaymentPlan
       with AfterCheckedPaymentPlan
-      with AfterChosenTypeOfBankAccount
+      with AfterEnteredDetailsAboutBankAccount
       with AfterEnteredDirectDebitDetails
       with AfterConfirmedDirectDebitDetails
       with AfterAgreedTermsAndConditions
@@ -615,7 +615,7 @@ object Journey {
       with AfterAffordableQuotesResponse
       with AfterSelectedPaymentPlan
       with AfterCheckedPaymentPlan
-      with AfterChosenTypeOfBankAccount
+      with AfterEnteredDetailsAboutBankAccount
       with AfterEnteredDirectDebitDetails
       with AfterConfirmedDirectDebitDetails
       with AfterAgreedTermsAndConditions
@@ -906,7 +906,7 @@ object Journey {
       with Journey.Epaye
 
     /**
-     * [[Journey]] after Payment plan has been chosen
+     * [[Journey]] after Payment plan has been checked
      * Epaye
      */
     final case class CheckedPaymentPlan(
@@ -933,17 +933,17 @@ object Journey {
       with Journey.Epaye
 
     /**
-     * [[Journey]] after Payment plan has been chosen
+     * [[Journey]] after details about bank account
      * Epaye
      */
-    final case class ChosenTypeOfBankAccount(
+    final case class EnteredDetailsAboutBankAccount(
         override val _id:                      JourneyId,
         override val origin:                   Origins.Epaye,
         override val createdOn:                Instant,
         override val sjRequest:                SjRequest.Epaye,
         override val sessionId:                SessionId,
         override val correlationId:            CorrelationId,
-        override val stage:                    Stage.AfterChosenTypeOfBankAccount,
+        override val stage:                    Stage.AfterEnteredDetailsAboutBankAccount,
         override val taxId:                    EmpRef,
         override val eligibilityCheckResult:   EligibilityCheckResult,
         override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
@@ -954,10 +954,10 @@ object Journey {
         override val startDatesResponse:       StartDatesResponse,
         override val affordableQuotesResponse: AffordableQuotesResponse,
         override val selectedPaymentPlan:      PaymentPlan,
-        override val typeOfBankAccount:        TypeOfBankAccount
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount
     )
       extends Journey
-      with Journey.Stages.ChosenTypeOfBankAccount
+      with Journey.Stages.EnteredDetailsAboutBankAccount
       with Journey.Epaye
 
     /**
@@ -982,8 +982,8 @@ object Journey {
         override val startDatesResponse:       StartDatesResponse,
         override val affordableQuotesResponse: AffordableQuotesResponse,
         override val selectedPaymentPlan:      PaymentPlan,
-        override val typeOfBankAccount:        TypeOfBankAccount,
-        override val directDebitDetails:       DirectDebitDetails
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount,
+        override val directDebitDetails:       BankDetails
     )
       extends Journey
       with Journey.Stages.EnteredDirectDebitDetails
@@ -1011,8 +1011,8 @@ object Journey {
         override val startDatesResponse:       StartDatesResponse,
         override val affordableQuotesResponse: AffordableQuotesResponse,
         override val selectedPaymentPlan:      PaymentPlan,
-        override val typeOfBankAccount:        TypeOfBankAccount,
-        override val directDebitDetails:       DirectDebitDetails
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount,
+        override val directDebitDetails:       BankDetails
     )
       extends Journey
       with Journey.Stages.ConfirmedDirectDebitDetails
@@ -1040,8 +1040,8 @@ object Journey {
         override val startDatesResponse:       StartDatesResponse,
         override val affordableQuotesResponse: AffordableQuotesResponse,
         override val selectedPaymentPlan:      PaymentPlan,
-        override val typeOfBankAccount:        TypeOfBankAccount,
-        override val directDebitDetails:       DirectDebitDetails
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount,
+        override val directDebitDetails:       BankDetails
     )
       extends Journey
       with Journey.Stages.AgreedTermsAndConditions
@@ -1069,8 +1069,8 @@ object Journey {
         override val startDatesResponse:       StartDatesResponse,
         override val affordableQuotesResponse: AffordableQuotesResponse,
         override val selectedPaymentPlan:      PaymentPlan,
-        override val typeOfBankAccount:        TypeOfBankAccount,
-        override val directDebitDetails:       DirectDebitDetails,
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount,
+        override val directDebitDetails:       BankDetails,
         override val arrangementResponse:      ArrangementResponse
     )
       extends Journey

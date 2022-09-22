@@ -107,12 +107,12 @@ class JourneyInFinalStateSpec extends ItSpec {
         expectedMessage    = """{"statusCode":400,"message":"Cannot update HasCheckedPaymentPlan when journey is in completed state"}"""
       ),
       TestScenario(
-        httpResponse       = makeUpdate("/update-chosen-type-of-bank-account", tdAll.EpayeBta.updateChosenTypeOfBankAccountRequest()),
+        httpResponse       = makeUpdate("/update-details-about-bank-account", tdAll.EpayeBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)),
         expectedStatusCode = 400,
-        expectedMessage    = """{"statusCode":400,"message":"Cannot update TypeOfBankAccount when journey is in completed state"}"""
+        expectedMessage    = """{"statusCode":400,"message":"Cannot update DetailsAboutBankAccount when journey is in completed state"}"""
       ),
       TestScenario(
-        httpResponse       = makeUpdate("/update-direct-debit-details", tdAll.EpayeBta.updateDirectDebitDetailsRequest(true)),
+        httpResponse       = makeUpdate("/update-direct-debit-details", tdAll.EpayeBta.updateDirectDebitDetailsRequest),
         expectedStatusCode = 400,
         expectedMessage    = """{"statusCode":400,"message":"Cannot update DirectDebitDetails when journey is in completed state"}"""
       ),

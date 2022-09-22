@@ -117,7 +117,7 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Epaye.ChosenTypeOfBankAccount =>
+        case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
           j.into[Journey.Epaye.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -199,7 +199,7 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
             .withFieldConst(_.startDatesResponse, startDatesResponse)
             .transform
-        case j: Journey.Epaye.ChosenTypeOfBankAccount =>
+        case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
           j.into[Journey.Epaye.RetrievedStartDates]
             .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
             .withFieldConst(_.startDatesResponse, startDatesResponse)

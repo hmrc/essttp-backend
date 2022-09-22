@@ -93,7 +93,7 @@ class UpdateDayOfMonthController @Inject() (
             .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
             .withFieldConst(_.dayOfMonth, dayOfMonth)
             .transform
-        case j: Journey.Epaye.ChosenTypeOfBankAccount =>
+        case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
           j.into[Journey.Epaye.EnteredDayOfMonth]
             .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
             .withFieldConst(_.dayOfMonth, dayOfMonth)

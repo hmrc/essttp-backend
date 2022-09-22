@@ -85,14 +85,12 @@ trait TdBase {
   def businessBankAccount: TypeOfBankAccount = TypesOfBankAccount.Business
   def personalBankAccount: TypeOfBankAccount = TypesOfBankAccount.Personal
 
-  def directDebitDetails(isAccountHolder: Boolean): DirectDebitDetails = DirectDebitDetails(
+  val directDebitDetails: BankDetails =
     BankDetails(
       AccountName(SensitiveString("First Last")),
       SortCode(SensitiveString("123456")),
       AccountNumber(SensitiveString("12345678"))
-    ),
-    isAccountHolder
-  )
+    )
 
   def backUrl: BackUrl = BackUrl("https://www.tax.service.gov.uk/back-url")
   def returnUrl: ReturnUrl = ReturnUrl("https://www.tax.service.gov.uk/return-url")

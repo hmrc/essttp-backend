@@ -107,12 +107,12 @@ class JourneyControllerSpec extends ItSpec {
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCheckedPaymentPlan
 
     /** Update Type of Bank Account */
-    journeyConnector.updateChosenTypeOfBankAccount(tdAll.journeyId, tdAll.EpayeBta.updateChosenTypeOfBankAccountRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterChosenTypeOfBankAccount
+    journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.EpayeBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
 
     /** Update Direct debit details */
-    journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeBta.updateDirectDebitDetailsRequest(isAccountHolder = true)).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails(isAccountHolder = true)
+    journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeBta.updateDirectDebitDetailsRequest).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails()
 
     /** Update Confirm Direct debit details */
     journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
@@ -189,12 +189,12 @@ class JourneyControllerSpec extends ItSpec {
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterCheckedPaymentPlan
 
     /** Update Type of Bank Account */
-    journeyConnector.updateChosenTypeOfBankAccount(tdAll.journeyId, tdAll.EpayeGovUk.updateChosenTypeOfBankAccountRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterChosenTypeOfBankAccount
+    journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.EpayeGovUk.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
 
     /** Update Direct debit details */
-    journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeGovUk.updateDirectDebitDetailsRequest(isAccountHolder = true)).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterEnteredDirectDebitDetails(isAccountHolder = true)
+    journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeGovUk.updateDirectDebitDetailsRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterEnteredDirectDebitDetails()
 
     /** Update Confirm Direct debit details */
     journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
@@ -271,12 +271,12 @@ class JourneyControllerSpec extends ItSpec {
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterCheckedPaymentPlan
 
     /** Update Type of Bank Account */
-    journeyConnector.updateChosenTypeOfBankAccount(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateChosenTypeOfBankAccountRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterChosenTypeOfBankAccount
+    journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
 
     /** Update Direct debit details */
-    journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateDirectDebitDetailsRequest(isAccountHolder = true)).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterEnteredDirectDebitDetails(isAccountHolder = true)
+    journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateDirectDebitDetailsRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterEnteredDirectDebitDetails()
 
     /** Update Confirm Direct debit details */
     journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue

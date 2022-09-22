@@ -18,7 +18,7 @@ package essttp.testdata
 
 import essttp.journey.model.SjRequest.Epaye
 import essttp.journey.model._
-import essttp.rootmodel.bank.{DirectDebitDetails, TypeOfBankAccount}
+import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.ttp.EligibilityCheckResult
@@ -353,17 +353,18 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
 
     def journeyAfterCheckedPaymentPlanJson: JsObject = read("/testdata/epaye/detachedurl/JourneyAfterCheckedPaymentPlan.json").asJson
 
-    def updateChosenTypeOfBankAccountRequest(): TypeOfBankAccount = dependencies.businessBankAccount
+    def updateDetailsAboutBankAccountRequest(isAccountHolder: Boolean): DetailsAboutBankAccount =
+      DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder)
 
-    def updateChosenTypeOfBankAccountRequestJson(): JsObject = read("/testdata/epaye/detachedurl/JourneyAfterChosenTypeOfBankAccount.json").asJson
+    def updateDetailsAboutBankAccountRequestJson(): JsObject = read("/testdata/epaye/detachedurl/JourneyAfterEnteredDetailsAboutBankAccount.json").asJson
 
-    def journeyAfterChosenTypeOfBankAccount: Journey.AfterChosenTypeOfBankAccount = Journey.Epaye.ChosenTypeOfBankAccount(
+    def journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder: Boolean): Journey.AfterEnteredDetailsAboutBankAccount = Journey.Epaye.EnteredDetailsAboutBankAccount(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Epaye.DetachedUrl,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
-      stage                    = Stage.AfterChosenTypeOfBankAccount.Business,
+      stage                    = if (isAccountHolder) Stage.AfterEnteredDetailsAboutBankAccount.Business else Stage.AfterEnteredDetailsAboutBankAccount.IsNotAccountHolder,
       correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResult,
@@ -375,22 +376,22 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
       startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
       affordableQuotesResponse = dependencies.affordableQuotesResponse,
       selectedPaymentPlan      = dependencies.paymentPlan(1),
-      typeOfBankAccount        = dependencies.businessBankAccount
+      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder)
     )
 
-    def journeyAfterChosenTypeOfBankAccountJson: JsObject = read("/testdata/epaye/detachedurl/UpdateTypeOfBankAccountRequest.json").asJson
+    def journeyAfterEnteredDetailsAboutBankAccountJson: JsObject = read("/testdata/epaye/detachedurl/JourneyAfterUpdateDetailsAboutBankAccountRequest.json").asJson
 
-    def updateDirectDebitDetailsRequest(isAccountHolder: Boolean): DirectDebitDetails = dependencies.directDebitDetails(isAccountHolder)
+    def updateDirectDebitDetailsRequest(): BankDetails = dependencies.directDebitDetails
 
     def updateDirectDebitDetailsRequestJson(): JsObject = read("/testdata/epaye/detachedurl/UpdateDirectDebitDetailsRequest.json").asJson
 
-    def journeyAfterEnteredDirectDebitDetails(isAccountHolder: Boolean): Journey.AfterEnteredDirectDebitDetails = Journey.Epaye.EnteredDirectDebitDetails(
+    def journeyAfterEnteredDirectDebitDetails(): Journey.AfterEnteredDirectDebitDetails = Journey.Epaye.EnteredDirectDebitDetails(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Epaye.DetachedUrl,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
-      stage                    = if (isAccountHolder) Stage.AfterEnteredDirectDebitDetails.IsAccountHolder else Stage.AfterEnteredDirectDebitDetails.IsNotAccountHolder,
+      stage                    = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails,
       correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResult,
@@ -402,8 +403,8 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
       startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
       affordableQuotesResponse = dependencies.affordableQuotesResponse,
       selectedPaymentPlan      = dependencies.paymentPlan(1),
-      typeOfBankAccount        = dependencies.businessBankAccount,
-      directDebitDetails       = directDebitDetails(isAccountHolder)
+      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+      directDebitDetails       = directDebitDetails
     )
 
     def journeyAfterEnteredDirectDebitDetailsJson: JsObject = read("/testdata/epaye/detachedurl/JourneyAfterUpdateDirectDebitDetails.json").asJson
@@ -430,8 +431,8 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
       startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
       affordableQuotesResponse = dependencies.affordableQuotesResponse,
       selectedPaymentPlan      = dependencies.paymentPlan(1),
-      typeOfBankAccount        = dependencies.businessBankAccount,
-      directDebitDetails       = directDebitDetails(true)
+      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+      directDebitDetails       = directDebitDetails
     )
 
     def journeyAfterConfirmedDirectDebitDetailsJson: JsObject = read("/testdata/epaye/detachedurl/JourneyAfterUpdateConfirmedDirectDebitDetails.json").asJson
@@ -458,8 +459,8 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
       startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
       affordableQuotesResponse = dependencies.affordableQuotesResponse,
       selectedPaymentPlan      = dependencies.paymentPlan(1),
-      typeOfBankAccount        = dependencies.businessBankAccount,
-      directDebitDetails       = directDebitDetails(true)
+      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+      directDebitDetails       = directDebitDetails
     )
 
     def journeyAfterAgreedTermsAndConditionsJson: JsObject = read("/testdata/epaye/detachedurl/JourneyAfterUpdateAgreedTermsAndConditions.json").asJson
@@ -486,8 +487,8 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
       startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
       affordableQuotesResponse = dependencies.affordableQuotesResponse,
       selectedPaymentPlan      = dependencies.paymentPlan(1),
-      typeOfBankAccount        = dependencies.businessBankAccount,
-      directDebitDetails       = directDebitDetails(true),
+      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+      directDebitDetails       = directDebitDetails,
       arrangementResponse      = dependencies.arrangementResponse
     )
     def journeyAfterSubmittedArrangementJson: JsObject = read("/testdata/epaye/detachedurl/JourneyAfterUpdateSubmittedArrangement.json").asJson

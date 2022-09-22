@@ -17,8 +17,10 @@
 package controllers
 
 import essttp.journey.JourneyConnector
+import essttp.rootmodel.bank.AccountNumber
 import essttp.testdata.TdAll
 import testsupport.ItSpec
+import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
 class UpdateDirectDebitDetailsControllerSpec extends ItSpec {
 
@@ -27,26 +29,40 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec {
   "POST /journey/:journeyId/update-direct-debit-details" - {
     "should throw Bad Request when Journey is in a stage [BeforeChosenTypeOfBankAccount]" in new JourneyItTest {
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
-      val result: Throwable = journeyConnector.updateDirectDebitDetails(tdAll.journeyId, TdAll.EpayeBta.updateDirectDebitDetailsRequest(true)).failed.futureValue
+
+      val result: Throwable = journeyConnector.updateDirectDebitDetails(tdAll.journeyId, TdAll.EpayeBta.updateDirectDebitDetailsRequest).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"UpdateDirectDebitDetails is not possible in that state: [Started]"}""")
     }
     "should not update the journey when Direct debit details haven't changed" in new JourneyItTest {
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterChosenTypeOfBankAccount.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, TdAll.EpayeBta.updateDirectDebitDetailsRequest(true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails(true)
-      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, TdAll.EpayeBta.updateDirectDebitDetailsRequest(true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails(true)
+      insertJourneyForTest(
+        TdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+          .copy(_id           = tdAll.journeyId, correlationId = tdAll.correlationId)
+      )
+
+      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, TdAll.EpayeBta.updateDirectDebitDetailsRequest).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails
+      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, TdAll.EpayeBta.updateDirectDebitDetailsRequest).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails
     }
     "should update the journey when Direct debit details have changed" in new JourneyItTest {
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterChosenTypeOfBankAccount.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, TdAll.EpayeBta.updateDirectDebitDetailsRequest(true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails(true)
-      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, TdAll.EpayeBta.updateDirectDebitDetailsRequest(false)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails(false)
+      insertJourneyForTest(
+        TdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+          .copy(_id           = tdAll.journeyId, correlationId = tdAll.correlationId)
+      )
+
+      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, TdAll.EpayeBta.updateDirectDebitDetailsRequest).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails
+
+      val updateRequest = TdAll.EpayeBta.updateDirectDebitDetailsRequest.copy(accountNumber = AccountNumber(SensitiveString("accounts")))
+      val expectedUpdatedJourney = tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails.copy(
+        directDebitDetails = updateRequest
+      )
+      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, updateRequest).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney
     }
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      val result: Throwable = journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeBta.updateDirectDebitDetailsRequest(true)).failed.futureValue
+      val result: Throwable = journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeBta.updateDirectDebitDetailsRequest).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"Cannot update DirectDebitDetails when journey is in completed state"}""")
     }
   }
