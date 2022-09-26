@@ -31,7 +31,7 @@ final case class Charges(
     accruedInterest:      AccruedInterest,
     ineligibleChargeType: IneligibleChargeType,
     chargeOverMaxDebtAge: ChargeOverMaxDebtAge,
-    locks:                List[Lock]
+    locks:                Option[List[Lock]]
 )
 
 object Charges {
