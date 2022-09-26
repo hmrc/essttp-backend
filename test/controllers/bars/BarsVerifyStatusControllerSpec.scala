@@ -17,7 +17,7 @@
 package controllers.bars
 
 import essttp.bars.BarsVerifyStatusConnector
-import essttp.bars.model.BarsVerifyStatusResponse
+import essttp.bars.model.{BarsVerifyStatusResponse, NumberOfBarsVerifyAttempts}
 import essttp.rootmodel.EmpRef
 import org.scalatest.Assertion
 import testsupport.ItSpec
@@ -39,9 +39,12 @@ class BarsVerifyStatusControllerSpec extends ItSpec {
     def assertBarsVerifyStatusResponse(): Assertion = {
       val result = connector.status(EmpRef(empRef)).futureValue
       if (numberUpdates < 3) {
-        result shouldBe BarsVerifyStatusResponse(attempts              = numberUpdates, lockoutExpiryDateTime = None)
+        result shouldBe BarsVerifyStatusResponse(
+          attempts              = NumberOfBarsVerifyAttempts(numberUpdates),
+          lockoutExpiryDateTime = None
+        )
       } else {
-        result.attempts shouldBe numberUpdates
+        result.attempts shouldBe NumberOfBarsVerifyAttempts(numberUpdates)
         result.lockoutExpiryDateTime shouldBe Some(expectedExpiry)
       }
     }
@@ -99,13 +102,13 @@ class BarsVerifyStatusControllerSpec extends ItSpec {
     "is dependent on taxId" in new BarsVerifyStatusItTest {
       private val taxIdUnderTest = "taxId"
       // initial status
-      connector.status(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe 0
+      connector.status(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe NumberOfBarsVerifyAttempts(0)
       // after other update
       connector.update(EmpRef("taxId-OTHER")).futureValue
-      connector.status(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe 0
+      connector.status(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe NumberOfBarsVerifyAttempts(0)
       // after correct update
       connector.update(EmpRef(taxIdUnderTest)).futureValue
-      connector.status(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe 1
+      connector.status(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe NumberOfBarsVerifyAttempts(1)
     }
   }
 
@@ -113,13 +116,13 @@ class BarsVerifyStatusControllerSpec extends ItSpec {
     "is dependent on taxId" in new BarsVerifyStatusItTest {
       private val taxIdUnderTest = "taxId"
       // first update for taxId under test
-      connector.update(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe 1
+      connector.update(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe NumberOfBarsVerifyAttempts(1)
       // other updates
       connector.update(EmpRef("taxId-OTHER")).futureValue
       connector.update(EmpRef("taxId-OTHER")).futureValue
 
       // second update for taxId under test
-      connector.update(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe 2
+      connector.update(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe NumberOfBarsVerifyAttempts(2)
     }
   }
 }
