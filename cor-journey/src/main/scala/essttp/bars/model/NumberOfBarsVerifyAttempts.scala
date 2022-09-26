@@ -16,15 +16,20 @@
 
 package essttp.bars.model
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json}
 
-import java.time.Instant
+final case class NumberOfBarsVerifyAttempts(value: Int) extends AnyVal
 
-final case class BarsVerifyStatusResponse(attempts: NumberOfBarsVerifyAttempts, lockoutExpiryDateTime: Option[Instant])
+object NumberOfBarsVerifyAttempts {
 
-object BarsVerifyStatusResponse {
-  implicit val format: OFormat[BarsVerifyStatusResponse] = Json.format
+  val zero: NumberOfBarsVerifyAttempts = NumberOfBarsVerifyAttempts(0)
 
-  def apply(status: BarsVerifyStatus): BarsVerifyStatusResponse =
-    BarsVerifyStatusResponse(status.verifyCalls, status.lockoutExpiryDateTime)
+  implicit class NumberOfBarsVerifyAttemptsOps(private val n: NumberOfBarsVerifyAttempts) {
+
+    def increment: NumberOfBarsVerifyAttempts = NumberOfBarsVerifyAttempts(n.value + 1)
+
+  }
+
+  implicit val format: Format[NumberOfBarsVerifyAttempts] = Json.valueFormat
+
 }

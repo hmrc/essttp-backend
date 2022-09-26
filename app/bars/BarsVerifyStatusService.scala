@@ -41,7 +41,7 @@ class BarsVerifyStatusService @Inject() (
       case Some(barsStatus) => BarsVerifyStatusResponse(barsStatus)
       case None =>
         BarsVerifyStatusResponse(
-          attempts              = 0,
+          attempts              = NumberOfBarsVerifyAttempts.zero,
           lockoutExpiryDateTime = None
         )
     }
@@ -54,9 +54,9 @@ class BarsVerifyStatusService @Inject() (
     OptionT[Future, BarsVerifyStatus](find(taxId))
       .fold(BarsVerifyStatus(taxId)) {
         status =>
-          val newVerifyCalls = status.verifyCalls + 1
+          val newVerifyCalls = status.verifyCalls.increment
           val expiry: Option[Instant] =
-            if (newVerifyCalls >= appConfig.barsVerifyMaxAttempts)
+            if (newVerifyCalls.value >= appConfig.barsVerifyMaxAttempts)
               Some(Instant.now(clock).plus(24, ChronoUnit.HOURS))
             else None
 
