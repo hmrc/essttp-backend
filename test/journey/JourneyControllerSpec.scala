@@ -18,6 +18,7 @@ package journey
 
 import essttp.journey.JourneyConnector
 import essttp.journey.model.{CorrelationId, JourneyId, SjResponse}
+import essttp.rootmodel.IsEmailAddressRequired
 import essttp.testdata.TdAll
 import play.api.mvc.Request
 import testsupport.ItSpec
@@ -119,8 +120,8 @@ class JourneyControllerSpec extends ItSpec {
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails
 
     /** Update Agreed terms and conditions */
-    journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions
+    journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(false)).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false)
 
     /** Update Arrangement (journey completed) */
     journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeBta.updateArrangementRequest()).futureValue
@@ -201,8 +202,8 @@ class JourneyControllerSpec extends ItSpec {
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterConfirmedDirectDebitDetails
 
     /** Update Agreed terms and conditions */
-    journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterAgreedTermsAndConditions
+    journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(false)).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false)
 
     /** Update Arrangement (journey completed) */
     journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeGovUk.updateArrangementRequest()).futureValue
@@ -283,8 +284,8 @@ class JourneyControllerSpec extends ItSpec {
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterConfirmedDirectDebitDetails
 
     /** Update Agreed terms and conditions */
-    journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterAgreedTermsAndConditions
+    journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(false)).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false)
 
     /** Update Arrangement (journey completed) */
     journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateArrangementRequest()).futureValue
