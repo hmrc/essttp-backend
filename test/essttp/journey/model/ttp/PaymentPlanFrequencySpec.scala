@@ -23,11 +23,11 @@ import testsupport.UnitSpec
 class PaymentPlanFrequencySpec extends UnitSpec {
 
   "Serialise" in {
-    Json.toJson(PaymentPlanFrequencies.Monthly: PaymentPlanFrequency) shouldBe JsString("monthly")
+    Json.toJson(PaymentPlanFrequencies.Monthly: PaymentPlanFrequency) shouldBe JsString("Monthly")
   }
 
   "Deserialise" in {
-    JsString("monthly").validate[PaymentPlanFrequency] shouldBe JsSuccess(PaymentPlanFrequencies.Monthly)
+    JsString("Monthly").validate[PaymentPlanFrequency] shouldBe JsSuccess(PaymentPlanFrequencies.Monthly)
   }
 
 }
