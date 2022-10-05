@@ -122,7 +122,7 @@ class JourneyInFinalStateSpec extends ItSpec {
         expectedMessage    = """{"statusCode":400,"message":"Cannot update ConfirmedDirectDebitDetails when journey is in completed state"}"""
       ),
       TestScenario(
-        httpResponse       = makeUpdate("/update-has-agreed-terms-and-conditions", JsNull),
+        httpResponse       = makeUpdate("/update-has-agreed-terms-and-conditions", tdAll.EpayeBta.updateAgreedTermsAndConditionsRequest(isEmailAddressRequired = false)),
         expectedStatusCode = 400,
         expectedMessage    = """{"statusCode":400,"message":"Cannot update AgreedTermsAndConditions when journey is in completed state"}"""
       ),

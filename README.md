@@ -55,8 +55,9 @@ graph TD;
     EnteredDetailsAboutBankAccount.Personal --> EnteredDirectDebitDetails;
     EnteredDetailsAboutBankAccount.Business --> EnteredDirectDebitDetails;
     EnteredDirectDebitDetails --> ConfirmedDirectDebitDetails;
-    ConfirmedDirectDebitDetails --> AgreedTermsAndConditions;
-    AgreedTermsAndConditions --> SubmittedArrangement;
+    ConfirmedDirectDebitDetails --> EmailAddressRequired;
+    ConfirmedDirectDebitDetails --> EmailAddressNotRequired;
+    EmailAddressNotRequired --> SubmittedArrangement;
 ```
 To edit this, use [mermaid live editor](https://mermaid.live/)
 

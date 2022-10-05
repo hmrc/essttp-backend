@@ -25,7 +25,7 @@ import essttp.rootmodel.ttp.EligibilityCheckResult
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
-import essttp.rootmodel.{CanPayUpfront, DayOfMonth, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
+import essttp.rootmodel.{CanPayUpfront, DayOfMonth, IsEmailAddressRequired, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import essttp.utils.JsonSyntax._
 import essttp.utils.ResourceReader._
 import play.api.libs.json.{JsNull, JsObject}
@@ -437,31 +437,38 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
 
     def journeyAfterConfirmedDirectDebitDetailsJson: JsObject = read("/testdata/epaye/detachedurl/JourneyAfterUpdateConfirmedDirectDebitDetails.json").asJson
 
-    def updateAgreedTermsAndConditionsRequest(): JsNull.type = JsNull
+    def updateAgreedTermsAndConditionsRequest(isEmailAddressRequired: Boolean): IsEmailAddressRequired = IsEmailAddressRequired(isEmailAddressRequired)
 
     def updateAgreedTermsAndConditionsJson(): JsObject = read("/testdata/epaye/detachedurl/UpdateAgreedTermsAndConditions.json").asJson
 
-    def journeyAfterAgreedTermsAndConditions: Journey.AfterAgreedTermsAndConditions = Journey.Epaye.AgreedTermsAndConditions(
-      _id                      = dependencies.journeyId,
-      origin                   = Origins.Epaye.DetachedUrl,
-      createdOn                = dependencies.createdOn,
-      sjRequest                = sjRequest,
-      sessionId                = dependencies.sessionId,
-      stage                    = Stage.AfterAgreedTermsAndConditions.Agreed,
-      correlationId            = dependencies.correlationId,
-      taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
-      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts        = dependencies.instalmentAmounts,
-      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
-      dayOfMonth               = dependencies.dayOfMonth,
-      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan      = dependencies.paymentPlan(1),
-      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
-      directDebitDetails       = directDebitDetails
-    )
+    def journeyAfterAgreedTermsAndConditions(isEmailAddressRequired: Boolean): Journey.AfterAgreedTermsAndConditions = {
+      val stage =
+        if (isEmailAddressRequired) Stage.AfterAgreedTermsAndConditions.EmailAddressRequired
+        else Stage.AfterAgreedTermsAndConditions.EmailAddressNotRequired
+
+      Journey.Epaye.AgreedTermsAndConditions(
+        _id                      = dependencies.journeyId,
+        origin                   = Origins.Epaye.DetachedUrl,
+        createdOn                = dependencies.createdOn,
+        sjRequest                = sjRequest,
+        sessionId                = dependencies.sessionId,
+        stage                    = stage,
+        correlationId            = dependencies.correlationId,
+        taxId                    = empRef,
+        eligibilityCheckResult   = eligibleEligibilityCheckResult,
+        upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts        = dependencies.instalmentAmounts,
+        monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+        dayOfMonth               = dependencies.dayOfMonth,
+        startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+        affordableQuotesResponse = dependencies.affordableQuotesResponse,
+        selectedPaymentPlan      = dependencies.paymentPlan(1),
+        detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+        directDebitDetails       = directDebitDetails,
+        isEmailAddressRequired   = IsEmailAddressRequired(isEmailAddressRequired)
+      )
+    }
 
     def journeyAfterAgreedTermsAndConditionsJson: JsObject = read("/testdata/epaye/detachedurl/JourneyAfterUpdateAgreedTermsAndConditions.json").asJson
 
@@ -489,6 +496,7 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
       selectedPaymentPlan      = dependencies.paymentPlan(1),
       detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
       directDebitDetails       = directDebitDetails,
+      isEmailAddressRequired   = IsEmailAddressRequired(false),
       arrangementResponse      = dependencies.arrangementResponse
     )
     def journeyAfterSubmittedArrangementJson: JsObject = read("/testdata/epaye/detachedurl/JourneyAfterUpdateSubmittedArrangement.json").asJson

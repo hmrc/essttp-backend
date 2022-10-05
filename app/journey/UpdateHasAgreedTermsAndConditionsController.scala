@@ -16,11 +16,14 @@
 
 package journey
 
+import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
+import essttp.journey.model.Journey.Stages
 import essttp.journey.model.{Journey, JourneyId, Stage}
+import essttp.rootmodel.IsEmailAddressRequired
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformerOps
-import play.api.mvc.{Action, AnyContent, ControllerComponents, Request}
+import play.api.mvc.{Action, ControllerComponents, Request}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,29 +34,59 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
 
-  def updateAgreedTermsAndConditions(journeyId: JourneyId): Action[AnyContent] = Action.async { implicit request =>
+  def updateAgreedTermsAndConditions(journeyId: JourneyId): Action[IsEmailAddressRequired] = Action.async(parse.json[IsEmailAddressRequired]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {
         case j: Journey.BeforeConfirmedDirectDebitDetails  => Errors.throwBadRequestExceptionF(s"UpdateAgreedTermsAndConditions is not possible in that state: [${j.stage}]")
-        case j: Journey.Stages.ConfirmedDirectDebitDetails => updateJourneyWithNewValue(j)
-        case j: Journey.AfterAgreedTermsAndConditions => j match {
-          case _: Journey.BeforeArrangementSubmitted => Future.successful(())
-          case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update AgreedTermsAndConditions when journey is in completed state")
-        }
+        case j: Journey.Stages.ConfirmedDirectDebitDetails => updateJourneyWithNewValue(j, request.body)
+        case j: Journey.AfterAgreedTermsAndConditions      => updateJourneyWithExistingValue(j, request.body)
       }
     } yield Ok
   }
 
   private def updateJourneyWithNewValue(
-      journey: Journey.Stages.ConfirmedDirectDebitDetails
+      journey:                Journey.Stages.ConfirmedDirectDebitDetails,
+      isEmailAddressRequired: IsEmailAddressRequired
   )(implicit request: Request[_]): Future[Unit] = {
     val newJourney: Journey.AfterAgreedTermsAndConditions = journey match {
       case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
         j.into[Journey.Epaye.AgreedTermsAndConditions]
-          .withFieldConst(_.stage, Stage.AfterAgreedTermsAndConditions.Agreed)
+          .withFieldConst(_.stage, toStage(isEmailAddressRequired))
+          .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired)
           .transform
     }
     journeyService.upsert(newJourney)
   }
+
+  private def updateJourneyWithExistingValue(
+      journey:                Journey.AfterAgreedTermsAndConditions,
+      isEmailAddressRequired: IsEmailAddressRequired
+  )(implicit request: Request[_]): Future[Unit] =
+    journey match {
+      case _: Stages.SubmittedArrangement =>
+        Errors.throwBadRequestException("Cannot update AgreedTermsAndConditions when journey is in completed state")
+
+      case j: Journey.Epaye.AgreedTermsAndConditions =>
+        upsertIfChanged(j, isEmailAddressRequired,
+                        j.copy(
+            isEmailAddressRequired = isEmailAddressRequired,
+            stage                  = toStage(isEmailAddressRequired)
+          ))
+    }
+
+  private def upsertIfChanged(
+      j:                      Journey.AfterAgreedTermsAndConditions,
+      isEmailAddressRequired: IsEmailAddressRequired,
+      updatedJourney:         => Journey.AfterAgreedTermsAndConditions
+  )(
+      implicit
+      r: Request[_]
+  ): Future[Unit] =
+    if (j.isEmailAddressRequired === isEmailAddressRequired) Future.successful((()))
+    else journeyService.upsert(updatedJourney)
+
+  private def toStage(isEmailAddressRequired: IsEmailAddressRequired): Stage.AfterAgreedTermsAndConditions =
+    if (isEmailAddressRequired) Stage.AfterAgreedTermsAndConditions.EmailAddressRequired
+    else Stage.AfterAgreedTermsAndConditions.EmailAddressNotRequired
 }

@@ -24,7 +24,7 @@ import essttp.rootmodel.ttp.EligibilityCheckResult
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
-import essttp.rootmodel.{CanPayUpfront, DayOfMonth, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
+import essttp.rootmodel.{CanPayUpfront, DayOfMonth, IsEmailAddressRequired, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import play.api.libs.json.{JsNull, JsObject}
 
 trait TdJourneyStructure {
@@ -137,10 +137,10 @@ trait TdJourneyStructure {
   def journeyAfterConfirmedDirectDebitDetails: Journey.AfterConfirmedDirectDebitDetails
   def journeyAfterConfirmedDirectDebitDetailsJson: JsObject
 
-  def updateAgreedTermsAndConditionsRequest(): JsNull.type
+  def updateAgreedTermsAndConditionsRequest(isEmailAddressRequired: Boolean): IsEmailAddressRequired
   def updateAgreedTermsAndConditionsJson(): JsObject
 
-  def journeyAfterAgreedTermsAndConditions: Journey.AfterAgreedTermsAndConditions
+  def journeyAfterAgreedTermsAndConditions(isEmailAddressRequired: Boolean): Journey.AfterAgreedTermsAndConditions
   def journeyAfterAgreedTermsAndConditionsJson: JsObject
 
   def updateArrangementRequest(): ArrangementResponse

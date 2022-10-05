@@ -177,7 +177,9 @@ object Journey {
 
   sealed trait BeforeAgreedTermsAndConditions extends Journey with Stages.JourneyStage
 
-  sealed trait AfterAgreedTermsAndConditions extends Journey
+  sealed trait AfterAgreedTermsAndConditions extends Journey {
+    def isEmailAddressRequired: IsEmailAddressRequired
+  }
 
   sealed trait BeforeArrangementSubmitted extends Journey with Stages.JourneyStage
 
@@ -1041,7 +1043,8 @@ object Journey {
         override val affordableQuotesResponse: AffordableQuotesResponse,
         override val selectedPaymentPlan:      PaymentPlan,
         override val detailsAboutBankAccount:  DetailsAboutBankAccount,
-        override val directDebitDetails:       BankDetails
+        override val directDebitDetails:       BankDetails,
+        override val isEmailAddressRequired:   IsEmailAddressRequired
     )
       extends Journey
       with Journey.Stages.AgreedTermsAndConditions
@@ -1071,6 +1074,7 @@ object Journey {
         override val selectedPaymentPlan:      PaymentPlan,
         override val detailsAboutBankAccount:  DetailsAboutBankAccount,
         override val directDebitDetails:       BankDetails,
+        override val isEmailAddressRequired:   IsEmailAddressRequired,
         override val arrangementResponse:      ArrangementResponse
     )
       extends Journey

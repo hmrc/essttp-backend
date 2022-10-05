@@ -256,7 +256,10 @@ object Stage {
     implicit val format: OFormat[AfterAgreedTermsAndConditions] = derived.oformat[AfterAgreedTermsAndConditions]()
     val values: immutable.IndexedSeq[AfterAgreedTermsAndConditions] = findValues
 
-    case object Agreed extends AfterAgreedTermsAndConditions
+    case object EmailAddressRequired extends AfterAgreedTermsAndConditions
+
+    case object EmailAddressNotRequired extends AfterAgreedTermsAndConditions
+
   }
 
   sealed trait AfterSubmittedArrangement extends Stage with EnumEntry

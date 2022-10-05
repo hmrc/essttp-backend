@@ -36,9 +36,17 @@ class UpdateSubmittedArrangementController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {
-        case j: Journey.BeforeAgreedTermsAndConditions  => Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user hasn't agreed to the terms and conditions, state: [${j.stage}]")
-        case j: Journey.Stages.AgreedTermsAndConditions => updateJourneyWithNewValue(j, request.body)
-        case _: Journey.AfterArrangementSubmitted       => updateJourneyWithExistingValue()
+        case j: Journey.BeforeAgreedTermsAndConditions =>
+          Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user hasn't agreed to the terms and conditions, state: [${j.stage}]")
+
+        case j: Journey.Stages.AgreedTermsAndConditions =>
+          if (j.isEmailAddressRequired)
+            Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user still requires and email address, state: [${j.stage}]")
+          else
+            updateJourneyWithNewValue(j, request.body)
+
+        case _: Journey.AfterArrangementSubmitted =>
+          Errors.throwBadRequestExceptionF("Cannot update SubmittedArrangement when journey is in completed state")
       }
     } yield Ok
   }
@@ -57,7 +65,4 @@ class UpdateSubmittedArrangementController @Inject() (
     journeyService.upsert(newJourney)
   }
 
-  private def updateJourneyWithExistingValue(): Future[Unit] = {
-    Errors.throwBadRequestExceptionF("Cannot update SubmittedArrangement when journey is in completed state")
-  }
 }
