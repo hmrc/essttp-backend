@@ -26,21 +26,33 @@ class UpdateHasConfirmedDirectDebitDetailsControllerSpec extends ItSpec {
 
   "POST /journey/:journeyId/update-has-confirmed-direct-debit-details" - {
     "should throw Bad Request when Journey is in a stage [BeforeEnteredDirectDebitDetails]" in new JourneyItTest {
+      stubCommonActions()
+
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
       val result: Throwable = journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"UpdateHasConfirmedDirectDebitDetails is not possible in that state: [Started]"}""")
+
+      verifyCommonActions(numberOfAuthCalls = 2)
     }
     "should return Unit when Direct debit details have already been confirmed" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails
       val result = journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId)
       result.futureValue shouldBe (())
+
+      verifyCommonActions(numberOfAuthCalls = 3)
     }
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       val result: Throwable = journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"Cannot update ConfirmedDirectDebitDetails when journey is in completed state"}""")
+
+      verifyCommonActions(numberOfAuthCalls = 1)
     }
   }
 }

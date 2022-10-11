@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-package action.model
+package action
 
-import essttp.rootmodel.SessionId
-import play.api.mvc.{Request, WrappedRequest}
+import action.model.AuthenticatedRequest
+import com.google.inject.{Inject, Singleton}
+import play.api.mvc.{ActionBuilder, AnyContent, DefaultActionBuilder}
 
-final case class SessionRequest[A](
-    request:   Request[A],
-    sessionId: SessionId
-) extends WrappedRequest[A](request)
+@Singleton
+class Actions @Inject() (
+    actionBuilder:              DefaultActionBuilder,
+    authenticatedActionRefiner: AuthenticatedActionRefiner
+) {
+
+  val authenticatedAction: ActionBuilder[AuthenticatedRequest, AnyContent] =
+    actionBuilder.andThen(authenticatedActionRefiner)
+
+}

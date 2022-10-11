@@ -16,6 +16,7 @@
 
 package journey
 
+import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
@@ -30,11 +31,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateDirectDebitDetailsController @Inject() (
+    actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
-  def updateDirectDebitDetails(journeyId: JourneyId): Action[BankDetails] = Action.async(parse.json[BankDetails]) { implicit request =>
+  def updateDirectDebitDetails(journeyId: JourneyId): Action[BankDetails] = actions.authenticatedAction.async(parse.json[BankDetails]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {

@@ -27,15 +27,23 @@ class UpdateTaxIdControllerSpec extends ItSpec {
 
   "POST /journey/:journeyId/update-tax-id" - {
     "should throw Bad Request when Journey is in a stage [AfterComputedTaxId]" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterEligibilityCheckEligible.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       val result: Throwable = journeyConnector.updateTaxId(tdAll.journeyId, tdAll.EpayeBta.updateTaxIdRequest()).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"UpdateTaxId is not possible in this stage, why is it happening? Debug me... [Eligible]"}""")
+
+      verifyCommonActions(numberOfAuthCalls = 1)
     }
     "Journey.Epaye" - {
       "should throw Bad Request when passed a VRN for a PAYE journey in stage [Started]" in new JourneyItTest {
+        stubCommonActions()
+
         insertJourneyForTest(TdAll.EpayeBta.journeyAfterStarted.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
         val result: Throwable = journeyConnector.updateTaxId(tdAll.journeyId, Vrn("thisshouldfailthetest")).failed.futureValue
         result.getMessage should include("""{"statusCode":400,"message":"Why is there a vrn, this is for EPAYE..."}""")
+
+        verifyCommonActions(numberOfAuthCalls = 1)
       }
     }
     "Journey.Vat" - {

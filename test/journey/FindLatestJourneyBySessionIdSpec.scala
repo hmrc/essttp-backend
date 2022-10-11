@@ -35,28 +35,38 @@ class FindLatestJourneyBySessionIdSpec extends ItSpec {
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
   def makeHeaderCarrier(sessionId: SessionId): HeaderCarrier =
-    HeaderCarrier(sessionId = Some(sessionId))
+    HeaderCarrier(sessionId     = Some(sessionId), authorization = Some(TdAll.authorization))
 
   "return a 500 when no sessionId provided" in {
+    stubCommonActions()
+
     val httpClient = app.injector.instanceOf[HttpClient]
-    val response = httpClient.GET[HttpResponse](s"$baseUrl/essttp-backend/journey/find-latest-by-session-id").futureValue
+    val response = httpClient.GET[HttpResponse](
+      url     = s"$baseUrl/essttp-backend/journey/find-latest-by-session-id",
+      headers = Seq("Authorization" -> TdAll.authorization.value)
+    ).futureValue
     response.status shouldBe 500
     response.body shouldBe """{"statusCode":500,"message":"Missing required 'SessionId'"}"""
+
+    verifyCommonActions(numberOfAuthCalls = 1)
   }
 
   "connector fails to make request if no sessionId provided" in {
     val thrown = journeyConnector.findLatestJourneyBySessionId().failed.futureValue
     thrown.getMessage should include("Missing required 'SessionId'")
+
+    verifyCommonActions(numberOfAuthCalls = 0)
   }
 
   "find a single journey" in {
-
       def startJourney(sessionId: SessionId): JourneyId = {
         implicit val request: FakeRequest[AnyContentAsEmpty.type] = TdAll.request.withSession(SessionKeys.sessionId -> sessionId.value)
         val sjRequest = TdAll.EpayeBta.sjRequest
         val journeyId = journeyConnector.Epaye.startJourneyBta(sjRequest).futureValue.journeyId
         journeyId
       }
+
+    stubCommonActions()
 
     val sessionId = SessionId(s"session-${UUID.randomUUID().toString}")
     implicit val hc: HeaderCarrier = makeHeaderCarrier(sessionId)
@@ -69,13 +79,19 @@ class FindLatestJourneyBySessionIdSpec extends ItSpec {
     val result2 = journeyConnector.findLatestJourneyBySessionId().futureValue.value
     result2.journeyId shouldBe latterJourneyId
     result2.journeyId shouldNot be(previousJourneyId)
+
+    verifyCommonActions(numberOfAuthCalls = 4)
   }
 
   "find a single journey - Not Found" in {
+    stubCommonActions()
+
     val sessionId = SessionId("i-have-no-session-id")
     implicit val hc: HeaderCarrier = makeHeaderCarrier(sessionId)
     val journey: Option[Journey] = journeyConnector.findLatestJourneyBySessionId().futureValue
     journey shouldBe None
+
+    verifyCommonActions(numberOfAuthCalls = 1)
   }
 
 }

@@ -16,6 +16,7 @@
 
 package journey
 
+import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
@@ -28,11 +29,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateSubmittedArrangementController @Inject() (
+    actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
 
-  def updateArrangement(journeyId: JourneyId): Action[ArrangementResponse] = Action.async(parse.json[ArrangementResponse]) { implicit request =>
+  def updateArrangement(journeyId: JourneyId): Action[ArrangementResponse] = actions.authenticatedAction.async(parse.json[ArrangementResponse]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {

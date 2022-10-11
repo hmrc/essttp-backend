@@ -26,28 +26,43 @@ class UpdateAffordableQuotesControllerSpec extends ItSpec {
 
   "POST /journey/:journeyId/update-affordable-quotes" - {
     "should throw Bad Request when Journey is in a stage [UpdateAffordableQuotes]" in new JourneyItTest {
+      stubCommonActions()
+
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
       val result: Throwable = journeyConnector.updateAffordableQuotes(tdAll.journeyId, TdAll.EpayeBta.updateAffordableQuotesResponse()).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"UpdateAffordableQuotes is not possible in that state: [Started]"}""")
+
+      verifyCommonActions(numberOfAuthCalls = 2)
     }
     "should not update the journey when Affordable Quotes haven't changed" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterStartDatesResponse.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       journeyConnector.updateAffordableQuotes(tdAll.journeyId, TdAll.EpayeBta.updateAffordableQuotesResponse()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAffordableQuotesResponse
       journeyConnector.updateAffordableQuotes(tdAll.journeyId, TdAll.EpayeBta.updateAffordableQuotesResponse()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAffordableQuotesResponse
+
+      verifyCommonActions(numberOfAuthCalls = 4)
     }
     "should update the journey when Affordable Quotes has changed" in new JourneyItTest {
+      stubCommonActions()
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterStartDatesResponse.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       journeyConnector.updateAffordableQuotes(tdAll.journeyId, TdAll.EpayeBta.updateAffordableQuotesResponse()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAffordableQuotesResponse
       journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.affordableQuotesResponseWith2Plans).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAffordableQuotesResponse.copy(affordableQuotesResponse = tdAll.affordableQuotesResponseWith2Plans)
+
+      verifyCommonActions(numberOfAuthCalls = 4)
     }
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       val result: Throwable = journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.EpayeBta.updateAffordableQuotesResponse()).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"Cannot update AffordableQuotes when journey is in completed state"}""")
+
+      verifyCommonActions(numberOfAuthCalls = 1)
     }
   }
 }

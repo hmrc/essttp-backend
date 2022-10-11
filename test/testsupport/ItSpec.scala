@@ -17,21 +17,24 @@
 package testsupport
 
 import bars.BarsVerifyStatusRepo
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import com.google.inject.{AbstractModule, Provides}
 import essttp.journey.model.{CorrelationId, Journey, JourneyId}
 import essttp.testdata.TdAll
 import journey.{CorrelationIdGenerator, JourneyIdGenerator}
 import org.mongodb.scala.bson.BsonDocument
-import org.scalatest.TestData
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatestplus.play.guice.GuiceOneServerPerTest
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 import play.api.mvc.Request
 import play.api.test.{DefaultTestServerFactory, FakeRequest, RunningServer}
 import play.api.{Application, Mode}
 import play.core.server.ServerConfig
 import repository.JourneyRepo
+import testsupport.stubs.AuthStub
+import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
+import uk.gov.hmrc.auth.core.AuthProviders
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.format.DateTimeFormatter
@@ -45,7 +48,8 @@ import scala.util.Random
 trait ItSpec
   extends AnyFreeSpecLike
   with RichMatchers
-  with GuiceOneServerPerTest { self =>
+  with GuiceOneServerPerSuite
+  with WireMockSupport { self =>
 
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(
     timeout  = scaled(Span(20, Seconds)),
@@ -114,16 +118,17 @@ trait ItSpec
     "mongodb.uri" -> s"mongodb://localhost:27017/$databaseName",
     "microservice.services.essttp-backend.protocol" -> "http",
     "microservice.services.essttp-backend.host" -> "localhost",
-    "microservice.services.essttp-backend.port" -> testServerPort
+    "microservice.services.essttp-backend.port" -> testServerPort,
+    "microservice.services.auth.protocol" -> "http",
+    "microservice.services.auth.host" -> "localhost",
+    "microservice.services.auth.port" -> WireMockSupport.port
   )
 
-  override def newAppForTest(testData: org.scalatest.TestData): Application = new GuiceApplicationBuilder()
+  //in tests use `app`
+  override def fakeApplication(): Application = new GuiceApplicationBuilder()
     .configure(conf)
     .overrides(GuiceableModule.fromGuiceModules(Seq(overridingsModule)))
     .build()
-
-  override protected def newServerForTest(app: Application, testData: TestData): RunningServer =
-    TestServerFactory.start(app)
 
   object TestServerFactory extends DefaultTestServerFactory {
     override protected def serverConfig(app: Application): ServerConfig = {
@@ -132,12 +137,15 @@ trait ItSpec
     }
   }
 
+  override implicit protected lazy val runningServer: RunningServer =
+    TestServerFactory.start(app)
+
   trait JourneyItTest {
     val tdAll: TdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
-    implicit val request: Request[_] = tdAll.request
+    implicit val request: Request[_] = tdAll.request.withHeaders("Authorization" -> TdAll.authorization.value)
 
     private def journeyRepo: JourneyRepo = app.injector.instanceOf[JourneyRepo]
 
@@ -159,6 +167,12 @@ trait ItSpec
     private def barsRepo: BarsVerifyStatusRepo = app.injector.instanceOf[BarsVerifyStatusRepo]
     barsRepo.collection.deleteMany(BsonDocument("{}")).toFuture().futureValue
   }
+
+  def stubCommonActions(): StubMapping =
+    AuthStub.authorise()
+
+  def verifyCommonActions(numberOfAuthCalls: Int): Unit =
+    AuthStub.ensureAuthoriseCalled(numberOfAuthCalls, AuthProviders(GovernmentGateway))
 
 }
 

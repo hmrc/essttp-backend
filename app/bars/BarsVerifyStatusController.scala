@@ -16,6 +16,7 @@
 
 package bars
 
+import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.bars.model.BarsUpdateVerifyStatusParams
 import play.api.libs.json.Json
@@ -26,18 +27,19 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class BarsVerifyStatusController @Inject() (
+    actions:     Actions,
     barsService: BarsVerifyStatusService,
     cc:          ControllerComponents
 )
   (implicit exec: ExecutionContext)
   extends BackendController(cc) {
 
-  def status(): Action[BarsUpdateVerifyStatusParams] = Action.async(parse.json[BarsUpdateVerifyStatusParams]) { implicit request =>
+  def status(): Action[BarsUpdateVerifyStatusParams] = actions.authenticatedAction.async(parse.json[BarsUpdateVerifyStatusParams]) { implicit request =>
     barsService.status(request.body.taxId)
       .map { resp => Ok(Json.toJson(resp)) }
   }
 
-  def update(): Action[BarsUpdateVerifyStatusParams] = Action.async(parse.json[BarsUpdateVerifyStatusParams]) { implicit request =>
+  def update(): Action[BarsUpdateVerifyStatusParams] = actions.authenticatedAction.async(parse.json[BarsUpdateVerifyStatusParams]) { implicit request =>
     barsService.update(request.body.taxId)
       .map { resp => Ok(Json.toJson(resp)) }
   }

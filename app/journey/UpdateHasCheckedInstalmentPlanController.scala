@@ -16,6 +16,7 @@
 
 package journey
 
+import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.utils.Errors
@@ -27,11 +28,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateHasCheckedInstalmentPlanController @Inject() (
+    actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
 
-  def updateHasCheckedInstalmentPlan(journeyId: JourneyId): Action[AnyContent] = Action.async { implicit request =>
+  def updateHasCheckedInstalmentPlan(journeyId: JourneyId): Action[AnyContent] = actions.authenticatedAction.async { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {

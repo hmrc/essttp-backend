@@ -47,6 +47,8 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateSubmittedArrangement]"
 
   s"[Epaye.Bta][Happy path with upfront payment]$testNameJourneyStages" in {
+    stubCommonActions()
+
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
@@ -126,9 +128,13 @@ class JourneyControllerSpec extends ItSpec {
     /** Update Arrangement (journey completed) */
     journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeBta.updateArrangementRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSubmittedArrangement
+
+    verifyCommonActions(numberOfAuthCalls = 36)
   }
 
   s"[Epaye.GovUk][Happy path with upfront payment]$testNameJourneyStages" in {
+    stubCommonActions()
+
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
@@ -208,9 +214,13 @@ class JourneyControllerSpec extends ItSpec {
     /** Update Arrangement (journey completed) */
     journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeGovUk.updateArrangementRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterSubmittedArrangement
+
+    verifyCommonActions(numberOfAuthCalls = 36)
   }
 
   s"[Epaye.DetachedUrl][Happy path with upfront payment]$testNameJourneyStages" in {
+    stubCommonActions()
+
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
@@ -290,5 +300,7 @@ class JourneyControllerSpec extends ItSpec {
     /** Update Arrangement (journey completed) */
     journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateArrangementRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterSubmittedArrangement
+
+    verifyCommonActions(numberOfAuthCalls = 36)
   }
 }

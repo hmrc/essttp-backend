@@ -18,11 +18,8 @@ package action.model
 
 import essttp.journey.model.Journey
 import play.api.mvc.{Request, WrappedRequest}
-import uk.gov.hmrc.auth.core.Enrolments
 
 final class JourneyRequest[A](
-    val request:    Request[A],
-    val enrolments: Enrolments,
-    val journey:    Journey
+    val request: Request[A],
+    val journey: Journey
 ) extends WrappedRequest[A](request)
-

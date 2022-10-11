@@ -16,6 +16,7 @@
 
 package journey
 
+import action.Actions
 import cats.Eq
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
@@ -32,13 +33,14 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateEligibilityCheckResultController @Inject() (
+    actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
   implicit val eq: Eq[EligibilityCheckResult] = Eq.fromUniversalEquals
 
-  def updateEligibilityResult(journeyId: JourneyId): Action[EligibilityCheckResult] = Action.async(parse.json[EligibilityCheckResult]) { implicit request =>
+  def updateEligibilityResult(journeyId: JourneyId): Action[EligibilityCheckResult] = actions.authenticatedAction.async(parse.json[EligibilityCheckResult]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {

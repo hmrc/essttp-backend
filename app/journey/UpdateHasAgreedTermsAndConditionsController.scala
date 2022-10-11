@@ -16,6 +16,7 @@
 
 package journey
 
+import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.journey.model.Journey.Stages
@@ -30,11 +31,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateHasAgreedTermsAndConditionsController @Inject() (
+    actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
 
-  def updateAgreedTermsAndConditions(journeyId: JourneyId): Action[IsEmailAddressRequired] = Action.async(parse.json[IsEmailAddressRequired]) { implicit request =>
+  def updateAgreedTermsAndConditions(journeyId: JourneyId): Action[IsEmailAddressRequired] = actions.authenticatedAction.async(parse.json[IsEmailAddressRequired]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {

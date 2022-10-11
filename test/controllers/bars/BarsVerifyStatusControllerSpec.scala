@@ -19,7 +19,6 @@ package controllers.bars
 import essttp.bars.BarsVerifyStatusConnector
 import essttp.bars.model.{BarsVerifyStatusResponse, NumberOfBarsVerifyAttempts}
 import essttp.rootmodel.EmpRef
-import org.scalatest.Assertion
 import testsupport.ItSpec
 
 import java.time.temporal.ChronoUnit
@@ -29,6 +28,8 @@ class BarsVerifyStatusControllerSpec extends ItSpec {
   def connector: BarsVerifyStatusConnector = app.injector.instanceOf[BarsVerifyStatusConnector]
 
   abstract class Setup(numberUpdates: Int) extends BarsVerifyStatusItTest {
+    stubCommonActions()
+
     private val empRef = "123XYZ456"
     private val expectedExpiry = frozenZonedDateTime.toInstant.plus(24, ChronoUnit.HOURS)
 
@@ -36,7 +37,7 @@ class BarsVerifyStatusControllerSpec extends ItSpec {
       connector.update(EmpRef(empRef)).futureValue
     }
 
-    def assertBarsVerifyStatusResponse(): Assertion = {
+    def assertBarsVerifyStatusResponse(): Unit = {
       val result = connector.status(EmpRef(empRef)).futureValue
       if (numberUpdates < 3) {
         result shouldBe BarsVerifyStatusResponse(
@@ -47,6 +48,8 @@ class BarsVerifyStatusControllerSpec extends ItSpec {
         result.attempts shouldBe NumberOfBarsVerifyAttempts(numberUpdates)
         result.lockoutExpiryDateTime shouldBe Some(expectedExpiry)
       }
+
+      verifyCommonActions(numberOfAuthCalls = numberUpdates + 1)
     }
   }
 
@@ -100,6 +103,8 @@ class BarsVerifyStatusControllerSpec extends ItSpec {
 
   "POST /bars/verify/status" - {
     "is dependent on taxId" in new BarsVerifyStatusItTest {
+      stubCommonActions()
+
       private val taxIdUnderTest = "taxId"
       // initial status
       connector.status(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe NumberOfBarsVerifyAttempts(0)
@@ -109,11 +114,15 @@ class BarsVerifyStatusControllerSpec extends ItSpec {
       // after correct update
       connector.update(EmpRef(taxIdUnderTest)).futureValue
       connector.status(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe NumberOfBarsVerifyAttempts(1)
+
+      verifyCommonActions(numberOfAuthCalls = 5)
     }
   }
 
   "POST /bars/verify/update" - {
     "is dependent on taxId" in new BarsVerifyStatusItTest {
+      stubCommonActions()
+
       private val taxIdUnderTest = "taxId"
       // first update for taxId under test
       connector.update(EmpRef(taxIdUnderTest)).futureValue.attempts shouldBe NumberOfBarsVerifyAttempts(1)

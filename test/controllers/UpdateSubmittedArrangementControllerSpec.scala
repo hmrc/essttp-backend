@@ -27,33 +27,48 @@ class UpdateSubmittedArrangementControllerSpec extends ItSpec {
   "POST /journey/:journeyId/update-arrangement" - {
 
     "should throw Bad Request when Journey is in a stage [BeforeAgreedTermsAndConditions]" in new JourneyItTest {
+      stubCommonActions()
+
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
 
       val result: Throwable = journeyConnector.updateArrangement(tdAll.journeyId, TdAll.EpayeBta.updateArrangementRequest()).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"UpdateArrangement is not possible if the user hasn't agreed to the terms and conditions, state: [Started]"}""")
+
+      verifyCommonActions(numberOfAuthCalls = 2)
     }
 
     "should throw a Bad Request when the journey is already in stage SubmittedArrangement" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
       val result: Throwable = journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeBta.updateArrangementRequest()).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"Cannot update SubmittedArrangement when journey is in completed state"}""")
+
+      verifyCommonActions(numberOfAuthCalls = 1)
     }
 
     "should throw Bad Request when the journey is in a stage [AgreedTermsAndConditions] and an email address is required" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true).copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
       val result: Throwable = journeyConnector.updateArrangement(tdAll.journeyId, TdAll.EpayeBta.updateArrangementRequest()).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"UpdateArrangement is not possible if the user still requires and email address, state: [EmailAddressRequired]"}""")
+
+      verifyCommonActions(numberOfAuthCalls = 1)
     }
 
     "should update the journey if the journey is in a stage [AgreedTermsAndConditions] and an email address is not required" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false).copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
       journeyConnector.updateArrangement(tdAll.journeyId, TdAll.EpayeBta.updateArrangementRequest()).futureValue
       val result = journeyConnector.getJourney(tdAll.journeyId).futureValue
       result shouldBe TdAll.EpayeBta.journeyAfterSubmittedArrangement.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId)
 
+      verifyCommonActions(numberOfAuthCalls = 2)
     }
 
   }

@@ -28,12 +28,18 @@ class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec {
   "POST /journey/:journeyId/update-has-agreed-terms-and-conditions" - {
 
     "should throw Bad Request when Journey is in a stage [BeforeConfirmedDirectDebitDetails]" in new JourneyItTest {
+      stubCommonActions()
+
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
       val result: Throwable = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"UpdateAgreedTermsAndConditions is not possible in that state: [Started]"}""")
+
+      verifyCommonActions(numberOfAuthCalls = 2)
     }
 
     "should return Unit when terms and conditions have already been confirmed and the value for isEmailAddressRequired has not changed" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(false)).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false)
@@ -42,9 +48,13 @@ class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec {
       result.futureValue shouldBe (())
       // check value hasn't actually changed
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false)
+
+      verifyCommonActions(numberOfAuthCalls = 4)
     }
 
     "should return Unit when terms and conditions have already been confirmed and the value for isEmailAddressRequired has changed" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(false)).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false)
@@ -53,12 +63,18 @@ class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec {
       result.futureValue shouldBe (())
       // check value has changed
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+
+      verifyCommonActions(numberOfAuthCalls = 4)
     }
 
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       val result: Throwable = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"Cannot update AgreedTermsAndConditions when journey is in completed state"}""")
+
+      verifyCommonActions(numberOfAuthCalls = 1)
     }
   }
 }

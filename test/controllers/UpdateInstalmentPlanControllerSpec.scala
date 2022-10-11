@@ -26,28 +26,44 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec {
 
   "POST /journey/:journeyId/update-selected-plan" - {
     "should throw Bad Request when Journey is in a stage [BeforeAffordableQuotesResponse]" in new JourneyItTest {
+      stubCommonActions()
+
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
       val result: Throwable = journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.EpayeBta.updateSelectedPaymentPlanRequest()).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"UpdateSelectedPaymentPlan is not possible in that state: [Started]"}""")
+
+      verifyCommonActions(numberOfAuthCalls = 2)
     }
     "should not update the journey when Selected Plan hasn't changed" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterAffordableQuotesResponse.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.EpayeBta.updateSelectedPaymentPlanRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
       journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.EpayeBta.updateSelectedPaymentPlanRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
+
+      verifyCommonActions(numberOfAuthCalls = 4)
     }
     "should update the journey when Selected Plan has changed" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterAffordableQuotesResponse.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.EpayeBta.updateSelectedPaymentPlanRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
       journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.paymentPlan(2)).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = TdAll.paymentPlan(2))
+
+      verifyCommonActions(numberOfAuthCalls = 4)
     }
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       val result: Throwable = journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.EpayeBta.updateSelectedPaymentPlanRequest()).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"Cannot update ChosenPlan when journey is in completed state"}""")
+
+      verifyCommonActions(numberOfAuthCalls = 1)
     }
   }
 }

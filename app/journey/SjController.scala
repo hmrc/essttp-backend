@@ -16,6 +16,7 @@
 
 package journey
 
+import action.Actions
 import com.google.inject.Inject
 import essttp.journey.model._
 import essttp.rootmodel.SessionId
@@ -30,20 +31,22 @@ import scala.concurrent.{ExecutionContext, Future}
  * Start Journey (Sj) Controller
  */
 class SjController @Inject() (
+    actions:        Actions,
     journeyService: JourneyService,
     journeyConfig:  JourneyConfig,
     journeyFactory: JourneyFactory,
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
 
-  def startJourneyEpayeFromBta(): Action[SjRequest.Epaye.Simple] = startDdJourneyEpaye[SjRequest.Epaye.Simple](Origins.Epaye.Bta)
-  def startJourneyEpayeFromGovUk(): Action[SjRequest.Epaye.Empty] = startDdJourneyEpaye[SjRequest.Epaye.Empty](Origins.Epaye.GovUk)
-  def startJourneyEpayeFromDetachedUrl(): Action[SjRequest.Epaye.Empty] = startDdJourneyEpaye[SjRequest.Epaye.Empty](Origins.Epaye.DetachedUrl)
+  def startJourneyEpayeFromBta(): Action[SjRequest.Epaye.Simple] = startJourneyEpaye[SjRequest.Epaye.Simple](Origins.Epaye.Bta)
+  def startJourneyEpayeFromGovUk(): Action[SjRequest.Epaye.Empty] = startJourneyEpaye[SjRequest.Epaye.Empty](Origins.Epaye.GovUk)
+  def startJourneyEpayeFromDetachedUrl(): Action[SjRequest.Epaye.Empty] = startJourneyEpaye[SjRequest.Epaye.Empty](Origins.Epaye.DetachedUrl)
 
-  private def startDdJourneyEpaye[StartRequest <: SjRequest.Epaye: Reads](origin: Origins.Epaye): Action[StartRequest] = Action.async(parse.json[StartRequest]) { implicit request =>
-    val originatedSddjRequest = OriginatedSjRequest.Epaye(origin, request.body)
-    doJourneyStart(originatedSddjRequest)
-  }
+  private def startJourneyEpaye[StartRequest <: SjRequest.Epaye: Reads](origin: Origins.Epaye): Action[StartRequest] =
+    actions.authenticatedAction.async(parse.json[StartRequest]) { implicit request =>
+      val originatedSjRequest = OriginatedSjRequest.Epaye(origin, request.body)
+      doJourneyStart(originatedSjRequest)
+    }
 
   private def doJourneyStart(
       originatedRequest: OriginatedSjRequest
@@ -65,9 +68,9 @@ class SjController @Inject() (
 
   private def journeyDescription(origin: Origin): String = origin match {
     case o: Origins.Epaye => o match {
-      case Origins.Epaye.Bta         => s"Journey for Epaye from BTA"
-      case Origins.Epaye.GovUk       => s"Journey for Epaye from GovUk"
-      case Origins.Epaye.DetachedUrl => s"Journey for Epaye from DetachedUrl"
+      case Origins.Epaye.Bta         => "Journey for Epaye from BTA"
+      case Origins.Epaye.GovUk       => "Journey for Epaye from GovUk"
+      case Origins.Epaye.DetachedUrl => "Journey for Epaye from DetachedUrl"
     }
   }
 

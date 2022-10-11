@@ -29,6 +29,7 @@ import essttp.utils.TdSupport.FakeRequestOps
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
+import uk.gov.hmrc.http.Authorization
 
 import java.time.{Instant, LocalDate, LocalDateTime, ZoneOffset}
 import java.util.UUID
@@ -38,6 +39,7 @@ trait TdBase {
   def traceId: TraceId = TraceId(journeyId)
   def sessionId: SessionId = SessionId("session-2082fcd4-70f6-49cc-a4bf-845917981cd7")
   def correlationId: CorrelationId = CorrelationId(UUID.fromString("5838794a-5419-496c-a5dd-e807f91d6da6"))
+  def authorization: Authorization = Authorization("Bearer xyz")
 
   def createdOn: Instant = LocalDateTime.parse("2057-11-02T16:28:55.185").toInstant(ZoneOffset.UTC)
   def amountToUpdate: AmountInPence = AmountInPence(123499)

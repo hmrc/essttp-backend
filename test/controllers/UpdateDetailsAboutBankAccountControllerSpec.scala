@@ -28,13 +28,19 @@ class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec {
 
   "POST /journey/:journeyId/update-details-about-bank-account" - {
     "should throw Bad Request when Journey is in a stage [BeforeCheckedPaymentPlan]" in new JourneyItTest {
+      stubCommonActions()
+
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
 
       val requestBody = TdAll.EpayeBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
       val result: Throwable = journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, requestBody).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"UpdateDetailsAboutBankAccount is not possible in that state: [Started]"}""")
+
+      verifyCommonActions(numberOfAuthCalls = 2)
     }
     "should not update the journey when Type of bank account hasn't changed" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterCheckedPaymentPlan.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
       val requestBody = TdAll.EpayeBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
@@ -42,8 +48,12 @@ class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, requestBody).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+
+      verifyCommonActions(numberOfAuthCalls = 4)
     }
     "should update the journey when Type of bank account has changed" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterCheckedPaymentPlan.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
       val request1 = DetailsAboutBankAccount(TdAll.businessBankAccount, isAccountHolder = true)
@@ -64,13 +74,18 @@ class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec {
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, request3).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney3
 
+      verifyCommonActions(numberOfAuthCalls = 6)
     }
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
       val requestBody = TdAll.EpayeBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
       val result: Throwable = journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, requestBody).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"Cannot update DetailsAboutBankAccount when journey is in completed state"}""")
+
+      verifyCommonActions(numberOfAuthCalls = 1)
     }
   }
 }
