@@ -16,6 +16,7 @@
 
 package journey
 
+import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.journey.model.Journey.{Epaye, Stages}
@@ -30,11 +31,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateDayOfMonthController @Inject() (
+    actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
 
-  def updateDayOfMonth(journeyId: JourneyId): Action[DayOfMonth] = Action.async(parse.json[DayOfMonth]) { implicit request =>
+  def updateDayOfMonth(journeyId: JourneyId): Action[DayOfMonth] = actions.authenticatedAction.async(parse.json[DayOfMonth]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {

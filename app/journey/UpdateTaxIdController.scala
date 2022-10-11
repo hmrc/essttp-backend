@@ -16,6 +16,7 @@
 
 package journey
 
+import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.journey.model._
 import essttp.rootmodel.{EmpRef, TaxId, Vrn}
@@ -28,11 +29,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateTaxIdController @Inject() (
+    actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
 
-  def updateTaxId(journeyId: JourneyId): Action[TaxId] = Action.async(parse.json[TaxId]) { implicit request =>
+  def updateTaxId(journeyId: JourneyId): Action[TaxId] = actions.authenticatedAction.async(parse.json[TaxId]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
       _ <- updateJourney(journey, request.body)

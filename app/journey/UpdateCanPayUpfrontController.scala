@@ -16,6 +16,7 @@
 
 package journey
 
+import action.Actions
 import cats.instances.boolean._
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
@@ -31,11 +32,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateCanPayUpfrontController @Inject() (
+    actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
 
-  def updateCanPayUpfront(journeyId: JourneyId): Action[CanPayUpfront] = Action.async(parse.json[CanPayUpfront]) { implicit request =>
+  def updateCanPayUpfront(journeyId: JourneyId): Action[CanPayUpfront] = actions.authenticatedAction.async(parse.json[CanPayUpfront]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {

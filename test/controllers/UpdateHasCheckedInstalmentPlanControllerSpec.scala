@@ -26,21 +26,33 @@ class UpdateHasCheckedInstalmentPlanControllerSpec extends ItSpec {
 
   "POST /journey/:journeyId/update-has-checked-plan" - {
     "should throw Bad Request when Journey is in a stage [BeforeSelectedPaymentPlan]" in new JourneyItTest {
+      stubCommonActions()
+
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
       val result: Throwable = journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"UpdateHasCheckedInstalmentPlan is not possible in that state: [Started]"}""")
+
+      verifyCommonActions(numberOfAuthCalls = 2)
     }
     "should return Unit whenSelected Plan has already been confirmed but not submitted to ttp" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterSelectedPaymentPlan.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCheckedPaymentPlan
       val result = journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId)
       result.futureValue shouldBe (())
+
+      verifyCommonActions(numberOfAuthCalls = 3)
     }
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
+      stubCommonActions()
+
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       val result: Throwable = journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"Cannot update HasCheckedPaymentPlan when journey is in completed state"}""")
+
+      verifyCommonActions(numberOfAuthCalls = 1)
     }
   }
 }

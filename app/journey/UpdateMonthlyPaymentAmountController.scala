@@ -16,6 +16,7 @@
 
 package journey
 
+import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.journey.model.Journey.{Epaye, Stages}
 import essttp.journey.model.{Journey, JourneyId, Stage}
@@ -29,11 +30,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateMonthlyPaymentAmountController @Inject() (
+    actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
 
-  def updateMonthlyPaymentAmount(journeyId: JourneyId): Action[MonthlyPaymentAmount] = Action.async(parse.json[MonthlyPaymentAmount]) { implicit request =>
+  def updateMonthlyPaymentAmount(journeyId: JourneyId): Action[MonthlyPaymentAmount] = actions.authenticatedAction.async(parse.json[MonthlyPaymentAmount]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
       _ <- journey match {

@@ -16,13 +16,6 @@
 
 package action.model
 
-import essttp.rootmodel.SessionId
 import play.api.mvc.{Request, WrappedRequest}
-import uk.gov.hmrc.auth.core.Enrolments
 
-final class EnrolmentsRequest[A](
-    val request:    Request[A],
-    val sessionId:  SessionId,
-    val enrolments: Enrolments
-) extends WrappedRequest[A](request)
-
+final case class AuthenticatedRequest[A](val request: Request[A]) extends WrappedRequest[A](request)

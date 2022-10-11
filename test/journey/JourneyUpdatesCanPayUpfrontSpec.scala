@@ -32,6 +32,8 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
   }
 
   "[Epaye.Bta][Update CanPayUpfront from yes to no to yes, round trip]" in {
+    stubCommonActions()
+
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
@@ -53,9 +55,13 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
     /** Update CanPayUpfront as YES */
     journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
+
+    verifyCommonActions(numberOfAuthCalls = 9)
   }
 
   "[Epaye.Bta][CanPayUpfront.Yes, Update UpfrontPaymentAmount with value, then change to CanPayFrontNo]" in {
+    stubCommonActions()
+
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
@@ -77,9 +83,13 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
     /** user decides not to pay upfront, Update CanPayUpfront as No */
     journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontNoRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontNo
+
+    verifyCommonActions(numberOfAuthCalls = 9)
   }
 
   "[Epaye.Bta][Update UpfrontPaymentAmount with new value]" in {
+    stubCommonActions()
+
     val tdAll = new TdAll {
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
@@ -100,5 +110,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
     /** Update UpfrontPaymentAmount with different value */
     journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.anotherUpdateUpfrontPaymentAmountRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = UpfrontPaymentAmount(AmountInPence(1001)))
+
+    verifyCommonActions(numberOfAuthCalls = 9)
   }
 }

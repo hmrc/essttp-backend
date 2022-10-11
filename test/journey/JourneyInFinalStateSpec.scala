@@ -34,13 +34,16 @@ class JourneyInFinalStateSpec extends ItSpec {
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
   "should not be able to update journey once it is completed" in new JourneyItTest {
+    stubCommonActions()
+
     val httpClient: HttpClient = app.injector.instanceOf[HttpClient]
     implicit val cryptoFormat: OperationalCryptoFormat = app.injector.instanceOf[OperationalCryptoFormat]
 
     def makeUpdate[A](url: String, payload: A)(implicit writes: Writes[A]): HttpResponse =
       httpClient.POST[A, HttpResponse](
-        url  = s"$baseUrl/essttp-backend/journey/${tdAll.journeyId.value}$url",
-        body = payload
+        url     = s"$baseUrl/essttp-backend/journey/${tdAll.journeyId.value}$url",
+        body    = payload,
+        headers = Seq("Authorization" -> TdAll.authorization.value)
       ).futureValue
 
     def extractAndAssert(testScenario: TestScenario): Assertion = {
