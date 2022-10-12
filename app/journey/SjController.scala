@@ -19,7 +19,6 @@ package journey
 import action.Actions
 import com.google.inject.Inject
 import essttp.journey.model._
-import essttp.rootmodel.SessionId
 import essttp.utils.RequestSupport
 import play.api.libs.json.{Json, Reads}
 import play.api.mvc.{Action, ControllerComponents, Request, Result}
@@ -53,7 +52,7 @@ class SjController @Inject() (
   )(implicit request: Request[_]): Future[Result] = {
 
     for {
-      sessionId: SessionId <- RequestSupport.getSessionId()
+      sessionId <- RequestSupport.getSessionId()
       journey: Journey = journeyFactory.makeJourney(originatedRequest, sessionId)
       _ <- journeyService.upsert(journey)
     } yield {

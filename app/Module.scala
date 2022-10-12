@@ -15,7 +15,6 @@
  */
 
 import com.google.inject.{AbstractModule, Provides, Singleton}
-import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 
 import java.time.Clock
 
@@ -25,9 +24,4 @@ class Module extends AbstractModule {
   @Singleton
   def provideClock(): Clock = Clock.systemUTC()
 
-  @Provides
-  @Singleton
-  def authorisedFunctions(ac: AuthConnector): AuthorisedFunctions = new AuthorisedFunctions {
-    override def authConnector: AuthConnector = ac
-  }
 }

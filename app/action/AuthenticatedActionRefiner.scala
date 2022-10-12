@@ -17,51 +17,37 @@
 package action
 
 import action.model.AuthenticatedRequest
-import cats.data.EitherT
 import com.google.inject.Inject
-import config.AppConfig
-import essttp.utils.RequestSupport._
 import play.api.Logger
 import play.api.mvc.Results.{InternalServerError, Unauthorized}
 import play.api.mvc.{ActionRefiner, MessagesControllerComponents, Request, Result}
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
-import uk.gov.hmrc.auth.core.{AuthProviders, AuthorisationException, AuthorisedFunctions, NoActiveSession}
-import uk.gov.hmrc.http.{Authorization, HeaderCarrier}
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthProviders, AuthorisationException, AuthorisedFunctions, NoActiveSession}
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendHeaderCarrierProvider
 
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthenticatedActionRefiner @Inject() (
-    af:        AuthorisedFunctions,
-    appConfig: AppConfig,
-    cc:        MessagesControllerComponents
+    val authConnector: AuthConnector,
+    cc:                MessagesControllerComponents
 )(
     implicit
     ec: ExecutionContext
-) extends ActionRefiner[Request, AuthenticatedRequest] {
+) extends ActionRefiner[Request, AuthenticatedRequest] with BackendHeaderCarrierProvider with AuthorisedFunctions {
 
   private val logger = Logger(getClass)
 
   override protected def refine[A](request: Request[A]): Future[Either[Result, AuthenticatedRequest[A]]] = {
-    val result =
-      EitherT.fromOption[Future](request.headers.get("Authorization"), Unauthorized)
-        .flatMapF{ authorization =>
-          // authorization in HeaderCarrier will not be populated even if it's in the request header if a session id is
-          // provided - stick it explicitly in the HeaderCarrier here to make the authorised call work below
-          val headerCarrier: HeaderCarrier = hc(request).copy(authorization = Some(Authorization(authorization)))
+    authorised(AuthProviders(GovernmentGateway)) {
+      Future.successful(Right(model.AuthenticatedRequest(request)))
+    }(hc(request), ec).recover {
+      case _: NoActiveSession =>
+        Left(Unauthorized)
 
-          af.authorised(AuthProviders(GovernmentGateway)) {
-            Future.successful(Right(model.AuthenticatedRequest(request)))
-          }(headerCarrier, ec).recover {
-            case _: NoActiveSession =>
-              Left(Unauthorized)
-
-            case e: AuthorisationException =>
-              logger.error(s"Unauthorised because of ${e.reason}, please investigate why", e)
-              Left(InternalServerError)
-          }
-        }
-
-    result.value
+      case e: AuthorisationException =>
+        logger.error(s"Unauthorised because of ${e.reason}, please investigate why", e)
+        Left(InternalServerError)
+    }
   }
 
   override protected def executionContext: ExecutionContext = cc.executionContext

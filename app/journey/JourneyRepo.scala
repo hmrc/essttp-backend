@@ -30,7 +30,7 @@ import uk.gov.hmrc.mongo.play.json.Codecs
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.duration.DurationInt
+import scala.concurrent.duration.FiniteDuration
 
 @Singleton
 final class JourneyRepo @Inject() (
@@ -40,7 +40,7 @@ final class JourneyRepo @Inject() (
   extends Repo[JourneyId, Journey](
     collectionName = "journey",
     mongoComponent = mongoComponent,
-    indexes        = JourneyRepo.indexes(30.minutes.toSeconds),
+    indexes        = JourneyRepo.indexes(config.journeyRepoTtl),
     extraCodecs    = Codecs.playFormatSumCodecs(Journey.format),
     replaceIndexes = true
   ) {
@@ -66,10 +66,10 @@ object JourneyRepo {
     override def id(j: Journey): JourneyId = j.journeyId
   }
 
-  def indexes(cacheTtlInSeconds: Long): Seq[IndexModel] = Seq(
+  def indexes(cacheTtl: FiniteDuration): Seq[IndexModel] = Seq(
     IndexModel(
       keys         = Indexes.ascending("lastUpdated"),
-      indexOptions = IndexOptions().expireAfter(cacheTtlInSeconds, TimeUnit.SECONDS).name("lastUpdatedIdx")
+      indexOptions = IndexOptions().expireAfter(cacheTtl.toSeconds, TimeUnit.SECONDS).name("lastUpdatedIdx")
     )
   )
 

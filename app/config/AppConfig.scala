@@ -18,15 +18,15 @@ package config
 
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.duration.FiniteDuration
 
 @Singleton
 class AppConfig @Inject() (
-    config: Configuration, servicesConfig: ServicesConfig
+    config: Configuration
 ) {
   val barsVerifyRepoTtl: FiniteDuration = config.get[FiniteDuration]("bars.verify.repoTtl")
   val barsVerifyMaxAttempts: Int = config.get[Int]("bars.verify.maxAttempts")
 
+  val journeyRepoTtl: FiniteDuration = config.get[FiniteDuration]("journey.repoTtl")
 }
