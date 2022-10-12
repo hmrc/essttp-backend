@@ -43,7 +43,7 @@ object ValueClassBinder {
     parse = JsString(_).as[A],
     fromAtoString,
     {
-      case (key: String, e: Exception) => s"Cannot parse param $key as ${typeOf[A].typeSymbol.name.toString}"
+      case (key: String, _: Exception) => s"Cannot parse param $key as ${typeOf[A].typeSymbol.name.toString}"
     }
   )
 

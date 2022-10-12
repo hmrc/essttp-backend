@@ -33,7 +33,7 @@ class BarsVerifyStatusControllerSpec extends ItSpec {
     private val empRef = "123XYZ456"
     private val expectedExpiry = frozenZonedDateTime.toInstant.plus(24, ChronoUnit.HOURS)
 
-    for (n <- 1 to numberUpdates) {
+    for (_ <- 1 to numberUpdates) {
       connector.update(EmpRef(empRef)).futureValue
     }
 
