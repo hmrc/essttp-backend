@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel
+package essttp.journey.model
 
-import cats.Eq
 import essttp.crypto.CryptoFormat
-import play.api.libs.json._
-import uk.gov.hmrc.crypto.Sensitive.SensitiveString
+import essttp.rootmodel.Email
+import julienrf.json.derived
+import play.api.libs.json.OFormat
 
-final case class Email(value: SensitiveString) extends AnyVal
+sealed trait EmailVerificationPhase
 
-object Email {
-  implicit val eq: Eq[Email] = Eq.fromUniversalEquals
+object EmailVerificationPhase {
+  case object NoEmailJourney extends EmailVerificationPhase
+  final case class EmailVerified(email: Email, emailIsVerified: Boolean) extends EmailVerificationPhase
 
-  implicit def format(implicit cryptoFormat: CryptoFormat): Format[Email] = {
-    implicit val sensitiveStringFormat: Format[SensitiveString] = essttp.crypto.sensitiveStringFormat(cryptoFormat)
-    Json.valueFormat
-  }
+  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[EmailVerificationPhase] = derived.oformat[EmailVerificationPhase]()
 }

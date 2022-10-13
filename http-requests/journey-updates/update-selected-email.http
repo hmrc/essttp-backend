@@ -1,0 +1,7 @@
+POST http://localhost:9216/essttp-backend/journey/634542d5d7605e3ecb9fd32f/update-chosen-email
+Accept: */*
+Cache-Control: no-cache
+Content-Type: Application/Json
+X-Session-ID: session-022c7460-eb42-4a4a-96d2-45aee6bc033a
+
+"bobross@something.com"

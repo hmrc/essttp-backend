@@ -92,6 +92,11 @@ class UpdateDetailsAboutBankAccountController @Inject() (
             .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
             .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
             .transform
+        case j: Journey.Epaye.SelectedEmailToBeVerified =>
+          j.into[Journey.Epaye.EnteredDetailsAboutBankAccount]
+            .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
+            .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
+            .transform
         case _: Journey.Epaye.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update DetailsAboutBankAccount when journey is in completed state")
       }

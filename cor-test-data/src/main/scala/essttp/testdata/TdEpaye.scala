@@ -16,7 +16,7 @@
 
 package essttp.testdata
 
-import essttp.rootmodel.{AmountInPence, CanPayUpfront, EmpRef}
+import essttp.rootmodel.{AmountInPence, CanPayUpfront, Email, EmpRef}
 import essttp.rootmodel.epaye.{Aor, TaxOfficeNumber, TaxOfficeReference}
 import essttp.rootmodel.ttp._
 import essttp.rootmodel.ttp.affordablequotes.DueDate
@@ -103,6 +103,8 @@ trait TdEpaye {
   val canPayUpfrontYes: CanPayUpfront = CanPayUpfront(true)
 
   val canPayUpfrontNo: CanPayUpfront = CanPayUpfront(false)
+
+  val email: Email = Email(SensitiveString("bobross@joyofpainting.com"))
 
   val arrangementResponse: ArrangementResponse = ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(aor.value))
 
