@@ -29,6 +29,12 @@ class UpdateChosenEmailControllerSpec extends ItSpec {
   "POST /journey/:journeyId/update-chosen-email" - {
     "should throw Bad Request when Journey is in a stage [BeforeAgreedTermsAndConditions]" in new JourneyItTest {
       stubCommonActions()
+
+      journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
+      val result: Throwable = journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest()).failed.futureValue
+      result.getMessage should include("""{"statusCode":400,"message":"UpdateChosenEmail is not possible in that state: [Started]"}""")
+
+      verifyCommonActions(numberOfAuthCalls = 2)
     }
 
     "should update the journey with users selected email address" in new JourneyItTest {
