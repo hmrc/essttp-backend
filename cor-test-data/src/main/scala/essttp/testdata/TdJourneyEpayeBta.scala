@@ -536,7 +536,7 @@ trait TdJourneyEpayeBta {
       detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
       directDebitDetails       = directDebitDetails,
       isEmailAddressRequired   = IsEmailAddressRequired(false),
-      emailVerificationAnswers = EmailVerificationPhase.NoEmailJourney,
+      emailVerificationAnswers = EmailVerificationAnswers.NoEmailJourney,
       arrangementResponse      = dependencies.arrangementResponse
     )
     def journeyAfterSubmittedArrangementJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateSubmittedArrangement.json").asJson

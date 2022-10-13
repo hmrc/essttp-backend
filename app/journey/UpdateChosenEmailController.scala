@@ -72,8 +72,8 @@ class UpdateChosenEmailController @Inject() (
   }
 
   private def updateJourneyWithExistingValue(
-      journey: Either[Journey.AfterEmailAddressSelectedToBeVerified, Journey.AfterEmailVerification],
-      email:   Email
+                                              journey: Either[Journey.AfterEmailAddressSelectedToBeVerified, Journey.AfterEmailVerificationPhase],
+                                              email:   Email
   )(implicit request: Request[_]): Future[Unit] = {
     journey match {
       case Right(_: Journey.Epaye.SubmittedArrangement) => //todo, this will work better when new stage for after email answers added and there's the verified part too, bare with me Andy :)

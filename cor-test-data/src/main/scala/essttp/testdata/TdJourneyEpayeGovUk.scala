@@ -496,7 +496,7 @@ trait TdJourneyEpayeGovUk { dependencies: TdBase with TdEpaye =>
       detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
       directDebitDetails       = directDebitDetails,
       isEmailAddressRequired   = IsEmailAddressRequired(false),
-      emailVerificationAnswers = EmailVerificationPhase.NoEmailJourney,
+      emailVerificationAnswers = EmailVerificationAnswers.NoEmailJourney,
       arrangementResponse      = dependencies.arrangementResponse
     )
     def journeyAfterSubmittedArrangementJson: JsObject = read("/testdata/epaye/govuk/JourneyAfterUpdateSubmittedArrangement.json").asJson

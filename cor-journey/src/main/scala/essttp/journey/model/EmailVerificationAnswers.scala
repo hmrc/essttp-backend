@@ -21,11 +21,11 @@ import essttp.rootmodel.Email
 import julienrf.json.derived
 import play.api.libs.json.OFormat
 
-sealed trait EmailVerificationPhase
+sealed trait EmailVerificationAnswers
 
-object EmailVerificationPhase {
-  case object NoEmailJourney extends EmailVerificationPhase
-  final case class EmailVerified(email: Email, emailIsVerified: Boolean) extends EmailVerificationPhase
+object EmailVerificationAnswers {
+  case object NoEmailJourney extends EmailVerificationAnswers
+  final case class EmailVerified(email: Email, emailIsVerified: Boolean) extends EmailVerificationAnswers
 
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[EmailVerificationPhase] = derived.oformat[EmailVerificationPhase]()
+  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[EmailVerificationAnswers] = derived.oformat[EmailVerificationAnswers]()
 }
