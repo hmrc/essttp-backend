@@ -165,6 +165,12 @@ class UpdateUpfrontPaymentAmountController @Inject() (
                   .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
+              case j: Epaye.SelectedEmailToBeVerified =>
+                j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
+                  .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
+                  .transform
               case _: Epaye.SubmittedArrangement =>
                 Errors.throwBadRequestException("Cannot update UpfrontPaymentAmount when journey is in completed state")
             }

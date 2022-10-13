@@ -75,6 +75,12 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
             isEmailAddressRequired = isEmailAddressRequired,
             stage                  = toStage(isEmailAddressRequired)
           ))
+
+      case j: Journey.Epaye.SelectedEmailToBeVerified =>
+        upsertIfChanged(j, isEmailAddressRequired,
+                        j.into[Journey.Epaye.AgreedTermsAndConditions]
+            .withFieldConst(_.stage, toStage(isEmailAddressRequired))
+            .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
     }
 
   private def upsertIfChanged(
@@ -85,7 +91,7 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
       implicit
       r: Request[_]
   ): Future[Unit] =
-    if (j.isEmailAddressRequired === isEmailAddressRequired) Future.successful((()))
+    if (j.isEmailAddressRequired === isEmailAddressRequired) Future.successful(())
     else journeyService.upsert(updatedJourney)
 
   private def toStage(isEmailAddressRequired: IsEmailAddressRequired): Stage.AfterAgreedTermsAndConditions =

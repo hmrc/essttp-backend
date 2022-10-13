@@ -481,6 +481,36 @@ trait TdJourneyEpayeBta {
 
     def journeyAfterAgreedTermsAndConditionsJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateAgreedTermsAndConditions.json").asJson
 
+    def updateSelectedEmailRequest(): Email = dependencies.email
+
+    def updateSelectedEmailRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateSelectedEmailRequest.json").asJson
+
+    def journeyAfterSelectedEmail: Journey.Epaye.SelectedEmailToBeVerified = Journey.Epaye.SelectedEmailToBeVerified(
+      _id                      = dependencies.journeyId,
+      origin                   = Origins.Epaye.Bta,
+      createdOn                = dependencies.createdOn,
+      sjRequest                = sjRequest,
+      sessionId                = dependencies.sessionId,
+      stage                    = Stage.AfterSelectedAnEmailToBeVerified.EmailChosen,
+      correlationId            = dependencies.correlationId,
+      taxId                    = empRef,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts        = dependencies.instalmentAmounts,
+      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+      dayOfMonth               = dependencies.dayOfMonth,
+      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan      = dependencies.paymentPlan(1),
+      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+      directDebitDetails       = directDebitDetails,
+      isEmailAddressRequired   = IsEmailAddressRequired(true),
+      emailToBeVerified        = dependencies.email
+    )
+
+    def journeyAfterSelectedEmailJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateSelectedEmail.json").asJson
+
     def updateArrangementRequest(): ArrangementResponse = dependencies.arrangementResponse
 
     def updateArrangementRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateSubmittedArrangementRequest.json").asJson
@@ -506,6 +536,7 @@ trait TdJourneyEpayeBta {
       detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
       directDebitDetails       = directDebitDetails,
       isEmailAddressRequired   = IsEmailAddressRequired(false),
+      emailVerificationAnswers = EmailVerificationAnswers.NoEmailJourney,
       arrangementResponse      = dependencies.arrangementResponse
     )
     def journeyAfterSubmittedArrangementJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateSubmittedArrangement.json").asJson

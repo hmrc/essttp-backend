@@ -31,4 +31,6 @@ POST        /journey/:journeyId/update-direct-debit-details                 jour
 POST        /journey/:journeyId/update-has-confirmed-direct-debit-details   journey.UpdateHasConfirmedDirectDebitDetailsController.updateConfirmedDirectDebitDetails(journeyId: JourneyId)
 POST        /journey/:journeyId/update-has-agreed-terms-and-conditions      journey.UpdateHasAgreedTermsAndConditionsController.updateAgreedTermsAndConditions(journeyId: JourneyId)
 
+POST        /journey/:journeyId/update-chosen-email                         journey.UpdateChosenEmailController.updateChosenEmail(journeyId: JourneyId)
+
 POST        /journey/:journeyId/update-arrangement                          journey.UpdateSubmittedArrangementController.updateArrangement(journeyId: JourneyId)

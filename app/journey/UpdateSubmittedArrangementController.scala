@@ -18,7 +18,7 @@ package journey
 
 import action.Actions
 import com.google.inject.{Inject, Singleton}
-import essttp.journey.model.{Journey, JourneyId, Stage}
+import essttp.journey.model.{EmailVerificationAnswers, Journey, JourneyId, Stage}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformerOps
@@ -47,6 +47,9 @@ class UpdateSubmittedArrangementController @Inject() (
           else
             updateJourneyWithNewValue(j, request.body)
 
+        case _: Journey.Stages.SelectedEmailToBeVerified =>
+          Errors.throwBadRequestExceptionF("This should never happen, remember to remove me once verified email is in.")
+
         case _: Journey.AfterArrangementSubmitted =>
           Errors.throwBadRequestExceptionF("Cannot update SubmittedArrangement when journey is in completed state")
       }
@@ -61,6 +64,7 @@ class UpdateSubmittedArrangementController @Inject() (
       case j: Journey.Epaye.AgreedTermsAndConditions =>
         j.into[Journey.Epaye.SubmittedArrangement]
           .withFieldConst(_.stage, Stage.AfterSubmittedArrangement.Submitted)
+          .withFieldConst(_.emailVerificationAnswers, EmailVerificationAnswers.NoEmailJourney)
           .withFieldConst(_.arrangementResponse, arrangementResponse)
           .transform
     }

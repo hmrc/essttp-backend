@@ -181,6 +181,24 @@ object Journey {
     def isEmailAddressRequired: IsEmailAddressRequired
   }
 
+  sealed trait BeforeEmailAddressSelectedToBeVerified extends Journey with Stages.JourneyStage
+
+  sealed trait AfterEmailAddressSelectedToBeVerified extends Journey with Stages.JourneyStage {
+    def emailToBeVerified: Email
+  }
+
+  sealed trait BeforeEmailAddressVerified extends Journey with Stages.JourneyStage
+
+  sealed trait AfterEmailAddressVerificationResult extends Journey with Stages.JourneyStage {
+    def emailHasBeenVerified: Boolean
+  }
+
+  sealed trait BeforeEmailVerificationPhase extends Journey with Stages.JourneyStage
+
+  sealed trait AfterEmailVerificationPhase extends Journey with Stages.JourneyStage {
+    def emailVerificationAnswers: EmailVerificationAnswers
+  }
+
   sealed trait BeforeArrangementSubmitted extends Journey with Stages.JourneyStage
 
   sealed trait AfterArrangementSubmitted extends Journey {
@@ -222,6 +240,8 @@ object Journey {
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterStarted.values.contains(stage), sanityMessage)
       def stage: Stage.AfterStarted
@@ -247,6 +267,8 @@ object Journey {
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterComputedTaxId.values.contains(stage), sanityMessage)
       def stage: Stage.AfterComputedTaxId
@@ -272,6 +294,8 @@ object Journey {
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterEligibilityCheck.values.contains(stage), sanityMessage)
       def stage: Stage.AfterEligibilityCheck
@@ -297,6 +321,8 @@ object Journey {
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterCanPayUpfront.values.contains(stage), sanityMessage)
       def stage: Stage.AfterCanPayUpfront
@@ -322,6 +348,8 @@ object Journey {
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterUpfrontPaymentAmount.values.contains(stage), sanityMessage)
       def stage: Stage.AfterUpfrontPaymentAmount
@@ -345,6 +373,8 @@ object Journey {
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterExtremeDatesResponse.values.contains(stage), sanityMessage)
       def stage: Stage.AfterExtremeDatesResponse
@@ -368,6 +398,8 @@ object Journey {
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterAffordabilityResult.values.contains(stage), sanityMessage)
       def stage: Stage.AfterAffordabilityResult
@@ -391,6 +423,8 @@ object Journey {
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterMonthlyPaymentAmount.values.contains(stage), sanityMessage)
       def stage: Stage.AfterMonthlyPaymentAmount
@@ -414,6 +448,8 @@ object Journey {
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterEnteredDayOfMonth.values.contains(stage), sanityMessage)
       def stage: Stage.AfterEnteredDayOfMonth
@@ -437,6 +473,8 @@ object Journey {
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterStartDatesResponse.values.contains(stage), sanityMessage)
       def stage: Stage.AfterStartDatesResponse
@@ -460,6 +498,8 @@ object Journey {
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterAffordableQuotesResponse.values.contains(stage), sanityMessage)
       def stage: Stage.AfterAffordableQuotesResponse
@@ -483,6 +523,8 @@ object Journey {
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterSelectedPlan.values.contains(stage), sanityMessage)
       def stage: Stage.AfterSelectedPlan
@@ -506,6 +548,8 @@ object Journey {
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterCheckedPlan.values.contains(stage), sanityMessage)
       def stage: Stage.AfterCheckedPlan
@@ -529,6 +573,8 @@ object Journey {
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterEnteredDetailsAboutBankAccount.values.contains(stage), sanityMessage)
       def stage: Stage.AfterEnteredDetailsAboutBankAccount
@@ -552,6 +598,8 @@ object Journey {
       with AfterEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterEnteredDirectDebitDetails.values.contains(stage), sanityMessage)
       def stage: Stage.AfterEnteredDirectDebitDetails
@@ -575,6 +623,8 @@ object Journey {
       with AfterEnteredDirectDebitDetails
       with AfterConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterConfirmedDirectDebitDetails.values.contains(stage), sanityMessage)
       def stage: Stage.AfterConfirmedDirectDebitDetails
@@ -598,9 +648,35 @@ object Journey {
       with AfterEnteredDirectDebitDetails
       with AfterConfirmedDirectDebitDetails
       with AfterAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterAgreedTermsAndConditions.values.contains(stage), sanityMessage)
       def stage: Stage.AfterAgreedTermsAndConditions
+    }
+
+    sealed trait SelectedEmailToBeVerified
+      extends Journey
+      with JourneyStage
+      with AfterComputedTaxId
+      with AfterEligibilityChecked
+      with AfterUpfrontPaymentAnswers
+      with AfterExtremeDatesResponse
+      with AfterRetrievedAffordabilityResult
+      with AfterEnteredMonthlyPaymentAmount
+      with AfterEnteredDayOfMonth
+      with AfterStartDatesResponse
+      with AfterAffordableQuotesResponse
+      with AfterSelectedPaymentPlan
+      with AfterCheckedPaymentPlan
+      with AfterEnteredDetailsAboutBankAccount
+      with AfterEnteredDirectDebitDetails
+      with AfterConfirmedDirectDebitDetails
+      with AfterAgreedTermsAndConditions
+      with AfterEmailAddressSelectedToBeVerified
+      with BeforeArrangementSubmitted {
+      Errors.sanityCheck(Stage.AfterSelectedAnEmailToBeVerified.values.contains(stage), sanityMessage)
+      def stage: Stage.AfterSelectedAnEmailToBeVerified
     }
 
     sealed trait SubmittedArrangement
@@ -621,6 +697,7 @@ object Journey {
       with AfterEnteredDirectDebitDetails
       with AfterConfirmedDirectDebitDetails
       with AfterAgreedTermsAndConditions
+      with AfterEmailVerificationPhase
       with AfterArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterSubmittedArrangement.values.contains(stage), sanityMessage)
       def stage: Stage.AfterSubmittedArrangement
@@ -1051,6 +1128,37 @@ object Journey {
       with Journey.Epaye
 
     /**
+     * [[Journey]] after Agreeing terms and conditions
+     * Epaye
+     */
+    final case class SelectedEmailToBeVerified(
+        override val _id:                      JourneyId,
+        override val origin:                   Origins.Epaye,
+        override val createdOn:                Instant,
+        override val sjRequest:                SjRequest.Epaye,
+        override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
+        override val stage:                    Stage.AfterSelectedAnEmailToBeVerified,
+        override val taxId:                    EmpRef,
+        override val eligibilityCheckResult:   EligibilityCheckResult,
+        override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
+        override val extremeDatesResponse:     ExtremeDatesResponse,
+        override val instalmentAmounts:        InstalmentAmounts,
+        override val monthlyPaymentAmount:     MonthlyPaymentAmount,
+        override val dayOfMonth:               DayOfMonth,
+        override val startDatesResponse:       StartDatesResponse,
+        override val affordableQuotesResponse: AffordableQuotesResponse,
+        override val selectedPaymentPlan:      PaymentPlan,
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount,
+        override val directDebitDetails:       BankDetails,
+        override val isEmailAddressRequired:   IsEmailAddressRequired,
+        override val emailToBeVerified:        Email
+    )
+      extends Journey
+      with Journey.Stages.SelectedEmailToBeVerified
+      with Journey.Epaye
+
+    /**
      * [[Journey]] after Submission of their arrangement to the enact api
      * Epaye
      */
@@ -1075,7 +1183,8 @@ object Journey {
         override val detailsAboutBankAccount:  DetailsAboutBankAccount,
         override val directDebitDetails:       BankDetails,
         override val isEmailAddressRequired:   IsEmailAddressRequired,
-        override val arrangementResponse:      ArrangementResponse
+        override val arrangementResponse:      ArrangementResponse,
+        override val emailVerificationAnswers: EmailVerificationAnswers
     )
       extends Journey
       with Journey.Stages.SubmittedArrangement
