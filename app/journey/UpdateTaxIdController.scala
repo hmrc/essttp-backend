@@ -45,17 +45,28 @@ class UpdateTaxIdController @Inject() (
     journey match {
       case j: Journey.Epaye.Started =>
         taxId match {
-          case empRef: EmpRef =>
-            val newJourney: Journey.Epaye.ComputedTaxId =
-              j.into[Journey.Epaye.ComputedTaxId]
-                .withFieldConst(_.stage, Stage.AfterComputedTaxId.ComputedTaxId)
-                .withFieldConst(_.taxId, empRef)
-                .transform
-            journeyService.upsert(newJourney)
-          case _: Vrn => Errors.throwBadRequestExceptionF("Why is there a vrn, this is for EPAYE...")
+          case empRef: EmpRef => journeyService.upsert(asEpayeComputedTaxId(j, empRef))
+          case _: Vrn         => Errors.throwBadRequestExceptionF("Why is there a vrn, this is for EPAYE...")
+        }
+      case j: Journey.Vat.Started =>
+        taxId match {
+          case vrn: Vrn  => journeyService.upsert(asVatComputedTaxId(j, vrn))
+          case _: EmpRef => Errors.throwBadRequestExceptionF("Why is there an empref, this is for Vat...")
         }
       case j: Journey.AfterComputedTaxId =>
         Errors.throwBadRequestExceptionF(s"UpdateTaxId is not possible in this stage, why is it happening? Debug me... [${j.stage}]")
     }
   }
+
+  private def asEpayeComputedTaxId(journey: Journey.Epaye.Started, empRef: EmpRef): Journey.Epaye.ComputedTaxId =
+    journey.into[Journey.Epaye.ComputedTaxId]
+      .withFieldConst(_.stage, Stage.AfterComputedTaxId.ComputedTaxId)
+      .withFieldConst(_.taxId, empRef)
+      .transform
+
+  private def asVatComputedTaxId(journey: Journey.Vat.Started, vrn: Vrn): Journey.Vat.ComputedTaxId =
+    journey.into[Journey.Vat.ComputedTaxId]
+      .withFieldConst(_.stage, Stage.AfterComputedTaxId.ComputedTaxId)
+      .withFieldConst(_.taxId, vrn)
+      .transform
 }

@@ -44,5 +44,16 @@ class JourneyFactory @Inject() (
         stage         = Stage.AfterStarted.Started,
         correlationId = correlationIdGenerator.nextCorrelationId()
       )
+
+    case OriginatedSjRequest.Vat(origin, sjRequest) =>
+      Journey.Vat.Started(
+        _id           = journeyIdGenerator.nextJourneyId(),
+        origin        = origin,
+        sjRequest     = sjRequest,
+        createdOn     = Instant.now(clock),
+        sessionId     = sessionId,
+        stage         = Stage.AfterStarted.Started,
+        correlationId = correlationIdGenerator.nextCorrelationId()
+      )
   }
 }

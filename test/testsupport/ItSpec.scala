@@ -193,7 +193,8 @@ class TestJourneyIdGenerator(testJourneyIdPrefix: TestJourneyIdPrefix) extends J
 final case class TestCorrelationIdPrefix(value: String)
 
 class TestCorrelationIdGenerator(testCorrelationIdPrefix: TestCorrelationIdPrefix) extends CorrelationIdGenerator {
-  private val correlationIdIterator: Iterator[CorrelationId] = Stream.from(0).map(i => CorrelationId(UUID.fromString(s"${testCorrelationIdPrefix.value}$i"))).iterator
+  private val correlationIdIterator: Iterator[CorrelationId] =
+    Stream.from(0).map(i => CorrelationId(UUID.fromString(s"${testCorrelationIdPrefix.value.dropRight(1)}$i"))).iterator
   private val nextCorrelationIdCached = new AtomicReference[CorrelationId](correlationIdIterator.next())
 
   def readNextCorrelationId(): CorrelationId = nextCorrelationIdCached.get()

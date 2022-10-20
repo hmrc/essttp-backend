@@ -60,12 +60,18 @@ class UpdateEligibilityCheckResultController @Inject() (
   )(implicit request: Request[_]): Future[Unit] = {
     journey match {
       case j: Journey.Epaye.ComputedTaxId =>
-        val newJourney = j
-          .into[Journey.Epaye.EligibilityChecked]
+        val newJourney = j.into[Journey.Epaye.EligibilityChecked]
           .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
           .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
           .transform
         journeyService.upsert(newJourney)
+      case _: Journey.Vat.ComputedTaxId =>
+        Errors.throwBadRequestExceptionF("Not built yet...")
+      //        val newJourney = j.into[Journey.Vat.EligibilityChecked]
+      //          .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+      //          .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+      //          .transform
+      //        journeyService.upsert(newJourney)
     }
   }
 

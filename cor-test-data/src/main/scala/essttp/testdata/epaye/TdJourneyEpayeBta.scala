@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package essttp.testdata
+package essttp.testdata.epaye
 
 import essttp.journey.model.SjRequest.Epaye
 import essttp.journey.model._
-
-import scala.language.reflectiveCalls
-import essttp.rootmodel._
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
@@ -28,8 +25,10 @@ import essttp.rootmodel.ttp.EligibilityCheckResult
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
+import essttp.rootmodel._
+import essttp.testdata.{TdBase, TdJourneyStructure}
+import essttp.utils.ResourceReader.read
 import essttp.utils.JsonSyntax._
-import essttp.utils.ResourceReader._
 import play.api.libs.json.{JsNull, JsObject}
 
 import scala.language.reflectiveCalls
@@ -539,6 +538,7 @@ trait TdJourneyEpayeBta {
       emailVerificationAnswers = EmailVerificationAnswers.NoEmailJourney,
       arrangementResponse      = dependencies.arrangementResponse
     )
+
     def journeyAfterSubmittedArrangementJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateSubmittedArrangement.json").asJson
   }
 }

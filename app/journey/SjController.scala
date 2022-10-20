@@ -47,6 +47,16 @@ class SjController @Inject() (
       doJourneyStart(originatedSjRequest)
     }
 
+  def startJourneyVatFromBta(): Action[SjRequest.Vat.Simple] = startJourneyVat[SjRequest.Vat.Simple](Origins.Vat.Bta)
+  def startJourneyVatFromGovUk(): Action[SjRequest.Vat.Empty] = startJourneyVat[SjRequest.Vat.Empty](Origins.Vat.GovUk)
+  def startJourneyVatFromDetachedUrl(): Action[SjRequest.Vat.Empty] = startJourneyVat[SjRequest.Vat.Empty](Origins.Vat.DetachedUrl)
+
+  private def startJourneyVat[StartRequest <: SjRequest.Vat: Reads](origin: Origins.Vat): Action[StartRequest] =
+    actions.authenticatedAction.async(parse.json[StartRequest]) { implicit request =>
+      val originatedSjRequest = OriginatedSjRequest.Vat(origin, request.body)
+      doJourneyStart(originatedSjRequest)
+    }
+
   private def doJourneyStart(
       originatedRequest: OriginatedSjRequest
   )(implicit request: Request[_]): Future[Result] = {
@@ -70,6 +80,11 @@ class SjController @Inject() (
       case Origins.Epaye.Bta         => "Journey for Epaye from BTA"
       case Origins.Epaye.GovUk       => "Journey for Epaye from GovUk"
       case Origins.Epaye.DetachedUrl => "Journey for Epaye from DetachedUrl"
+    }
+    case o: Origins.Vat => o match {
+      case Origins.Vat.Bta         => "Journey for Vat from BTA"
+      case Origins.Vat.GovUk       => "Journey for Vat from GovUk"
+      case Origins.Vat.DetachedUrl => "Journey for Vat from DetachedUrl"
     }
   }
 

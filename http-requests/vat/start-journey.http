@@ -1,4 +1,3 @@
-### just a placeholder for now
 POST http://localhost:9216/essttp-backend/vat/bta/journey/start
 Accept: */*
 Cache-Control: no-cache
@@ -10,8 +9,8 @@ X-Session-ID: sialalalabta
   "backUrl":   "http://localhost:9066/back"
 }
 
+###
 
-### just a placeholder for now
 POST http://localhost:9216/essttp-backend/vat/gov-uk/journey/start
 Accept: */*
 Cache-Control: no-cache
@@ -20,7 +19,8 @@ X-Session-ID: sialalalagovuk
 
 {}
 
-### just a placeholder for now
+###
+
 POST http://localhost:9216/essttp-backend/vat/detached-url/journey/start
 Accept: */*
 Cache-Control: no-cache

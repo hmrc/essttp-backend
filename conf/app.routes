@@ -1,7 +1,13 @@
 
+#EPAYE
 POST        /epaye/bta/journey/start                                        journey.SjController.startJourneyEpayeFromBta()
 POST        /epaye/gov-uk/journey/start                                     journey.SjController.startJourneyEpayeFromGovUk()
 POST        /epaye/detached-url/journey/start                               journey.SjController.startJourneyEpayeFromDetachedUrl()
+
+#VAT
+POST        /vat/bta/journey/start                                          journey.SjController.startJourneyVatFromBta()
+POST        /vat/gov-uk/journey/start                                       journey.SjController.startJourneyVatFromGovUk()
+POST        /vat/detached-url/journey/start                                 journey.SjController.startJourneyVatFromDetachedUrl()
 
 POST        /bars/verify/status                                             bars.BarsVerifyStatusController.status()
 POST        /bars/verify/update                                             bars.BarsVerifyStatusController.update()

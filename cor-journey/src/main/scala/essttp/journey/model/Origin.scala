@@ -54,7 +54,7 @@ object Origins extends Enum[Origin] {
     case object GovUk extends Origin with Epaye with BetterName
 
     /**
-     * This represents situation when user receives link to the application in watsapp/email/etc and it's not clear
+     * This represents situation when user receives link to the application in whatsapp/email/etc and it's not clear
      * where the journey actually started from.
      */
     case object DetachedUrl extends Origin with Epaye with BetterName
@@ -69,8 +69,15 @@ object Origins extends Enum[Origin] {
 
   object Vat extends Enum[Vat] {
     implicit val format: Format[Vat] = EnumFormat(Vat)
-    //TODO: Uncomment once Vat is enabled
-    //    case object Bta extends Origin with Vat with BetterName { def show = "Origin.Vat.Bta" }
+
+    case object Bta extends Origin with Vat with BetterName
+    case object GovUk extends Origin with Vat with BetterName
+
+    /**
+     * This represents situation when user receives link to the application in whatsapp/email/etc and it's not clear
+     * where the journey actually started from.
+     */
+    case object DetachedUrl extends Origin with Vat with BetterName
     override def values: immutable.IndexedSeq[Vat] = findValues
   }
 

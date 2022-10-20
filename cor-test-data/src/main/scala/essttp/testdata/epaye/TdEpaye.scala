@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package essttp.testdata
+package essttp.testdata.epaye
 
-import essttp.rootmodel.{AmountInPence, CanPayUpfront, Email, EmpRef}
 import essttp.rootmodel.epaye.{Aor, TaxOfficeNumber, TaxOfficeReference}
-import essttp.rootmodel.ttp._
 import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
+import essttp.rootmodel.ttp._
+import essttp.rootmodel.{AmountInPence, CanPayUpfront, Email, EmpRef}
+import essttp.testdata.TdBase
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
 import java.time.LocalDate
