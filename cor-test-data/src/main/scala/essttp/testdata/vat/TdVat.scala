@@ -14,27 +14,10 @@
  * limitations under the License.
  */
 
-package essttp.journey.model
+package essttp.testdata.vat
 
-/**
- * A temporary structure which binds both [[Origin]] and [[SjRequest]] of the same "type"
- * (Vat to Vat, Sdil to Sdil, Cds to Cds, etc)
- */
-sealed trait OriginatedSjRequest {
-  def origin: Origin
-  def sjRequest: SjRequest
-}
+import essttp.testdata.TdBase
 
-object OriginatedSjRequest {
-
-  final case class Epaye(
-      override val origin:    Origins.Epaye,
-      override val sjRequest: SjRequest.Epaye
-  ) extends OriginatedSjRequest
-
-  final case class Vat(
-      override val origin:    Origins.Vat,
-      override val sjRequest: SjRequest.Vat
-  ) extends OriginatedSjRequest
-
+trait TdVat {
+  dependencies: TdBase =>
 }

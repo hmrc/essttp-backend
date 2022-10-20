@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package essttp.testdata
+package essttp.testdata.epaye
 
 import essttp.journey.model.SjRequest.Epaye
 import essttp.journey.model._
@@ -25,14 +25,16 @@ import essttp.rootmodel.ttp.EligibilityCheckResult
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
-import essttp.rootmodel.{CanPayUpfront, DayOfMonth, IsEmailAddressRequired, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
+import essttp.rootmodel._
+import essttp.testdata.{TdBase, TdJourneyStructure}
+import essttp.utils.ResourceReader.read
 import essttp.utils.JsonSyntax._
-import essttp.utils.ResourceReader._
 import play.api.libs.json.{JsNull, JsObject}
 
 import scala.language.reflectiveCalls
 
-trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
+trait TdJourneyEpayeDetachedUrl {
+  dependencies: TdBase with TdEpaye =>
 
   object EpayeDetachedUrl extends TdJourneyStructure {
 
@@ -500,6 +502,7 @@ trait TdJourneyEpayeDetachedUrl { dependencies: TdBase with TdEpaye =>
       emailVerificationAnswers = EmailVerificationAnswers.NoEmailJourney,
       arrangementResponse      = dependencies.arrangementResponse
     )
+
     def journeyAfterSubmittedArrangementJson: JsObject = read("/testdata/epaye/detachedurl/JourneyAfterUpdateSubmittedArrangement.json").asJson
   }
 }

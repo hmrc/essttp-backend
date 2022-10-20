@@ -27,8 +27,9 @@ class OriginSpec extends UnitSpec {
       Json.toJson[Origin](Origins.Epaye.Bta) shouldBe JsString("Origins.Epaye.Bta")
     }
     "Vat" in {
-      //TODO: Uncomment once Vat is enabled
-      //      Json.toJson[Origin](Origins.Vat.Bta) shouldBe JsString("Origins.Vat.Bta")
+      Json.toJson[Origin](Origins.Vat.GovUk) shouldBe JsString("Origins.Vat.GovUk")
+      Json.toJson[Origin](Origins.Vat.DetachedUrl) shouldBe JsString("Origins.Vat.DetachedUrl")
+      Json.toJson[Origin](Origins.Vat.Bta) shouldBe JsString("Origins.Vat.Bta")
     }
   }
 
@@ -39,8 +40,9 @@ class OriginSpec extends UnitSpec {
       Json.toJson[Origins.Epaye](Origins.Epaye.Bta) shouldBe JsString("Origins.Epaye.Bta")
     }
     "Vat" in {
-      //TODO: Uncomment once Vat is enabled
-      //      Json.toJson[Origins.Vat](Origins.Vat.Bta) shouldBe JsString("Origins.Vat.Bta")
+      Json.toJson[Origins.Vat](Origins.Vat.GovUk) shouldBe JsString("Origins.Vat.GovUk")
+      Json.toJson[Origins.Vat](Origins.Vat.DetachedUrl) shouldBe JsString("Origins.Vat.DetachedUrl")
+      Json.toJson[Origins.Vat](Origins.Vat.Bta) shouldBe JsString("Origins.Vat.Bta")
     }
   }
 
@@ -50,10 +52,10 @@ class OriginSpec extends UnitSpec {
       JsString("Origins.Epaye.DetachedUrl").as[Origin] shouldBe Origins.Epaye.DetachedUrl
       JsString("Origins.Epaye.Bta").as[Origin] shouldBe Origins.Epaye.Bta
     }
-
     "Vat" in {
-      //TODO: Uncomment once Vat is enabled
-      //      JsString("Origins.Vat.Bta").as[Origin] shouldBe Origins.Vat.Bta
+      JsString("Origins.Vat.GovUk").as[Origin] shouldBe Origins.Vat.GovUk
+      JsString("Origins.Vat.DetachedUrl").as[Origin] shouldBe Origins.Vat.DetachedUrl
+      JsString("Origins.Vat.Bta").as[Origin] shouldBe Origins.Vat.Bta
     }
   }
 
@@ -63,10 +65,10 @@ class OriginSpec extends UnitSpec {
       JsString("Origins.Epaye.DetachedUrl").as[Origins.Epaye] shouldBe Origins.Epaye.DetachedUrl
       JsString("Origins.Epaye.Bta").as[Origins.Epaye] shouldBe Origins.Epaye.Bta
     }
-
     "Vat" in {
-      //TODO: Uncomment once Vat is enabled
-      //      JsString("Origins.Vat.Bta").as[Origins.Vat] shouldBe Origins.Vat.Bta
+      JsString("Origins.Vat.GovUk").as[Origins.Vat] shouldBe Origins.Vat.GovUk
+      JsString("Origins.Vat.DetachedUrl").as[Origins.Vat] shouldBe Origins.Vat.DetachedUrl
+      JsString("Origins.Vat.Bta").as[Origins.Vat] shouldBe Origins.Vat.Bta
     }
   }
 

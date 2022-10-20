@@ -101,6 +101,19 @@ object SjRequest {
     object Simple {
       implicit val format: OFormat[Simple] = Json.format
     }
+
+    /**
+     * Start Journey (Sj) Request
+     * for VAT (Value Added Tax)
+     * It is used by origins which doesn't provide any data
+     */
+    final case class Empty()
+      extends SjRequest
+      with Vat
+
+    object Empty {
+      implicit val format: OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
+    }
   }
 
 }

@@ -1192,4 +1192,54 @@ object Journey {
 
   }
 
+  /**
+   * Marking trait for extracting Vat [[Journey]]s
+   */
+  sealed trait Vat extends Journey {
+    override def taxRegime: TaxRegime.Vat.type = TaxRegime.Vat
+    override def sjRequest: SjRequest.Vat
+    override def origin: Origins.Vat
+
+    override val (backUrl, returnUrl) = sjRequest match {
+      case r: SjRequest.Vat.Simple => (Some(r.backUrl), Some(r.returnUrl))
+      case _                       => (None, None)
+    }
+  }
+
+  object Vat {
+    /**
+     * [[Journey]] after started
+     * VAT
+     */
+    final case class Started(
+        override val _id:           JourneyId,
+        override val origin:        Origins.Vat,
+        override val createdOn:     Instant,
+        override val sjRequest:     SjRequest.Vat,
+        override val sessionId:     SessionId,
+        override val correlationId: CorrelationId,
+        override val stage:         Stage.AfterStarted
+    )
+      extends Journey
+      with Journey.Stages.Started
+      with Journey.Vat
+
+    /**
+     * [[Journey]] after computed TaxIds
+     * Epaye
+     */
+    final case class ComputedTaxId(
+        override val _id:           JourneyId,
+        override val origin:        Origins.Vat,
+        override val createdOn:     Instant,
+        override val sjRequest:     SjRequest.Vat,
+        override val sessionId:     SessionId,
+        override val correlationId: CorrelationId,
+        override val stage:         Stage.AfterComputedTaxId,
+        override val taxId:         Vrn
+    )
+      extends Journey
+      with Journey.Stages.ComputedTaxId
+      with Journey.Vat
+  }
 }

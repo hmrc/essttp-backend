@@ -126,6 +126,27 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
       )
   }
 
+  object Vat {
+
+    def startJourneyBta(sjRequest: SjRequest.Vat.Simple)(implicit request: RequestHeader): Future[SjResponse] =
+      httpClient.POST[SjRequest.Vat.Simple, SjResponse](
+        url  = s"$baseUrl/essttp-backend/vat/bta/journey/start",
+        body = sjRequest
+      )
+
+    def startJourneyDetachedUrl(sjRequest: SjRequest.Vat.Empty)(implicit request: RequestHeader): Future[SjResponse] =
+      httpClient.POST[SjRequest, SjResponse](
+        url  = s"$baseUrl/essttp-backend/vat/detached-url/journey/start",
+        body = sjRequest
+      )
+
+    def startJourneyGovUk(sjRequest: SjRequest.Vat.Empty)(implicit request: RequestHeader): Future[SjResponse] =
+      httpClient.POST[SjRequest, SjResponse](
+        url  = s"$baseUrl/essttp-backend/vat/gov-uk/journey/start",
+        body = sjRequest
+      )
+  }
+
   @Inject()
   def this(httpClient: HttpClient, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) = this(
     httpClient,
