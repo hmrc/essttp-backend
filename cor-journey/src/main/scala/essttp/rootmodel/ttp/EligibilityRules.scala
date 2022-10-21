@@ -19,15 +19,17 @@ package essttp.rootmodel.ttp
 import play.api.libs.json.{Json, OFormat}
 
 final case class EligibilityRules(
-    hasRlsOnAddress:            Boolean,
-    markedAsInsolvent:          Boolean,
-    isLessThanMinDebtAllowance: Boolean,
-    isMoreThanMaxDebtAllowance: Boolean,
-    disallowedChargeLockTypes:  Boolean,
-    existingTTP:                Boolean,
-    chargesOverMaxDebtAge:      Boolean,
-    ineligibleChargeTypes:      Boolean,
-    missingFiledReturns:        Boolean
+    hasRlsOnAddress:                   Boolean,
+    markedAsInsolvent:                 Boolean,
+    isLessThanMinDebtAllowance:        Boolean,
+    isMoreThanMaxDebtAllowance:        Boolean,
+    disallowedChargeLockTypes:         Boolean,
+    existingTTP:                       Boolean,
+    chargesOverMaxDebtAge:             Boolean,
+    ineligibleChargeTypes:             Boolean,
+    missingFiledReturns:               Boolean,
+    hasInvalidInterestSignals:         Option[Boolean],
+    dmSpecialOfficeProcessingRequired: Option[Boolean]
 ) {
 
   val moreThanOneReasonForIneligibility: Boolean = {
@@ -40,7 +42,9 @@ final case class EligibilityRules(
       existingTTP,
       chargesOverMaxDebtAge,
       ineligibleChargeTypes,
-      missingFiledReturns
+      missingFiledReturns,
+      hasInvalidInterestSignals.getOrElse(false),
+      dmSpecialOfficeProcessingRequired.getOrElse(false)
     ).map{ if (_) 1 else 0 }.sum > 1
   }
 
@@ -54,7 +58,9 @@ final case class EligibilityRules(
       existingTTP,
       chargesOverMaxDebtAge,
       ineligibleChargeTypes,
-      missingFiledReturns
+      missingFiledReturns,
+      hasInvalidInterestSignals.getOrElse(false),
+      dmSpecialOfficeProcessingRequired.getOrElse(false)
     ).forall(flag => !flag) //if all flags are false then isEligible is true
   }
 }

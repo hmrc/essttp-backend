@@ -22,7 +22,19 @@ import testsupport.UnitSpec
 class EligibilityRulesSpec extends UnitSpec {
 
   "isEligible" in {
-    val e = EligibilityRules(false, false, false, false, false, false, false, false, false)
+    val e = EligibilityRules(
+      hasRlsOnAddress                   = false,
+      markedAsInsolvent                 = false,
+      isLessThanMinDebtAllowance        = false,
+      isMoreThanMaxDebtAllowance        = false,
+      disallowedChargeLockTypes         = false,
+      existingTTP                       = false,
+      chargesOverMaxDebtAge             = false,
+      ineligibleChargeTypes             = false,
+      missingFiledReturns               = false,
+      hasInvalidInterestSignals         = Some(false),
+      dmSpecialOfficeProcessingRequired = Some(false)
+    )
     e.isEligible shouldBe true
 
   }
