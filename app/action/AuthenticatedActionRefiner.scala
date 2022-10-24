@@ -45,7 +45,7 @@ class AuthenticatedActionRefiner @Inject() (
         Left(Unauthorized)
 
       case e: AuthorisationException =>
-        logger.error(s"Unauthorised because of ${e.reason}, please investigate why", e)
+        logger.warn(s"Unauthorised because of ${e.reason}, please investigate why", e)
         Left(InternalServerError)
     }
   }
