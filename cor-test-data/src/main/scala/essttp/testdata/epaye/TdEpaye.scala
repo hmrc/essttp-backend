@@ -40,13 +40,18 @@ trait TdEpaye {
   val reusableDateAsString: String = "2022-05-17"
   val reusableDate: LocalDate = LocalDate.parse(reusableDateAsString)
 
-  val eligibleEligibilityRules: EligibilityRules = EligibilityRules(hasRlsOnAddress            = false, markedAsInsolvent = false, isLessThanMinDebtAllowance = false, isMoreThanMaxDebtAllowance = false, disallowedChargeLockTypes = false, existingTTP = false, chargesOverMaxDebtAge = false, ineligibleChargeTypes = false, missingFiledReturns = false)
+  val eligibleEligibilityRules: EligibilityRules = EligibilityRules(
+    hasRlsOnAddress                   = false, markedAsInsolvent = false, isLessThanMinDebtAllowance = false,
+    isMoreThanMaxDebtAllowance        = false, disallowedChargeLockTypes = false, existingTTP = false,
+    chargesOverMaxDebtAge             = false, ineligibleChargeTypes = false, missingFiledReturns = false,
+    hasInvalidInterestSignals         = None, dmSpecialOfficeProcessingRequired = None
+  )
 
   val hasRlsAddressOn: EligibilityRules = eligibleEligibilityRules.copy(hasRlsOnAddress = true)
 
   val eligibleEligibilityCheckResult: EligibilityCheckResult = EligibilityCheckResult(
-    processingDateTime     = ProcessingDateTime(reusableDateAsString),
-    identification         = List(
+    processingDateTime          = ProcessingDateTime(reusableDateAsString),
+    identification              = List(
       Identification(
         idType  = IdType("EMPREF"),
         idValue = IdValue(empRef.value)
@@ -56,14 +61,14 @@ trait TdEpaye {
         idValue = IdValue("123PA44545546")
       )
     ),
-    customerPostcodes      = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate("2020-01-01"))),
-    regimePaymentFrequency = PaymentPlanFrequencies.Monthly,
-    paymentPlanFrequency   = PaymentPlanFrequencies.Monthly,
-    paymentPlanMinLength   = PaymentPlanMinLength(1),
-    paymentPlanMaxLength   = PaymentPlanMaxLength(6),
-    eligibilityStatus      = EligibilityStatus(EligibilityPass(true)),
-    eligibilityRules       = eligibleEligibilityRules,
-    chargeTypeAssessment   = List(
+    customerPostcodes           = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate("2020-01-01"))),
+    regimePaymentFrequency      = PaymentPlanFrequencies.Monthly,
+    paymentPlanFrequency        = PaymentPlanFrequencies.Monthly,
+    paymentPlanMinLength        = PaymentPlanMinLength(1),
+    paymentPlanMaxLength        = PaymentPlanMaxLength(6),
+    eligibilityStatus           = EligibilityStatus(EligibilityPass(true)),
+    eligibilityRules            = eligibleEligibilityRules,
+    chargeTypeAssessment        = List(
       ChargeTypeAssessment(
         taxPeriodFrom   = TaxPeriodFrom("2020-08-13"),
         taxPeriodTo     = TaxPeriodTo("2020-08-14"),
@@ -93,7 +98,9 @@ trait TdEpaye {
           )
         )
       )
-    )
+    ),
+    customerDetails             = None,
+    regimeDigitalCorrespondence = None
   )
 
   def ineligibleEligibilityCheckResult: EligibilityCheckResult = eligibleEligibilityCheckResult.copy(
