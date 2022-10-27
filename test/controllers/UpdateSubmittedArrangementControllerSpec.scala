@@ -40,7 +40,7 @@ class UpdateSubmittedArrangementControllerSpec extends ItSpec {
     "should throw a Bad Request when the journey is already in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
       val result: Throwable = journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeBta.updateArrangementRequest()).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"Cannot update SubmittedArrangement when journey is in completed state"}""")
@@ -66,7 +66,7 @@ class UpdateSubmittedArrangementControllerSpec extends ItSpec {
 
       journeyConnector.updateArrangement(tdAll.journeyId, TdAll.EpayeBta.updateArrangementRequest()).futureValue
       val result = journeyConnector.getJourney(tdAll.journeyId).futureValue
-      result shouldBe TdAll.EpayeBta.journeyAfterSubmittedArrangement.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId)
+      result shouldBe TdAll.EpayeBta.journeyAfterSubmittedArrangement().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId)
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }

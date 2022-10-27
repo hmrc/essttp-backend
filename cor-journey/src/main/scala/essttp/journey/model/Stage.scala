@@ -274,6 +274,20 @@ object Stage {
     case object EmailChosen extends AfterSelectedAnEmailToBeVerified
   }
 
+  sealed trait AfterEmailVerificationPhase extends Stage with EnumEntry
+
+  /**
+   * [[Journey]] has been orchestrated to indicate the user has gone through email verification
+   */
+  object AfterEmailVerificationPhase extends Enum[AfterEmailVerificationPhase] {
+    implicit val format: OFormat[AfterEmailVerificationPhase] = derived.oformat[AfterEmailVerificationPhase]()
+    val values: immutable.IndexedSeq[AfterEmailVerificationPhase] = findValues
+
+    case object VerificationSuccess extends AfterEmailVerificationPhase
+
+    case object Locked extends AfterEmailVerificationPhase
+  }
+
   sealed trait AfterSubmittedArrangement extends Stage with EnumEntry
 
   /**

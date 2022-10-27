@@ -146,7 +146,7 @@ trait TdJourneyStructure {
   def updateArrangementRequest(): ArrangementResponse
   def updateArrangementRequestJson(): JsObject
 
-  def journeyAfterSubmittedArrangement: Journey.AfterArrangementSubmitted
+  def journeyAfterSubmittedArrangement(isEmailAddressRequired: Boolean = false): Journey.AfterArrangementSubmitted
   def journeyAfterSubmittedArrangementJson: JsObject
 
 }

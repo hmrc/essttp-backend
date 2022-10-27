@@ -18,6 +18,7 @@ package journey
 
 import action.Actions
 import com.google.inject.{Inject, Singleton}
+import essttp.emailverification.EmailVerificationStatus
 import essttp.journey.model.{EmailVerificationAnswers, Journey, JourneyId, Stage}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.utils.Errors
@@ -45,10 +46,19 @@ class UpdateSubmittedArrangementController @Inject() (
           if (j.isEmailAddressRequired)
             Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user still requires and email address, state: [${j.stage}]")
           else
-            updateJourneyWithNewValue(j, request.body)
+            updateJourneyWithNewValue(Left(j), request.body)
 
-        case _: Journey.Stages.SelectedEmailToBeVerified =>
-          Errors.throwBadRequestExceptionF("This should never happen, remember to remove me once verified email is in.")
+        case j: Journey.Stages.SelectedEmailToBeVerified =>
+          Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user has not verified their email address yet, state: [${j.stage}]")
+
+        case j: Journey.Stages.EmailVerificationComplete =>
+          j.emailVerificationStatus match {
+            case EmailVerificationStatus.Locked =>
+              Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user has been locked out from verifying their email address, state: [${j.stage}]")
+
+            case EmailVerificationStatus.Verified =>
+              updateJourneyWithNewValue(Right(j), request.body)
+          }
 
         case _: Journey.AfterArrangementSubmitted =>
           Errors.throwBadRequestExceptionF("Cannot update SubmittedArrangement when journey is in completed state")
@@ -57,17 +67,24 @@ class UpdateSubmittedArrangementController @Inject() (
   }
 
   private def updateJourneyWithNewValue(
-      journey:             Journey.Stages.AgreedTermsAndConditions,
+      journey:             Either[Journey.Stages.AgreedTermsAndConditions, Journey.Stages.EmailVerificationComplete],
       arrangementResponse: ArrangementResponse
   )(implicit request: Request[_]): Future[Unit] = {
     val newJourney: Journey.AfterArrangementSubmitted = journey match {
-      case j: Journey.Epaye.AgreedTermsAndConditions =>
+      case Left(j: Journey.Epaye.AgreedTermsAndConditions) =>
         j.into[Journey.Epaye.SubmittedArrangement]
           .withFieldConst(_.stage, Stage.AfterSubmittedArrangement.Submitted)
           .withFieldConst(_.emailVerificationAnswers, EmailVerificationAnswers.NoEmailJourney)
           .withFieldConst(_.arrangementResponse, arrangementResponse)
           .transform
+
+      case Right(j: Journey.Epaye.EmailVerificationComplete) =>
+        j.into[Journey.Epaye.SubmittedArrangement]
+          .withFieldConst(_.stage, Stage.AfterSubmittedArrangement.Submitted)
+          .withFieldConst(_.arrangementResponse, arrangementResponse)
+          .transform
     }
+
     journeyService.upsert(newJourney)
   }
 

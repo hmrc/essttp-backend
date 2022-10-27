@@ -57,6 +57,10 @@ graph TD;
     EnteredDirectDebitDetails --> ConfirmedDirectDebitDetails;
     ConfirmedDirectDebitDetails --> EmailAddressRequired;
     ConfirmedDirectDebitDetails --> EmailAddressNotRequired;
+    EmailAddressRequired --> EmailChosen;
+    EmailChosen --> Locked;
+    EmailChosen --> VerificationSuccess;
+    VerificationSuccess --> SubmittedArrangement;
     EmailAddressNotRequired --> SubmittedArrangement;
 ```
 To edit this, use [mermaid live editor](https://mermaid.live/)

@@ -51,7 +51,7 @@ class JourneyInFinalStateSpec extends ItSpec {
       testScenario.httpResponse.body shouldBe testScenario.expectedMessage withClue s"Response body wasn't ${testScenario.expectedMessage}"
     }
 
-    insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+    insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
     val scenarios: immutable.Seq[TestScenario] = List(
       TestScenario(
