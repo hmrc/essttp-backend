@@ -16,7 +16,8 @@
 
 package essttp.testdata
 
-import essttp.journey.model.{CorrelationId, JourneyId, UpfrontPaymentAnswers}
+import essttp.emailverification.EmailVerificationStatus
+import essttp.journey.model.{CorrelationId, EmailVerificationAnswers, JourneyId, UpfrontPaymentAnswers}
 import essttp.rootmodel._
 import essttp.rootmodel.bank._
 import essttp.rootmodel.dates.InitialPaymentDate
@@ -44,6 +45,8 @@ trait TdBase {
   def createdOn: Instant = LocalDateTime.parse("2057-11-02T16:28:55.185").toInstant(ZoneOffset.UTC)
   def amountToUpdate: AmountInPence = AmountInPence(123499)
   def amountInPence: AmountInPence = AmountInPence(1000)
+  val canPayUpfrontYes: CanPayUpfront = CanPayUpfront(true)
+  val canPayUpfrontNo: CanPayUpfront = CanPayUpfront(false)
   def upfrontPaymentAmount: UpfrontPaymentAmount = UpfrontPaymentAmount(amountInPence)
   def anotherUpfrontPaymentAmount: UpfrontPaymentAmount = UpfrontPaymentAmount(amountInPence.copy(value = 1001))
   def instalmentAmounts: InstalmentAmounts = InstalmentAmounts(AmountInPence(1000), AmountInPence(2000))
@@ -93,6 +96,24 @@ trait TdBase {
       SortCode(SensitiveString("123456")),
       AccountNumber(SensitiveString("12345678"))
     )
+
+  val email: Email = Email(SensitiveString("bobross@joyofpainting.com"))
+
+  val emailVerificationSuccess: EmailVerificationStatus = EmailVerificationStatus.Verified
+
+  val emailVerificationLocked: EmailVerificationStatus = EmailVerificationStatus.Locked
+
+  val emailVerificationAnswersEmailNotNeeded: EmailVerificationAnswers = EmailVerificationAnswers.NoEmailJourney
+
+  val emailVerificationAnswersSuccess: EmailVerificationAnswers = EmailVerificationAnswers.EmailVerified(email, emailVerificationSuccess)
+
+  val emailVerificationAnswersLocked: EmailVerificationAnswers = EmailVerificationAnswers.EmailVerified(email, emailVerificationLocked)
+
+  def emailVerificationAnswers(status: Option[EmailVerificationStatus]): EmailVerificationAnswers = status match {
+    case Some(EmailVerificationStatus.Verified) => emailVerificationAnswersSuccess
+    case Some(EmailVerificationStatus.Locked)   => emailVerificationAnswersLocked
+    case None                                   => emailVerificationAnswersEmailNotNeeded
+  }
 
   def backUrl: BackUrl = BackUrl("https://www.tax.service.gov.uk/back-url")
   def returnUrl: ReturnUrl = ReturnUrl("https://www.tax.service.gov.uk/return-url")

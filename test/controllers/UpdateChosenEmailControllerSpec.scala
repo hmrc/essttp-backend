@@ -67,7 +67,7 @@ class UpdateChosenEmailControllerSpec extends ItSpec {
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
       insertJourneyForTest(
-        TdAll.EpayeBta.journeyAfterSubmittedArrangement
+        TdAll.EpayeBta.journeyAfterSubmittedArrangement()
           .copy(_id = tdAll.journeyId)
           .copy(correlationId = tdAll.correlationId)
           .copy(isEmailAddressRequired = IsEmailAddressRequired(true))

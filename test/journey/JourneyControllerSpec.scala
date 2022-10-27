@@ -16,6 +16,7 @@
 
 package journey
 
+import essttp.emailverification.EmailVerificationStatus
 import essttp.journey.JourneyConnector
 import essttp.journey.model.{CorrelationId, JourneyId, SjResponse}
 import essttp.rootmodel.IsEmailAddressRequired
@@ -44,6 +45,8 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateChosenTypeOfBankAccount]" +
       "[UpdateEnteredDirectDebitDetails]" +
       "[UpdateConfirmedDirectDebitDetails]" +
+      "[UpdateChosenEmail]" +
+      "[UpdateEmailVerificationStatus]" +
       "[UpdateSubmittedArrangement]"
 
   "[Epaye]" - {
@@ -123,14 +126,22 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails
 
       /** Update Agreed terms and conditions */
-      journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(false)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false)
+      journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+
+      /** Update Email Address */
+      journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedEmail
+
+      /** Update Email Verification Status */
+      journeyConnector.updateEmailVerificationStatus(tdAll.journeyId, EmailVerificationStatus.Verified).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEmailVerificationStatus(EmailVerificationStatus.Verified)
 
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeBta.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSubmittedArrangement
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 36)
+      verifyCommonActions(numberOfAuthCalls = 40)
     }
 
     s"[GovUk][Happy path with upfront payment]$testNameJourneyStages" in {
@@ -209,14 +220,22 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterConfirmedDirectDebitDetails
 
       /** Update Agreed terms and conditions */
-      journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(false)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false)
+      journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+
+      /** Update Email Address */
+      journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterSelectedEmail
+
+      /** Update Email Verification Status */
+      journeyConnector.updateEmailVerificationStatus(tdAll.journeyId, EmailVerificationStatus.Verified).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterEmailVerificationStatus(EmailVerificationStatus.Verified)
 
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeGovUk.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterSubmittedArrangement
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 36)
+      verifyCommonActions(numberOfAuthCalls = 40)
     }
 
     s"[DetachedUrl][Happy path with upfront payment]$testNameJourneyStages" in {
@@ -295,14 +314,22 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterConfirmedDirectDebitDetails
 
       /** Update Agreed terms and conditions */
-      journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(false)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false)
+      journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+
+      /** Update Email Address */
+      journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterSelectedEmail
+
+      /** Update Email Verification Status */
+      journeyConnector.updateEmailVerificationStatus(tdAll.journeyId, EmailVerificationStatus.Verified).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterEmailVerificationStatus(EmailVerificationStatus.Verified)
 
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterSubmittedArrangement
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 36)
+      verifyCommonActions(numberOfAuthCalls = 40)
     }
   }
 
