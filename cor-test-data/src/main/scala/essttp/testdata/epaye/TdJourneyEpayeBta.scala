@@ -16,6 +16,7 @@
 
 package essttp.testdata.epaye
 
+import essttp.emailverification.EmailVerificationStatus
 import essttp.journey.model.SjRequest.Epaye
 import essttp.journey.model._
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
@@ -510,11 +511,44 @@ trait TdJourneyEpayeBta {
 
     def journeyAfterSelectedEmailJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateSelectedEmail.json").asJson
 
+    def updateEmailVerificationStatusRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateEmailVerificationStatusRequest.json").asJson
+
+    def journeyAfterEmailVerificationStatus(status: EmailVerificationStatus): Journey.Epaye.EmailVerificationComplete = Journey.Epaye.EmailVerificationComplete(
+      _id                      = dependencies.journeyId,
+      origin                   = Origins.Epaye.Bta,
+      createdOn                = dependencies.createdOn,
+      sjRequest                = sjRequest,
+      sessionId                = dependencies.sessionId,
+      stage                    = status match {
+        case EmailVerificationStatus.Verified => Stage.AfterEmailVerificationPhase.VerificationSuccess
+        case EmailVerificationStatus.Locked   => Stage.AfterEmailVerificationPhase.Locked
+      },
+      correlationId            = dependencies.correlationId,
+      taxId                    = empRef,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts        = dependencies.instalmentAmounts,
+      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+      dayOfMonth               = dependencies.dayOfMonth,
+      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan      = dependencies.paymentPlan(1),
+      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+      directDebitDetails       = directDebitDetails,
+      isEmailAddressRequired   = IsEmailAddressRequired(true),
+      emailToBeVerified        = dependencies.email,
+      emailVerificationStatus  = status,
+      emailVerificationAnswers = emailVerificationAnswers(Some(status))
+    )
+
+    def journeyAfterEmailVerificationStatusJson: JsObject = read("/testdata/epaye/bta/JourneyAfterUpdateEmailVerificationStatus.json").asJson
+
     def updateArrangementRequest(): ArrangementResponse = dependencies.arrangementResponse
 
     def updateArrangementRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateSubmittedArrangementRequest.json").asJson
 
-    def journeyAfterSubmittedArrangement: Journey.Epaye.SubmittedArrangement = Journey.Epaye.SubmittedArrangement(
+    def journeyAfterSubmittedArrangement(isEmailAddressRequired: Boolean): Journey.Epaye.SubmittedArrangement = Journey.Epaye.SubmittedArrangement(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Epaye.Bta,
       createdOn                = dependencies.createdOn,
@@ -534,8 +568,12 @@ trait TdJourneyEpayeBta {
       selectedPaymentPlan      = dependencies.paymentPlan(1),
       detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
       directDebitDetails       = directDebitDetails,
-      isEmailAddressRequired   = IsEmailAddressRequired(false),
-      emailVerificationAnswers = EmailVerificationAnswers.NoEmailJourney,
+      isEmailAddressRequired   = IsEmailAddressRequired(isEmailAddressRequired),
+      emailVerificationAnswers = if (isEmailAddressRequired) {
+        EmailVerificationAnswers.EmailVerified(dependencies.email, EmailVerificationStatus.Verified)
+      } else {
+        EmailVerificationAnswers.NoEmailJourney
+      },
       arrangementResponse      = dependencies.arrangementResponse
     )
 

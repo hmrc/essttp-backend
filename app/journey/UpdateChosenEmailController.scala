@@ -50,7 +50,8 @@ class UpdateChosenEmailController @Inject() (
             case j1: Journey.Stages.AgreedTermsAndConditions =>
               if (j.isEmailAddressRequired) updateJourneyWithNewValue(j1, request.body)
               else Errors.throwBadRequestExceptionF(s"Cannot update selected email address when isEmailAddressRequired is false for journey.")
-            case j1: Journey.Stages.SelectedEmailToBeVerified => updateJourneyWithExistingValue(Left(j1), request.body)
+            case j1: Journey.Stages.SelectedEmailToBeVerified => updateJourneyWithExistingValue(j1, request.body)
+            case j1: Journey.Stages.EmailVerificationComplete => updateJourneyWithExistingValue(j1, request.body)
             case _: Journey.Epaye.SubmittedArrangement        => Errors.throwBadRequestExceptionF(s"Cannot update ChosenEmail when journey is in completed state.")
           }
       }
@@ -72,15 +73,21 @@ class UpdateChosenEmailController @Inject() (
   }
 
   private def updateJourneyWithExistingValue(
-      journey: Either[Journey.AfterEmailAddressSelectedToBeVerified, Journey.AfterEmailVerificationPhase],
+      journey: Journey.AfterEmailAddressSelectedToBeVerified,
       email:   Email
   )(implicit request: Request[_]): Future[Unit] = {
     journey match {
-      case Right(_: Journey.Epaye.SubmittedArrangement) => //todo, this will work better when new stage for after email answers added and there's the verified part too, bare with me Andy :)
-        Errors.throwBadRequestException("Cannot update Chosen email when journey is in completed state")
-      case Left(j: Journey.Epaye.SelectedEmailToBeVerified) =>
+      case j: Journey.Epaye.SelectedEmailToBeVerified =>
         if (j.emailToBeVerified === email) Future.successful(())
         else journeyService.upsert(j.copy(emailToBeVerified = email))
+
+      case j: Journey.Epaye.EmailVerificationComplete =>
+        journeyService.upsert(
+          j.into[Journey.Epaye.SelectedEmailToBeVerified]
+            .withFieldConst(_.emailToBeVerified, email)
+            .withFieldConst(_.stage, Stage.AfterSelectedAnEmailToBeVerified.EmailChosen)
+            .transform
+        )
     }
   }
 

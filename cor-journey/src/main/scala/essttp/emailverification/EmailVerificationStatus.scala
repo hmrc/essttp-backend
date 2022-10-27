@@ -14,23 +14,28 @@
  * limitations under the License.
  */
 
-package essttp.journey.model
+package essttp.emailverification
 
-import essttp.crypto.CryptoFormat
-import essttp.emailverification.EmailVerificationStatus
-import essttp.rootmodel.Email
+import cats.Eq
+import enumeratum.{Enum, EnumEntry}
 import julienrf.json.derived
 import play.api.libs.json.OFormat
 
-sealed trait EmailVerificationAnswers
+import scala.collection.immutable
 
-object EmailVerificationAnswers {
+sealed trait EmailVerificationStatus extends EnumEntry
 
-  case object NoEmailJourney extends EmailVerificationAnswers
+object EmailVerificationStatus extends Enum[EmailVerificationStatus] {
 
-  final case class EmailVerified(email: Email, emailVerificationStatus: EmailVerificationStatus) extends EmailVerificationAnswers
+  implicit val eq: Eq[EmailVerificationStatus] = Eq.fromUniversalEquals
 
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[EmailVerificationAnswers] =
-    derived.oformat[EmailVerificationAnswers]()
+  implicit val format: OFormat[EmailVerificationStatus] = derived.oformat[EmailVerificationStatus]()
+
+  case object Verified extends EmailVerificationStatus
+
+  case object Locked extends EmailVerificationStatus
+
+  override val values: immutable.IndexedSeq[EmailVerificationStatus] = findValues
 
 }
+

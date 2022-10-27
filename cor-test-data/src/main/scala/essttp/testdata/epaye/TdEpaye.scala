@@ -20,7 +20,7 @@ import essttp.rootmodel.epaye.{Aor, TaxOfficeNumber, TaxOfficeReference}
 import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.rootmodel.ttp._
-import essttp.rootmodel.{AmountInPence, CanPayUpfront, Email, EmpRef}
+import essttp.rootmodel.{AmountInPence, EmpRef}
 import essttp.testdata.TdBase
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
@@ -107,12 +107,6 @@ trait TdEpaye {
     eligibilityStatus = EligibilityStatus(EligibilityPass(false)),
     eligibilityRules  = hasRlsAddressOn
   )
-
-  val canPayUpfrontYes: CanPayUpfront = CanPayUpfront(true)
-
-  val canPayUpfrontNo: CanPayUpfront = CanPayUpfront(false)
-
-  val email: Email = Email(SensitiveString("bobross@joyofpainting.com"))
 
   val arrangementResponse: ArrangementResponse = ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(aor.value))
 

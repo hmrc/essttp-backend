@@ -81,6 +81,12 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
                         j.into[Journey.Epaye.AgreedTermsAndConditions]
             .withFieldConst(_.stage, toStage(isEmailAddressRequired))
             .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
+
+      case j: Journey.Epaye.EmailVerificationComplete =>
+        upsertIfChanged(j, isEmailAddressRequired,
+                        j.into[Journey.Epaye.AgreedTermsAndConditions]
+            .withFieldConst(_.stage, toStage(isEmailAddressRequired))
+            .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
     }
 
   private def upsertIfChanged(

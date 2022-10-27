@@ -104,6 +104,11 @@ class UpdateInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
             .withFieldConst(_.selectedPaymentPlan, paymentPlan)
             .transform
+        case j: Journey.Epaye.EmailVerificationComplete =>
+          j.into[Journey.Epaye.ChosenPaymentPlan]
+            .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+            .withFieldConst(_.selectedPaymentPlan, paymentPlan)
+            .transform
         case _: Journey.Epaye.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update ChosenPlan when journey is in completed state")
       }

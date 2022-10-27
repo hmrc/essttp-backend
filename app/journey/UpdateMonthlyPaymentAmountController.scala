@@ -117,6 +117,11 @@ class UpdateMonthlyPaymentAmountController @Inject() (
           .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
           .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
           .transform
+      case j: Epaye.EmailVerificationComplete =>
+        j.into[Epaye.EnteredMonthlyPaymentAmount]
+          .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+          .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+          .transform
       case _: Epaye.SubmittedArrangement =>
         Errors.throwBadRequestException("Cannot update MonthlyAmount when journey is in completed state")
     }
