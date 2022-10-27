@@ -51,6 +51,7 @@ object Origins extends Enum[Origin] {
     implicit val format: Format[Epaye] = EnumFormat(Epaye)
 
     case object Bta extends Origin with Epaye with BetterName
+    case object EpayeService extends Origin with Epaye with BetterName
     case object GovUk extends Origin with Epaye with BetterName
 
     /**

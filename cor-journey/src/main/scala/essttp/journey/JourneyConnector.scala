@@ -117,6 +117,12 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
         body = sjRequest
       )
 
+    def startJourneyEpayeService(sjRequest: SjRequest.Epaye.Simple)(implicit request: RequestHeader): Future[SjResponse] =
+      httpClient.POST[SjRequest.Epaye.Simple, SjResponse](
+        url  = s"$baseUrl/essttp-backend/epaye/epaye-service/journey/start",
+        body = sjRequest
+      )
+
     def startJourneyDetachedUrl(sjRequest: SjRequest.Epaye.Empty)(implicit request: RequestHeader): Future[SjResponse] =
       httpClient.POST[SjRequest, SjResponse](
         url  = s"$baseUrl/essttp-backend/epaye/detached-url/journey/start",

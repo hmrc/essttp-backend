@@ -1,6 +1,7 @@
 
 #EPAYE
 POST        /epaye/bta/journey/start                                        journey.SjController.startJourneyEpayeFromBta()
+POST        /epaye/epaye-service/journey/start                              journey.SjController.startJourneyEpayeFromEpayeService()
 POST        /epaye/gov-uk/journey/start                                     journey.SjController.startJourneyEpayeFromGovUk()
 POST        /epaye/detached-url/journey/start                               journey.SjController.startJourneyEpayeFromDetachedUrl()
 

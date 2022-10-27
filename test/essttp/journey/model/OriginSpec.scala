@@ -25,6 +25,7 @@ class OriginSpec extends UnitSpec {
       Json.toJson[Origin](Origins.Epaye.GovUk) shouldBe JsString("Origins.Epaye.GovUk")
       Json.toJson[Origin](Origins.Epaye.DetachedUrl) shouldBe JsString("Origins.Epaye.DetachedUrl")
       Json.toJson[Origin](Origins.Epaye.Bta) shouldBe JsString("Origins.Epaye.Bta")
+      Json.toJson[Origin](Origins.Epaye.EpayeService) shouldBe JsString("Origins.Epaye.EpayeService")
     }
     "Vat" in {
       Json.toJson[Origin](Origins.Vat.GovUk) shouldBe JsString("Origins.Vat.GovUk")
@@ -38,6 +39,7 @@ class OriginSpec extends UnitSpec {
       Json.toJson[Origins.Epaye](Origins.Epaye.GovUk) shouldBe JsString("Origins.Epaye.GovUk")
       Json.toJson[Origins.Epaye](Origins.Epaye.DetachedUrl) shouldBe JsString("Origins.Epaye.DetachedUrl")
       Json.toJson[Origins.Epaye](Origins.Epaye.Bta) shouldBe JsString("Origins.Epaye.Bta")
+      Json.toJson[Origins.Epaye](Origins.Epaye.EpayeService) shouldBe JsString("Origins.Epaye.EpayeService")
     }
     "Vat" in {
       Json.toJson[Origins.Vat](Origins.Vat.GovUk) shouldBe JsString("Origins.Vat.GovUk")
@@ -51,6 +53,7 @@ class OriginSpec extends UnitSpec {
       JsString("Origins.Epaye.GovUk").as[Origin] shouldBe Origins.Epaye.GovUk
       JsString("Origins.Epaye.DetachedUrl").as[Origin] shouldBe Origins.Epaye.DetachedUrl
       JsString("Origins.Epaye.Bta").as[Origin] shouldBe Origins.Epaye.Bta
+      JsString("Origins.Epaye.EpayeService").as[Origin] shouldBe Origins.Epaye.EpayeService
     }
     "Vat" in {
       JsString("Origins.Vat.GovUk").as[Origin] shouldBe Origins.Vat.GovUk
@@ -64,6 +67,7 @@ class OriginSpec extends UnitSpec {
       JsString("Origins.Epaye.GovUk").as[Origins.Epaye] shouldBe Origins.Epaye.GovUk
       JsString("Origins.Epaye.DetachedUrl").as[Origins.Epaye] shouldBe Origins.Epaye.DetachedUrl
       JsString("Origins.Epaye.Bta").as[Origins.Epaye] shouldBe Origins.Epaye.Bta
+      JsString("Origins.Epaye.EpayeService").as[Origins.Epaye] shouldBe Origins.Epaye.EpayeService
     }
     "Vat" in {
       JsString("Origins.Vat.GovUk").as[Origins.Vat] shouldBe Origins.Vat.GovUk

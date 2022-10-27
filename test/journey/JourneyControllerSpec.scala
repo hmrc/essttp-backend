@@ -331,6 +331,100 @@ class JourneyControllerSpec extends ItSpec {
 
       verifyCommonActions(numberOfAuthCalls = 40)
     }
+
+    s"[EpayeService][Happy path with upfront payment]$testNameJourneyStages" in {
+      stubCommonActions()
+
+      val tdAll = new TdAll {
+        override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
+        override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
+      }
+
+      implicit val request: Request[_] = tdAll.request
+      val response: SjResponse = journeyConnector.Epaye.startJourneyEpayeService(tdAll.EpayeEpayeService.sjRequest).futureValue
+
+      /** Start journey * */
+      response shouldBe tdAll.EpayeEpayeService.sjResponse
+      journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterStarted
+
+      /** Update tax id * */
+      journeyConnector.updateTaxId(tdAll.journeyId, tdAll.EpayeEpayeService.updateTaxIdRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterDetermineTaxIds
+
+      /** Update eligibility result * */
+      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeEpayeService.updateEligibilityCheckRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterEligibilityCheckEligible
+
+      /** Update CanPayUpfront * */
+      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeEpayeService.updateCanPayUpfrontYesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterCanPayUpfrontYes
+
+      /** Update UpfrontPaymentAmount */
+      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeEpayeService.updateUpfrontPaymentAmountRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterUpfrontPaymentAmount
+
+      /** Update ExtremeDates */
+      journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.EpayeEpayeService.updateExtremeDatesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterExtremeDates
+
+      /** Update AffordabilityResult */
+      journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.EpayeEpayeService.updateInstalmentAmountsRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterInstalmentAmounts
+
+      /** Update MonthlyPaymentAmount */
+      journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.EpayeEpayeService.updateMonthlyPaymentAmountRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterMonthlyPaymentAmount
+
+      /** Update DayOfMonth */
+      journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.EpayeEpayeService.updateDayOfMonthRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterDayOfMonth
+
+      /** Update StartDates */
+      journeyConnector.updateStartDates(tdAll.journeyId, tdAll.EpayeEpayeService.updateStartDatesResponse()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterStartDatesResponse
+
+      /** Update AffordableQuotes */
+      journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.EpayeEpayeService.updateAffordableQuotesResponse()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterAffordableQuotesResponse
+
+      /** Update Chosen Instalment plan */
+      journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.EpayeEpayeService.updateSelectedPaymentPlanRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterSelectedPaymentPlan
+
+      /** Update Checked Instalment plan */
+      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterCheckedPaymentPlan
+
+      /** Update Type of Bank Account */
+      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.EpayeEpayeService.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+
+      /** Update Direct debit details */
+      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeEpayeService.updateDirectDebitDetailsRequest).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterEnteredDirectDebitDetails()
+
+      /** Update Confirm Direct debit details */
+      journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterConfirmedDirectDebitDetails
+
+      /** Update Agreed terms and conditions */
+      journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+
+      /** Update Email Address */
+      journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterSelectedEmail
+
+      /** Update Email Verification Status */
+      journeyConnector.updateEmailVerificationStatus(tdAll.journeyId, EmailVerificationStatus.Verified).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterEmailVerificationStatus(EmailVerificationStatus.Verified)
+
+      /** Update Arrangement (journey completed) */
+      journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeEpayeService.updateArrangementRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+
+      verifyCommonActions(numberOfAuthCalls = 40)
+    }
   }
 
   "[Vat]" - {

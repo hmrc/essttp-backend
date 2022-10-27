@@ -16,7 +16,7 @@
 
 package essttp.testdata
 
-import essttp.testdata.epaye.{TdEpaye, TdJourneyEpayeBta, TdJourneyEpayeDetachedUrl, TdJourneyEpayeGovUk}
+import essttp.testdata.epaye.{TdEpaye, TdJourneyEpayeBta, TdJourneyEpayeDetachedUrl, TdJourneyEpayeEpayeService, TdJourneyEpayeGovUk}
 import essttp.testdata.vat.{TdJourneyVatBta, TdJourneyVatDetachedUrl, TdJourneyVatGovUk, TdVat}
 
 /**
@@ -35,6 +35,7 @@ trait TdAll extends AnyRef
   with TdJourneyEpayeBta
   with TdJourneyEpayeGovUk
   with TdJourneyEpayeDetachedUrl
+  with TdJourneyEpayeEpayeService
   with TdVat
   with TdJourneyVatBta
   with TdJourneyVatGovUk

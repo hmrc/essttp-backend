@@ -38,6 +38,7 @@ class SjController @Inject() (
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
 
   def startJourneyEpayeFromBta(): Action[SjRequest.Epaye.Simple] = startJourneyEpaye[SjRequest.Epaye.Simple](Origins.Epaye.Bta)
+  def startJourneyEpayeFromEpayeService(): Action[SjRequest.Epaye.Simple] = startJourneyEpaye[SjRequest.Epaye.Simple](Origins.Epaye.EpayeService)
   def startJourneyEpayeFromGovUk(): Action[SjRequest.Epaye.Empty] = startJourneyEpaye[SjRequest.Epaye.Empty](Origins.Epaye.GovUk)
   def startJourneyEpayeFromDetachedUrl(): Action[SjRequest.Epaye.Empty] = startJourneyEpaye[SjRequest.Epaye.Empty](Origins.Epaye.DetachedUrl)
 
@@ -77,9 +78,10 @@ class SjController @Inject() (
 
   private def journeyDescription(origin: Origin): String = origin match {
     case o: Origins.Epaye => o match {
-      case Origins.Epaye.Bta         => "Journey for Epaye from BTA"
-      case Origins.Epaye.GovUk       => "Journey for Epaye from GovUk"
-      case Origins.Epaye.DetachedUrl => "Journey for Epaye from DetachedUrl"
+      case Origins.Epaye.Bta          => "Journey for Epaye from BTA"
+      case Origins.Epaye.EpayeService => "Journey for Epaye from EPAYE service"
+      case Origins.Epaye.GovUk        => "Journey for Epaye from GovUk"
+      case Origins.Epaye.DetachedUrl  => "Journey for Epaye from DetachedUrl"
     }
     case o: Origins.Vat => o match {
       case Origins.Vat.Bta         => "Journey for Vat from BTA"
