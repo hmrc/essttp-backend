@@ -45,7 +45,7 @@ trait TdJourneyEpayeBta {
     )
 
     def sjResponse: SjResponse = SjResponse(
-      nextUrl   = NextUrl(s"http://localhost:9215/set-up-a-payment-plan?traceId=${dependencies.traceId.value}"),
+      nextUrl   = NextUrl(s"http://localhost:9215/set-up-a-payment-plan/epaye-payment-plan"),
       journeyId = dependencies.journeyId
     )
 

@@ -18,6 +18,7 @@ package essttp.testdata.vat
 
 import essttp.journey.model.SjRequest.Vat
 import essttp.journey.model.{Journey, NextUrl, Origins, SjRequest, SjResponse, Stage}
+import essttp.rootmodel.TaxId
 import essttp.testdata.TdBase
 import essttp.utils.ResourceReader.read
 import play.api.libs.json.JsObject
@@ -34,7 +35,7 @@ trait TdJourneyVatBta {
     )
 
     def sjResponse: SjResponse = SjResponse(
-      nextUrl   = NextUrl(s"http://localhost:9215/set-up-a-payment-plan?traceId=${dependencies.traceId.value}"),
+      nextUrl   = NextUrl(s"http://localhost:9215/set-up-a-payment-plan/vat-payment-plan"),
       journeyId = dependencies.journeyId
     )
 
@@ -53,5 +54,22 @@ trait TdJourneyVatBta {
     )
 
     def journeyAfterStartedJson: JsObject = read("/testdata/vat/bta/JourneyAfterStarted.json").asJson
+
+    def updateTaxIdRequest(): TaxId = vrn
+
+    def updateTaxIdRequestJson(): JsObject = read("/testdata/vat/bta/UpdateTaxIdRequest.json").asJson
+
+    def journeyAfterDetermineTaxIds: Journey.Vat.ComputedTaxId = Journey.Vat.ComputedTaxId(
+      _id           = dependencies.journeyId,
+      origin        = Origins.Vat.Bta,
+      createdOn     = dependencies.createdOn,
+      sjRequest     = sjRequest,
+      sessionId     = dependencies.sessionId,
+      stage         = Stage.AfterComputedTaxId.ComputedTaxId,
+      correlationId = dependencies.correlationId,
+      taxId         = vrn
+    )
+
+    def journeyAfterDetermineTaxIdsJson: JsObject = read("testdata/vat/bta/JourneyAfterComputedTaxIds.json").asJson
   }
 }

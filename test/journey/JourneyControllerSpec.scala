@@ -28,7 +28,7 @@ class JourneyControllerSpec extends ItSpec {
 
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
-  private val testNameJourneyStages: String =
+  private val epayeTestNameJourneyStages: String =
     "[StartJourney]" +
       "[UpdateTaxId]" +
       "[UpdateEligibilityCheck]" +
@@ -50,7 +50,7 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateSubmittedArrangement]"
 
   "[Epaye]" - {
-    s"[Bta][Happy path with upfront payment]$testNameJourneyStages" in {
+    s"[Bta][Happy path with upfront payment]$epayeTestNameJourneyStages" in {
       stubCommonActions()
 
       val tdAll = new TdAll {
@@ -144,7 +144,7 @@ class JourneyControllerSpec extends ItSpec {
       verifyCommonActions(numberOfAuthCalls = 40)
     }
 
-    s"[GovUk][Happy path with upfront payment]$testNameJourneyStages" in {
+    s"[GovUk][Happy path with upfront payment]$epayeTestNameJourneyStages" in {
       stubCommonActions()
 
       val tdAll = new TdAll {
@@ -238,7 +238,7 @@ class JourneyControllerSpec extends ItSpec {
       verifyCommonActions(numberOfAuthCalls = 40)
     }
 
-    s"[DetachedUrl][Happy path with upfront payment]$testNameJourneyStages" in {
+    s"[DetachedUrl][Happy path with upfront payment]$epayeTestNameJourneyStages" in {
       stubCommonActions()
 
       val tdAll = new TdAll {
@@ -332,7 +332,7 @@ class JourneyControllerSpec extends ItSpec {
       verifyCommonActions(numberOfAuthCalls = 40)
     }
 
-    s"[EpayeService][Happy path with upfront payment]$testNameJourneyStages" in {
+    s"[EpayeService][Happy path with upfront payment]$epayeTestNameJourneyStages" in {
       stubCommonActions()
 
       val tdAll = new TdAll {
@@ -427,8 +427,12 @@ class JourneyControllerSpec extends ItSpec {
     }
   }
 
+  private val vatTestNameJourneyStages: String =
+    "[StartJourney]" +
+      "[UpdateTaxId]"
+
   "[Vat]" - {
-    s"[Bta][Start journey]" in {
+    s"[Bta]$vatTestNameJourneyStages" in {
       stubCommonActions()
       val tdAll = new TdAll {
         override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
@@ -441,7 +445,11 @@ class JourneyControllerSpec extends ItSpec {
       response shouldBe tdAll.VatBta.sjResponse
       journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterStarted
 
-      verifyCommonActions(numberOfAuthCalls = 2)
+      /** Update tax id */
+      journeyConnector.updateTaxId(tdAll.journeyId, tdAll.VatBta.updateTaxIdRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterDetermineTaxIds
+
+      verifyCommonActions(numberOfAuthCalls = 4)
     }
 
     s"[GovUk][Start journey]" in {
@@ -457,7 +465,11 @@ class JourneyControllerSpec extends ItSpec {
       response shouldBe tdAll.VatGovUk.sjResponse
       journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterStarted
 
-      verifyCommonActions(numberOfAuthCalls = 2)
+      /** Update tax id */
+      journeyConnector.updateTaxId(tdAll.journeyId, tdAll.VatGovUk.updateTaxIdRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterDetermineTaxIds
+
+      verifyCommonActions(numberOfAuthCalls = 4)
     }
 
     s"[DetachedUrl][Start journey]" in {
@@ -473,7 +485,11 @@ class JourneyControllerSpec extends ItSpec {
       response shouldBe tdAll.VatDetachedUrl.sjResponse
       journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterStarted
 
-      verifyCommonActions(numberOfAuthCalls = 2)
+      /** Update tax id */
+      journeyConnector.updateTaxId(tdAll.journeyId, tdAll.VatDetachedUrl.updateTaxIdRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterDetermineTaxIds
+
+      verifyCommonActions(numberOfAuthCalls = 4)
     }
   }
 

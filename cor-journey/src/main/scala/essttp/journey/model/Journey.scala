@@ -1305,7 +1305,7 @@ object Journey {
 
     /**
      * [[Journey]] after computed TaxIds
-     * Epaye
+     * VAT
      */
     final case class ComputedTaxId(
         override val _id:           JourneyId,
