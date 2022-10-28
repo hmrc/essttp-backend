@@ -18,6 +18,7 @@ package essttp.testdata.vat
 
 import essttp.journey.model.SjRequest.Vat
 import essttp.journey.model._
+import essttp.rootmodel.TaxId
 import essttp.testdata.TdBase
 import essttp.utils.JsonSyntax._
 import essttp.utils.ResourceReader.read
@@ -31,7 +32,7 @@ trait TdJourneyVatGovUk {
     def sjRequest: Vat.Empty = SjRequest.Vat.Empty()
 
     def sjResponse: SjResponse = SjResponse(
-      nextUrl   = NextUrl(s"http://localhost:9215/set-up-a-payment-plan?traceId=${dependencies.traceId.value}"),
+      nextUrl   = NextUrl(s"http://localhost:9215/set-up-a-payment-plan/vat-payment-plan"),
       journeyId = dependencies.journeyId
     )
 
@@ -50,5 +51,22 @@ trait TdJourneyVatGovUk {
     )
 
     def journeyAfterStartedJson: JsObject = read("/testdata/vat/govuk/JourneyAfterStarted.json").asJson
+
+    def updateTaxIdRequest(): TaxId = vrn
+
+    def updateTaxIdRequestJson(): JsObject = read("/testdata/vat/govuk/UpdateTaxIdRequest.json").asJson
+
+    def journeyAfterDetermineTaxIds: Journey.Vat.ComputedTaxId = Journey.Vat.ComputedTaxId(
+      _id           = dependencies.journeyId,
+      origin        = Origins.Vat.GovUk,
+      createdOn     = dependencies.createdOn,
+      sjRequest     = sjRequest,
+      sessionId     = dependencies.sessionId,
+      stage         = Stage.AfterComputedTaxId.ComputedTaxId,
+      correlationId = dependencies.correlationId,
+      taxId         = vrn
+    )
+
+    def journeyAfterDetermineTaxIdsJson: JsObject = read("testdata/vat/govuk/JourneyAfterComputedTaxIds.json").asJson
   }
 }

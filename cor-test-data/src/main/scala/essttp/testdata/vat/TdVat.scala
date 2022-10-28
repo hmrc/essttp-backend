@@ -16,8 +16,11 @@
 
 package essttp.testdata.vat
 
+import essttp.rootmodel.Vrn
 import essttp.testdata.TdBase
 
 trait TdVat {
   dependencies: TdBase =>
+
+  val vrn: Vrn = Vrn("101747001")
 }

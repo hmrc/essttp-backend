@@ -68,7 +68,7 @@ class SjController @Inject() (
       _ <- journeyService.upsert(journey)
     } yield {
       val description: String = journeyDescription(originatedRequest.origin)
-      val nextUrl: NextUrl = NextUrl(s"${journeyConfig.nextUrlHost}/set-up-a-payment-plan?traceId=${journey.traceId.value}")
+      val nextUrl: NextUrl = NextUrl(s"${journeyConfig.nextUrlHost}/set-up-a-payment-plan${originToRelativeUrl(originatedRequest.origin)}")
       val sjResponse: SjResponse = SjResponse(nextUrl, journey.journeyId)
       val response: Result = Created(Json.toJson(sjResponse))
       JourneyLogger.info(s"Started $description [journeyId:${journey.id}]")
@@ -88,6 +88,11 @@ class SjController @Inject() (
       case Origins.Vat.GovUk       => "Journey for Vat from GovUk"
       case Origins.Vat.DetachedUrl => "Journey for Vat from DetachedUrl"
     }
+  }
+
+  private def originToRelativeUrl(origin: Origin): String = origin match {
+    case _: Origins.Epaye => "/epaye-payment-plan"
+    case _: Origins.Vat   => "/vat-payment-plan"
   }
 
 }
