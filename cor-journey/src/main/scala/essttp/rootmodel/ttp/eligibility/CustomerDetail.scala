@@ -18,7 +18,7 @@ package essttp.rootmodel.ttp.eligibility
 
 import play.api.libs.json.{Format, Json}
 
-final case class CustomerDetail(emailAddress: String, emailSource: String)
+final case class CustomerDetail(emailAddress: Option[String], emailSource: Option[String])
 
 object CustomerDetail {
   implicit val format: Format[CustomerDetail] = Json.format[CustomerDetail]
