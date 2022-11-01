@@ -1,0 +1,158 @@
+/*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package journey
+
+import action.Actions
+import cats.instances.boolean._
+import cats.syntax.eq._
+import com.google.inject.{Inject, Singleton}
+import essttp.journey.model.Journey.Stages
+import essttp.journey.model.{Journey, JourneyId, Stage, UpfrontPaymentAnswers}
+import essttp.rootmodel.CanPayUpfront
+import essttp.utils.Errors
+import io.scalaland.chimney.dsl.TransformerOps
+import play.api.mvc._
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+
+import scala.concurrent.{ExecutionContext, Future}
+
+@Singleton
+class UpdateUpfrontPaymentController @Inject() (
+    actions:        Actions,
+    journeyService: JourneyService,
+    cc:             ControllerComponents
+)(implicit exec: ExecutionContext) extends BackendController(cc) {
+
+  def updateUpfrontPaymentAnswers(journeyId: JourneyId): Action[UpfrontPaymentAnswers] = actions.authenticatedAction.async(parse.json[UpfrontPaymentAnswers]) { implicit request =>
+    for {
+      journey <- journeyService.get(journeyId)
+      _ <- journey match {
+        case _: Journey.BeforeEligibilityChecked   => Errors.throwBadRequestExceptionF("UpdateUpfrontPayment is not possible in that state.")
+        case j: Journey.Stages.EligibilityChecked  => updateJourneyWithNewValue(j, request.body)
+        case j: Journey.AfterUpfrontPaymentAnswers => updateJourneyWithExistingValue(j, request.body)
+      }
+    } yield Ok
+  }
+
+  private def updateJourneyWithNewValue(
+      journey:               Stages.EligibilityChecked,
+      upfrontPaymentAnswers: UpfrontPaymentAnswers
+  )(implicit request: Request[_]): Future[Unit] = {
+    journey match {
+      case j: Journey.Epaye.EligibilityChecked =>
+        val newJourney: Journey.Epaye.UpfrontPaymentDetermined =
+          j.into[Journey.Epaye.UpfrontPaymentDetermined]
+            .withFieldConst(_.stage, determineStage(upfrontPaymentAnswers))
+            .withFieldConst(_.upfrontPaymentAnswers, upfrontPaymentAnswers)
+            .transform
+        journeyService.upsert(newJourney)
+    }
+  }
+
+  private def updateJourneyWithExistingValue(
+      journey:               Journey.AfterUpfrontPaymentAnswers,
+      upfrontPaymentAnswers: UpfrontPaymentAnswers
+  )(implicit request: Request[_]): Future[Unit] = {
+    if (journey.upfrontPaymentAnswers === upfrontPaymentAnswers) {
+      Future.successful(())
+    } else {
+      val updatedJourney: Journey = journey match {
+        case j1: Journey.Epaye.EnteredMonthlyPaymentAmount =>
+          j1.into[Journey.Epaye.UpfrontPaymentDetermined]
+            .withFieldConst(_.stage, determineStage(upfrontPaymentAnswers))
+            .withFieldConst(_.upfrontPaymentAnswers, upfrontPaymentAnswers)
+            .transform
+        case j1: Journey.Epaye.RetrievedExtremeDates =>
+          j1.into[Journey.Epaye.UpfrontPaymentDetermined]
+            .withFieldConst(_.stage, determineStage(upfrontPaymentAnswers))
+            .withFieldConst(_.upfrontPaymentAnswers, upfrontPaymentAnswers)
+            .transform
+        case j1: Journey.Epaye.RetrievedAffordabilityResult =>
+          j1.into[Journey.Epaye.UpfrontPaymentDetermined]
+            .withFieldConst(_.stage, determineStage(upfrontPaymentAnswers))
+            .withFieldConst(_.upfrontPaymentAnswers, upfrontPaymentAnswers)
+            .transform
+        case j1: Journey.Epaye.EnteredDayOfMonth =>
+          j1.into[Journey.Epaye.UpfrontPaymentDetermined]
+            .withFieldConst(_.stage, determineStage(upfrontPaymentAnswers))
+            .withFieldConst(_.upfrontPaymentAnswers, upfrontPaymentAnswers)
+            .transform
+        case j1: Journey.Epaye.RetrievedStartDates =>
+          j1.into[Journey.Epaye.UpfrontPaymentDetermined]
+            .withFieldConst(_.stage, determineStage(upfrontPaymentAnswers))
+            .withFieldConst(_.upfrontPaymentAnswers, upfrontPaymentAnswers)
+            .transform
+        case j1: Journey.Epaye.RetrievedAffordableQuotes =>
+          j1.into[Journey.Epaye.UpfrontPaymentDetermined]
+            .withFieldConst(_.stage, determineStage(upfrontPaymentAnswers))
+            .withFieldConst(_.upfrontPaymentAnswers, upfrontPaymentAnswers)
+            .transform
+        case j1: Journey.Epaye.ChosenPaymentPlan =>
+          j1.into[Journey.Epaye.UpfrontPaymentDetermined]
+            .withFieldConst(_.stage, determineStage(upfrontPaymentAnswers))
+            .withFieldConst(_.upfrontPaymentAnswers, upfrontPaymentAnswers)
+            .transform
+        case j1: Journey.Epaye.CheckedPaymentPlan =>
+          j1.into[Journey.Epaye.UpfrontPaymentDetermined]
+            .withFieldConst(_.stage, determineStage(upfrontPaymentAnswers))
+            .withFieldConst(_.upfrontPaymentAnswers, upfrontPaymentAnswers)
+            .transform
+        case j1: Journey.Epaye.EnteredDetailsAboutBankAccount =>
+          j1.into[Journey.Epaye.UpfrontPaymentDetermined]
+            .withFieldConst(_.stage, determineStage(upfrontPaymentAnswers))
+            .withFieldConst(_.upfrontPaymentAnswers, upfrontPaymentAnswers)
+            .transform
+        case j1: Journey.Epaye.EnteredDirectDebitDetails =>
+          j1.into[Journey.Epaye.UpfrontPaymentDetermined]
+            .withFieldConst(_.stage, determineStage(upfrontPaymentAnswers))
+            .withFieldConst(_.upfrontPaymentAnswers, upfrontPaymentAnswers)
+            .transform
+        case j1: Journey.Epaye.ConfirmedDirectDebitDetails =>
+          j1.into[Journey.Epaye.UpfrontPaymentDetermined]
+            .withFieldConst(_.stage, determineStage(upfrontPaymentAnswers))
+            .withFieldConst(_.upfrontPaymentAnswers, upfrontPaymentAnswers)
+            .transform
+        case j1: Journey.Epaye.AgreedTermsAndConditions =>
+          j1.into[Journey.Epaye.UpfrontPaymentDetermined]
+            .withFieldConst(_.stage, determineStage(upfrontPaymentAnswers))
+            .withFieldConst(_.upfrontPaymentAnswers, upfrontPaymentAnswers)
+            .transform
+        case j1: Journey.Epaye.SelectedEmailToBeVerified =>
+          j1.into[Journey.Epaye.UpfrontPaymentDetermined]
+            .withFieldConst(_.stage, determineStage(upfrontPaymentAnswers))
+            .withFieldConst(_.upfrontPaymentAnswers, upfrontPaymentAnswers)
+            .transform
+        case j1: Journey.Epaye.EmailVerificationComplete =>
+          j1.into[Journey.Epaye.UpfrontPaymentDetermined]
+            .withFieldConst(_.stage, determineStage(upfrontPaymentAnswers))
+            .withFieldConst(_.upfrontPaymentAnswers, upfrontPaymentAnswers)
+            .transform
+        case _: Journey.Epaye.SubmittedArrangement =>
+          Errors.throwBadRequestException("Cannot update AnsweredCanPayUpFront when journey is in completed state")
+
+      }
+      journeyService.upsert(updatedJourney)
+    }
+
+  }
+
+  private def determineStage(upfrontPaymentAnswers: UpfrontPaymentAnswers): Stage.AfterUpfrontPaymentDetermined = upfrontPaymentAnswers match {
+    case UpfrontPaymentAnswers.NoUpfrontPayment          => Stage.AfterUpfrontPaymentDetermined.CannotPayUpfront
+    case _: UpfrontPaymentAnswers.DeclaredUpfrontPayment => Stage.AfterUpfrontPaymentDetermined.CanPayUpfront
+  }
+
+}

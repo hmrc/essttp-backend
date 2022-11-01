@@ -87,7 +87,7 @@ class UpdateEligibilityCheckResultController @Inject() (
         case j: Epaye.EligibilityChecked =>
           j.copy(eligibilityCheckResult = eligibilityCheckResult)
             .copy(stage = deriveEligibilityEnum(eligibilityCheckResult))
-        case j: Epaye.AnsweredCanPayUpfront =>
+        case j: Epaye.UpfrontPaymentDetermined =>
           j.into[Journey.Epaye.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)

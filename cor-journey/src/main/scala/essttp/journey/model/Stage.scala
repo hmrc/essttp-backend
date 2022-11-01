@@ -72,42 +72,18 @@ object Stage {
     case object Ineligible extends AfterEligibilityCheck
   }
 
-  sealed trait AfterCanPayUpfront extends Stage with EnumEntry
+  sealed trait AfterUpfrontPaymentDetermined extends Stage with EnumEntry
 
   /**
-   * [[Journey]] has been orchestrated with can user make an upfront payment.
+   * [[Journey]] has been orchestrated with non-zero upfront payment amount or zero
    */
-  object AfterCanPayUpfront extends Enum[AfterCanPayUpfront] {
-    implicit val format: OFormat[AfterCanPayUpfront] = derived.oformat[AfterCanPayUpfront]()
-    val values: immutable.IndexedSeq[AfterCanPayUpfront] = findValues
+  object AfterUpfrontPaymentDetermined extends Enum[AfterUpfrontPaymentDetermined] {
+    implicit val format: OFormat[AfterUpfrontPaymentDetermined] = derived.oformat[AfterUpfrontPaymentDetermined]()
+    val values: immutable.IndexedSeq[AfterUpfrontPaymentDetermined] = findValues
 
-    case object Yes extends AfterCanPayUpfront
+    case object CanPayUpfront extends AfterUpfrontPaymentDetermined
 
-    case object No extends AfterCanPayUpfront
-  }
-
-  sealed trait AfterUpfrontPaymentAmount extends Stage with EnumEntry
-
-  object AfterUpfrontPaymentAmount extends Enum[AfterUpfrontPaymentAmount] {
-    implicit val format: OFormat[AfterUpfrontPaymentAmount] = derived.oformat[AfterUpfrontPaymentAmount]()
-    val values: immutable.IndexedSeq[AfterUpfrontPaymentAmount] = findValues
-
-    /**
-     * [[Journey]] has been orchestrated with Upfront payment amount.
-     */
-    case object EnteredUpfrontPaymentAmount extends AfterUpfrontPaymentAmount
-  }
-
-  sealed trait AfterUpfrontPaymentAnswers extends Stage with EnumEntry
-
-  object AfterUpfrontPaymentAnswers extends Enum[AfterUpfrontPaymentAnswers] {
-    implicit val format: OFormat[AfterUpfrontPaymentAnswers] = derived.oformat[AfterUpfrontPaymentAnswers]()
-    val values: immutable.IndexedSeq[AfterUpfrontPaymentAnswers] = findValues
-
-    /**
-     * [[Journey]] has been orchestrated with Upfront payment answers.
-     */
-    case object SubmittedUpfrontPaymentAnswers extends AfterUpfrontPaymentAnswers
+    case object CannotPayUpfront extends AfterUpfrontPaymentDetermined
   }
 
   sealed trait AfterExtremeDatesResponse extends Stage with EnumEntry

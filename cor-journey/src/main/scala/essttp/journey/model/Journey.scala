@@ -96,18 +96,6 @@ object Journey {
     def eligibilityCheckResult: EligibilityCheckResult
   }
 
-  sealed trait BeforeAnsweredCanPayUpfront extends Journey with Stages.JourneyStage
-
-  sealed trait AfterAnsweredCanPayUpfront extends Journey {
-    def canPayUpfront: CanPayUpfront
-  }
-
-  sealed trait BeforeEnteredUpfrontPaymentAmount extends Journey with Stages.JourneyStage
-
-  sealed trait AfterEnteredUpfrontPaymentAmount extends Journey {
-    def upfrontPaymentAmount: UpfrontPaymentAmount
-  }
-
   sealed trait BeforeUpfrontPaymentAnswers extends Journey with Stages.JourneyStage
 
   sealed trait AfterUpfrontPaymentAnswers extends Journey with Stages.JourneyStage {
@@ -226,8 +214,6 @@ object Journey {
       with JourneyStage
       with BeforeComputedTaxId
       with BeforeEligibilityChecked
-      with BeforeAnsweredCanPayUpfront
-      with BeforeEnteredUpfrontPaymentAmount
       with BeforeUpfrontPaymentAnswers
       with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
@@ -254,8 +240,6 @@ object Journey {
       with JourneyStage
       with AfterComputedTaxId
       with BeforeEligibilityChecked
-      with BeforeAnsweredCanPayUpfront
-      with BeforeEnteredUpfrontPaymentAmount
       with BeforeUpfrontPaymentAnswers
       with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
@@ -282,8 +266,6 @@ object Journey {
       with JourneyStage
       with AfterComputedTaxId
       with AfterEligibilityChecked
-      with BeforeAnsweredCanPayUpfront
-      with BeforeEnteredUpfrontPaymentAmount
       with BeforeUpfrontPaymentAnswers
       with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
@@ -305,14 +287,12 @@ object Journey {
       def stage: Stage.AfterEligibilityCheck
     }
 
-    sealed trait AnsweredCanPayUpfront
+    sealed trait UpfrontPaymentDetermined
       extends Journey
       with JourneyStage
       with AfterComputedTaxId
       with AfterEligibilityChecked
-      with AfterAnsweredCanPayUpfront
-      with BeforeEnteredUpfrontPaymentAmount
-      with BeforeUpfrontPaymentAnswers
+      with AfterUpfrontPaymentAnswers
       with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
       with BeforeEnteredMonthlyPaymentAmount
@@ -329,36 +309,8 @@ object Journey {
       with BeforeEmailAddressVerificationResult
       with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterCanPayUpfront.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterCanPayUpfront
-    }
-
-    sealed trait EnteredUpfrontPaymentAmount
-      extends Journey
-      with JourneyStage
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterAnsweredCanPayUpfront
-      with AfterEnteredUpfrontPaymentAmount
-      with BeforeUpfrontPaymentAnswers
-      with BeforeExtremeDatesResponse
-      with BeforeRetrievedAffordabilityResult
-      with BeforeEnteredMonthlyPaymentAmount
-      with BeforeEnteredDayOfMonth
-      with BeforeStartDatesResponse
-      with BeforeAffordableQuotesResponse
-      with BeforeSelectedPaymentPlan
-      with BeforeCheckedPaymentPlan
-      with BeforeEnteredDetailsAboutBankAccount
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterUpfrontPaymentAmount.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterUpfrontPaymentAmount
+      Errors.sanityCheck(Stage.AfterUpfrontPaymentDetermined.values.contains(stage), sanityMessage)
+      def stage: Stage.AfterUpfrontPaymentDetermined
     }
 
     sealed trait RetrievedExtremeDates
@@ -825,41 +777,20 @@ object Journey {
      * [[Journey]] after CanPayUpfront
      * Epaye
      */
-    final case class AnsweredCanPayUpfront(
+    final case class UpfrontPaymentDetermined(
         override val _id:                    JourneyId,
         override val origin:                 Origins.Epaye,
         override val createdOn:              Instant,
         override val sjRequest:              SjRequest.Epaye,
         override val sessionId:              SessionId,
         override val correlationId:          CorrelationId,
-        override val stage:                  Stage.AfterCanPayUpfront,
+        override val stage:                  Stage.AfterUpfrontPaymentDetermined,
         override val taxId:                  EmpRef,
         override val eligibilityCheckResult: EligibilityCheckResult,
-        override val canPayUpfront:          CanPayUpfront
+        override val upfrontPaymentAnswers:  UpfrontPaymentAnswers
     )
       extends Journey
-      with Journey.Stages.AnsweredCanPayUpfront
-      with Journey.Epaye
-
-    /**
-     * [[Journey]] after UpfrontPaymentAmount
-     * Epaye
-     */
-    final case class EnteredUpfrontPaymentAmount(
-        override val _id:                    JourneyId,
-        override val origin:                 Origins.Epaye,
-        override val createdOn:              Instant,
-        override val sjRequest:              SjRequest.Epaye,
-        override val sessionId:              SessionId,
-        override val correlationId:          CorrelationId,
-        override val stage:                  Stage.AfterUpfrontPaymentAmount,
-        override val taxId:                  EmpRef,
-        override val eligibilityCheckResult: EligibilityCheckResult,
-        override val canPayUpfront:          CanPayUpfront,
-        override val upfrontPaymentAmount:   UpfrontPaymentAmount
-    )
-      extends Journey
-      with Journey.Stages.EnteredUpfrontPaymentAmount
+      with Journey.Stages.UpfrontPaymentDetermined
       with Journey.Epaye
 
     /**

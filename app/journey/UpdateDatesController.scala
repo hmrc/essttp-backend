@@ -20,7 +20,7 @@ import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.journey.model.Journey.Epaye
-import essttp.journey.model.Journey.Stages.{AnsweredCanPayUpfront, EnteredUpfrontPaymentAmount}
+import essttp.journey.model.Journey.Stages.{UpfrontPaymentDetermined, EnteredUpfrontPaymentAmount}
 import essttp.journey.model.{Journey, JourneyId, Stage, UpfrontPaymentAnswers}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
@@ -43,7 +43,7 @@ class UpdateDatesController @Inject() (
       journey <- journeyService.get(journeyId)
       _ <- journey match {
         case j: Journey.Stages.EnteredUpfrontPaymentAmount => updateJourneyWithNewExtremeDatesValue(Right(j), request.body)
-        case j: Journey.Stages.AnsweredCanPayUpfront       => updateJourneyWithNewExtremeDatesValue(Left(j), request.body)
+        case j: Journey.Stages.UpfrontPaymentDetermined    => updateJourneyWithNewExtremeDatesValue(Left(j), request.body)
         case j: Journey.AfterExtremeDatesResponse => j match {
           case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingExtremeDatesValue (j, request.body)
           case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update ExtremeDates when journey is in completed state")
@@ -54,11 +54,11 @@ class UpdateDatesController @Inject() (
   }
 
   private def updateJourneyWithNewExtremeDatesValue(
-      journey:              Either[AnsweredCanPayUpfront, EnteredUpfrontPaymentAmount],
+      journey:              Either[UpfrontPaymentDetermined, EnteredUpfrontPaymentAmount],
       extremeDatesResponse: ExtremeDatesResponse
   )(implicit request: Request[_]): Future[Unit] = {
     val newJourney: Journey.Stages.RetrievedExtremeDates = journey match {
-      case Left(j: Epaye.AnsweredCanPayUpfront) => j.into[Journey.Epaye.RetrievedExtremeDates]
+      case Left(j: Epaye.UpfrontPaymentDetermined) => j.into[Journey.Epaye.RetrievedExtremeDates]
         .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
         .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.NoUpfrontPayment)
         .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)

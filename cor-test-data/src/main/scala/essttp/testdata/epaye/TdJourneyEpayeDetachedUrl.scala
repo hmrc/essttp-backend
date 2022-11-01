@@ -119,26 +119,26 @@ trait TdJourneyEpayeDetachedUrl {
 
     def updateCanPayUpfrontNoRequestJson(): JsObject = read("/testdata/epaye/detachedurl/UpdateCanPayUpfrontNo.json").asJson
 
-    def journeyAfterCanPayUpfrontYes: Journey.Epaye.AnsweredCanPayUpfront = Journey.Epaye.AnsweredCanPayUpfront(
+    def journeyAfterCanPayUpfrontYes: Journey.Epaye.UpfrontPaymentDetermined = Journey.Epaye.UpfrontPaymentDetermined(
       _id                    = dependencies.journeyId,
       origin                 = Origins.Epaye.DetachedUrl,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
-      stage                  = Stage.AfterCanPayUpfront.Yes,
+      stage                  = Stage.AfterUpfrontPaymentDetermined.CanPayUpfront,
       correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,
       canPayUpfront          = canPayUpfrontYes
     )
 
-    def journeyAfterCanPayUpfrontNo: Journey.Epaye.AnsweredCanPayUpfront = Journey.Epaye.AnsweredCanPayUpfront(
+    def journeyAfterCanPayUpfrontNo: Journey.Epaye.UpfrontPaymentDetermined = Journey.Epaye.UpfrontPaymentDetermined(
       _id                    = dependencies.journeyId,
       origin                 = Origins.Epaye.DetachedUrl,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
-      stage                  = Stage.AfterCanPayUpfront.No,
+      stage                  = Stage.AfterUpfrontPaymentDetermined.CannotPayUpfront,
       correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResult,

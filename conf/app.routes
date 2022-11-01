@@ -18,8 +18,7 @@ GET         /journey/find-latest-by-session-id                              jour
 GET         /journey/:journeyId                                             journey.JourneyController.getJourney(journeyId: JourneyId)
 POST        /journey/:journeyId/update-tax-id                               journey.UpdateTaxIdController.updateTaxId(journeyId: JourneyId)
 POST        /journey/:journeyId/update-eligibility-result                   journey.UpdateEligibilityCheckResultController.updateEligibilityResult(journeyId: JourneyId)
-POST        /journey/:journeyId/update-can-pay-upfront                      journey.UpdateCanPayUpfrontController.updateCanPayUpfront(journeyId: JourneyId)
-POST        /journey/:journeyId/update-upfront-payment-amount               journey.UpdateUpfrontPaymentAmountController.updateUpfrontPaymentAmount(journeyId: JourneyId)
+POST        /journey/:journeyId/update-upfront-payment                      journey.UpdateUpfrontPaymentController.updateUpfrontPaymentAnswers(journeyId: JourneyId)
 
 POST        /journey/:journeyId/update-extreme-dates                        journey.UpdateDatesController.updateExtremeDates(journeyId: JourneyId)
 

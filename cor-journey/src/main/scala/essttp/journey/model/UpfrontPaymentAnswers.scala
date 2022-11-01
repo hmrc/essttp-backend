@@ -16,6 +16,7 @@
 
 package essttp.journey.model
 
+import cats.Eq
 import essttp.rootmodel.UpfrontPaymentAmount
 import julienrf.json.derived
 import play.api.libs.json.OFormat
@@ -23,9 +24,13 @@ import play.api.libs.json.OFormat
 sealed trait UpfrontPaymentAnswers
 
 object UpfrontPaymentAnswers {
+
   case object NoUpfrontPayment extends UpfrontPaymentAnswers
 
   final case class DeclaredUpfrontPayment(amount: UpfrontPaymentAmount) extends UpfrontPaymentAnswers
 
+  implicit val eq: Eq[UpfrontPaymentAnswers] = Eq.fromUniversalEquals
+
   implicit val format: OFormat[UpfrontPaymentAnswers] = derived.oformat[UpfrontPaymentAnswers]()
+
 }

@@ -20,7 +20,7 @@ import essttp.journey.JourneyConnector
 import essttp.testdata.TdAll
 import testsupport.ItSpec
 
-class UpdateCanPayUpfrontControllerSpec extends ItSpec {
+class UpdateUpfrontPaymentControllerSpec extends ItSpec {
 
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
