@@ -17,14 +17,22 @@
 package essttp.journey.model
 
 import essttp.rootmodel.EmpRef
-import essttp.rootmodel.epaye.{TaxOfficeNumber, TaxOfficeReference}
+import essttp.rootmodel.epaye.{Aor, TaxOfficeNumber, TaxOfficeReference}
+import play.api.libs.json.Json
 import testsupport.UnitSpec
 
-class TaxIdSpec extends UnitSpec {
+class TaxReferencesSpec extends UnitSpec {
 
   "EmpRef.makeEmpRef" - {
     "should create emp ref in correct format" in {
       EmpRef.makeEmpRef(TaxOfficeNumber("864"), TaxOfficeReference("FZ00049")) shouldBe EmpRef("864FZ00049")
     }
+  }
+
+  "Aor round trip de/serialisation" in {
+    val aor = Aor("1234")
+    val json = """{"value":"1234"}"""
+    Json.toJson(aor) shouldBe Json.parse(json)
+    Json.parse(json).as[Aor] shouldBe aor
   }
 }
