@@ -18,6 +18,7 @@ package journey
 
 import action.Actions
 import com.google.inject.{Inject, Singleton}
+import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformerOps
@@ -31,25 +32,25 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
     actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
-)(implicit exec: ExecutionContext) extends BackendController(cc) {
+)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
   def updateHasCheckedInstalmentPlan(journeyId: JourneyId): Action[AnyContent] = actions.authenticatedAction.async { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
-      _ <- journey match {
+      newJourney <- journey match {
         case j: Journey.BeforeSelectedPaymentPlan => Errors.throwBadRequestExceptionF(s"UpdateHasCheckedInstalmentPlan is not possible in that state: [${j.stage}]")
         case j: Journey.Stages.ChosenPaymentPlan  => updateJourneyWithNewValue(j)
         case j: Journey.AfterCheckedPaymentPlan => j match {
-          case _: Journey.BeforeArrangementSubmitted => Future.successful(())
+          case _: Journey.BeforeArrangementSubmitted => Future.successful(j)
           case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update HasCheckedPaymentPlan when journey is in completed state")
         }
       }
-    } yield Ok
+    } yield Ok(newJourney.json)
   }
 
   private def updateJourneyWithNewValue(
       journey: Journey.Stages.ChosenPaymentPlan
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     val newJourney: Journey.AfterCheckedPaymentPlan = journey match {
       case j: Journey.Epaye.ChosenPaymentPlan =>
         j.into[Journey.Epaye.CheckedPaymentPlan]

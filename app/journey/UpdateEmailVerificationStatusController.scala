@@ -19,7 +19,7 @@ package journey
 import action.Actions
 import cats.syntax.eq._
 import com.google.inject.Inject
-import essttp.crypto.{Crypto, CryptoFormat}
+import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.emailverification.EmailVerificationStatus
 import essttp.journey.model.Journey.Epaye
 import essttp.journey.model.{EmailVerificationAnswers, Journey, JourneyId, Stage}
@@ -33,17 +33,14 @@ import scala.concurrent.{ExecutionContext, Future}
 class UpdateEmailVerificationStatusController @Inject() (
     journeyService: JourneyService,
     cc:             ControllerComponents,
-    actions:        Actions,
-    mongoCrypto:    Crypto
-)(implicit exec: ExecutionContext) extends BackendController(cc) {
-
-  implicit val cryptoFormat: CryptoFormat = CryptoFormat.OperationalCryptoFormat(mongoCrypto)
+    actions:        Actions
+)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
   def updateEmailVerificationStatus(journeyId: JourneyId): Action[EmailVerificationStatus] =
     actions.authenticatedAction.async(parse.json[EmailVerificationStatus]) { implicit request =>
       for {
         journey <- journeyService.get(journeyId)
-        _ <- journey match {
+        newJourney <- journey match {
           case j: Journey.BeforeEmailAddressSelectedToBeVerified =>
             Errors.throwBadRequestExceptionF(s"UpdateEmailVerificationStatus is not possible in that state: [${j.stage}]")
 
@@ -57,13 +54,13 @@ class UpdateEmailVerificationStatusController @Inject() (
             }
 
         }
-      } yield Ok
+      } yield Ok(newJourney.json)
     }
 
   private def updateJourneyWithNewValue(
       journey: Journey.Stages.SelectedEmailToBeVerified,
       status:  EmailVerificationStatus
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     val newJourney = journey match {
       case j: Epaye.SelectedEmailToBeVerified =>
         j.into[Epaye.EmailVerificationComplete]
@@ -83,9 +80,9 @@ class UpdateEmailVerificationStatusController @Inject() (
   private def updateJourneyWithExistingValue(
       journey: Journey.Stages.EmailVerificationComplete,
       status:  EmailVerificationStatus
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     if (journey.emailVerificationStatus === status) {
-      Future.successful(())
+      Future.successful(journey)
     } else {
       val newJourney = journey match {
         case j: Epaye.EmailVerificationComplete =>

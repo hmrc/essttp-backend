@@ -19,6 +19,7 @@ package journey
 import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
+import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.ttp.affordablequotes.AffordableQuotesResponse
 import essttp.utils.Errors
@@ -33,12 +34,12 @@ class UpdateAffordableQuotesController @Inject() (
     actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
-)(implicit exec: ExecutionContext) extends BackendController(cc) {
+)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
   def updateAffordableQuotes(journeyId: JourneyId): Action[AffordableQuotesResponse] = actions.authenticatedAction.async(parse.json[AffordableQuotesResponse]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
-      _ <- journey match {
+      newJourney <- journey match {
         case j: Journey.BeforeStartDatesResponse   => Errors.throwBadRequestExceptionF(s"UpdateAffordableQuotes is not possible in that state: [${j.stage}]")
         case j: Journey.Stages.RetrievedStartDates => updateJourneyWithNewValue(j, request.body)
         case j: Journey.AfterAffordableQuotesResponse => j match {
@@ -46,13 +47,13 @@ class UpdateAffordableQuotesController @Inject() (
           case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update AffordableQuotes when journey is in completed state")
         }
       }
-    } yield Ok
+    } yield Ok(newJourney.json)
   }
 
   private def updateJourneyWithNewValue(
       journey:                  Journey.Stages.RetrievedStartDates,
       affordableQuotesResponse: AffordableQuotesResponse
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     val newJourney: Journey.AfterAffordableQuotesResponse = journey match {
       case j: Journey.Epaye.RetrievedStartDates =>
         j.into[Journey.Epaye.RetrievedAffordableQuotes]
@@ -66,10 +67,10 @@ class UpdateAffordableQuotesController @Inject() (
   private def updateJourneyWithExistingValue(
       journey:                  Journey.AfterAffordableQuotesResponse,
       affordableQuotesResponse: AffordableQuotesResponse
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     if (journey.affordableQuotesResponse === affordableQuotesResponse) {
       JourneyLogger.info("Nothing to update, AffordableQuotesResponse is the same as the existing one in journey.")
-      Future.successful(())
+      Future.successful(journey)
     } else {
       val newJourney: Journey.AfterAffordableQuotesResponse = journey match {
         case j: Journey.Epaye.RetrievedAffordableQuotes =>

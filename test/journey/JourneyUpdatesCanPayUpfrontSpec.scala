@@ -29,6 +29,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
   def putJourneyIntoEligibilityCheckedState(tdAll: TdAll)(implicit request: Request[_]): Unit = {
     journeyConnector.updateTaxId(tdAll.journeyId, tdAll.EpayeBta.updateTaxIdRequest()).futureValue
     journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).futureValue
+    ()
   }
 
   "[Epaye.Bta][Update CanPayUpfront from yes to no to yes, round trip]" in {

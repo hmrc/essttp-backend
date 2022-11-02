@@ -38,9 +38,13 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec {
       stubCommonActions()
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterAffordableQuotesResponse.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.EpayeBta.updateSelectedPaymentPlanRequest()).futureValue
+
+      val result1 = journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.EpayeBta.updateSelectedPaymentPlanRequest()).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
-      journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.EpayeBta.updateSelectedPaymentPlanRequest()).futureValue
+
+      val result2 = journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.EpayeBta.updateSelectedPaymentPlanRequest()).futureValue
+      result2 shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
 
       verifyCommonActions(numberOfAuthCalls = 4)
@@ -49,10 +53,15 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec {
       stubCommonActions()
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterAffordableQuotesResponse.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.EpayeBta.updateSelectedPaymentPlanRequest()).futureValue
+
+      val result1 = journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.EpayeBta.updateSelectedPaymentPlanRequest()).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
-      journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.paymentPlan(2)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = TdAll.paymentPlan(2))
+
+      val result2 = journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.paymentPlan(2)).futureValue
+      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = TdAll.paymentPlan(2))
+      result2 shouldBe expectedUpdatedJourney2
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
 
       verifyCommonActions(numberOfAuthCalls = 4)
     }

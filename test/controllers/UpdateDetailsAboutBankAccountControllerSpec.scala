@@ -44,10 +44,15 @@ class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec {
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterCheckedPaymentPlan.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
       val requestBody = TdAll.EpayeBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, requestBody).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, requestBody).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+      val expectedUpdatedJourney = tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+
+      val result1 = journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, requestBody).futureValue
+      result1 shouldBe expectedUpdatedJourney
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney
+
+      val result2 = journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, requestBody).futureValue
+      result2 shouldBe expectedUpdatedJourney
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney
 
       verifyCommonActions(numberOfAuthCalls = 4)
     }
@@ -58,12 +63,14 @@ class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec {
 
       val request1 = DetailsAboutBankAccount(TdAll.businessBankAccount, isAccountHolder = true)
       val expectedUpdatedJourney1 = tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, request1).futureValue
+      val result1 = journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, request1).futureValue
+      result1 shouldBe expectedUpdatedJourney1
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney1
 
       val request2 = DetailsAboutBankAccount(TdAll.businessBankAccount, isAccountHolder = false)
       val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = false)
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, request2).futureValue
+      val result2 = journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, request2).futureValue
+      result2 shouldBe expectedUpdatedJourney2
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
 
       val request3 = DetailsAboutBankAccount(TdAll.personalBankAccount, isAccountHolder = true)
@@ -71,7 +78,8 @@ class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec {
         stage                   = AfterEnteredDetailsAboutBankAccount.Personal,
         detailsAboutBankAccount = request3
       )
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, request3).futureValue
+      val result3 = journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, request3).futureValue
+      result3 shouldBe expectedUpdatedJourney3
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney3
 
       verifyCommonActions(numberOfAuthCalls = 6)

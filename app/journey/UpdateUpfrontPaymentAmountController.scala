@@ -19,6 +19,7 @@ package journey
 import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
+import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.Journey.{Epaye, Stages}
 import essttp.journey.model.{Journey, JourneyId, Stage, UpfrontPaymentAnswers}
 import essttp.rootmodel.{CanPayUpfront, UpfrontPaymentAmount}
@@ -34,12 +35,12 @@ class UpdateUpfrontPaymentAmountController @Inject() (
     actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
-)(implicit exec: ExecutionContext) extends BackendController(cc) {
+)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
   def updateUpfrontPaymentAmount(journeyId: JourneyId): Action[UpfrontPaymentAmount] = actions.authenticatedAction.async(parse.json[UpfrontPaymentAmount]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
-      _ <- journey match {
+      newJourney <- journey match {
         case j: Journey.BeforeAnsweredCanPayUpfront      => Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible in that state: [${j.stage}]")
         case j: Journey.Stages.AnsweredCanPayUpfront     => updateJourneyWithNewValue(j, request.body)
         case j: Journey.AfterEnteredUpfrontPaymentAmount => updateJourneyWithExistingValue(Left(j), request.body)
@@ -49,13 +50,13 @@ class UpdateUpfrontPaymentAmountController @Inject() (
             case UpfrontPaymentAnswers.NoUpfrontPayment          => Errors.throwBadRequestExceptionF("UpdateUpfrontPaymentAmount update is not possible when an upfront payment has not been chosen")
           }
       }
-    } yield Ok
+    } yield Ok(newJourney.json)
   }
 
   private def updateJourneyWithNewValue(
       journey:              Stages.AnsweredCanPayUpfront,
       upfrontPaymentAmount: UpfrontPaymentAmount
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     if (journey.canPayUpfront.value) {
       journey match {
         case j: Epaye.AnsweredCanPayUpfront =>
@@ -74,13 +75,13 @@ class UpdateUpfrontPaymentAmountController @Inject() (
   private def updateJourneyWithExistingValue(
       journey:              Either[Journey.AfterEnteredUpfrontPaymentAmount, Journey.AfterUpfrontPaymentAnswers],
       upfrontPaymentAmount: UpfrontPaymentAmount
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
 
     journey match {
       case Left(j: Epaye.EnteredUpfrontPaymentAmount) =>
-        if (j.upfrontPaymentAmount.value.value === upfrontPaymentAmount.value.value) {
+        if (j.upfrontPaymentAmount.value === upfrontPaymentAmount.value) {
           JourneyLogger.info("Nothing to update, UpfrontPaymentAmount is the same as the existing one in journey.")
-          Future.successful(())
+          Future.successful(j)
         } else {
           val updatedJourney: Epaye.EnteredUpfrontPaymentAmount = j.copy(upfrontPaymentAmount = upfrontPaymentAmount)
           journeyService.upsert(updatedJourney)
@@ -88,9 +89,9 @@ class UpdateUpfrontPaymentAmountController @Inject() (
 
       case Right(j) =>
         withUpfrontPaymentAmount(j, j.upfrontPaymentAnswers) { existingAmount =>
-          if (existingAmount.value.value === upfrontPaymentAmount.value.value) {
+          if (existingAmount.value === upfrontPaymentAmount.value) {
             JourneyLogger.info("Nothing to update, UpfrontPaymentAmount is the same as the existing one in journey.")
-            Future.successful(())
+            Future.successful(j)
           } else {
             val updatedJourney = j match {
               case j: Epaye.EnteredMonthlyPaymentAmount =>

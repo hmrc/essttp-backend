@@ -34,14 +34,17 @@ class UpdateHasCheckedInstalmentPlanControllerSpec extends ItSpec {
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }
-    "should return Unit whenSelected Plan has already been confirmed but not submitted to ttp" in new JourneyItTest {
+    "should return an unchanged journey whenSelected Plan has already been confirmed but not submitted to ttp" in new JourneyItTest {
       stubCommonActions()
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterSelectedPaymentPlan.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
+
+      val result1 = journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterCheckedPaymentPlan
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCheckedPaymentPlan
-      val result = journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId)
-      result.futureValue shouldBe (())
+
+      val result2 = journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
+      result2 shouldBe tdAll.EpayeBta.journeyAfterCheckedPaymentPlan
 
       verifyCommonActions(numberOfAuthCalls = 3)
     }

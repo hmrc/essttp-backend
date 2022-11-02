@@ -45,6 +45,18 @@ class UpdateTaxIdControllerSpec extends ItSpec {
 
         verifyCommonActions(numberOfAuthCalls = 1)
       }
+
+      "update a tax ID when given an EmpRef" in new JourneyItTest {
+        stubCommonActions()
+
+        insertJourneyForTest(TdAll.EpayeBta.journeyAfterStarted.copy(_id           = tdAll.journeyId, correlationId = tdAll.correlationId))
+
+        val result = journeyConnector.updateTaxId(tdAll.journeyId, tdAll.empRef).futureValue
+        result shouldBe TdAll.EpayeBta.journeyAfterDetermineTaxIds.copy(_id           = tdAll.journeyId, correlationId = tdAll.correlationId)
+
+        verifyCommonActions(numberOfAuthCalls = 1)
+      }
+
     }
     "Journey.Vat" - {
 

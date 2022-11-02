@@ -18,6 +18,7 @@ package journey
 
 import action.Actions
 import com.google.inject.{Inject, Singleton}
+import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.emailverification.EmailVerificationStatus
 import essttp.journey.model.{EmailVerificationAnswers, Journey, JourneyId, Stage}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
@@ -33,12 +34,12 @@ class UpdateSubmittedArrangementController @Inject() (
     actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
-)(implicit exec: ExecutionContext) extends BackendController(cc) {
+)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
   def updateArrangement(journeyId: JourneyId): Action[ArrangementResponse] = actions.authenticatedAction.async(parse.json[ArrangementResponse]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
-      _ <- journey match {
+      newJourney <- journey match {
         case j: Journey.BeforeAgreedTermsAndConditions =>
           Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user hasn't agreed to the terms and conditions, state: [${j.stage}]")
 
@@ -63,13 +64,13 @@ class UpdateSubmittedArrangementController @Inject() (
         case _: Journey.AfterArrangementSubmitted =>
           Errors.throwBadRequestExceptionF("Cannot update SubmittedArrangement when journey is in completed state")
       }
-    } yield Ok
+    } yield Ok(newJourney.json)
   }
 
   private def updateJourneyWithNewValue(
       journey:             Either[Journey.Stages.AgreedTermsAndConditions, Journey.Stages.EmailVerificationComplete],
       arrangementResponse: ArrangementResponse
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     val newJourney: Journey.AfterArrangementSubmitted = journey match {
       case Left(j: Journey.Epaye.AgreedTermsAndConditions) =>
         j.into[Journey.Epaye.SubmittedArrangement]

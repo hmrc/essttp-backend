@@ -38,9 +38,13 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec {
       stubCommonActions()
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterDetermineTaxIds.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).futureValue
+
+      val result1 = journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
-      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).futureValue
+
+      val result2 = journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).futureValue
+      result2 shouldBe tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
 
       verifyCommonActions(numberOfAuthCalls = 4)
@@ -49,9 +53,13 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec {
       stubCommonActions()
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterDetermineTaxIds.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).futureValue
+
+      val result1 = journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
-      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.ineligibleEligibilityCheckResult).futureValue
+
+      val result2 = journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.ineligibleEligibilityCheckResult).futureValue
+      result2 shouldBe tdAll.EpayeBta.journeyAfterEligibilityCheckNotEligible
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEligibilityCheckNotEligible
 
       verifyCommonActions(numberOfAuthCalls = 4)

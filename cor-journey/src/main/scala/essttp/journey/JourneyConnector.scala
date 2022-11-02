@@ -35,7 +35,6 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import essttp.utils.RequestSupport._
 import uk.gov.hmrc.http.HttpReads.Implicits.{readUnit => _, _}
-import essttp.utils.HttpReadsUnitThrowingException.readUnit
 import play.api.libs.json.JsNull
 
 @Singleton
@@ -52,62 +51,62 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
     } yield result
   }
 
-  def updateTaxId(journeyId: JourneyId, taxId: TaxId)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[TaxId, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-tax-id", taxId)
+  def updateTaxId(journeyId: JourneyId, taxId: TaxId)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[TaxId, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-tax-id", taxId)
 
-  def updateEligibilityCheckResult(journeyId: JourneyId, eligibilityCheckResult: EligibilityCheckResult)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[EligibilityCheckResult, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-eligibility-result", eligibilityCheckResult)
+  def updateEligibilityCheckResult(journeyId: JourneyId, eligibilityCheckResult: EligibilityCheckResult)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[EligibilityCheckResult, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-eligibility-result", eligibilityCheckResult)
 
-  def updateCanPayUpfront(journeyId: JourneyId, canPayUpfront: CanPayUpfront)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[CanPayUpfront, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-can-pay-upfront", canPayUpfront)
+  def updateCanPayUpfront(journeyId: JourneyId, canPayUpfront: CanPayUpfront)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[CanPayUpfront, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-can-pay-upfront", canPayUpfront)
 
-  def updateUpfrontPaymentAmount(journeyId: JourneyId, upfrontPaymentAmount: UpfrontPaymentAmount)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[UpfrontPaymentAmount, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-upfront-payment-amount", upfrontPaymentAmount)
+  def updateUpfrontPaymentAmount(journeyId: JourneyId, upfrontPaymentAmount: UpfrontPaymentAmount)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[UpfrontPaymentAmount, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-upfront-payment-amount", upfrontPaymentAmount)
 
-  def updateExtremeDates(journeyId: JourneyId, extremeDatesResponse: ExtremeDatesResponse)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[ExtremeDatesResponse, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-extreme-dates", extremeDatesResponse)
+  def updateExtremeDates(journeyId: JourneyId, extremeDatesResponse: ExtremeDatesResponse)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[ExtremeDatesResponse, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-extreme-dates", extremeDatesResponse)
 
-  def updateAffordabilityResult(journeyId: JourneyId, instalmentAmounts: InstalmentAmounts)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[InstalmentAmounts, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-affordability-result", instalmentAmounts)
+  def updateAffordabilityResult(journeyId: JourneyId, instalmentAmounts: InstalmentAmounts)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[InstalmentAmounts, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-affordability-result", instalmentAmounts)
 
-  def updateMonthlyPaymentAmount(journeyId: JourneyId, monthlyPaymentAmount: MonthlyPaymentAmount)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[MonthlyPaymentAmount, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-monthly-payment-amount", monthlyPaymentAmount)
+  def updateMonthlyPaymentAmount(journeyId: JourneyId, monthlyPaymentAmount: MonthlyPaymentAmount)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[MonthlyPaymentAmount, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-monthly-payment-amount", monthlyPaymentAmount)
 
-  def updateDayOfMonth(journeyId: JourneyId, dayOfMonth: DayOfMonth)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[DayOfMonth, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-day-of-month", dayOfMonth)
+  def updateDayOfMonth(journeyId: JourneyId, dayOfMonth: DayOfMonth)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[DayOfMonth, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-day-of-month", dayOfMonth)
 
-  def updateStartDates(journeyId: JourneyId, startDatesResponse: StartDatesResponse)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[StartDatesResponse, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-start-dates", startDatesResponse)
+  def updateStartDates(journeyId: JourneyId, startDatesResponse: StartDatesResponse)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[StartDatesResponse, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-start-dates", startDatesResponse)
 
-  def updateAffordableQuotes(journeyId: JourneyId, affordableQuotesResponse: AffordableQuotesResponse)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[AffordableQuotesResponse, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-affordable-quotes", affordableQuotesResponse)
+  def updateAffordableQuotes(journeyId: JourneyId, affordableQuotesResponse: AffordableQuotesResponse)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[AffordableQuotesResponse, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-affordable-quotes", affordableQuotesResponse)
 
-  def updateChosenPaymentPlan(journeyId: JourneyId, paymentPlan: PaymentPlan)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[PaymentPlan, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-selected-plan", paymentPlan)
+  def updateChosenPaymentPlan(journeyId: JourneyId, paymentPlan: PaymentPlan)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[PaymentPlan, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-selected-plan", paymentPlan)
 
-  def updateHasCheckedPaymentPlan(journeyId: JourneyId)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[JsNull.type, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-has-checked-plan", JsNull)
+  def updateHasCheckedPaymentPlan(journeyId: JourneyId)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[JsNull.type, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-has-checked-plan", JsNull)
 
-  def updateDetailsAboutBankAccount(journeyId: JourneyId, detailsAboutBankAccount: DetailsAboutBankAccount)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[DetailsAboutBankAccount, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-details-about-bank-account", detailsAboutBankAccount)
+  def updateDetailsAboutBankAccount(journeyId: JourneyId, detailsAboutBankAccount: DetailsAboutBankAccount)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[DetailsAboutBankAccount, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-details-about-bank-account", detailsAboutBankAccount)
 
-  def updateDirectDebitDetails(journeyId: JourneyId, directDebitDetails: BankDetails)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[BankDetails, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-direct-debit-details", directDebitDetails)
+  def updateDirectDebitDetails(journeyId: JourneyId, directDebitDetails: BankDetails)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[BankDetails, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-direct-debit-details", directDebitDetails)
 
-  def updateHasConfirmedDirectDebitDetails(journeyId: JourneyId)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[JsNull.type, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-has-confirmed-direct-debit-details", JsNull)
+  def updateHasConfirmedDirectDebitDetails(journeyId: JourneyId)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[JsNull.type, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-has-confirmed-direct-debit-details", JsNull)
 
-  def updateHasAgreedTermsAndConditions(journeyId: JourneyId, emailAddressRequired: IsEmailAddressRequired)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[IsEmailAddressRequired, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-has-agreed-terms-and-conditions", emailAddressRequired)
+  def updateHasAgreedTermsAndConditions(journeyId: JourneyId, emailAddressRequired: IsEmailAddressRequired)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[IsEmailAddressRequired, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-has-agreed-terms-and-conditions", emailAddressRequired)
 
-  def updateSelectedEmailToBeVerified(journeyId: JourneyId, email: Email)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[Email, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-chosen-email", email)
+  def updateSelectedEmailToBeVerified(journeyId: JourneyId, email: Email)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[Email, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-chosen-email", email)
 
-  def updateEmailVerificationStatus(journeyId: JourneyId, status: EmailVerificationStatus)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[EmailVerificationStatus, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-email-verification-status", status)
+  def updateEmailVerificationStatus(journeyId: JourneyId, status: EmailVerificationStatus)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[EmailVerificationStatus, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-email-verification-status", status)
 
-  def updateArrangement(journeyId: JourneyId, arrangementResponse: ArrangementResponse)(implicit request: RequestHeader): Future[Unit] =
-    httpClient.POST[ArrangementResponse, Unit](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-arrangement", arrangementResponse)
+  def updateArrangement(journeyId: JourneyId, arrangementResponse: ArrangementResponse)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[ArrangementResponse, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-arrangement", arrangementResponse)
 
   object Epaye {
 

@@ -19,6 +19,7 @@ package journey
 import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
+import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.ttp.affordablequotes.PaymentPlan
 import essttp.utils.Errors
@@ -33,12 +34,12 @@ class UpdateInstalmentPlanController @Inject() (
     actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
-)(implicit exec: ExecutionContext) extends BackendController(cc) {
+)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
   def updateChosenInstalmentPlan(journeyId: JourneyId): Action[PaymentPlan] = actions.authenticatedAction.async(parse.json[PaymentPlan]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
-      _ <- journey match {
+      newJourney <- journey match {
         case j: Journey.BeforeAffordableQuotesResponse   => Errors.throwBadRequestExceptionF(s"UpdateSelectedPaymentPlan is not possible in that state: [${j.stage}]")
         case j: Journey.Stages.RetrievedAffordableQuotes => updateJourneyWithNewValue(j, request.body)
         case j: Journey.AfterSelectedPaymentPlan => j match {
@@ -46,13 +47,13 @@ class UpdateInstalmentPlanController @Inject() (
           case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update ChosenPlan when journey is in completed state")
         }
       }
-    } yield Ok
+    } yield Ok(newJourney.json)
   }
 
   private def updateJourneyWithNewValue(
       journey:     Journey.Stages.RetrievedAffordableQuotes,
       paymentPlan: PaymentPlan
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     val newJourney: Journey.AfterSelectedPaymentPlan = journey match {
       case j: Journey.Epaye.RetrievedAffordableQuotes =>
         j.into[Journey.Epaye.ChosenPaymentPlan]
@@ -66,10 +67,10 @@ class UpdateInstalmentPlanController @Inject() (
   private def updateJourneyWithExistingValue(
       journey:     Journey.AfterSelectedPaymentPlan,
       paymentPlan: PaymentPlan
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     if (journey.selectedPaymentPlan === paymentPlan) {
       JourneyLogger.info("Nothing to update, selected PaymentPlan is the same as the existing one in journey.")
-      Future.successful(())
+      Future.successful(journey)
     } else {
       val newJourney: Journey.AfterSelectedPaymentPlan = journey match {
         case j: Journey.Epaye.ChosenPaymentPlan =>
