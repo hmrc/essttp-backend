@@ -17,7 +17,6 @@
 package journey
 
 import action.Actions
-import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.Journey.Epaye
@@ -73,21 +72,18 @@ class UpdateChosenEmailController @Inject() (
       journey: Journey.AfterEmailAddressSelectedToBeVerified,
       email:   Email
   )(implicit request: Request[_]): Future[Journey] = {
-    if (journey.emailToBeVerified === email) {
-      Future.successful(journey)
-    } else {
-      val newJourney = journey match {
-        case j: Journey.Epaye.SelectedEmailToBeVerified =>
-          j.copy(emailToBeVerified = email)
+    // don't check to see if email is same to allow for passcodes to be requested again for same email
+    val newJourney = journey match {
+      case j: Journey.Epaye.SelectedEmailToBeVerified =>
+        j.copy(emailToBeVerified = email)
 
-        case j: Journey.Epaye.EmailVerificationComplete =>
-          j.into[Journey.Epaye.SelectedEmailToBeVerified]
-            .withFieldConst(_.emailToBeVerified, email)
-            .withFieldConst(_.stage, Stage.AfterSelectedAnEmailToBeVerified.EmailChosen)
-            .transform
-      }
-      journeyService.upsert(newJourney)
+      case j: Journey.Epaye.EmailVerificationComplete =>
+        j.into[Journey.Epaye.SelectedEmailToBeVerified]
+          .withFieldConst(_.emailToBeVerified, email)
+          .withFieldConst(_.stage, Stage.AfterSelectedAnEmailToBeVerified.EmailChosen)
+          .transform
     }
+    journeyService.upsert(newJourney)
   }
 
 }
