@@ -46,10 +46,14 @@ class UpdateChosenEmailControllerSpec extends ItSpec {
           .copy(correlationId = tdAll.correlationId)
       )
 
-      journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest()).futureValue
+      val result1 = journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest()).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterSelectedEmail
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedEmail
-      journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest().copy(SensitiveString("billyJoel@pianoman.com"))).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedEmail.copy(emailToBeVerified = Email(SensitiveString("billyJoel@pianoman.com")))
+
+      val result2 = journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest().copy(SensitiveString("billyJoel@pianoman.com"))).futureValue
+      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterSelectedEmail.copy(emailToBeVerified = Email(SensitiveString("billyJoel@pianoman.com")))
+      result2 shouldBe expectedUpdatedJourney2
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
 
       verifyCommonActions(numberOfAuthCalls = 4)
     }

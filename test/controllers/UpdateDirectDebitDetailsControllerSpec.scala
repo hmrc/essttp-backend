@@ -45,9 +45,12 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec {
           .copy(_id           = tdAll.journeyId, correlationId = tdAll.correlationId)
       )
 
-      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, TdAll.EpayeBta.updateDirectDebitDetailsRequest).futureValue
+      val result1 = journeyConnector.updateDirectDebitDetails(tdAll.journeyId, TdAll.EpayeBta.updateDirectDebitDetailsRequest).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails
-      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, TdAll.EpayeBta.updateDirectDebitDetailsRequest).futureValue
+
+      val result2 = journeyConnector.updateDirectDebitDetails(tdAll.journeyId, TdAll.EpayeBta.updateDirectDebitDetailsRequest).futureValue
+      result2 shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails
 
       verifyCommonActions(numberOfAuthCalls = 4)
@@ -60,14 +63,16 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec {
           .copy(_id           = tdAll.journeyId, correlationId = tdAll.correlationId)
       )
 
-      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, TdAll.EpayeBta.updateDirectDebitDetailsRequest).futureValue
+      val result1 = journeyConnector.updateDirectDebitDetails(tdAll.journeyId, TdAll.EpayeBta.updateDirectDebitDetailsRequest).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails
 
       val updateRequest = TdAll.EpayeBta.updateDirectDebitDetailsRequest.copy(accountNumber = AccountNumber(SensitiveString("accounts")))
       val expectedUpdatedJourney = tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails.copy(
         directDebitDetails = updateRequest
       )
-      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, updateRequest).futureValue
+      val result2 = journeyConnector.updateDirectDebitDetails(tdAll.journeyId, updateRequest).futureValue
+      result2 shouldBe expectedUpdatedJourney
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney
 
       verifyCommonActions(numberOfAuthCalls = 4)

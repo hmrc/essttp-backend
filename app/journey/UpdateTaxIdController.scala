@@ -18,6 +18,7 @@ package journey
 
 import action.Actions
 import com.google.inject.{Inject, Singleton}
+import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model._
 import essttp.rootmodel.{EmpRef, TaxId, Vrn}
 import essttp.utils.Errors
@@ -32,16 +33,16 @@ class UpdateTaxIdController @Inject() (
     actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
-)(implicit exec: ExecutionContext) extends BackendController(cc) {
+)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
   def updateTaxId(journeyId: JourneyId): Action[TaxId] = actions.authenticatedAction.async(parse.json[TaxId]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
-      _ <- updateJourney(journey, request.body)
-    } yield Ok
+      newJourney <- updateJourney(journey, request.body)
+    } yield Ok(newJourney.json)
   }
 
-  private def updateJourney(journey: Journey, taxId: TaxId)(implicit request: Request[_]): Future[Unit] = {
+  private def updateJourney(journey: Journey, taxId: TaxId)(implicit request: Request[_]): Future[Journey] = {
     journey match {
       case j: Journey.Epaye.Started =>
         taxId match {

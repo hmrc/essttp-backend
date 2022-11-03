@@ -38,9 +38,12 @@ class UpdateAffordableQuotesControllerSpec extends ItSpec {
       stubCommonActions()
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterStartDatesResponse.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateAffordableQuotes(tdAll.journeyId, TdAll.EpayeBta.updateAffordableQuotesResponse()).futureValue
+      val result1 = journeyConnector.updateAffordableQuotes(tdAll.journeyId, TdAll.EpayeBta.updateAffordableQuotesResponse()).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterAffordableQuotesResponse
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAffordableQuotesResponse
-      journeyConnector.updateAffordableQuotes(tdAll.journeyId, TdAll.EpayeBta.updateAffordableQuotesResponse()).futureValue
+
+      val result2 = journeyConnector.updateAffordableQuotes(tdAll.journeyId, TdAll.EpayeBta.updateAffordableQuotesResponse()).futureValue
+      result2 shouldBe tdAll.EpayeBta.journeyAfterAffordableQuotesResponse
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAffordableQuotesResponse
 
       verifyCommonActions(numberOfAuthCalls = 4)
@@ -48,10 +51,15 @@ class UpdateAffordableQuotesControllerSpec extends ItSpec {
     "should update the journey when Affordable Quotes has changed" in new JourneyItTest {
       stubCommonActions()
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterStartDatesResponse.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateAffordableQuotes(tdAll.journeyId, TdAll.EpayeBta.updateAffordableQuotesResponse()).futureValue
+
+      val result1 = journeyConnector.updateAffordableQuotes(tdAll.journeyId, TdAll.EpayeBta.updateAffordableQuotesResponse()).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterAffordableQuotesResponse
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAffordableQuotesResponse
-      journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.affordableQuotesResponseWith2Plans).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAffordableQuotesResponse.copy(affordableQuotesResponse = tdAll.affordableQuotesResponseWith2Plans)
+
+      val result2 = journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.affordableQuotesResponseWith2Plans).futureValue
+      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterAffordableQuotesResponse.copy(affordableQuotesResponse = tdAll.affordableQuotesResponseWith2Plans)
+      result2 shouldBe expectedUpdatedJourney2
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
 
       verifyCommonActions(numberOfAuthCalls = 4)
     }

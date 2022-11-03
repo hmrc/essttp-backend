@@ -38,9 +38,12 @@ class UpdateDatesControllerSpec extends ItSpec {
       stubCommonActions()
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.EpayeBta.updateExtremeDatesRequest()).futureValue
+      val result1 = journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.EpayeBta.updateExtremeDatesRequest()).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterExtremeDates
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterExtremeDates
-      journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.EpayeBta.updateExtremeDatesRequest()).futureValue
+
+      val result2 = journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.EpayeBta.updateExtremeDatesRequest()).futureValue
+      result2 shouldBe tdAll.EpayeBta.journeyAfterExtremeDates
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterExtremeDates
 
       verifyCommonActions(numberOfAuthCalls = 4)
@@ -49,10 +52,15 @@ class UpdateDatesControllerSpec extends ItSpec {
       stubCommonActions()
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.EpayeBta.updateExtremeDatesRequest()).futureValue
+
+      val result1 = journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.EpayeBta.updateExtremeDatesRequest()).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterExtremeDates
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterExtremeDates
-      journeyConnector.updateExtremeDates(tdAll.journeyId, TdAll.extremeDatesWithoutUpfrontPayment).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterExtremeDates.copy(extremeDatesResponse = TdAll.extremeDatesWithoutUpfrontPayment)
+
+      val result2 = journeyConnector.updateExtremeDates(tdAll.journeyId, TdAll.extremeDatesWithoutUpfrontPayment).futureValue
+      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterExtremeDates.copy(extremeDatesResponse = TdAll.extremeDatesWithoutUpfrontPayment)
+      result2 shouldBe expectedUpdatedJourney2
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
 
       verifyCommonActions(numberOfAuthCalls = 4)
     }
@@ -81,9 +89,12 @@ class UpdateDatesControllerSpec extends ItSpec {
       stubCommonActions()
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterDayOfMonth.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateStartDates(tdAll.journeyId, tdAll.EpayeBta.updateStartDatesResponse()).futureValue
+      val result1 = journeyConnector.updateStartDates(tdAll.journeyId, tdAll.EpayeBta.updateStartDatesResponse()).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterStartDatesResponse
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterStartDatesResponse
-      journeyConnector.updateStartDates(tdAll.journeyId, tdAll.EpayeBta.updateStartDatesResponse()).futureValue
+
+      val result2 = journeyConnector.updateStartDates(tdAll.journeyId, tdAll.EpayeBta.updateStartDatesResponse()).futureValue
+      result2 shouldBe tdAll.EpayeBta.journeyAfterStartDatesResponse
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterStartDatesResponse
 
       verifyCommonActions(numberOfAuthCalls = 4)
@@ -92,10 +103,15 @@ class UpdateDatesControllerSpec extends ItSpec {
       stubCommonActions()
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterDayOfMonth.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateStartDates(tdAll.journeyId, tdAll.EpayeBta.updateStartDatesResponse()).futureValue
+
+      val result1 = journeyConnector.updateStartDates(tdAll.journeyId, tdAll.EpayeBta.updateStartDatesResponse()).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterStartDatesResponse
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterStartDatesResponse
-      journeyConnector.updateStartDates(tdAll.journeyId, TdAll.startDatesResponseWithoutInitialPayment).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterStartDatesResponse.copy(startDatesResponse = TdAll.startDatesResponseWithoutInitialPayment)
+
+      val result2 = journeyConnector.updateStartDates(tdAll.journeyId, TdAll.startDatesResponseWithoutInitialPayment).futureValue
+      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterStartDatesResponse.copy(startDatesResponse = TdAll.startDatesResponseWithoutInitialPayment)
+      result2 shouldBe expectedUpdatedJourney2
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
 
       verifyCommonActions(numberOfAuthCalls = 4)
     }

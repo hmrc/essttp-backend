@@ -43,7 +43,7 @@ class UpdateEligibilityCheckResultController @Inject() (
   def updateEligibilityResult(journeyId: JourneyId): Action[EligibilityCheckResult] = actions.authenticatedAction.async(parse.json[EligibilityCheckResult]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
-      _ <- journey match {
+      newJourney <- journey match {
         case _: Journey.BeforeComputedTaxId  => Errors.throwBadRequestExceptionF("EligibilityCheckResult update is not possible in that state.")
         case j: Journey.Stages.ComputedTaxId => updateJourneyWithNewValue(j, request.body)
         case j: Journey.AfterEligibilityChecked => j match {
@@ -51,13 +51,13 @@ class UpdateEligibilityCheckResultController @Inject() (
           case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update EligibilityCheckResult when journey is in completed state")
         }
       }
-    } yield Ok
+    } yield Ok(newJourney.json)
   }
 
   private def updateJourneyWithNewValue(
       journey:                Stages.ComputedTaxId,
       eligibilityCheckResult: EligibilityCheckResult
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     journey match {
       case j: Journey.Epaye.ComputedTaxId =>
         val newJourney = j.into[Journey.Epaye.EligibilityChecked]
@@ -77,10 +77,10 @@ class UpdateEligibilityCheckResultController @Inject() (
   private def updateJourneyWithExistingValue(
       journey:                Journey.AfterEligibilityChecked,
       eligibilityCheckResult: EligibilityCheckResult
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     if (journey.eligibilityCheckResult === eligibilityCheckResult) {
       JourneyLogger.info("Nothing to update, EligibilityCheckResult is the same as the existing one in journey.")
-      Future.successful(())
+      Future.successful(journey)
     } else {
       val updatedJourney: Journey.AfterEligibilityChecked = journey match {
 

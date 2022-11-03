@@ -38,9 +38,12 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec {
       stubCommonActions()
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterEligibilityCheckEligible.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
+      val result1 = journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
-      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
+
+      val result2 = journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
+      result2 shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
 
       verifyCommonActions(numberOfAuthCalls = 4)
@@ -49,12 +52,19 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec {
       stubCommonActions()
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterEligibilityCheckEligible.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
+      val result1 = journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
-      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontNoRequest()).futureValue
+
+      val result2 = journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontNoRequest()).futureValue
+      result2 shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontNo
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontNo
 
-      verifyCommonActions(numberOfAuthCalls = 4)
+      val result3 = journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
+      result3 shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
+
+      verifyCommonActions(numberOfAuthCalls = 6)
     }
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()

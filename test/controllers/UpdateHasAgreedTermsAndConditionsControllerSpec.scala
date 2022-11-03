@@ -41,13 +41,17 @@ class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec {
       stubCommonActions()
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(false)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false)
 
-      val result = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(false))
-      result.futureValue shouldBe (())
+      val expectedUpdatedJourney = tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false)
+
+      val result1 = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(false)).futureValue
+      result1 shouldBe expectedUpdatedJourney
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney
+
+      val result2 = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(false)).futureValue
+      result2 shouldBe expectedUpdatedJourney
       // check value hasn't actually changed
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney
 
       verifyCommonActions(numberOfAuthCalls = 4)
     }
@@ -56,13 +60,17 @@ class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec {
       stubCommonActions()
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(false)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false)
 
-      val result = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true))
-      result.futureValue shouldBe (())
+      val result1 = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(false)).futureValue
+      val expectedUpdatedJourney1 = tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false)
+      result1 shouldBe expectedUpdatedJourney1
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney1
+
+      val result2 = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).futureValue
+      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+      result2 shouldBe expectedUpdatedJourney2
       // check value has changed
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
 
       verifyCommonActions(numberOfAuthCalls = 4)
     }

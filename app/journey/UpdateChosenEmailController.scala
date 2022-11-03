@@ -19,7 +19,7 @@ package journey
 import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
-import essttp.crypto.{Crypto, CryptoFormat}
+import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.Journey.Epaye
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.Email
@@ -34,16 +34,13 @@ import scala.concurrent.{ExecutionContext, Future}
 class UpdateChosenEmailController @Inject() (
     journeyService: JourneyService,
     cc:             ControllerComponents,
-    actions:        Actions,
-    mongoCrypto:    Crypto
-)(implicit exec: ExecutionContext) extends BackendController(cc) {
-
-  implicit val cryptoFormat: CryptoFormat = CryptoFormat.OperationalCryptoFormat(mongoCrypto)
+    actions:        Actions
+)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
   def updateChosenEmail(journeyId: JourneyId): Action[Email] = actions.authenticatedAction.async(parse.json[Email]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
-      _ <- journey match {
+      newJourney <- journey match {
         case j: Journey.BeforeAgreedTermsAndConditions => Errors.throwBadRequestExceptionF(s"UpdateChosenEmail is not possible in that state: [${j.stage}]")
         case j: Journey.AfterAgreedTermsAndConditions =>
           j match {
@@ -55,13 +52,13 @@ class UpdateChosenEmailController @Inject() (
             case _: Journey.Epaye.SubmittedArrangement        => Errors.throwBadRequestExceptionF(s"Cannot update ChosenEmail when journey is in completed state.")
           }
       }
-    } yield Ok
+    } yield Ok(newJourney.json)
   }
 
   private def updateJourneyWithNewValue(
       journey: Journey.Stages.AgreedTermsAndConditions,
       email:   Email
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     val newJourney = journey match {
       case j: Epaye.AgreedTermsAndConditions =>
         j.into[Epaye.SelectedEmailToBeVerified]
@@ -75,19 +72,21 @@ class UpdateChosenEmailController @Inject() (
   private def updateJourneyWithExistingValue(
       journey: Journey.AfterEmailAddressSelectedToBeVerified,
       email:   Email
-  )(implicit request: Request[_]): Future[Unit] = {
-    journey match {
-      case j: Journey.Epaye.SelectedEmailToBeVerified =>
-        if (j.emailToBeVerified === email) Future.successful(())
-        else journeyService.upsert(j.copy(emailToBeVerified = email))
+  )(implicit request: Request[_]): Future[Journey] = {
+    if (journey.emailToBeVerified === email) {
+      Future.successful(journey)
+    } else {
+      val newJourney = journey match {
+        case j: Journey.Epaye.SelectedEmailToBeVerified =>
+          j.copy(emailToBeVerified = email)
 
-      case j: Journey.Epaye.EmailVerificationComplete =>
-        journeyService.upsert(
+        case j: Journey.Epaye.EmailVerificationComplete =>
           j.into[Journey.Epaye.SelectedEmailToBeVerified]
             .withFieldConst(_.emailToBeVerified, email)
             .withFieldConst(_.stage, Stage.AfterSelectedAnEmailToBeVerified.EmailChosen)
             .transform
-        )
+      }
+      journeyService.upsert(newJourney)
     }
   }
 

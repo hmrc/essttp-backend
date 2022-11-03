@@ -40,9 +40,12 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec {
       stubCommonActions()
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterExtremeDates.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateAffordabilityResult(tdAll.journeyId, TdAll.EpayeBta.updateInstalmentAmountsRequest()).futureValue
+      val result1 = journeyConnector.updateAffordabilityResult(tdAll.journeyId, TdAll.EpayeBta.updateInstalmentAmountsRequest()).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterInstalmentAmounts
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterInstalmentAmounts
-      journeyConnector.updateAffordabilityResult(tdAll.journeyId, TdAll.EpayeBta.updateInstalmentAmountsRequest()).futureValue
+
+      val result2 = journeyConnector.updateAffordabilityResult(tdAll.journeyId, TdAll.EpayeBta.updateInstalmentAmountsRequest()).futureValue
+      result2 shouldBe tdAll.EpayeBta.journeyAfterInstalmentAmounts
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterInstalmentAmounts
 
       verifyCommonActions(numberOfAuthCalls = 4)
@@ -51,10 +54,15 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec {
       stubCommonActions()
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterExtremeDates.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      journeyConnector.updateAffordabilityResult(tdAll.journeyId, TdAll.EpayeBta.updateInstalmentAmountsRequest()).futureValue
+
+      val result1 = journeyConnector.updateAffordabilityResult(tdAll.journeyId, TdAll.EpayeBta.updateInstalmentAmountsRequest()).futureValue
+      result1 shouldBe tdAll.EpayeBta.journeyAfterInstalmentAmounts
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterInstalmentAmounts
-      journeyConnector.updateAffordabilityResult(tdAll.journeyId, TdAll.EpayeBta.updateInstalmentAmountsRequest().copy(minimumInstalmentAmount = AmountInPence(999))).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = this.tdAll.instalmentAmounts.copy(minimumInstalmentAmount = AmountInPence(999)))
+
+      val result2 = journeyConnector.updateAffordabilityResult(tdAll.journeyId, TdAll.EpayeBta.updateInstalmentAmountsRequest().copy(minimumInstalmentAmount = AmountInPence(999))).futureValue
+      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = this.tdAll.instalmentAmounts.copy(minimumInstalmentAmount = AmountInPence(999)))
+      result2 shouldBe expectedUpdatedJourney2
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
 
       verifyCommonActions(numberOfAuthCalls = 4)
     }

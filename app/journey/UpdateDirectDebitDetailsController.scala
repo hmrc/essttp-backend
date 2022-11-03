@@ -39,7 +39,7 @@ class UpdateDirectDebitDetailsController @Inject() (
   def updateDirectDebitDetails(journeyId: JourneyId): Action[BankDetails] = actions.authenticatedAction.async(parse.json[BankDetails]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
-      _ <- journey match {
+      newJourney <- journey match {
         case j: Journey.BeforeEnteredDetailsAboutBankAccount  => Errors.throwBadRequestExceptionF(s"UpdateDirectDebitDetails is not possible in that state: [${j.stage}]")
         case j: Journey.Stages.EnteredDetailsAboutBankAccount => updateJourneyWithNewValue(j, request.body)
         case j: Journey.AfterEnteredDirectDebitDetails => j match {
@@ -47,13 +47,13 @@ class UpdateDirectDebitDetailsController @Inject() (
           case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update DirectDebitDetails when journey is in completed state")
         }
       }
-    } yield Ok
+    } yield Ok(newJourney.json)
   }
 
   private def updateJourneyWithNewValue(
       journey:            Journey.Stages.EnteredDetailsAboutBankAccount,
       directDebitDetails: BankDetails
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     val newJourney: Journey.AfterEnteredDirectDebitDetails = journey match {
       case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
         j.into[Journey.Epaye.EnteredDirectDebitDetails]
@@ -67,10 +67,10 @@ class UpdateDirectDebitDetailsController @Inject() (
   private def updateJourneyWithExistingValue(
       journey:            Journey.AfterEnteredDirectDebitDetails,
       directDebitDetails: BankDetails
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     if (journey.directDebitDetails === directDebitDetails) {
       JourneyLogger.info("Direct debit details haven't changed, nothing to update")
-      Future.successful(())
+      Future.successful(journey)
     } else {
       val updatedJourney = journey match {
         case j: Journey.Epaye.EnteredDirectDebitDetails =>

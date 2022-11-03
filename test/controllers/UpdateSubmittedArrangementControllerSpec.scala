@@ -64,9 +64,10 @@ class UpdateSubmittedArrangementControllerSpec extends ItSpec {
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false).copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
-      journeyConnector.updateArrangement(tdAll.journeyId, TdAll.EpayeBta.updateArrangementRequest()).futureValue
-      val result = journeyConnector.getJourney(tdAll.journeyId).futureValue
-      result shouldBe TdAll.EpayeBta.journeyAfterSubmittedArrangement().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId)
+      val result = journeyConnector.updateArrangement(tdAll.journeyId, TdAll.EpayeBta.updateArrangementRequest()).futureValue
+      val expectedUpdatedJourney = TdAll.EpayeBta.journeyAfterSubmittedArrangement().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId)
+      result shouldBe expectedUpdatedJourney
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }

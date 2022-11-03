@@ -19,6 +19,7 @@ package journey
 import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
+import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.utils.Errors
@@ -33,11 +34,11 @@ class UpdateAffordabilityResultController @Inject() (
     actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
-)(implicit exec: ExecutionContext) extends BackendController(cc) {
+)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
   def updateAffordabilityResult(journeyId: JourneyId): Action[InstalmentAmounts] = actions.authenticatedAction.async(parse.json[InstalmentAmounts]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
-      _ <- journey match {
+      newJourney <- journey match {
         case j: Journey.BeforeExtremeDatesResponse   => Errors.throwBadRequestExceptionF(s"UpdateAffordabilityResult update is not possible in that state: [${j.stage}]")
         case j: Journey.Stages.RetrievedExtremeDates => updateJourneyWithNewValue(j, request.body)
         case j: Journey.AfterRetrievedAffordabilityResult => j match {
@@ -45,13 +46,13 @@ class UpdateAffordabilityResultController @Inject() (
           case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update AffordabilityResult when journey is in completed state")
         }
       }
-    } yield Ok
+    } yield Ok(newJourney.json)
   }
 
   private def updateJourneyWithNewValue(
       journey:           Journey.Stages.RetrievedExtremeDates,
       instalmentAmounts: InstalmentAmounts
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     val newJourney: Journey.Epaye.RetrievedAffordabilityResult = journey match {
       case j: Journey.Epaye.RetrievedExtremeDates =>
         j.into[Journey.Epaye.RetrievedAffordabilityResult]
@@ -65,10 +66,10 @@ class UpdateAffordabilityResultController @Inject() (
   private def updateJourneyWithExistingValue(
       journey:           Journey.AfterRetrievedAffordabilityResult,
       instalmentAmounts: InstalmentAmounts
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     if (journey.instalmentAmounts === instalmentAmounts) {
       JourneyLogger.info("Nothing to update, InstalmentAmounts is the same as the existing one in journey.")
-      Future.successful(())
+      Future.successful(journey)
     } else {
       val newJourney: Journey.AfterRetrievedAffordabilityResult = journey match {
         case j: Journey.Epaye.RetrievedAffordabilityResult =>

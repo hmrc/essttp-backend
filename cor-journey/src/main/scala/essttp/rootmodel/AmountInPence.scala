@@ -16,6 +16,7 @@
 
 package essttp.rootmodel
 
+import cats.Eq
 import play.api.libs.json._
 
 import java.text.NumberFormat
@@ -47,7 +48,8 @@ object AmountInPence {
 
   val zero: AmountInPence = AmountInPence(0)
 
-  //  implicit val format: OFormat[AmountInPence] = Json.format[AmountInPence]
+  implicit val eq: Eq[AmountInPence] = Eq.fromUniversalEquals
+
   implicit val format: Format[AmountInPence] = Format(
     Reads{
       case JsNumber(n) if n.isWhole() => JsSuccess(AmountInPence(n.toLong))

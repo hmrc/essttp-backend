@@ -42,9 +42,13 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec {
         stubCommonActions()
 
         insertJourneyForTest(TdAll.EpayeBta.journeyAfterCanPayUpfrontYes.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+
+        val result1 = journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        result1 shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
         journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
-        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+
+        val result2 = journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        result2 shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
         journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
 
         verifyCommonActions(numberOfAuthCalls = 4)
@@ -53,10 +57,15 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec {
         stubCommonActions()
 
         insertJourneyForTest(TdAll.EpayeBta.journeyAfterCanPayUpfrontYes.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+
+        val result1 = journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        result1 shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
         journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
-        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest().copy(AmountInPence(9999))).futureValue
-        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = UpfrontPaymentAmount(AmountInPence(9999)))
+
+        val result2 = journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest().copy(AmountInPence(9999))).futureValue
+        val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = UpfrontPaymentAmount(AmountInPence(9999)))
+        result2 shouldBe expectedUpdatedJourney2
+        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
 
         verifyCommonActions(numberOfAuthCalls = 4)
       }
@@ -67,9 +76,13 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec {
         stubCommonActions()
 
         insertJourneyForTest(TdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+
+        val result1 = journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        result1 shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
         journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
-        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+
+        val result2 = journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        result2 shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
         journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
 
         verifyCommonActions(numberOfAuthCalls = 4)
@@ -78,10 +91,15 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec {
         stubCommonActions()
 
         insertJourneyForTest(TdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+
+        val result1 = journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        result1 shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
         journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
-        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest().copy(AmountInPence(9999))).futureValue
-        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = UpfrontPaymentAmount(AmountInPence(9999)))
+
+        val result2 = journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest().copy(AmountInPence(9999))).futureValue
+        val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = UpfrontPaymentAmount(AmountInPence(9999)))
+        result2 shouldBe expectedUpdatedJourney2
+        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
 
         verifyCommonActions(numberOfAuthCalls = 4)
       }
@@ -113,9 +131,13 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec {
         stubCommonActions()
 
         insertJourneyForTest(TdAll.EpayeBta.journeyAfterExtremeDates.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+
+        val result1 = journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        result1 shouldBe tdAll.EpayeBta.journeyAfterExtremeDates
         journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterExtremeDates
-        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+
+        val result2 = journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        result2 shouldBe tdAll.EpayeBta.journeyAfterExtremeDates
         journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterExtremeDates
 
         verifyCommonActions(numberOfAuthCalls = 4)
@@ -124,12 +146,17 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec {
         stubCommonActions()
 
         insertJourneyForTest(TdAll.EpayeBta.journeyAfterExtremeDates.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+
+        val result1 = journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
+        result1 shouldBe tdAll.EpayeBta.journeyAfterExtremeDates
         journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterExtremeDates
-        journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest().copy(AmountInPence(9999))).futureValue
-        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(
+
+        val result2 = journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest().copy(AmountInPence(9999))).futureValue
+        val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(
           upfrontPaymentAmount = UpfrontPaymentAmount(AmountInPence(9999))
         )
+        result2 shouldBe expectedUpdatedJourney2
+        journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
 
         verifyCommonActions(numberOfAuthCalls = 4)
       }

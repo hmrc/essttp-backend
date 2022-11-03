@@ -47,10 +47,15 @@ class UpdateEmailVerificationStatusControllerSpec extends ItSpec {
           .copy(correlationId = tdAll.correlationId)
       )
 
-      journeyConnector.updateEmailVerificationStatus(tdAll.journeyId, EmailVerificationStatus.Verified).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEmailVerificationStatus(EmailVerificationStatus.Verified)
-      journeyConnector.updateEmailVerificationStatus(tdAll.journeyId, EmailVerificationStatus.Locked).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEmailVerificationStatus(EmailVerificationStatus.Locked)
+      val result1 = journeyConnector.updateEmailVerificationStatus(tdAll.journeyId, EmailVerificationStatus.Verified).futureValue
+      val expectedUpdatedJourney1 = tdAll.EpayeBta.journeyAfterEmailVerificationStatus(EmailVerificationStatus.Verified)
+      result1 shouldBe expectedUpdatedJourney1
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney1
+
+      val result2 = journeyConnector.updateEmailVerificationStatus(tdAll.journeyId, EmailVerificationStatus.Locked).futureValue
+      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterEmailVerificationStatus(EmailVerificationStatus.Locked)
+      result2 shouldBe expectedUpdatedJourney2
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
 
       verifyCommonActions(numberOfAuthCalls = 4)
     }

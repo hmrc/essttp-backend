@@ -19,6 +19,7 @@ package journey
 import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
+import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.bank.{DetailsAboutBankAccount, TypesOfBankAccount}
 import essttp.utils.Errors
@@ -33,12 +34,12 @@ class UpdateDetailsAboutBankAccountController @Inject() (
     actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
-)(implicit exec: ExecutionContext) extends BackendController(cc) {
+)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
   def updateDetailsAboutBankAccount(journeyId: JourneyId): Action[DetailsAboutBankAccount] = actions.authenticatedAction.async(parse.json[DetailsAboutBankAccount]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
-      _ <- journey match {
+      newJourney <- journey match {
         case j: Journey.BeforeCheckedPaymentPlan  => Errors.throwBadRequestExceptionF(s"UpdateDetailsAboutBankAccount is not possible in that state: [${j.stage}]")
         case j: Journey.Stages.CheckedPaymentPlan => updateJourneyWithNewValue(j, request.body)
         case j: Journey.AfterEnteredDetailsAboutBankAccount => j match {
@@ -46,13 +47,13 @@ class UpdateDetailsAboutBankAccountController @Inject() (
           case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update DetailsAboutBankAccount when journey is in completed state")
         }
       }
-    } yield Ok
+    } yield Ok(newJourney.json)
   }
 
   private def updateJourneyWithNewValue(
       journey:                 Journey.Stages.CheckedPaymentPlan,
       detailsAboutBankAccount: DetailsAboutBankAccount
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     val newJourney: Journey.AfterEnteredDetailsAboutBankAccount = journey match {
       case j: Journey.Epaye.CheckedPaymentPlan =>
         j.into[Journey.Epaye.EnteredDetailsAboutBankAccount]
@@ -66,10 +67,10 @@ class UpdateDetailsAboutBankAccountController @Inject() (
   private def updateJourneyWithExistingValue(
       journey:                 Journey.AfterEnteredDetailsAboutBankAccount,
       detailsAboutBankAccount: DetailsAboutBankAccount
-  )(implicit request: Request[_]): Future[Unit] = {
+  )(implicit request: Request[_]): Future[Journey] = {
     if (journey.detailsAboutBankAccount === detailsAboutBankAccount) {
       JourneyLogger.info("Chosen type of bank account hasn't changed, nothing to update")
-      Future.successful(())
+      Future.successful(journey)
     } else {
       val updatedJourney = journey match {
         case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>

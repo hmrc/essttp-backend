@@ -29,7 +29,7 @@ import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.utils.Errors
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 import julienrf.json.derived
-import play.api.libs.json.{Json, OFormat, OWrites}
+import play.api.libs.json.{JsValue, Json, OFormat, OWrites}
 
 import java.time.{Clock, Instant}
 
@@ -82,6 +82,12 @@ object Journey {
       defaultFormat,
       customWrites
     )
+  }
+
+  implicit class JourneyOps(private val j: Journey) extends AnyVal {
+
+    def json(implicit cryptoFormat: CryptoFormat): JsValue = Json.toJson(j)
+
   }
 
   sealed trait BeforeComputedTaxId extends Journey with Stages.JourneyStage
