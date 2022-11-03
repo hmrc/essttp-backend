@@ -16,11 +16,64 @@
 
 package essttp.testdata.vat
 
-import essttp.rootmodel.Vrn
+import essttp.rootmodel.ttp.affordablequotes.DueDate
+import essttp.rootmodel.{AmountInPence, TaxId, Vrn}
+import essttp.rootmodel.ttp.{AccruedInterest, ChargeOverMaxDebtAge, ChargeReference, ChargeType, ChargeTypeAssessment, Charges, CustomerPostcode, DebtTotalAmount, DisallowedChargeLockType, EligibilityCheckResult, EligibilityPass, EligibilityStatus, IdType, IdValue, Identification, IneligibleChargeType, InterestStartDate, Lock, LockReason, LockType, MainTrans, MainType, OutstandingAmount, PaymentPlanFrequencies, PaymentPlanMaxLength, PaymentPlanMinLength, Postcode, PostcodeDate, ProcessingDateTime, SubTrans, TaxPeriodFrom, TaxPeriodTo}
 import essttp.testdata.TdBase
+import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
 trait TdVat {
   dependencies: TdBase =>
 
   val vrn: Vrn = Vrn("101747001")
+
+  def eligibleEligibilityCheckResult(taxId: TaxId = vrn): EligibilityCheckResult = EligibilityCheckResult(
+    processingDateTime          = ProcessingDateTime(reusableDateAsString),
+    identification              = List(
+      Identification(
+        idType  = IdType("VRN"),
+        idValue = IdValue(taxId.value)
+      )
+    ),
+    customerPostcodes           = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate("2020-01-01"))),
+    regimePaymentFrequency      = PaymentPlanFrequencies.Monthly,
+    paymentPlanFrequency        = PaymentPlanFrequencies.Monthly,
+    paymentPlanMinLength        = PaymentPlanMinLength(1),
+    paymentPlanMaxLength        = PaymentPlanMaxLength(6),
+    eligibilityStatus           = EligibilityStatus(EligibilityPass(true)),
+    eligibilityRules            = eligibleEligibilityRules,
+    chargeTypeAssessment        = List(
+      ChargeTypeAssessment(
+        taxPeriodFrom   = TaxPeriodFrom("2020-08-13"),
+        taxPeriodTo     = TaxPeriodTo("2020-08-14"),
+        debtTotalAmount = DebtTotalAmount(AmountInPence(300000)),
+        charges         = List(
+          Charges(
+            chargeType           = ChargeType("InYearRTICharge-Tax"),
+            mainType             = MainType("InYearRTICharge(FPS)"),
+            chargeReference      = ChargeReference("A00000000001"),
+            mainTrans            = MainTrans("mainTrans"),
+            subTrans             = SubTrans("subTrans"),
+            outstandingAmount    = OutstandingAmount(AmountInPence(100000)),
+            dueDate              = DueDate(reusableDate),
+            interestStartDate    = Some(InterestStartDate(reusableDate)),
+            accruedInterest      = AccruedInterest(AmountInPence(1597)),
+            ineligibleChargeType = IneligibleChargeType(false),
+            chargeOverMaxDebtAge = ChargeOverMaxDebtAge(false),
+            locks                = Some(
+              List(
+                Lock(
+                  lockType                 = LockType("Payment"),
+                  lockReason               = LockReason("Risk/Fraud"),
+                  disallowedChargeLockType = DisallowedChargeLockType(false)
+                )
+              )
+            )
+          )
+        )
+      )
+    ),
+    customerDetails             = None,
+    regimeDigitalCorrespondence = None
+  )
 }

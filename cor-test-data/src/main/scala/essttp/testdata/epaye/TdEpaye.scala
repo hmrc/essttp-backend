@@ -17,14 +17,12 @@
 package essttp.testdata.epaye
 
 import essttp.rootmodel.epaye.{Aor, TaxOfficeNumber, TaxOfficeReference}
+import essttp.rootmodel.ttp._
 import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
-import essttp.rootmodel.ttp._
 import essttp.rootmodel.{AmountInPence, EmpRef}
 import essttp.testdata.TdBase
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
-
-import java.time.LocalDate
 
 trait TdEpaye {
   dependencies: TdBase =>
@@ -36,18 +34,6 @@ trait TdEpaye {
   val empRef: EmpRef = EmpRef("864FZ00049")
 
   val aor: Aor = Aor("123PA44545546")
-
-  val reusableDateAsString: String = "2022-05-17"
-  val reusableDate: LocalDate = LocalDate.parse(reusableDateAsString)
-
-  val eligibleEligibilityRules: EligibilityRules = EligibilityRules(
-    hasRlsOnAddress                   = false, markedAsInsolvent = false, isLessThanMinDebtAllowance = false,
-    isMoreThanMaxDebtAllowance        = false, disallowedChargeLockTypes = false, existingTTP = false,
-    chargesOverMaxDebtAge             = false, ineligibleChargeTypes = false, missingFiledReturns = false,
-    hasInvalidInterestSignals         = None, dmSpecialOfficeProcessingRequired = None
-  )
-
-  val hasRlsAddressOn: EligibilityRules = eligibleEligibilityRules.copy(hasRlsOnAddress = true)
 
   val eligibleEligibilityCheckResult: EligibilityCheckResult = EligibilityCheckResult(
     processingDateTime          = ProcessingDateTime(reusableDateAsString),
