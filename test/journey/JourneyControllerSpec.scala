@@ -429,7 +429,8 @@ class JourneyControllerSpec extends ItSpec {
 
   private val vatTestNameJourneyStages: String =
     "[StartJourney]" +
-      "[UpdateTaxId]"
+      "[UpdateTaxId]" +
+      "[UpdateEligibilityCheck]"
 
   "[Vat]" - {
     s"[Bta]$vatTestNameJourneyStages" in {
@@ -449,10 +450,14 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateTaxId(tdAll.journeyId, tdAll.VatBta.updateTaxIdRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterDetermineTaxIds
 
-      verifyCommonActions(numberOfAuthCalls = 4)
+      /** Update eligibility result * */
+      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.VatBta.updateEligibilityCheckRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterEligibilityCheckEligible
+
+      verifyCommonActions(numberOfAuthCalls = 6)
     }
 
-    s"[GovUk][Start journey]" in {
+    s"[GovUk]$vatTestNameJourneyStages" in {
       stubCommonActions()
       val tdAll = new TdAll {
         override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
@@ -469,10 +474,14 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateTaxId(tdAll.journeyId, tdAll.VatGovUk.updateTaxIdRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterDetermineTaxIds
 
-      verifyCommonActions(numberOfAuthCalls = 4)
+      /** Update eligibility result * */
+      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.VatGovUk.updateEligibilityCheckRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterEligibilityCheckEligible
+
+      verifyCommonActions(numberOfAuthCalls = 6)
     }
 
-    s"[DetachedUrl][Start journey]" in {
+    s"[DetachedUrl]$vatTestNameJourneyStages" in {
       stubCommonActions()
       val tdAll = new TdAll {
         override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
@@ -489,7 +498,11 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateTaxId(tdAll.journeyId, tdAll.VatDetachedUrl.updateTaxIdRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterDetermineTaxIds
 
-      verifyCommonActions(numberOfAuthCalls = 4)
+      /** Update eligibility result * */
+      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.VatDetachedUrl.updateEligibilityCheckRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterEligibilityCheckEligible
+
+      verifyCommonActions(numberOfAuthCalls = 6)
     }
   }
 

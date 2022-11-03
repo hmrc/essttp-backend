@@ -61,6 +61,8 @@ class UpdateCanPayUpfrontController @Inject() (
             .withFieldConst(_.canPayUpfront, canPayUpfront)
             .transform
         journeyService.upsert(newJourney)
+      case _: Journey.Vat.EligibilityChecked =>
+        Errors.throwBadRequestExceptionF("Not built yet...")
     }
   }
 

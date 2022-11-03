@@ -25,7 +25,7 @@ import essttp.rootmodel.dates.extremedates.{EarliestPaymentPlanStartDate, Extrem
 import essttp.rootmodel.dates.startdates.{InstalmentStartDate, StartDatesResponse}
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes._
-import essttp.rootmodel.ttp.{ChargeReference, InterestAccrued}
+import essttp.rootmodel.ttp.{ChargeReference, EligibilityCheckResult, EligibilityPass, EligibilityRules, EligibilityStatus, InterestAccrued}
 import essttp.utils.TdSupport.FakeRequestOps
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
@@ -44,6 +44,25 @@ trait TdBase {
   def createdOn: Instant = LocalDateTime.parse("2057-11-02T16:28:55.185").toInstant(ZoneOffset.UTC)
   def amountToUpdate: AmountInPence = AmountInPence(123499)
   def amountInPence: AmountInPence = AmountInPence(1000)
+
+  val reusableDateAsString: String = "2022-05-17"
+  val reusableDate: LocalDate = LocalDate.parse(reusableDateAsString)
+
+  val eligibleEligibilityRules: EligibilityRules = EligibilityRules(
+    hasRlsOnAddress                   = false, markedAsInsolvent = false, isLessThanMinDebtAllowance = false,
+    isMoreThanMaxDebtAllowance        = false, disallowedChargeLockTypes = false, existingTTP = false,
+    chargesOverMaxDebtAge             = false, ineligibleChargeTypes = false, missingFiledReturns = false,
+    hasInvalidInterestSignals         = None, dmSpecialOfficeProcessingRequired = None
+  )
+
+  def ineligibleEligibilityCheckResult(eligibleEligibilityCheckResult: EligibilityCheckResult): EligibilityCheckResult =
+    eligibleEligibilityCheckResult.copy(
+      eligibilityStatus = EligibilityStatus(EligibilityPass(false)),
+      eligibilityRules  = hasRlsAddressOn
+    )
+
+  val hasRlsAddressOn: EligibilityRules = eligibleEligibilityRules.copy(hasRlsOnAddress = true)
+
   val canPayUpfrontYes: CanPayUpfront = CanPayUpfront(true)
   val canPayUpfrontNo: CanPayUpfront = CanPayUpfront(false)
   def upfrontPaymentAmount: UpfrontPaymentAmount = UpfrontPaymentAmount(amountInPence)

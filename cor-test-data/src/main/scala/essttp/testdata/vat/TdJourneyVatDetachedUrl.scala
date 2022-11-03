@@ -19,6 +19,7 @@ package essttp.testdata.vat
 import essttp.journey.model.SjRequest.Vat
 import essttp.journey.model._
 import essttp.rootmodel.TaxId
+import essttp.rootmodel.ttp.EligibilityCheckResult
 import essttp.testdata.TdBase
 import essttp.utils.ResourceReader.read
 import play.api.libs.json.JsObject
@@ -54,7 +55,7 @@ trait TdJourneyVatDetachedUrl {
 
     def updateTaxIdRequest(): TaxId = vrn
 
-    def updateTaxIdRequestJson(): JsObject = read("/testdata/vat/bta/UpdateTaxIdRequest.json").asJson
+    def updateTaxIdRequestJson(): JsObject = read("/testdata/vat/detachedurl/UpdateTaxIdRequest.json").asJson
 
     def journeyAfterDetermineTaxIds: Journey.Vat.ComputedTaxId = Journey.Vat.ComputedTaxId(
       _id           = dependencies.journeyId,
@@ -67,6 +68,38 @@ trait TdJourneyVatDetachedUrl {
       taxId         = vrn
     )
 
-    def journeyAfterDetermineTaxIdsJson: JsObject = read("testdata/vat/bta/JourneyAfterComputedTaxIds.json").asJson
+    def journeyAfterDetermineTaxIdsJson: JsObject = read("testdata/vat/detachedurl/JourneyAfterComputedTaxIds.json").asJson
+
+    def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResult()
+
+    def updateEligibilityCheckRequestJson(): JsObject = read("/testdata/vat/detachedurl/UpdateEligibilityCheckRequest.json").asJson
+
+    def journeyAfterEligibilityCheckEligible: Journey.Vat.EligibilityChecked = Journey.Vat.EligibilityChecked(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Vat.DetachedUrl,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterEligibilityCheck.Eligible,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult()
+    )
+
+    def journeyAfterEligibilityCheckEligibleJson: JsObject = read("/testdata/vat/detachedurl/JourneyAfterEligibilityCheck.json").asJson
+
+    def journeyAfterEligibilityCheckNotEligible: Journey.Vat.EligibilityChecked = Journey.Vat.EligibilityChecked(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Vat.DetachedUrl,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterEligibilityCheck.Ineligible,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = ineligibleEligibilityCheckResult(eligibleEligibilityCheckResult())
+    )
+
+    def journeyAfterEligibilityCheckNotEligibleJson: JsObject = read("/testdata/vat/detachedurl/JourneyAfterEligibilityCheckNotEligible.json").asJson
   }
 }

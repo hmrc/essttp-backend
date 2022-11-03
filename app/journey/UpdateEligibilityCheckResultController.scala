@@ -21,7 +21,7 @@ import cats.Eq
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.{Epaye, Stages}
+import essttp.journey.model.Journey.{Epaye, Stages, Vat}
 import essttp.journey.model._
 import essttp.rootmodel.ttp.EligibilityCheckResult
 import essttp.utils.Errors
@@ -65,13 +65,12 @@ class UpdateEligibilityCheckResultController @Inject() (
           .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
           .transform
         journeyService.upsert(newJourney)
-      case _: Journey.Vat.ComputedTaxId =>
-        Errors.throwBadRequestExceptionF("Not built yet...")
-      //        val newJourney = j.into[Journey.Vat.EligibilityChecked]
-      //          .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
-      //          .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
-      //          .transform
-      //        journeyService.upsert(newJourney)
+      case j: Journey.Vat.ComputedTaxId =>
+        val newJourney = j.into[Journey.Vat.EligibilityChecked]
+          .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+          .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+          .transform
+        journeyService.upsert(newJourney)
     }
   }
 
@@ -84,9 +83,14 @@ class UpdateEligibilityCheckResultController @Inject() (
       Future.successful(())
     } else {
       val updatedJourney: Journey.AfterEligibilityChecked = journey match {
+
         case j: Epaye.EligibilityChecked =>
           j.copy(eligibilityCheckResult = eligibilityCheckResult)
             .copy(stage = deriveEligibilityEnum(eligibilityCheckResult))
+        case j: Vat.EligibilityChecked =>
+          j.copy(eligibilityCheckResult = eligibilityCheckResult)
+            .copy(stage = deriveEligibilityEnum(eligibilityCheckResult))
+
         case j: Epaye.AnsweredCanPayUpfront =>
           j.into[Journey.Epaye.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
