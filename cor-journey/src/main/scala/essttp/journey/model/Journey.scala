@@ -1326,5 +1326,24 @@ object Journey {
       extends Journey
       with Journey.Stages.ComputedTaxId
       with Journey.Vat
+
+    /**
+     * [[Journey]] after EligibilityCheck
+     * VAT
+     */
+    final case class EligibilityChecked(
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Vat,
+        override val createdOn:              Instant,
+        override val sjRequest:              SjRequest.Vat,
+        override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
+        override val stage:                  Stage.AfterEligibilityCheck,
+        override val taxId:                  Vrn,
+        override val eligibilityCheckResult: EligibilityCheckResult
+    )
+      extends Journey
+      with Journey.Stages.EligibilityChecked
+      with Journey.Vat
   }
 }

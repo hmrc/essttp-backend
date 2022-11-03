@@ -17,7 +17,7 @@
 package controllers
 
 import essttp.journey.JourneyConnector
-import essttp.rootmodel.Vrn
+import essttp.rootmodel.{EmpRef, Vrn}
 import essttp.testdata.TdAll
 import testsupport.ItSpec
 
@@ -59,7 +59,15 @@ class UpdateTaxIdControllerSpec extends ItSpec {
 
     }
     "Journey.Vat" - {
+      "should throw Bad Request when passed an EmpRef for a VAT journey in stage [Started]" in new JourneyItTest {
+        stubCommonActions()
 
+        insertJourneyForTest(TdAll.VatBta.journeyAfterStarted.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+        val result: Throwable = journeyConnector.updateTaxId(tdAll.journeyId, EmpRef("thisshouldfailthetest")).failed.futureValue
+        result.getMessage should include("""{"statusCode":400,"message":"Why is there an empref, this is for Vat..."}""")
+
+        verifyCommonActions(numberOfAuthCalls = 1)
+      }
     }
   }
 
