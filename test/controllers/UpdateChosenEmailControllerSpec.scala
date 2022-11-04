@@ -16,6 +16,7 @@
 
 package controllers
 
+import essttp.emailverification.EmailVerificationStatus
 import essttp.journey.JourneyConnector
 import essttp.rootmodel.{Email, IsEmailAddressRequired}
 import essttp.testdata.TdAll
@@ -56,6 +57,22 @@ class UpdateChosenEmailControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
 
       verifyCommonActions(numberOfAuthCalls = 4)
+    }
+
+    "change the journey state even if the email in the journey is the same" in new JourneyItTest {
+      stubCommonActions()
+
+      insertJourneyForTest(
+        TdAll.EpayeBta.journeyAfterEmailVerificationStatus(EmailVerificationStatus.Locked)
+          .copy(_id = tdAll.journeyId)
+          .copy(correlationId = tdAll.correlationId)
+      )
+
+      val result = journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest()).futureValue
+      result shouldBe tdAll.EpayeBta.journeyAfterSelectedEmail
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedEmail
+
+      verifyCommonActions(numberOfAuthCalls = 2)
     }
 
     "should throw a Bad Request when isEmailAddressRequired in journey is false" in new JourneyItTest {
