@@ -72,6 +72,7 @@ object Origins extends Enum[Origin] {
     implicit val format: Format[Vat] = EnumFormat(Vat)
 
     case object Bta extends Origin with Vat with BetterName
+    case object VatService extends Origin with Vat with BetterName
     case object GovUk extends Origin with Vat with BetterName
 
     /**

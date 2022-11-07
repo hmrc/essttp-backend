@@ -143,6 +143,12 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
         body = sjRequest
       )
 
+    def startJourneyVatService(sjRequest: SjRequest.Vat.Simple)(implicit request: RequestHeader): Future[SjResponse] =
+      httpClient.POST[SjRequest.Vat.Simple, SjResponse](
+        url  = s"$baseUrl/essttp-backend/vat/vat-service/journey/start",
+        body = sjRequest
+      )
+
     def startJourneyDetachedUrl(sjRequest: SjRequest.Vat.Empty)(implicit request: RequestHeader): Future[SjResponse] =
       httpClient.POST[SjRequest, SjResponse](
         url  = s"$baseUrl/essttp-backend/vat/detached-url/journey/start",
