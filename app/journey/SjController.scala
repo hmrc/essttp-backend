@@ -49,6 +49,7 @@ class SjController @Inject() (
     }
 
   def startJourneyVatFromBta(): Action[SjRequest.Vat.Simple] = startJourneyVat[SjRequest.Vat.Simple](Origins.Vat.Bta)
+  def startJourneyVatFromVatService(): Action[SjRequest.Vat.Simple] = startJourneyVat[SjRequest.Vat.Simple](Origins.Vat.VatService)
   def startJourneyVatFromGovUk(): Action[SjRequest.Vat.Empty] = startJourneyVat[SjRequest.Vat.Empty](Origins.Vat.GovUk)
   def startJourneyVatFromDetachedUrl(): Action[SjRequest.Vat.Empty] = startJourneyVat[SjRequest.Vat.Empty](Origins.Vat.DetachedUrl)
 
@@ -85,6 +86,7 @@ class SjController @Inject() (
     }
     case o: Origins.Vat => o match {
       case Origins.Vat.Bta         => "Journey for Vat from BTA"
+      case Origins.Vat.VatService  => "Journey for Vat from VAT service"
       case Origins.Vat.GovUk       => "Journey for Vat from GovUk"
       case Origins.Vat.DetachedUrl => "Journey for Vat from DetachedUrl"
     }

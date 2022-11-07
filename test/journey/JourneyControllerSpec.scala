@@ -504,6 +504,30 @@ class JourneyControllerSpec extends ItSpec {
 
       verifyCommonActions(numberOfAuthCalls = 6)
     }
+
+    s"[VatService]$vatTestNameJourneyStages" in {
+      stubCommonActions()
+      val tdAll = new TdAll {
+        override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
+        override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
+      }
+      implicit val request: Request[_] = tdAll.request
+      val response: SjResponse = journeyConnector.Vat.startJourneyVatService(tdAll.VatVatService.sjRequest).futureValue
+
+      /** Start journey */
+      response shouldBe tdAll.VatVatService.sjResponse
+      journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterStarted
+
+      /** Update tax id */
+      journeyConnector.updateTaxId(tdAll.journeyId, tdAll.VatVatService.updateTaxIdRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterDetermineTaxIds
+
+      /** Update eligibility result * */
+      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.VatVatService.updateEligibilityCheckRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterEligibilityCheckEligible
+
+      verifyCommonActions(numberOfAuthCalls = 6)
+    }
   }
 
 }

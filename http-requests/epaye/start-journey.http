@@ -11,6 +11,19 @@ X-Session-ID: sialalalabta
 
 ###
 
+POST http://localhost:9216/essttp-backend/epaye/epaye-service/journey/start
+Accept: */*
+Cache-Control: no-cache
+Content-Type: Application/Json
+X-Session-ID: sialalalaepayeservice
+
+{
+  "returnUrl": "http://localhost:9066/return",
+  "backUrl":   "http://localhost:9066/back"
+}
+
+###
+
 POST http://localhost:9216/essttp-backend/epaye/gov-uk/journey/start
 Accept: */*
 Cache-Control: no-cache

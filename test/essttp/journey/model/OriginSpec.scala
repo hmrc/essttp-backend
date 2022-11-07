@@ -31,6 +31,7 @@ class OriginSpec extends UnitSpec {
       Json.toJson[Origin](Origins.Vat.GovUk) shouldBe JsString("Origins.Vat.GovUk")
       Json.toJson[Origin](Origins.Vat.DetachedUrl) shouldBe JsString("Origins.Vat.DetachedUrl")
       Json.toJson[Origin](Origins.Vat.Bta) shouldBe JsString("Origins.Vat.Bta")
+      Json.toJson[Origin](Origins.Vat.VatService) shouldBe JsString("Origins.Vat.VatService")
     }
   }
 
@@ -59,6 +60,7 @@ class OriginSpec extends UnitSpec {
       JsString("Origins.Vat.GovUk").as[Origin] shouldBe Origins.Vat.GovUk
       JsString("Origins.Vat.DetachedUrl").as[Origin] shouldBe Origins.Vat.DetachedUrl
       JsString("Origins.Vat.Bta").as[Origin] shouldBe Origins.Vat.Bta
+      JsString("Origins.Vat.VatService").as[Origin] shouldBe Origins.Vat.VatService
     }
   }
 
@@ -73,6 +75,7 @@ class OriginSpec extends UnitSpec {
       JsString("Origins.Vat.GovUk").as[Origins.Vat] shouldBe Origins.Vat.GovUk
       JsString("Origins.Vat.DetachedUrl").as[Origins.Vat] shouldBe Origins.Vat.DetachedUrl
       JsString("Origins.Vat.Bta").as[Origins.Vat] shouldBe Origins.Vat.Bta
+      JsString("Origins.Vat.VatService").as[Origins.Vat] shouldBe Origins.Vat.VatService
     }
   }
 
