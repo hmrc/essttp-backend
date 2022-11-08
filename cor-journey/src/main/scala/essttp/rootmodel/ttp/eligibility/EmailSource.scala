@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.ttp
+package essttp.rootmodel.ttp.eligibility
 
 import play.api.libs.json.{Json, Format}
 
-final case class RegimeType(value: String) extends AnyVal
+final case class EmailSource(value: String) extends AnyVal
 
-object RegimeType {
-  implicit val format: Format[RegimeType] = Json.valueFormat
-  val `PAYE`: RegimeType = RegimeType("PAYE")
-  val `VAT`: RegimeType = RegimeType("VATC")
+object EmailSource {
+  implicit val format: Format[EmailSource] = Json.valueFormat
+  val `ETMP`: EmailSource = EmailSource("ETMP")
+  val `TEMP`: EmailSource = EmailSource("TEMP")
 }
