@@ -19,16 +19,19 @@ package essttp.rootmodel.ttp.arrangement
 import essttp.crypto.CryptoFormat
 import essttp.rootmodel.ttp.{Identification, PaymentPlanFrequency, RegimeType}
 import essttp.rootmodel.ttp.affordablequotes.ChannelIdentifier
+import essttp.rootmodel.ttp.eligibility.{CustomerDetail, RegimeDigitalCorrespondence}
 import play.api.libs.json.{Json, OFormat}
 
 final case class ArrangementRequest(
-    channelIdentifier:      ChannelIdentifier,
-    regimeType:             RegimeType,
-    regimePaymentFrequency: PaymentPlanFrequency,
-    arrangementAgreedDate:  ArrangementAgreedDate,
-    identification:         List[Identification],
-    directDebitInstruction: DirectDebitInstruction,
-    paymentPlan:            EnactPaymentPlan
+    channelIdentifier:           ChannelIdentifier,
+    regimeType:                  RegimeType,
+    regimePaymentFrequency:      PaymentPlanFrequency,
+    arrangementAgreedDate:       ArrangementAgreedDate,
+    identification:              List[Identification],
+    directDebitInstruction:      DirectDebitInstruction,
+    paymentPlan:                 EnactPaymentPlan,
+    customerDetails:             Option[List[CustomerDetail]],
+    regimeDigitalCorrespondence: Option[RegimeDigitalCorrespondence]
 )
 
 object ArrangementRequest {

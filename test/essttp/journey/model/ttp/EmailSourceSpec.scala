@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.ttp
+package essttp.journey.model.ttp
 
-import play.api.libs.json.{Json, Format}
+import essttp.rootmodel.ttp.eligibility.EmailSource
+import play.api.libs.json.{JsString, Json}
+import testsupport.UnitSpec
 
-final case class RegimeType(value: String) extends AnyVal
+class EmailSourceSpec extends UnitSpec {
 
-object RegimeType {
-  implicit val format: Format[RegimeType] = Json.valueFormat
-  val `PAYE`: RegimeType = RegimeType("PAYE")
-  val `VAT`: RegimeType = RegimeType("VATC")
+  "survive round trip de/serialisation" in {
+    Json.toJson[EmailSource](EmailSource.`ETMP`) shouldBe JsString("ETMP")
+    JsString("ETMP").as[EmailSource] shouldBe EmailSource.`ETMP`
+    Json.toJson[EmailSource](EmailSource.`TEMP`) shouldBe JsString("TEMP")
+    JsString("TEMP").as[EmailSource] shouldBe EmailSource.`TEMP`
+  }
 }
