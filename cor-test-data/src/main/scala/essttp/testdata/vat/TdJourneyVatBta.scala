@@ -18,7 +18,7 @@ package essttp.testdata.vat
 
 import essttp.journey.model.SjRequest.Vat
 import essttp.journey.model.{Journey, NextUrl, Origins, SjRequest, SjResponse, Stage}
-import essttp.rootmodel.TaxId
+import essttp.rootmodel.{CanPayUpfront, TaxId}
 import essttp.rootmodel.ttp.EligibilityCheckResult
 import essttp.testdata.TdBase
 import essttp.utils.ResourceReader.read
@@ -104,5 +104,43 @@ trait TdJourneyVatBta {
     )
 
     def journeyAfterEligibilityCheckNotEligibleJson: JsObject = read("/testdata/vat/bta/JourneyAfterEligibilityCheckNotEligible.json").asJson
+
+    def updateCanPayUpfrontYesRequest(): CanPayUpfront = canPayUpfrontYes
+
+    def updateCanPayUpfrontNoRequest(): CanPayUpfront = canPayUpfrontNo
+
+    def updateCanPayUpfrontYesRequestJson(): JsObject = read("/testdata/vat/bta/UpdateCanPayUpfrontYes.json").asJson
+
+    def updateCanPayUpfrontNoRequestJson(): JsObject = read("/testdata/vat/bta/UpdateCanPayUpfrontNo.json").asJson
+
+    def journeyAfterCanPayUpfrontYes: Journey.Vat.AnsweredCanPayUpfront = Journey.Vat.AnsweredCanPayUpfront(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Vat.Bta,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterCanPayUpfront.Yes,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      canPayUpfront          = canPayUpfrontYes
+    )
+
+    def journeyAfterCanPayUpfrontYesJson: JsObject = read("/testdata/vat/bta/JourneyAfterCanPayUpfrontYes.json").asJson
+
+    def journeyAfterCanPayUpfrontNo: Journey.Vat.AnsweredCanPayUpfront = Journey.Vat.AnsweredCanPayUpfront(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Vat.Bta,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterCanPayUpfront.No,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      canPayUpfront          = canPayUpfrontNo
+    )
+
+    def journeyAfterCanPayUpfrontNoJson: JsObject = read("/testdata/vat/bta/JourneyAfterCanPayUpfrontNo.json").asJson
   }
 }

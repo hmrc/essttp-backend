@@ -430,7 +430,8 @@ class JourneyControllerSpec extends ItSpec {
   private val vatTestNameJourneyStages: String =
     "[StartJourney]" +
       "[UpdateTaxId]" +
-      "[UpdateEligibilityCheck]"
+      "[UpdateEligibilityCheck]" +
+      "[UpdateCanPayUpfront]"
 
   "[Vat]" - {
     s"[Bta]$vatTestNameJourneyStages" in {
@@ -454,7 +455,11 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.VatBta.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterEligibilityCheckEligible
 
-      verifyCommonActions(numberOfAuthCalls = 6)
+      /** Update CanPayUpfront */
+      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.VatBta.updateCanPayUpfrontYesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterCanPayUpfrontYes
+
+      verifyCommonActions(numberOfAuthCalls = 8)
     }
 
     s"[GovUk]$vatTestNameJourneyStages" in {
@@ -478,7 +483,11 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.VatGovUk.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterEligibilityCheckEligible
 
-      verifyCommonActions(numberOfAuthCalls = 6)
+      /** Update CanPayUpfront */
+      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.VatGovUk.updateCanPayUpfrontYesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterCanPayUpfrontYes
+
+      verifyCommonActions(numberOfAuthCalls = 8)
     }
 
     s"[DetachedUrl]$vatTestNameJourneyStages" in {
@@ -502,7 +511,11 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.VatDetachedUrl.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterEligibilityCheckEligible
 
-      verifyCommonActions(numberOfAuthCalls = 6)
+      /** Update CanPayUpfront */
+      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.VatDetachedUrl.updateCanPayUpfrontYesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterCanPayUpfrontYes
+
+      verifyCommonActions(numberOfAuthCalls = 8)
     }
 
     s"[VatService]$vatTestNameJourneyStages" in {
@@ -526,7 +539,11 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.VatVatService.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterEligibilityCheckEligible
 
-      verifyCommonActions(numberOfAuthCalls = 6)
+      /** Update CanPayUpfront */
+      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.VatVatService.updateCanPayUpfrontYesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterCanPayUpfrontYes
+
+      verifyCommonActions(numberOfAuthCalls = 8)
     }
   }
 
