@@ -6,14 +6,14 @@
     },
     "createdOn": "2022-05-17T13:28:52.261",
     "_id": "6283a314430100e2eae927bf",
-    "origin": "Origins.Vat.VatService",
+    "origin": "Origins.Vat.DetachedUrl",
     "sjRequest": {
       "Simple": {
         "returnUrl": "http://localhost:9066/return",
         "backUrl": "http://localhost:9066/back"
       }
     },
-    "sessionId": "sialalalavatservice",
+    "sessionId": "sialalaladetachedurl",
     "eligibilityCheckResult": {
       "idType": "SSTTP",
       "idNumber": "101747001",
@@ -84,6 +84,6 @@
     },
     "canPayUpfront": true
   },
-  "sessionId": "sialalalavatservice",
+  "sessionId": "sialalaladetachedurl",
   "createdAt": "2022-05-17T13:28:52.261"
 }
