@@ -20,7 +20,7 @@ import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.{Epaye, Stages}
+import essttp.journey.model.Journey.{Epaye, Vat, Stages}
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.MonthlyPaymentAmount
 import essttp.utils.Errors
@@ -58,6 +58,7 @@ class UpdateMonthlyPaymentAmountController @Inject() (
           .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
           .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
           .transform
+      case _: Vat.RetrievedAffordabilityResult => Errors.notImplemented("Not built yet...")
     }
     journeyService.upsert(newJourney)
   }

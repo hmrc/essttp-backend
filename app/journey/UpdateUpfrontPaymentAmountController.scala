@@ -64,11 +64,11 @@ class UpdateUpfrontPaymentAmountController @Inject() (
             .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
             .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
             .transform
-        case _: Vat.AnsweredCanPayUpfront => Errors.notImplemented("Not built yet...")
-        //            j.into[Vat.EnteredUpfrontPaymentAmount]
-        //              .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-        //              .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
-        //              .transform
+        case j: Vat.AnsweredCanPayUpfront =>
+          j.into[Vat.EnteredUpfrontPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+            .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
+            .transform
       }
       journeyService.upsert(updatedJourney)
     } else {
@@ -82,12 +82,15 @@ class UpdateUpfrontPaymentAmountController @Inject() (
   )(implicit request: Request[_]): Future[Journey] = {
 
     journey match {
-      case Left(j: Epaye.EnteredUpfrontPaymentAmount) =>
+      case Left(j) =>
         if (j.upfrontPaymentAmount.value === upfrontPaymentAmount.value) {
           JourneyLogger.info("Nothing to update, UpfrontPaymentAmount is the same as the existing one in journey.")
           Future.successful(j)
         } else {
-          val updatedJourney: Epaye.EnteredUpfrontPaymentAmount = j.copy(upfrontPaymentAmount = upfrontPaymentAmount)
+          val updatedJourney: Stages.EnteredUpfrontPaymentAmount = j match {
+            case j1: Epaye.EnteredUpfrontPaymentAmount => j1.copy(upfrontPaymentAmount = upfrontPaymentAmount)
+            case j1: Vat.EnteredUpfrontPaymentAmount   => j1.copy(upfrontPaymentAmount = upfrontPaymentAmount)
+          }
           journeyService.upsert(updatedJourney)
         }
 
@@ -97,25 +100,40 @@ class UpdateUpfrontPaymentAmountController @Inject() (
             JourneyLogger.info("Nothing to update, UpfrontPaymentAmount is the same as the existing one in journey.")
             Future.successful(j)
           } else {
-            val updatedJourney = j match {
+            val updatedJourney: Stages.EnteredUpfrontPaymentAmount = j match {
               case j: Epaye.EnteredMonthlyPaymentAmount =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
                   .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
+
               case j: Epaye.RetrievedExtremeDates =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
                   .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
+              case j: Vat.RetrievedExtremeDates =>
+                j.into[Journey.Vat.EnteredUpfrontPaymentAmount]
+                  .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
+                  .transform
+
               case j: Epaye.RetrievedAffordabilityResult =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
                   .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
+              case j: Vat.RetrievedAffordabilityResult =>
+                j.into[Journey.Vat.EnteredUpfrontPaymentAmount]
+                  .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
+                  .transform
+
               case j: Epaye.EnteredDayOfMonth =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)

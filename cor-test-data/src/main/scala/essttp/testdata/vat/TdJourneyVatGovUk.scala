@@ -18,8 +18,10 @@ package essttp.testdata.vat
 
 import essttp.journey.model.SjRequest.Vat
 import essttp.journey.model._
-import essttp.rootmodel.{CanPayUpfront, TaxId}
+import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
+import essttp.rootmodel.{CanPayUpfront, TaxId, UpfrontPaymentAmount}
 import essttp.rootmodel.ttp.EligibilityCheckResult
+import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.testdata.TdBase
 import essttp.utils.JsonSyntax._
 import essttp.utils.ResourceReader.read
@@ -139,5 +141,66 @@ trait TdJourneyVatGovUk {
     )
 
     def journeyAfterCanPayUpfrontNoJson: JsObject = read("/testdata/vat/govuk/JourneyAfterCanPayUpfrontNo.json").asJson
+
+    def updateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.upfrontPaymentAmount
+
+    def updateUpfrontPaymentAmountRequestJson(): JsObject = read("/testdata/vat/govuk/UpdateUpfrontPaymentAmountRequest.json").asJson
+
+    def journeyAfterUpfrontPaymentAmount: Journey.Vat.EnteredUpfrontPaymentAmount = Journey.Vat.EnteredUpfrontPaymentAmount(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Vat.GovUk,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      canPayUpfront          = canPayUpfrontYes,
+      upfrontPaymentAmount   = dependencies.upfrontPaymentAmount
+    )
+
+    def journeyAfterUpfrontPaymentAmountJson: JsObject = read("/testdata/vat/govuk/JourneyAfterUpdateUpfrontPaymentAmount.json").asJson
+
+    def updateExtremeDatesRequest(): ExtremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment
+
+    def updateExtremeDatesRequestJson(): JsObject = read("/testdata/vat/govuk/UpdateExtremeDatesRequest.json").asJson
+
+    def journeyAfterExtremeDates: Journey.Vat.RetrievedExtremeDates = Journey.Vat.RetrievedExtremeDates(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Vat.GovUk,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment
+    )
+
+    def journeyAfterExtremeDatesJson: JsObject = read("/testdata/vat/govuk/JourneyAfterUpdateExtremeDates.json").asJson
+
+    def updateInstalmentAmountsRequest(): InstalmentAmounts = dependencies.instalmentAmounts
+
+    def updateInstalmentAmountsRequestJson(): JsObject = read("/testdata/vat/govuk/UpdateInstalmentAmountsRequest.json").asJson
+
+    def journeyAfterInstalmentAmounts: Journey.Vat.RetrievedAffordabilityResult = Journey.Vat.RetrievedAffordabilityResult(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Vat.GovUk,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterAffordabilityResult.RetrievedAffordabilityResult,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts      = dependencies.instalmentAmounts
+    )
+
+    def journeyAfterInstalmentAmountsJson: JsObject = read("/testdata/vat/govuk/JourneyAfterUpdateInstalmentAmounts.json").asJson
   }
 }
