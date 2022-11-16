@@ -1345,5 +1345,25 @@ object Journey {
       extends Journey
       with Journey.Stages.EligibilityChecked
       with Journey.Vat
+
+    /**
+     * [[Journey]] after CanPayUpfront
+     * Vat
+     */
+    final case class AnsweredCanPayUpfront(
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Vat,
+        override val createdOn:              Instant,
+        override val sjRequest:              SjRequest.Vat,
+        override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
+        override val stage:                  Stage.AfterCanPayUpfront,
+        override val taxId:                  Vrn,
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val canPayUpfront:          CanPayUpfront
+    )
+      extends Journey
+      with Journey.Stages.AnsweredCanPayUpfront
+      with Journey.Vat
   }
 }

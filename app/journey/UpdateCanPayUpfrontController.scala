@@ -54,17 +54,19 @@ class UpdateCanPayUpfrontController @Inject() (
       journey:       Stages.EligibilityChecked,
       canPayUpfront: CanPayUpfront
   )(implicit request: Request[_]): Future[Journey] = {
-    journey match {
+    val updatedJourney: Stages.AnsweredCanPayUpfront = journey match {
       case j: Journey.Epaye.EligibilityChecked =>
-        val newJourney: Journey.Epaye.AnsweredCanPayUpfront =
-          j.into[Journey.Epaye.AnsweredCanPayUpfront]
-            .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-            .withFieldConst(_.canPayUpfront, canPayUpfront)
-            .transform
-        journeyService.upsert(newJourney)
-      case _: Journey.Vat.EligibilityChecked =>
-        Errors.throwBadRequestExceptionF("Not built yet...")
+        j.into[Journey.Epaye.AnsweredCanPayUpfront]
+          .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+          .withFieldConst(_.canPayUpfront, canPayUpfront)
+          .transform
+      case j: Journey.Vat.EligibilityChecked =>
+        j.into[Journey.Vat.AnsweredCanPayUpfront]
+          .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+          .withFieldConst(_.canPayUpfront, canPayUpfront)
+          .transform
     }
+    journeyService.upsert(updatedJourney)
   }
 
   private def updateJourneyWithExistingValue(
@@ -79,6 +81,11 @@ class UpdateCanPayUpfrontController @Inject() (
         } else {
           val updatedJourney: Journey = j match {
             case j1: Journey.Epaye.AnsweredCanPayUpfront =>
+              j1.copy(
+                stage         = determineCanPayUpFrontEnum(canPayUpfront),
+                canPayUpfront = canPayUpfront
+              )
+            case j1: Journey.Vat.AnsweredCanPayUpfront =>
               j1.copy(
                 stage         = determineCanPayUpFrontEnum(canPayUpfront),
                 canPayUpfront = canPayUpfront

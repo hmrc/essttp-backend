@@ -20,7 +20,7 @@ import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.{Epaye, Stages}
+import essttp.journey.model.Journey.{Epaye, Vat, Stages}
 import essttp.journey.model.{Journey, JourneyId, Stage, UpfrontPaymentAnswers}
 import essttp.rootmodel.{CanPayUpfront, UpfrontPaymentAmount}
 import essttp.utils.Errors
@@ -58,15 +58,19 @@ class UpdateUpfrontPaymentAmountController @Inject() (
       upfrontPaymentAmount: UpfrontPaymentAmount
   )(implicit request: Request[_]): Future[Journey] = {
     if (journey.canPayUpfront.value) {
-      journey match {
+      val updatedJourney: Journey.AfterEnteredUpfrontPaymentAmount = journey match {
         case j: Epaye.AnsweredCanPayUpfront =>
-          val newJourney: Epaye.EnteredUpfrontPaymentAmount =
-            j.into[Epaye.EnteredUpfrontPaymentAmount]
-              .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-              .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
-              .transform
-          journeyService.upsert(newJourney)
+          j.into[Epaye.EnteredUpfrontPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+            .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
+            .transform
+        case _: Vat.AnsweredCanPayUpfront => Errors.notImplemented("Not built yet...")
+        //            j.into[Vat.EnteredUpfrontPaymentAmount]
+        //              .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+        //              .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
+        //              .transform
       }
+      journeyService.upsert(updatedJourney)
     } else {
       Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible when user has selected [No] for CanPayUpfront: [${journey.stage}]")
     }
