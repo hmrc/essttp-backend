@@ -20,6 +20,7 @@ import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
+import essttp.journey.model.Journey.Stages
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.utils.Errors
@@ -53,9 +54,14 @@ class UpdateAffordabilityResultController @Inject() (
       journey:           Journey.Stages.RetrievedExtremeDates,
       instalmentAmounts: InstalmentAmounts
   )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey.Epaye.RetrievedAffordabilityResult = journey match {
+    val newJourney: Stages.RetrievedAffordabilityResult = journey match {
       case j: Journey.Epaye.RetrievedExtremeDates =>
         j.into[Journey.Epaye.RetrievedAffordabilityResult]
+          .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+          .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+          .transform
+      case j: Journey.Vat.RetrievedExtremeDates =>
+        j.into[Journey.Vat.RetrievedAffordabilityResult]
           .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
           .withFieldConst(_.instalmentAmounts, instalmentAmounts)
           .transform
@@ -73,6 +79,8 @@ class UpdateAffordabilityResultController @Inject() (
     } else {
       val newJourney: Journey.AfterRetrievedAffordabilityResult = journey match {
         case j: Journey.Epaye.RetrievedAffordabilityResult =>
+          j.copy(instalmentAmounts = instalmentAmounts)
+        case j: Journey.Vat.RetrievedAffordabilityResult =>
           j.copy(instalmentAmounts = instalmentAmounts)
         case j: Journey.Epaye.EnteredMonthlyPaymentAmount =>
           j.into[Journey.Epaye.RetrievedAffordabilityResult]

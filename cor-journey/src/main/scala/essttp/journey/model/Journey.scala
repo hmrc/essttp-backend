@@ -869,7 +869,7 @@ object Journey {
       with Journey.Epaye
 
     /**
-     * [[Journey]] after Affordability request to tpp
+     * [[Journey]] after Extreme dates request to esstp-dates
      * Epaye
      */
     final case class RetrievedExtremeDates(
@@ -1364,6 +1364,70 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.AnsweredCanPayUpfront
+      with Journey.Vat
+
+    /**
+     * [[Journey]] after UpfrontPaymentAmount
+     * Vat
+     */
+    final case class EnteredUpfrontPaymentAmount(
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Vat,
+        override val createdOn:              Instant,
+        override val sjRequest:              SjRequest.Vat,
+        override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
+        override val stage:                  Stage.AfterUpfrontPaymentAmount,
+        override val taxId:                  Vrn,
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val canPayUpfront:          CanPayUpfront,
+        override val upfrontPaymentAmount:   UpfrontPaymentAmount
+    )
+      extends Journey
+      with Journey.Stages.EnteredUpfrontPaymentAmount
+      with Journey.Vat
+
+    /**
+     * [[Journey]] after Extreme dates request to esstp-dates
+     * Vat
+     */
+    final case class RetrievedExtremeDates(
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Vat,
+        override val createdOn:              Instant,
+        override val sjRequest:              SjRequest.Vat,
+        override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
+        override val stage:                  Stage.AfterExtremeDatesResponse,
+        override val taxId:                  Vrn,
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val upfrontPaymentAnswers:  UpfrontPaymentAnswers,
+        override val extremeDatesResponse:   ExtremeDatesResponse
+    )
+      extends Journey
+      with Journey.Stages.RetrievedExtremeDates
+      with Journey.Vat
+
+    /**
+     * [[Journey]] after Affordability request to tpp
+     * Vat
+     */
+    final case class RetrievedAffordabilityResult(
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Vat,
+        override val createdOn:              Instant,
+        override val sjRequest:              SjRequest.Vat,
+        override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
+        override val stage:                  Stage.AfterAffordabilityResult,
+        override val taxId:                  Vrn,
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val upfrontPaymentAnswers:  UpfrontPaymentAnswers,
+        override val extremeDatesResponse:   ExtremeDatesResponse,
+        override val instalmentAmounts:      InstalmentAmounts
+    )
+      extends Journey
+      with Journey.Stages.RetrievedAffordabilityResult
       with Journey.Vat
   }
 }

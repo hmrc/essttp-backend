@@ -64,13 +64,17 @@ class UpdateDatesController @Inject() (
         .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.NoUpfrontPayment)
         .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
         .transform
-      case Left(_: Vat.AnsweredCanPayUpfront) => Errors.notImplemented("Not built yet...")
-      //        j.into[Journey.Vat.RetrievedExtremeDates]
-      //        .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
-      //        .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.NoUpfrontPayment)
-      //        .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
-      //        .transform
+      case Left(j: Vat.AnsweredCanPayUpfront) => j.into[Journey.Vat.RetrievedExtremeDates]
+        .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+        .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.NoUpfrontPayment)
+        .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+        .transform
       case Right(j: Epaye.EnteredUpfrontPaymentAmount) => j.into[Journey.Epaye.RetrievedExtremeDates]
+        .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+        .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.DeclaredUpfrontPayment(j.upfrontPaymentAmount))
+        .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+        .transform
+      case Right(j: Vat.EnteredUpfrontPaymentAmount) => j.into[Journey.Vat.RetrievedExtremeDates]
         .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
         .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.DeclaredUpfrontPayment(j.upfrontPaymentAmount))
         .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -89,13 +93,23 @@ class UpdateDatesController @Inject() (
       Future.successful(journey)
     } else {
       val newJourney: Journey.AfterExtremeDatesResponse = journey match {
+
         case j: Journey.Epaye.RetrievedExtremeDates =>
           j.copy(extremeDatesResponse = extremeDatesResponse)
+        case j: Journey.Vat.RetrievedExtremeDates =>
+          j.copy(extremeDatesResponse = extremeDatesResponse)
+
         case j: Journey.Epaye.RetrievedAffordabilityResult =>
           j.into[Journey.Epaye.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
+        case j: Journey.Vat.RetrievedAffordabilityResult =>
+          j.into[Journey.Vat.RetrievedExtremeDates]
+            .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+            .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+            .transform
+
         case j: Journey.Epaye.EnteredMonthlyPaymentAmount =>
           j.into[Journey.Epaye.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)

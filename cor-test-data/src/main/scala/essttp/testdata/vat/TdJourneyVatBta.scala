@@ -17,9 +17,11 @@
 package essttp.testdata.vat
 
 import essttp.journey.model.SjRequest.Vat
-import essttp.journey.model.{Journey, NextUrl, Origins, SjRequest, SjResponse, Stage}
-import essttp.rootmodel.{CanPayUpfront, TaxId}
+import essttp.journey.model._
+import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
+import essttp.rootmodel.{CanPayUpfront, TaxId, UpfrontPaymentAmount}
 import essttp.rootmodel.ttp.EligibilityCheckResult
+import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.testdata.TdBase
 import essttp.utils.ResourceReader.read
 import play.api.libs.json.JsObject
@@ -142,5 +144,66 @@ trait TdJourneyVatBta {
     )
 
     def journeyAfterCanPayUpfrontNoJson: JsObject = read("/testdata/vat/bta/JourneyAfterCanPayUpfrontNo.json").asJson
+
+    def updateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.upfrontPaymentAmount
+
+    def updateUpfrontPaymentAmountRequestJson(): JsObject = read("/testdata/vat/bta/UpdateUpfrontPaymentAmountRequest.json").asJson
+
+    def journeyAfterUpfrontPaymentAmount: Journey.Vat.EnteredUpfrontPaymentAmount = Journey.Vat.EnteredUpfrontPaymentAmount(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Vat.Bta,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      canPayUpfront          = canPayUpfrontYes,
+      upfrontPaymentAmount   = dependencies.upfrontPaymentAmount
+    )
+
+    def journeyAfterUpfrontPaymentAmountJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateUpfrontPaymentAmount.json").asJson
+
+    def updateExtremeDatesRequest(): ExtremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment
+
+    def updateExtremeDatesRequestJson(): JsObject = read("/testdata/vat/bta/UpdateExtremeDatesRequest.json").asJson
+
+    def journeyAfterExtremeDates: Journey.Vat.RetrievedExtremeDates = Journey.Vat.RetrievedExtremeDates(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Vat.Bta,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment
+    )
+
+    def journeyAfterExtremeDatesJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateExtremeDates.json").asJson
+
+    def updateInstalmentAmountsRequest(): InstalmentAmounts = dependencies.instalmentAmounts
+
+    def updateInstalmentAmountsRequestJson(): JsObject = read("/testdata/vat/bta/UpdateInstalmentAmountsRequest.json").asJson
+
+    def journeyAfterInstalmentAmounts: Journey.Vat.RetrievedAffordabilityResult = Journey.Vat.RetrievedAffordabilityResult(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Vat.Bta,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterAffordabilityResult.RetrievedAffordabilityResult,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts      = dependencies.instalmentAmounts
+    )
+
+    def journeyAfterInstalmentAmountsJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateInstalmentAmounts.json").asJson
   }
 }

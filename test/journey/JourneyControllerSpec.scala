@@ -400,7 +400,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
 
       /** Update Direct debit details */
-      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeEpayeService.updateDirectDebitDetailsRequest).futureValue
+      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeEpayeService.updateDirectDebitDetailsRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterEnteredDirectDebitDetails()
 
       /** Update Confirm Direct debit details */
@@ -431,7 +431,10 @@ class JourneyControllerSpec extends ItSpec {
     "[StartJourney]" +
       "[UpdateTaxId]" +
       "[UpdateEligibilityCheck]" +
-      "[UpdateCanPayUpfront]"
+      "[UpdateCanPayUpfront]" +
+      "[UpdateUpfrontPaymentAmount]" +
+      "[UpdateExtremeDates]" +
+      "[UpdateAffordabilityResult]"
 
   "[Vat]" - {
     s"[Bta]$vatTestNameJourneyStages" in {
@@ -459,7 +462,19 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.VatBta.updateCanPayUpfrontYesRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterCanPayUpfrontYes
 
-      verifyCommonActions(numberOfAuthCalls = 8)
+      /** Update UpfrontPaymentAmount */
+      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.VatBta.updateUpfrontPaymentAmountRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterUpfrontPaymentAmount
+
+      /** Update ExtremeDates */
+      journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.VatBta.updateExtremeDatesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterExtremeDates
+
+      /** Update AffordabilityResult */
+      journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.VatBta.updateInstalmentAmountsRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterInstalmentAmounts
+
+      verifyCommonActions(numberOfAuthCalls = 14)
     }
 
     s"[GovUk]$vatTestNameJourneyStages" in {
@@ -487,7 +502,19 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.VatGovUk.updateCanPayUpfrontYesRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterCanPayUpfrontYes
 
-      verifyCommonActions(numberOfAuthCalls = 8)
+      /** Update UpfrontPaymentAmount */
+      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.VatGovUk.updateUpfrontPaymentAmountRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterUpfrontPaymentAmount
+
+      /** Update ExtremeDates */
+      journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.VatGovUk.updateExtremeDatesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterExtremeDates
+
+      /** Update AffordabilityResult */
+      journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.VatGovUk.updateInstalmentAmountsRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterInstalmentAmounts
+
+      verifyCommonActions(numberOfAuthCalls = 14)
     }
 
     s"[DetachedUrl]$vatTestNameJourneyStages" in {
@@ -515,7 +542,19 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.VatDetachedUrl.updateCanPayUpfrontYesRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterCanPayUpfrontYes
 
-      verifyCommonActions(numberOfAuthCalls = 8)
+      /** Update UpfrontPaymentAmount */
+      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.VatDetachedUrl.updateUpfrontPaymentAmountRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterUpfrontPaymentAmount
+
+      /** Update ExtremeDates */
+      journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.VatDetachedUrl.updateExtremeDatesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterExtremeDates
+
+      /** Update AffordabilityResult */
+      journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.VatDetachedUrl.updateInstalmentAmountsRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterInstalmentAmounts
+
+      verifyCommonActions(numberOfAuthCalls = 14)
     }
 
     s"[VatService]$vatTestNameJourneyStages" in {
@@ -543,7 +582,19 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.VatVatService.updateCanPayUpfrontYesRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterCanPayUpfrontYes
 
-      verifyCommonActions(numberOfAuthCalls = 8)
+      /** Update UpfrontPaymentAmount */
+      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.VatVatService.updateUpfrontPaymentAmountRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterUpfrontPaymentAmount
+
+      /** Update ExtremeDates */
+      journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.VatVatService.updateExtremeDatesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterExtremeDates
+
+      /** Update AffordabilityResult */
+      journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.VatVatService.updateInstalmentAmountsRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterInstalmentAmounts
+
+      verifyCommonActions(numberOfAuthCalls = 14)
     }
   }
 
