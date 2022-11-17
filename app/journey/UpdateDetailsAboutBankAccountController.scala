@@ -60,6 +60,7 @@ class UpdateDetailsAboutBankAccountController @Inject() (
           .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
           .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
           .transform
+      case _: Journey.Vat.CheckedPaymentPlan => Errors.notImplemented("Not built yet...")
     }
     journeyService.upsert(newJourney)
   }

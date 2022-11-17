@@ -19,12 +19,14 @@ package essttp.testdata.vat
 import essttp.journey.model.SjRequest.Vat
 import essttp.journey.model._
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
-import essttp.rootmodel.{CanPayUpfront, TaxId, UpfrontPaymentAmount}
+import essttp.rootmodel.dates.startdates.StartDatesResponse
+import essttp.rootmodel.{CanPayUpfront, DayOfMonth, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import essttp.rootmodel.ttp.EligibilityCheckResult
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
+import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.testdata.TdBase
 import essttp.utils.ResourceReader.read
-import play.api.libs.json.JsObject
+import play.api.libs.json.{JsNull, JsObject}
 import essttp.utils.JsonSyntax._
 
 import scala.language.reflectiveCalls
@@ -205,5 +207,151 @@ trait TdJourneyVatBta {
     )
 
     def journeyAfterInstalmentAmountsJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateInstalmentAmounts.json").asJson
+
+    def updateMonthlyPaymentAmountRequest(): MonthlyPaymentAmount = dependencies.monthlyPaymentAmount
+
+    def updateMonthlyPaymentAmountRequestJson(): JsObject = read("/testdata/vat/bta/UpdateMonthlyPaymentAmountRequest.json").asJson
+
+    def journeyAfterMonthlyPaymentAmount: Journey.Vat.EnteredMonthlyPaymentAmount = Journey.Vat.EnteredMonthlyPaymentAmount(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Vat.Bta,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts      = dependencies.instalmentAmounts,
+      monthlyPaymentAmount   = dependencies.monthlyPaymentAmount
+    )
+
+    def journeyAfterMonthlyPaymentAmountJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateMonthlyPaymentAmount.json").asJson
+
+    def updateDayOfMonthRequest(): DayOfMonth = dependencies.dayOfMonth
+
+    def updateDayOfMonthRequestJson(): JsObject = read("/testdata/vat/bta/UpdateDayOfMonthRequest.json").asJson
+
+    def journeyAfterDayOfMonth: Journey.Vat.EnteredDayOfMonth = Journey.Vat.EnteredDayOfMonth(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Vat.Bta,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts      = dependencies.instalmentAmounts,
+      monthlyPaymentAmount   = dependencies.monthlyPaymentAmount,
+      dayOfMonth             = dependencies.dayOfMonth
+    )
+
+    def journeyAfterDayOfMonthJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateDayOfMonth.json").asJson
+
+    def updateStartDatesResponse(): StartDatesResponse = dependencies.startDatesResponseWithInitialPayment
+
+    def updateStartDatesResponseJson(): JsObject = read("/testdata/vat/bta/UpdateStartDatesResponse.json").asJson
+
+    def journeyAfterStartDatesResponse: Journey.Vat.RetrievedStartDates = Journey.Vat.RetrievedStartDates(
+      _id                    = dependencies.journeyId,
+      origin                 = Origins.Vat.Bta,
+      createdOn              = dependencies.createdOn,
+      sjRequest              = sjRequest,
+      sessionId              = dependencies.sessionId,
+      stage                  = Stage.AfterStartDatesResponse.StartDatesResponseRetrieved,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts      = dependencies.instalmentAmounts,
+      monthlyPaymentAmount   = dependencies.monthlyPaymentAmount,
+      dayOfMonth             = dependencies.dayOfMonth,
+      startDatesResponse     = dependencies.startDatesResponseWithInitialPayment
+    )
+
+    def journeyAfterStartDatesResponseJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateStartDatesResponse.json").asJson
+
+    def updateAffordableQuotesResponse(): AffordableQuotesResponse = dependencies.affordableQuotesResponse
+
+    def updateAffordableQuotesResponseJson(): JsObject = read("/testdata/vat/bta/UpdateAffordableQuotesRequest.json").asJson
+
+    def journeyAfterAffordableQuotesResponse: Journey.Vat.RetrievedAffordableQuotes = Journey.Vat.RetrievedAffordableQuotes(
+      _id                      = dependencies.journeyId,
+      origin                   = Origins.Vat.Bta,
+      createdOn                = dependencies.createdOn,
+      sjRequest                = sjRequest,
+      sessionId                = dependencies.sessionId,
+      stage                    = Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved,
+      correlationId            = dependencies.correlationId,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts        = dependencies.instalmentAmounts,
+      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+      dayOfMonth               = dependencies.dayOfMonth,
+      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse = dependencies.affordableQuotesResponse
+    )
+
+    def journeyAfterAffordableQuotesResponseJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateAffordableQuotesResponse.json").asJson
+
+    def updateSelectedPaymentPlanRequest(): PaymentPlan = dependencies.paymentPlan(1)
+
+    def updateSelectedPaymentPlanRequestJson(): JsObject = read("/testdata/vat/bta/UpdateSelectedPaymentPlanRequest.json").asJson
+
+    def journeyAfterSelectedPaymentPlan: Journey.Vat.ChosenPaymentPlan = Journey.Vat.ChosenPaymentPlan(
+      _id                      = dependencies.journeyId,
+      origin                   = Origins.Vat.Bta,
+      createdOn                = dependencies.createdOn,
+      sjRequest                = sjRequest,
+      sessionId                = dependencies.sessionId,
+      stage                    = Stage.AfterSelectedPlan.SelectedPlan,
+      correlationId            = dependencies.correlationId,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts        = dependencies.instalmentAmounts,
+      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+      dayOfMonth               = dependencies.dayOfMonth,
+      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan      = dependencies.paymentPlan(1)
+    )
+
+    def journeyAfterSelectedPaymentPlanJson: JsObject = read("/testdata/vat/bta/JourneyAfterSelectedPaymentPlan.json").asJson
+
+    def updateCheckedPaymentPlanRequest(): JsNull.type = JsNull
+
+    def updateCheckedPaymentPlanRequestJson(): JsObject = read("/testdata/vat/bta/UpdateCheckedPaymentPlanRequest.json").asJson
+
+    def journeyAfterCheckedPaymentPlan: Journey.Vat.CheckedPaymentPlan = Journey.Vat.CheckedPaymentPlan(
+      _id                      = dependencies.journeyId,
+      origin                   = Origins.Vat.Bta,
+      createdOn                = dependencies.createdOn,
+      sjRequest                = sjRequest,
+      sessionId                = dependencies.sessionId,
+      stage                    = Stage.AfterCheckedPlan.AcceptedPlan,
+      correlationId            = dependencies.correlationId,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts        = dependencies.instalmentAmounts,
+      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+      dayOfMonth               = dependencies.dayOfMonth,
+      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan      = dependencies.paymentPlan(1)
+    )
+
+    def journeyAfterCheckedPaymentPlanJson: JsObject = read("/testdata/vat/bta/JourneyAfterCheckedPaymentPlan.json").asJson
   }
 }

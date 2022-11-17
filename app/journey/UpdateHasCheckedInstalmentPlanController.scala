@@ -56,6 +56,10 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
         j.into[Journey.Epaye.CheckedPaymentPlan]
           .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
           .transform
+      case j: Journey.Vat.ChosenPaymentPlan =>
+        j.into[Journey.Vat.CheckedPaymentPlan]
+          .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
