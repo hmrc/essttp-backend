@@ -60,6 +60,11 @@ class UpdateInstalmentPlanController @Inject() (
           .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
           .withFieldConst(_.selectedPaymentPlan, paymentPlan)
           .transform
+      case j: Journey.Vat.RetrievedAffordableQuotes =>
+        j.into[Journey.Vat.ChosenPaymentPlan]
+          .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+          .withFieldConst(_.selectedPaymentPlan, paymentPlan)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
@@ -73,13 +78,23 @@ class UpdateInstalmentPlanController @Inject() (
       Future.successful(journey)
     } else {
       val newJourney: Journey.AfterSelectedPaymentPlan = journey match {
+
         case j: Journey.Epaye.ChosenPaymentPlan =>
           j.copy(selectedPaymentPlan = paymentPlan)
+        case j: Journey.Vat.ChosenPaymentPlan =>
+          j.copy(selectedPaymentPlan = paymentPlan)
+
         case j: Journey.Epaye.CheckedPaymentPlan =>
           j.into[Journey.Epaye.ChosenPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
             .withFieldConst(_.selectedPaymentPlan, paymentPlan)
             .transform
+        case j: Journey.Vat.CheckedPaymentPlan =>
+          j.into[Journey.Vat.ChosenPaymentPlan]
+            .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+            .withFieldConst(_.selectedPaymentPlan, paymentPlan)
+            .transform
+
         case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
           j.into[Journey.Epaye.ChosenPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)

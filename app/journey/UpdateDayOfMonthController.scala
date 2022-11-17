@@ -20,7 +20,7 @@ import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.{Epaye, Stages}
+import essttp.journey.model.Journey.{Epaye, Vat, Stages}
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.DayOfMonth
 import essttp.utils.Errors
@@ -55,9 +55,14 @@ class UpdateDayOfMonthController @Inject() (
       journey:    Stages.EnteredMonthlyPaymentAmount,
       dayOfMonth: DayOfMonth
   )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Epaye.EnteredDayOfMonth = journey match {
+    val newJourney: Journey.AfterEnteredDayOfMonth = journey match {
       case j: Epaye.EnteredMonthlyPaymentAmount =>
         j.into[Epaye.EnteredDayOfMonth]
+          .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
+          .withFieldConst(_.dayOfMonth, dayOfMonth)
+          .transform
+      case j: Vat.EnteredMonthlyPaymentAmount =>
+        j.into[Vat.EnteredDayOfMonth]
           .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
           .withFieldConst(_.dayOfMonth, dayOfMonth)
           .transform
@@ -74,28 +79,56 @@ class UpdateDayOfMonthController @Inject() (
       Future.successful(journey)
     } else {
       val updatedJourney: Journey.Stages.EnteredDayOfMonth = journey match {
+
         case j: Epaye.EnteredDayOfMonth =>
           j.copy(dayOfMonth = dayOfMonth)
+        case j: Vat.EnteredDayOfMonth =>
+          j.copy(dayOfMonth = dayOfMonth)
+
         case j: Journey.Epaye.RetrievedStartDates =>
           j.into[Journey.Epaye.EnteredDayOfMonth]
             .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
             .withFieldConst(_.dayOfMonth, dayOfMonth)
             .transform
+        case j: Journey.Vat.RetrievedStartDates =>
+          j.into[Journey.Vat.EnteredDayOfMonth]
+            .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
+            .withFieldConst(_.dayOfMonth, dayOfMonth)
+            .transform
+
         case j: Journey.Epaye.RetrievedAffordableQuotes =>
           j.into[Journey.Epaye.EnteredDayOfMonth]
             .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
             .withFieldConst(_.dayOfMonth, dayOfMonth)
             .transform
+        case j: Journey.Vat.RetrievedAffordableQuotes =>
+          j.into[Journey.Vat.EnteredDayOfMonth]
+            .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
+            .withFieldConst(_.dayOfMonth, dayOfMonth)
+            .transform
+
         case j: Journey.Epaye.ChosenPaymentPlan =>
           j.into[Journey.Epaye.EnteredDayOfMonth]
             .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
             .withFieldConst(_.dayOfMonth, dayOfMonth)
             .transform
+        case j: Journey.Vat.ChosenPaymentPlan =>
+          j.into[Journey.Vat.EnteredDayOfMonth]
+            .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
+            .withFieldConst(_.dayOfMonth, dayOfMonth)
+            .transform
+
         case j: Journey.Epaye.CheckedPaymentPlan =>
           j.into[Journey.Epaye.EnteredDayOfMonth]
             .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
             .withFieldConst(_.dayOfMonth, dayOfMonth)
             .transform
+        case j: Journey.Vat.CheckedPaymentPlan =>
+          j.into[Journey.Vat.EnteredDayOfMonth]
+            .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
+            .withFieldConst(_.dayOfMonth, dayOfMonth)
+            .transform
+
         case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
           j.into[Journey.Epaye.EnteredDayOfMonth]
             .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)

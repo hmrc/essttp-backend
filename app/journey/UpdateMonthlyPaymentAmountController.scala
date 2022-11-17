@@ -52,13 +52,17 @@ class UpdateMonthlyPaymentAmountController @Inject() (
       journey:              Stages.RetrievedAffordabilityResult,
       monthlyPaymentAmount: MonthlyPaymentAmount
   )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Epaye.EnteredMonthlyPaymentAmount = journey match {
+    val newJourney: Journey.AfterEnteredMonthlyPaymentAmount = journey match {
       case j: Epaye.RetrievedAffordabilityResult =>
         j.into[Epaye.EnteredMonthlyPaymentAmount]
           .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
           .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
           .transform
-      case _: Vat.RetrievedAffordabilityResult => Errors.notImplemented("Not built yet...")
+      case j: Vat.RetrievedAffordabilityResult =>
+        j.into[Vat.EnteredMonthlyPaymentAmount]
+          .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+          .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
@@ -67,13 +71,17 @@ class UpdateMonthlyPaymentAmountController @Inject() (
       journey:              Journey.AfterEnteredMonthlyPaymentAmount,
       monthlyPaymentAmount: MonthlyPaymentAmount
   )(implicit request: Request[_]): Future[Journey] = {
-      def upsertIfChanged(updatedJourney: => Journey) =
+      def upsertIfChanged(updatedJourney: => Journey): Future[Journey] =
         if (journey.monthlyPaymentAmount.value === monthlyPaymentAmount.value) Future.successful(journey)
         else journeyService.upsert(updatedJourney)
 
     journey match {
+
       case j: Epaye.EnteredMonthlyPaymentAmount =>
         upsertIfChanged(j.copy(monthlyPaymentAmount = monthlyPaymentAmount))
+      case j: Vat.EnteredMonthlyPaymentAmount =>
+        upsertIfChanged(j.copy(monthlyPaymentAmount = monthlyPaymentAmount))
+
       case j: Epaye.EnteredDayOfMonth =>
         upsertIfChanged(
           j.into[Epaye.EnteredMonthlyPaymentAmount]
@@ -81,6 +89,14 @@ class UpdateMonthlyPaymentAmountController @Inject() (
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
         )
+      case j: Vat.EnteredDayOfMonth =>
+        upsertIfChanged(
+          j.into[Vat.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
+
       case j: Epaye.RetrievedStartDates =>
         upsertIfChanged(
           j.into[Epaye.EnteredMonthlyPaymentAmount]
@@ -88,6 +104,14 @@ class UpdateMonthlyPaymentAmountController @Inject() (
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
         )
+      case j: Vat.RetrievedStartDates =>
+        upsertIfChanged(
+          j.into[Vat.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
+
       case j: Epaye.RetrievedAffordableQuotes =>
         upsertIfChanged(
           j.into[Epaye.EnteredMonthlyPaymentAmount]
@@ -95,6 +119,14 @@ class UpdateMonthlyPaymentAmountController @Inject() (
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
         )
+      case j: Vat.RetrievedAffordableQuotes =>
+        upsertIfChanged(
+          j.into[Vat.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
+
       case j: Epaye.ChosenPaymentPlan =>
         upsertIfChanged(
           j.into[Epaye.EnteredMonthlyPaymentAmount]
@@ -102,6 +134,14 @@ class UpdateMonthlyPaymentAmountController @Inject() (
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
         )
+      case j: Vat.ChosenPaymentPlan =>
+        upsertIfChanged(
+          j.into[Vat.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
+
       case j: Epaye.CheckedPaymentPlan =>
         upsertIfChanged(
           j.into[Epaye.EnteredMonthlyPaymentAmount]
@@ -109,6 +149,14 @@ class UpdateMonthlyPaymentAmountController @Inject() (
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
         )
+      case j: Vat.CheckedPaymentPlan =>
+        upsertIfChanged(
+          j.into[Vat.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
+
       case j: Epaye.EnteredDetailsAboutBankAccount =>
         upsertIfChanged(
           j.into[Epaye.EnteredMonthlyPaymentAmount]
