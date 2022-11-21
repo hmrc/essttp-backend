@@ -25,18 +25,19 @@ import play.api.libs.json.{Json, OFormat}
  * https://confluence.tools.tax.service.gov.uk/pages/viewpage.action?spaceKey=DTDT&title=Eligibility+API
  */
 final case class EligibilityCheckResult(
-    processingDateTime:          ProcessingDateTime,
-    identification:              List[Identification],
-    customerPostcodes:           List[CustomerPostcode],
-    regimePaymentFrequency:      PaymentPlanFrequency,
-    paymentPlanFrequency:        PaymentPlanFrequency,
-    paymentPlanMinLength:        PaymentPlanMinLength,
-    paymentPlanMaxLength:        PaymentPlanMaxLength,
-    eligibilityStatus:           EligibilityStatus,
-    eligibilityRules:            EligibilityRules,
-    chargeTypeAssessment:        List[ChargeTypeAssessment],
-    customerDetails:             Option[List[CustomerDetail]],
-    regimeDigitalCorrespondence: Option[RegimeDigitalCorrespondence]
+    processingDateTime:              ProcessingDateTime,
+    identification:                  List[Identification],
+    customerPostcodes:               List[CustomerPostcode],
+    regimePaymentFrequency:          PaymentPlanFrequency,
+    paymentPlanFrequency:            PaymentPlanFrequency,
+    paymentPlanMinLength:            PaymentPlanMinLength,
+    paymentPlanMaxLength:            PaymentPlanMaxLength,
+    eligibilityStatus:               EligibilityStatus,
+    eligibilityRules:                EligibilityRules,
+    chargeTypeAssessment:            List[ChargeTypeAssessment],
+    customerDetails:                 Option[List[CustomerDetail]],
+    regimeDigitalCorrespondence:     Option[RegimeDigitalCorrespondence],
+    futureChargeLiabilitiesExcluded: Option[Boolean]
 ) {
   val isEligible: Boolean = eligibilityStatus.eligibilityPass.value
 }

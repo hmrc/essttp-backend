@@ -36,8 +36,8 @@ trait TdEpaye {
   val aor: Aor = Aor("123PA44545546")
 
   val eligibleEligibilityCheckResult: EligibilityCheckResult = EligibilityCheckResult(
-    processingDateTime          = ProcessingDateTime(reusableDateAsString),
-    identification              = List(
+    processingDateTime              = ProcessingDateTime(reusableDateAsString),
+    identification                  = List(
       Identification(
         idType  = IdType("EMPREF"),
         idValue = IdValue(empRef.value)
@@ -47,14 +47,14 @@ trait TdEpaye {
         idValue = IdValue("123PA44545546")
       )
     ),
-    customerPostcodes           = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate("2020-01-01"))),
-    regimePaymentFrequency      = PaymentPlanFrequencies.Monthly,
-    paymentPlanFrequency        = PaymentPlanFrequencies.Monthly,
-    paymentPlanMinLength        = PaymentPlanMinLength(1),
-    paymentPlanMaxLength        = PaymentPlanMaxLength(6),
-    eligibilityStatus           = EligibilityStatus(EligibilityPass(true)),
-    eligibilityRules            = eligibleEligibilityRules,
-    chargeTypeAssessment        = List(
+    customerPostcodes               = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate("2020-01-01"))),
+    regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
+    paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
+    paymentPlanMinLength            = PaymentPlanMinLength(1),
+    paymentPlanMaxLength            = PaymentPlanMaxLength(6),
+    eligibilityStatus               = EligibilityStatus(EligibilityPass(true)),
+    eligibilityRules                = eligibleEligibilityRules,
+    chargeTypeAssessment            = List(
       ChargeTypeAssessment(
         taxPeriodFrom   = TaxPeriodFrom("2020-08-13"),
         taxPeriodTo     = TaxPeriodTo("2020-08-14"),
@@ -80,13 +80,15 @@ trait TdEpaye {
                   disallowedChargeLockType = DisallowedChargeLockType(false)
                 )
               )
-            )
+            ),
+            dueDateNotReached    = Some(false)
           )
         )
       )
     ),
-    customerDetails             = None,
-    regimeDigitalCorrespondence = None
+    customerDetails                 = None,
+    regimeDigitalCorrespondence     = None,
+    futureChargeLiabilitiesExcluded = Some(false)
   )
 
   def ineligibleEligibilityCheckResult: EligibilityCheckResult = eligibleEligibilityCheckResult.copy(

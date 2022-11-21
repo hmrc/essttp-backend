@@ -28,21 +28,21 @@ trait TdVat {
   val vrn: Vrn = Vrn("101747001")
 
   def eligibleEligibilityCheckResult(taxId: TaxId = vrn): EligibilityCheckResult = EligibilityCheckResult(
-    processingDateTime          = ProcessingDateTime(reusableDateAsString),
-    identification              = List(
+    processingDateTime              = ProcessingDateTime(reusableDateAsString),
+    identification                  = List(
       Identification(
         idType  = IdType("VRN"),
         idValue = IdValue(taxId.value)
       )
     ),
-    customerPostcodes           = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate("2020-01-01"))),
-    regimePaymentFrequency      = PaymentPlanFrequencies.Monthly,
-    paymentPlanFrequency        = PaymentPlanFrequencies.Monthly,
-    paymentPlanMinLength        = PaymentPlanMinLength(1),
-    paymentPlanMaxLength        = PaymentPlanMaxLength(6),
-    eligibilityStatus           = EligibilityStatus(EligibilityPass(true)),
-    eligibilityRules            = eligibleEligibilityRules,
-    chargeTypeAssessment        = List(
+    customerPostcodes               = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate("2020-01-01"))),
+    regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
+    paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
+    paymentPlanMinLength            = PaymentPlanMinLength(1),
+    paymentPlanMaxLength            = PaymentPlanMaxLength(6),
+    eligibilityStatus               = EligibilityStatus(EligibilityPass(true)),
+    eligibilityRules                = eligibleEligibilityRules,
+    chargeTypeAssessment            = List(
       ChargeTypeAssessment(
         taxPeriodFrom   = TaxPeriodFrom("2020-08-13"),
         taxPeriodTo     = TaxPeriodTo("2020-08-14"),
@@ -68,12 +68,14 @@ trait TdVat {
                   disallowedChargeLockType = DisallowedChargeLockType(false)
                 )
               )
-            )
+            ),
+            dueDateNotReached    = Some(false)
           )
         )
       )
     ),
-    customerDetails             = None,
-    regimeDigitalCorrespondence = None
+    customerDetails                 = None,
+    regimeDigitalCorrespondence     = None,
+    futureChargeLiabilitiesExcluded = Some(false)
   )
 }
