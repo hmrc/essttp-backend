@@ -21,21 +21,41 @@ import testsupport.UnitSpec
 
 class EligibilityRulesSpec extends UnitSpec {
 
-  "isEligible" in {
-    val e = EligibilityRules(
-      hasRlsOnAddress                   = false,
-      markedAsInsolvent                 = false,
-      isLessThanMinDebtAllowance        = false,
-      isMoreThanMaxDebtAllowance        = false,
-      disallowedChargeLockTypes         = false,
-      existingTTP                       = false,
-      chargesOverMaxDebtAge             = false,
-      ineligibleChargeTypes             = false,
-      missingFiledReturns               = false,
-      hasInvalidInterestSignals         = Some(false),
-      dmSpecialOfficeProcessingRequired = Some(false)
-    )
-    e.isEligible shouldBe true
+  "isEligible should work when" - {
+
+    "all fields are populated" in {
+      EligibilityRules(
+        hasRlsOnAddress                   = false,
+        markedAsInsolvent                 = false,
+        isLessThanMinDebtAllowance        = false,
+        isMoreThanMaxDebtAllowance        = false,
+        disallowedChargeLockTypes         = false,
+        existingTTP                       = false,
+        chargesOverMaxDebtAge             = false,
+        ineligibleChargeTypes             = false,
+        missingFiledReturns               = false,
+        hasInvalidInterestSignals         = Some(false),
+        dmSpecialOfficeProcessingRequired = Some(false),
+        noDueDatesReached                 = Some(false)
+      ).isEligible shouldBe true
+    }
+
+    "when optional fields are not populated" in {
+      EligibilityRules(
+        hasRlsOnAddress                   = false,
+        markedAsInsolvent                 = false,
+        isLessThanMinDebtAllowance        = false,
+        isMoreThanMaxDebtAllowance        = false,
+        disallowedChargeLockTypes         = false,
+        existingTTP                       = false,
+        chargesOverMaxDebtAge             = false,
+        ineligibleChargeTypes             = false,
+        missingFiledReturns               = false,
+        hasInvalidInterestSignals         = None,
+        dmSpecialOfficeProcessingRequired = None,
+        noDueDatesReached                 = None
+      ).isEligible shouldBe true
+    }
 
   }
 }
