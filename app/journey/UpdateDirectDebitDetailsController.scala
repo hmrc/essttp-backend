@@ -60,6 +60,7 @@ class UpdateDirectDebitDetailsController @Inject() (
           .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
           .withFieldConst(_.directDebitDetails, directDebitDetails)
           .transform
+      case _: Journey.Vat.EnteredDetailsAboutBankAccount => Errors.notImplemented("Not built yet...")
     }
     journeyService.upsert(newJourney)
   }

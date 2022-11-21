@@ -18,6 +18,7 @@ package essttp.testdata.vat
 
 import essttp.journey.model.SjRequest.Vat
 import essttp.journey.model._
+import essttp.rootmodel.bank.DetailsAboutBankAccount
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.{CanPayUpfront, DayOfMonth, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
@@ -350,5 +351,33 @@ trait TdJourneyVatDetachedUrl {
     )
 
     def journeyAfterCheckedPaymentPlanJson: JsObject = read("/testdata/vat/detachedurl/JourneyAfterCheckedPaymentPlan.json").asJson
+
+    def updateDetailsAboutBankAccountRequest(isAccountHolder: Boolean): DetailsAboutBankAccount =
+      DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder)
+
+    def updateDetailsAboutBankAccountRequestJson(): JsObject = read("/testdata/vat/detachedurl/JourneyAfterEnteredDetailsAboutBankAccount.json").asJson
+
+    def journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder: Boolean): Journey.AfterEnteredDetailsAboutBankAccount = Journey.Vat.EnteredDetailsAboutBankAccount(
+      _id                      = dependencies.journeyId,
+      origin                   = Origins.Vat.DetachedUrl,
+      createdOn                = dependencies.createdOn,
+      sjRequest                = sjRequest,
+      sessionId                = dependencies.sessionId,
+      correlationId            = dependencies.correlationId,
+      stage                    = if (isAccountHolder) Stage.AfterEnteredDetailsAboutBankAccount.Business else Stage.AfterEnteredDetailsAboutBankAccount.IsNotAccountHolder,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts        = dependencies.instalmentAmounts,
+      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+      dayOfMonth               = dependencies.dayOfMonth,
+      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan      = dependencies.paymentPlan(1),
+      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder)
+    )
+
+    def journeyAfterEnteredDetailsAboutBankAccountJson: JsObject = read("/testdata/vat/detachedurl/JourneyAfterUpdateDetailsAboutBankAccountRequest.json").asJson
   }
 }

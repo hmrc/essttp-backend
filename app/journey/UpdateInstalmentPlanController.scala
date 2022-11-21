@@ -100,6 +100,12 @@ class UpdateInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
             .withFieldConst(_.selectedPaymentPlan, paymentPlan)
             .transform
+        case j: Journey.Vat.EnteredDetailsAboutBankAccount =>
+          j.into[Journey.Vat.ChosenPaymentPlan]
+            .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+            .withFieldConst(_.selectedPaymentPlan, paymentPlan)
+            .transform
+
         case j: Journey.Epaye.EnteredDirectDebitDetails =>
           j.into[Journey.Epaye.ChosenPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
