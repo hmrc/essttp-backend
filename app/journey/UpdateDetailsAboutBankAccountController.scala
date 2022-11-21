@@ -60,7 +60,11 @@ class UpdateDetailsAboutBankAccountController @Inject() (
           .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
           .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
           .transform
-      case _: Journey.Vat.CheckedPaymentPlan => Errors.notImplemented("Not built yet...")
+      case j: Journey.Vat.CheckedPaymentPlan =>
+        j.into[Journey.Vat.EnteredDetailsAboutBankAccount]
+          .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
+          .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
@@ -73,12 +77,19 @@ class UpdateDetailsAboutBankAccountController @Inject() (
       JourneyLogger.info("Chosen type of bank account hasn't changed, nothing to update")
       Future.successful(journey)
     } else {
-      val updatedJourney = journey match {
+      val updatedJourney: Journey.AfterEnteredDetailsAboutBankAccount = journey match {
+
         case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
           j.copy(
             detailsAboutBankAccount = detailsAboutBankAccount,
             stage                   = determineStage(detailsAboutBankAccount)
           )
+        case j: Journey.Vat.EnteredDetailsAboutBankAccount =>
+          j.copy(
+            detailsAboutBankAccount = detailsAboutBankAccount,
+            stage                   = determineStage(detailsAboutBankAccount)
+          )
+
         case j: Journey.Epaye.EnteredDirectDebitDetails =>
           j.into[Journey.Epaye.EnteredDetailsAboutBankAccount]
             .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)

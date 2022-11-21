@@ -94,10 +94,8 @@ class UpdateDatesController @Inject() (
     } else {
       val newJourney: Journey.AfterExtremeDatesResponse = journey match {
 
-        case j: Journey.Epaye.RetrievedExtremeDates =>
-          j.copy(extremeDatesResponse = extremeDatesResponse)
-        case j: Journey.Vat.RetrievedExtremeDates =>
-          j.copy(extremeDatesResponse = extremeDatesResponse)
+        case j: Journey.Epaye.RetrievedExtremeDates => j.copy(extremeDatesResponse = extremeDatesResponse)
+        case j: Journey.Vat.RetrievedExtremeDates   => j.copy(extremeDatesResponse = extremeDatesResponse)
 
         case j: Journey.Epaye.RetrievedAffordabilityResult =>
           j.into[Journey.Epaye.RetrievedExtremeDates]
@@ -181,6 +179,12 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
+        case j: Journey.Vat.EnteredDetailsAboutBankAccount =>
+          j.into[Journey.Vat.RetrievedExtremeDates]
+            .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+            .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+            .transform
+
         case j: Journey.Epaye.EnteredDirectDebitDetails =>
           j.into[Journey.Epaye.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
@@ -257,10 +261,8 @@ class UpdateDatesController @Inject() (
     } else {
       val newJourney: Journey.AfterStartDatesResponse = journey match {
 
-        case j: Journey.Epaye.RetrievedStartDates =>
-          j.copy(startDatesResponse = startDatesResponse)
-        case j: Journey.Vat.RetrievedStartDates =>
-          j.copy(startDatesResponse = startDatesResponse)
+        case j: Journey.Epaye.RetrievedStartDates => j.copy(startDatesResponse = startDatesResponse)
+        case j: Journey.Vat.RetrievedStartDates   => j.copy(startDatesResponse = startDatesResponse)
 
         case j: Journey.Epaye.RetrievedAffordableQuotes =>
           j.into[Journey.Epaye.RetrievedStartDates]
@@ -300,6 +302,12 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
             .withFieldConst(_.startDatesResponse, startDatesResponse)
             .transform
+        case j: Journey.Vat.EnteredDetailsAboutBankAccount =>
+          j.into[Journey.Vat.RetrievedStartDates]
+            .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
+            .withFieldConst(_.startDatesResponse, startDatesResponse)
+            .transform
+
         case j: Journey.Epaye.EnteredDirectDebitDetails =>
           j.into[Journey.Epaye.RetrievedStartDates]
             .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)

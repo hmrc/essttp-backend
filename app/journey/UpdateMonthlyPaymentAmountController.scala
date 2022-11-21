@@ -164,6 +164,14 @@ class UpdateMonthlyPaymentAmountController @Inject() (
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
         )
+      case j: Vat.EnteredDetailsAboutBankAccount =>
+        upsertIfChanged(
+          j.into[Vat.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
+
       case j: Epaye.EnteredDirectDebitDetails =>
         upsertIfChanged(
           j.into[Epaye.EnteredMonthlyPaymentAmount]

@@ -42,7 +42,7 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateAffordableQuotes]" +
       "[UpdateSelectedPaymentPlan]" +
       "[UpdateHasCheckedPaymentPlan]" +
-      "[UpdateChosenTypeOfBankAccount]" +
+      "[UpdateEnteredDetailsAboutBankAccount]" +
       "[UpdateEnteredDirectDebitDetails]" +
       "[UpdateConfirmedDirectDebitDetails]" +
       "[UpdateChosenEmail]" +
@@ -113,7 +113,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCheckedPaymentPlan
 
-      /** Update Type of Bank Account */
+      /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.EpayeBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
 
@@ -207,7 +207,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterCheckedPaymentPlan
 
-      /** Update Type of Bank Account */
+      /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.EpayeGovUk.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
 
@@ -301,7 +301,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterCheckedPaymentPlan
 
-      /** Update Type of Bank Account */
+      /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
 
@@ -395,7 +395,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterCheckedPaymentPlan
 
-      /** Update Type of Bank Account */
+      /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.EpayeEpayeService.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
 
@@ -440,7 +440,8 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateStartDatesResponse]" +
       "[UpdateAffordableQuotes]" +
       "[UpdateSelectedPaymentPlan]" +
-      "[UpdateHasCheckedPaymentPlan]"
+      "[UpdateHasCheckedPaymentPlan]" +
+      "[EnteredDetailsAboutBankAccount]"
 
   "[Vat]" - {
     s"[Bta]$vatTestNameJourneyStages" in {
@@ -504,7 +505,11 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterCheckedPaymentPlan
 
-      verifyCommonActions(numberOfAuthCalls = 26)
+      /** Update Details about Bank Account */
+      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+
+      verifyCommonActions(numberOfAuthCalls = 28)
     }
 
     s"[GovUk]$vatTestNameJourneyStages" in {
@@ -568,7 +573,11 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterCheckedPaymentPlan
 
-      verifyCommonActions(numberOfAuthCalls = 26)
+      /** Update Details about Bank Account */
+      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatGovUk.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+
+      verifyCommonActions(numberOfAuthCalls = 28)
     }
 
     s"[DetachedUrl]$vatTestNameJourneyStages" in {
@@ -632,7 +641,11 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterCheckedPaymentPlan
 
-      verifyCommonActions(numberOfAuthCalls = 26)
+      /** Update Details about Bank Account */
+      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatDetachedUrl.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+
+      verifyCommonActions(numberOfAuthCalls = 28)
     }
 
     s"[VatService]$vatTestNameJourneyStages" in {
@@ -696,7 +709,11 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterCheckedPaymentPlan
 
-      verifyCommonActions(numberOfAuthCalls = 26)
+      /** Update Details about Bank Account */
+      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatVatService.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+
+      verifyCommonActions(numberOfAuthCalls = 28)
     }
   }
 
