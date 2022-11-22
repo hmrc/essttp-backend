@@ -16,10 +16,14 @@
 
 package essttp.rootmodel.ttp.eligibility
 
+import essttp.crypto.CryptoFormat
+import essttp.rootmodel.Email
 import play.api.libs.json.{Format, Json}
 
-final case class CustomerDetail(emailAddress: Option[String], emailSource: Option[EmailSource])
+final case class CustomerDetail(emailAddress: Option[Email], emailSource: Option[EmailSource])
 
 object CustomerDetail {
-  implicit val format: Format[CustomerDetail] = Json.format[CustomerDetail]
+
+  implicit def format(implicit cryptoFormat: CryptoFormat): Format[CustomerDetail] = Json.format[CustomerDetail]
+
 }

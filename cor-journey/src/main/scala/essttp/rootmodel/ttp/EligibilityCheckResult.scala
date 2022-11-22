@@ -17,6 +17,7 @@
 package essttp.rootmodel.ttp
 
 import essttp.crypto.CryptoFormat
+import essttp.rootmodel.Email
 import essttp.rootmodel.ttp.eligibility.{CustomerDetail, RegimeDigitalCorrespondence}
 import play.api.libs.json.{Json, OFormat}
 
@@ -38,11 +39,18 @@ final case class EligibilityCheckResult(
     customerDetails:                 Option[List[CustomerDetail]],
     regimeDigitalCorrespondence:     Option[RegimeDigitalCorrespondence],
     futureChargeLiabilitiesExcluded: Option[Boolean]
-) {
-  val isEligible: Boolean = eligibilityStatus.eligibilityPass.value
-}
+)
 
 object EligibilityCheckResult {
+
+  implicit class EligibilityCheckResultOps(private val e: EligibilityCheckResult) extends AnyVal {
+
+    def isEligible: Boolean = e.eligibilityStatus.eligibilityPass.value
+
+    def email: Option[Email] = e.customerDetails.flatMap(_.collectFirst{ case CustomerDetail(Some(email), _) => email })
+
+  }
+
   implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[EligibilityCheckResult] = Json.format[EligibilityCheckResult]
 
 }
