@@ -441,7 +441,9 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateAffordableQuotes]" +
       "[UpdateSelectedPaymentPlan]" +
       "[UpdateHasCheckedPaymentPlan]" +
-      "[EnteredDetailsAboutBankAccount]"
+      "[EnteredDetailsAboutBankAccount]" +
+      "[UpdateEnteredDirectDebitDetails]" +
+      "[UpdateConfirmedDirectDebitDetails]"
 
   "[Vat]" - {
     s"[Bta]$vatTestNameJourneyStages" in {
@@ -509,7 +511,15 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
 
-      verifyCommonActions(numberOfAuthCalls = 28)
+      /** Update Direct debit details */
+      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatBta.updateDirectDebitDetailsRequest).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterEnteredDirectDebitDetails
+
+      /** Update Confirm Direct debit details */
+      journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterConfirmedDirectDebitDetails
+
+      verifyCommonActions(numberOfAuthCalls = 32)
     }
 
     s"[GovUk]$vatTestNameJourneyStages" in {
@@ -577,7 +587,15 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatGovUk.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
 
-      verifyCommonActions(numberOfAuthCalls = 28)
+      /** Update Direct debit details */
+      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatGovUk.updateDirectDebitDetailsRequest).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterEnteredDirectDebitDetails
+
+      /** Update Confirm Direct debit details */
+      journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterConfirmedDirectDebitDetails
+
+      verifyCommonActions(numberOfAuthCalls = 32)
     }
 
     s"[DetachedUrl]$vatTestNameJourneyStages" in {
@@ -645,7 +663,15 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatDetachedUrl.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
 
-      verifyCommonActions(numberOfAuthCalls = 28)
+      /** Update Direct debit details */
+      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatDetachedUrl.updateDirectDebitDetailsRequest).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterEnteredDirectDebitDetails
+
+      /** Update Confirm Direct debit details */
+      journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterConfirmedDirectDebitDetails
+
+      verifyCommonActions(numberOfAuthCalls = 32)
     }
 
     s"[VatService]$vatTestNameJourneyStages" in {
@@ -713,7 +739,15 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatVatService.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
 
-      verifyCommonActions(numberOfAuthCalls = 28)
+      /** Update Direct debit details */
+      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatVatService.updateDirectDebitDetailsRequest).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterEnteredDirectDebitDetails
+
+      /** Update Confirm Direct debit details */
+      journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterConfirmedDirectDebitDetails
+
+      verifyCommonActions(numberOfAuthCalls = 32)
     }
   }
 

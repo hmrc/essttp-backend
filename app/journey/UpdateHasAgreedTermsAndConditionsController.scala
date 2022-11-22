@@ -58,6 +58,7 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
           .withFieldConst(_.stage, toStage(isEmailAddressRequired))
           .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired)
           .transform
+      case _: Journey.Vat.ConfirmedDirectDebitDetails => Errors.notImplemented("Not built yet...")
     }
     journeyService.upsert(newJourney)
   }

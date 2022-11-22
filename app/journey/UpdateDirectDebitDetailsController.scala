@@ -60,7 +60,11 @@ class UpdateDirectDebitDetailsController @Inject() (
           .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
           .withFieldConst(_.directDebitDetails, directDebitDetails)
           .transform
-      case _: Journey.Vat.EnteredDetailsAboutBankAccount => Errors.notImplemented("Not built yet...")
+      case j: Journey.Vat.EnteredDetailsAboutBankAccount =>
+        j.into[Journey.Vat.EnteredDirectDebitDetails]
+          .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
+          .withFieldConst(_.directDebitDetails, directDebitDetails)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
@@ -73,17 +77,30 @@ class UpdateDirectDebitDetailsController @Inject() (
       JourneyLogger.info("Direct debit details haven't changed, nothing to update")
       Future.successful(journey)
     } else {
-      val updatedJourney = journey match {
+      val updatedJourney: Journey.AfterEnteredDirectDebitDetails = journey match {
+
         case j: Journey.Epaye.EnteredDirectDebitDetails =>
           j.copy(
             directDebitDetails = directDebitDetails,
             stage              = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails
           )
+        case j: Journey.Vat.EnteredDirectDebitDetails =>
+          j.copy(
+            directDebitDetails = directDebitDetails,
+            stage              = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails
+          )
+
         case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
           j.into[Journey.Epaye.EnteredDirectDebitDetails]
             .withFieldConst(_.directDebitDetails, directDebitDetails)
             .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
             .transform
+        case j: Journey.Vat.ConfirmedDirectDebitDetails =>
+          j.into[Journey.Vat.EnteredDirectDebitDetails]
+            .withFieldConst(_.directDebitDetails, directDebitDetails)
+            .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
+            .transform
+
         case j: Journey.Epaye.AgreedTermsAndConditions =>
           j.into[Journey.Epaye.EnteredDirectDebitDetails]
             .withFieldConst(_.directDebitDetails, directDebitDetails)

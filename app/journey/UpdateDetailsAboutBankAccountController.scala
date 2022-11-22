@@ -95,11 +95,23 @@ class UpdateDetailsAboutBankAccountController @Inject() (
             .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
             .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
             .transform
+        case j: Journey.Vat.EnteredDirectDebitDetails =>
+          j.into[Journey.Vat.EnteredDetailsAboutBankAccount]
+            .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
+            .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
+            .transform
+
         case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
           j.into[Journey.Epaye.EnteredDetailsAboutBankAccount]
             .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
             .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
             .transform
+        case j: Journey.Vat.ConfirmedDirectDebitDetails =>
+          j.into[Journey.Vat.EnteredDetailsAboutBankAccount]
+            .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
+            .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
+            .transform
+
         case j: Journey.Epaye.AgreedTermsAndConditions =>
           j.into[Journey.Epaye.EnteredDetailsAboutBankAccount]
             .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)

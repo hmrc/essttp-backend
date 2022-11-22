@@ -111,11 +111,23 @@ class UpdateInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
             .withFieldConst(_.selectedPaymentPlan, paymentPlan)
             .transform
+        case j: Journey.Vat.EnteredDirectDebitDetails =>
+          j.into[Journey.Vat.ChosenPaymentPlan]
+            .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+            .withFieldConst(_.selectedPaymentPlan, paymentPlan)
+            .transform
+
         case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
           j.into[Journey.Epaye.ChosenPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
             .withFieldConst(_.selectedPaymentPlan, paymentPlan)
             .transform
+        case j: Journey.Vat.ConfirmedDirectDebitDetails =>
+          j.into[Journey.Vat.ChosenPaymentPlan]
+            .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+            .withFieldConst(_.selectedPaymentPlan, paymentPlan)
+            .transform
+
         case j: Journey.Epaye.AgreedTermsAndConditions =>
           j.into[Journey.Epaye.ChosenPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
