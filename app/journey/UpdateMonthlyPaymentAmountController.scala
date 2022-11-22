@@ -179,6 +179,14 @@ class UpdateMonthlyPaymentAmountController @Inject() (
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
         )
+      case j: Vat.EnteredDirectDebitDetails =>
+        upsertIfChanged(
+          j.into[Vat.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
+
       case j: Epaye.ConfirmedDirectDebitDetails =>
         upsertIfChanged(
           j.into[Epaye.EnteredMonthlyPaymentAmount]
@@ -186,6 +194,14 @@ class UpdateMonthlyPaymentAmountController @Inject() (
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
         )
+      case j: Vat.ConfirmedDirectDebitDetails =>
+        upsertIfChanged(
+          j.into[Vat.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
+
       case j: Epaye.AgreedTermsAndConditions =>
         upsertIfChanged(
           j.into[Epaye.EnteredMonthlyPaymentAmount]

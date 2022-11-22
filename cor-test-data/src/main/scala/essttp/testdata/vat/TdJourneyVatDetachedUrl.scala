@@ -18,7 +18,7 @@ package essttp.testdata.vat
 
 import essttp.journey.model.SjRequest.Vat
 import essttp.journey.model._
-import essttp.rootmodel.bank.DetailsAboutBankAccount
+import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.{CanPayUpfront, DayOfMonth, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
@@ -379,5 +379,61 @@ trait TdJourneyVatDetachedUrl {
     )
 
     def journeyAfterEnteredDetailsAboutBankAccountJson: JsObject = read("/testdata/vat/detachedurl/JourneyAfterUpdateDetailsAboutBankAccountRequest.json").asJson
+
+    val updateDirectDebitDetailsRequest: BankDetails = dependencies.directDebitDetails
+
+    def updateDirectDebitDetailsRequestJson(): JsObject = read("/testdata/vat/detachedurl/UpdateDirectDebitDetailsRequest.json").asJson
+
+    def journeyAfterEnteredDirectDebitDetails: Journey.Vat.EnteredDirectDebitDetails = Journey.Vat.EnteredDirectDebitDetails(
+      _id                      = dependencies.journeyId,
+      origin                   = Origins.Vat.DetachedUrl,
+      createdOn                = dependencies.createdOn,
+      sjRequest                = sjRequest,
+      sessionId                = dependencies.sessionId,
+      stage                    = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails,
+      correlationId            = dependencies.correlationId,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts        = dependencies.instalmentAmounts,
+      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+      dayOfMonth               = dependencies.dayOfMonth,
+      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan      = dependencies.paymentPlan(1),
+      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+      directDebitDetails       = directDebitDetails
+    )
+
+    def journeyAfterEnteredDirectDebitDetailsJson: JsObject = read("/testdata/vat/detachedurl/JourneyAfterUpdateDirectDebitDetails.json").asJson
+
+    def updateConfirmedDirectDebitDetailsRequest(): JsNull.type = JsNull
+
+    def updateConfirmedDirectDebitDetailsJson(): JsObject = read("/testdata/vat/detachedurl/UpdateConfirmedDirectDebitDetailsRequest.json").asJson
+
+    def journeyAfterConfirmedDirectDebitDetails: Journey.Vat.ConfirmedDirectDebitDetails = Journey.Vat.ConfirmedDirectDebitDetails(
+      _id                      = dependencies.journeyId,
+      origin                   = Origins.Vat.DetachedUrl,
+      createdOn                = dependencies.createdOn,
+      sjRequest                = sjRequest,
+      sessionId                = dependencies.sessionId,
+      stage                    = Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails,
+      correlationId            = dependencies.correlationId,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts        = dependencies.instalmentAmounts,
+      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+      dayOfMonth               = dependencies.dayOfMonth,
+      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan      = dependencies.paymentPlan(1),
+      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+      directDebitDetails       = directDebitDetails
+    )
+
+    def journeyAfterConfirmedDirectDebitDetailsJson: JsObject = read("/testdata/vat/detachedurl/JourneyAfterUpdateConfirmedDirectDebitDetails.json").asJson
   }
 }

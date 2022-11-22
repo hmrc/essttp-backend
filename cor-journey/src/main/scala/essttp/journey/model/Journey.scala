@@ -1609,5 +1609,63 @@ object Journey {
       extends Journey
       with Journey.Stages.EnteredDetailsAboutBankAccount
       with Journey.Vat
+
+    /**
+     * [[Journey]] after bank details have been entered
+     * Vat
+     */
+    final case class EnteredDirectDebitDetails(
+        override val _id:                      JourneyId,
+        override val origin:                   Origins.Vat,
+        override val createdOn:                Instant,
+        override val sjRequest:                SjRequest.Vat,
+        override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
+        override val stage:                    Stage.AfterEnteredDirectDebitDetails,
+        override val taxId:                    Vrn,
+        override val eligibilityCheckResult:   EligibilityCheckResult,
+        override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
+        override val extremeDatesResponse:     ExtremeDatesResponse,
+        override val instalmentAmounts:        InstalmentAmounts,
+        override val monthlyPaymentAmount:     MonthlyPaymentAmount,
+        override val dayOfMonth:               DayOfMonth,
+        override val startDatesResponse:       StartDatesResponse,
+        override val affordableQuotesResponse: AffordableQuotesResponse,
+        override val selectedPaymentPlan:      PaymentPlan,
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount,
+        override val directDebitDetails:       BankDetails
+    )
+      extends Journey
+      with Journey.Stages.EnteredDirectDebitDetails
+      with Journey.Vat
+
+    /**
+     * [[Journey]] after bank details have been confirmed
+     * Vat
+     */
+    final case class ConfirmedDirectDebitDetails(
+        override val _id:                      JourneyId,
+        override val origin:                   Origins.Vat,
+        override val createdOn:                Instant,
+        override val sjRequest:                SjRequest.Vat,
+        override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
+        override val stage:                    Stage.AfterConfirmedDirectDebitDetails,
+        override val taxId:                    Vrn,
+        override val eligibilityCheckResult:   EligibilityCheckResult,
+        override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
+        override val extremeDatesResponse:     ExtremeDatesResponse,
+        override val instalmentAmounts:        InstalmentAmounts,
+        override val monthlyPaymentAmount:     MonthlyPaymentAmount,
+        override val dayOfMonth:               DayOfMonth,
+        override val startDatesResponse:       StartDatesResponse,
+        override val affordableQuotesResponse: AffordableQuotesResponse,
+        override val selectedPaymentPlan:      PaymentPlan,
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount,
+        override val directDebitDetails:       BankDetails
+    )
+      extends Journey
+      with Journey.Stages.ConfirmedDirectDebitDetails
+      with Journey.Vat
   }
 }

@@ -257,6 +257,14 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
+          case j1: Journey.Vat.EnteredDirectDebitDetails =>
+            upsertIfChanged(
+              j1.into[Journey.Vat.AnsweredCanPayUpfront]
+                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+                .withFieldConst(_.canPayUpfront, canPayUpfront)
+                .transform
+            )
+
           case j1: Journey.Epaye.ConfirmedDirectDebitDetails =>
             upsertIfChanged(
               j1.into[Journey.Epaye.AnsweredCanPayUpfront]
@@ -264,6 +272,14 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
+          case j1: Journey.Vat.ConfirmedDirectDebitDetails =>
+            upsertIfChanged(
+              j1.into[Journey.Vat.AnsweredCanPayUpfront]
+                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+                .withFieldConst(_.canPayUpfront, canPayUpfront)
+                .transform
+            )
+
           case j1: Journey.Epaye.AgreedTermsAndConditions =>
             upsertIfChanged(
               j1.into[Journey.Epaye.AnsweredCanPayUpfront]

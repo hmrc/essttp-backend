@@ -190,11 +190,23 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
+        case j: Journey.Vat.EnteredDirectDebitDetails =>
+          j.into[Journey.Vat.RetrievedExtremeDates]
+            .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+            .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+            .transform
+
         case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
           j.into[Journey.Epaye.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
+        case j: Journey.Vat.ConfirmedDirectDebitDetails =>
+          j.into[Journey.Vat.RetrievedExtremeDates]
+            .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+            .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+            .transform
+
         case j: Journey.Epaye.AgreedTermsAndConditions =>
           j.into[Journey.Epaye.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
@@ -313,11 +325,23 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
             .withFieldConst(_.startDatesResponse, startDatesResponse)
             .transform
+        case j: Journey.Vat.EnteredDirectDebitDetails =>
+          j.into[Journey.Vat.RetrievedStartDates]
+            .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
+            .withFieldConst(_.startDatesResponse, startDatesResponse)
+            .transform
+
         case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
           j.into[Journey.Epaye.RetrievedStartDates]
             .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
             .withFieldConst(_.startDatesResponse, startDatesResponse)
             .transform
+        case j: Journey.Vat.ConfirmedDirectDebitDetails =>
+          j.into[Journey.Vat.RetrievedStartDates]
+            .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
+            .withFieldConst(_.startDatesResponse, startDatesResponse)
+            .transform
+
         case j: Journey.Epaye.AgreedTermsAndConditions =>
           j.into[Journey.Epaye.RetrievedStartDates]
             .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
