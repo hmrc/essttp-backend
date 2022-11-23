@@ -21,5 +21,6 @@ import play.api.libs.json.{OFormat, Json}
 final case class RegularCollection(dueDate: DueDate, amountDue: AmountDue)
 
 object RegularCollection {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[RegularCollection] = Json.format[RegularCollection]
 }

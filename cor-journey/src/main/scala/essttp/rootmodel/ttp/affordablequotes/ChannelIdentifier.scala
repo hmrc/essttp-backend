@@ -17,16 +17,15 @@
 package essttp.rootmodel.ttp.affordablequotes
 
 import play.api.libs.json.Format
-
 import enumeratum._
 import essttp.utils.EnumFormat
-import play.api.libs.json.Format
 
 import scala.collection.immutable
 
 sealed trait ChannelIdentifier extends EnumEntry
 
 object ChannelIdentifier {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: Format[ChannelIdentifier] = EnumFormat(ChannelIdentifiers)
 }
 

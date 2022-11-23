@@ -24,5 +24,6 @@ import play.api.libs.json.{Json, OFormat}
 final case class SjResponse(nextUrl: NextUrl, journeyId: JourneyId)
 
 object SjResponse {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[SjResponse] = Json.format[SjResponse]
 }

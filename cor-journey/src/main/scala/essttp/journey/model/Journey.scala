@@ -54,8 +54,8 @@ sealed trait Journey {
     val className = getClass.getName
     val packageName = getClass.getPackage.getName
     className
-      .replaceAllLiterally(s"$packageName.", "")
-      .replaceAllLiterally("$", ".")
+      .replaceAll(s"\\$packageName.", "")
+      .replaceAll("\\$", ".")
   }
 
   def backUrl: Option[BackUrl]
@@ -67,6 +67,7 @@ object Journey {
 
   implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[Journey] = {
 
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     val defaultFormat: OFormat[Journey] = derived.oformat[Journey]()
 
     //we need to write some extra fields on the top of the structure so it's

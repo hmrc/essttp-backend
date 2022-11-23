@@ -23,7 +23,7 @@ import play.api.libs.json.{Format, Json}
 final case class CustomerDetail(emailAddress: Option[Email], emailSource: Option[EmailSource])
 
 object CustomerDetail {
-
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit def format(implicit cryptoFormat: CryptoFormat): Format[CustomerDetail] = Json.format[CustomerDetail]
 
 }

@@ -39,7 +39,7 @@ object DateFormats {
             )
             case Success(v) => JsSuccess(v)
           }
-        case _ => JsError(s"Expected value to be a string, was actually $json")
+        case _ => JsError(s"Expected value to be a string, was actually ${json.toString}")
       }
   }
 

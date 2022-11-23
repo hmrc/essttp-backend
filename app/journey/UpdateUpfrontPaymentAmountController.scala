@@ -41,7 +41,7 @@ class UpdateUpfrontPaymentAmountController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       newJourney <- journey match {
-        case j: Journey.BeforeAnsweredCanPayUpfront      => Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible in that state: [${j.stage}]")
+        case j: Journey.BeforeAnsweredCanPayUpfront      => Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible in that state: [${j.stage.toString}]")
         case j: Journey.Stages.AnsweredCanPayUpfront     => updateJourneyWithNewValue(j, request.body)
         case j: Journey.AfterEnteredUpfrontPaymentAmount => updateJourneyWithExistingValue(Left(j), request.body)
         case j: Journey.AfterUpfrontPaymentAnswers =>
@@ -72,7 +72,7 @@ class UpdateUpfrontPaymentAmountController @Inject() (
       }
       journeyService.upsert(updatedJourney)
     } else {
-      Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible when user has selected [No] for CanPayUpfront: [${journey.stage}]")
+      Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible when user has selected [No] for CanPayUpfront: [${journey.stage.toString}]")
     }
   }
 
@@ -276,7 +276,7 @@ class UpdateUpfrontPaymentAmountController @Inject() (
   private def withUpfrontPaymentAmount[A](j: Journey, upfrontPaymentAnswers: UpfrontPaymentAnswers)(f: UpfrontPaymentAmount => Future[A]): Future[A] =
     upfrontPaymentAnswers match {
       case UpfrontPaymentAnswers.NoUpfrontPayment =>
-        Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible there is no upfront payment amount before...: [${j.stage}]")
+        Errors.throwBadRequestExceptionF(s"UpdateUpfrontPaymentAmount update is not possible there is no upfront payment amount before...: [${j.stage.toString}]")
 
       case UpfrontPaymentAnswers.DeclaredUpfrontPayment(amount) =>
         f(amount)

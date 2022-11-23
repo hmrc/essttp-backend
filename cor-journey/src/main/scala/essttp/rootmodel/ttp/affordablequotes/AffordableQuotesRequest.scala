@@ -38,5 +38,6 @@ final case class AffordableQuotesRequest(
 )
 
 object AffordableQuotesRequest {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[AffordableQuotesRequest] = Json.format[AffordableQuotesRequest]
 }

@@ -25,6 +25,7 @@ object DetailsAboutBankAccount {
 
   implicit val eq: Eq[DetailsAboutBankAccount] = Eq.fromUniversalEquals
 
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[DetailsAboutBankAccount] = Json.format
 
 }

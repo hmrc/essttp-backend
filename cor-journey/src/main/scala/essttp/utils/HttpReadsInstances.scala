@@ -29,7 +29,7 @@ object HttpReadsInstances extends uk.gov.hmrc.http.HttpReadsInstances {
    */
   override implicit val readUnit: HttpReads[Unit] = {
     val eitherHttpResponseReads: HttpReads[Either[UpstreamErrorResponse, HttpResponse]] = readEitherOf[HttpResponse]
-    val eitherUnitReads: HttpReads[Either[UpstreamErrorResponse, Unit]] = eitherHttpResponseReads.map(x => x.right.map(_ => ()))
+    val eitherUnitReads: HttpReads[Either[UpstreamErrorResponse, Unit]] = eitherHttpResponseReads.map(x => x.map(_ => ()))
     throwOnFailure(eitherUnitReads)
   }
 }

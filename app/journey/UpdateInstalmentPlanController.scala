@@ -40,7 +40,7 @@ class UpdateInstalmentPlanController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       newJourney <- journey match {
-        case j: Journey.BeforeAffordableQuotesResponse   => Errors.throwBadRequestExceptionF(s"UpdateSelectedPaymentPlan is not possible in that state: [${j.stage}]")
+        case j: Journey.BeforeAffordableQuotesResponse   => Errors.throwBadRequestExceptionF(s"UpdateSelectedPaymentPlan is not possible in that state: [${j.stage.toString}]")
         case j: Journey.Stages.RetrievedAffordableQuotes => updateJourneyWithNewValue(j, request.body)
         case j: Journey.AfterSelectedPaymentPlan => j match {
           case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(j, request.body)

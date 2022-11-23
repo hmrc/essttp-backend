@@ -25,5 +25,6 @@ final case class Lock(
 )
 
 object Lock {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[Lock] = Json.format[Lock]
 }

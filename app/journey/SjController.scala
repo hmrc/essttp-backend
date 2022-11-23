@@ -72,7 +72,7 @@ class SjController @Inject() (
       val nextUrl: NextUrl = NextUrl(s"${journeyConfig.nextUrlHost}/set-up-a-payment-plan${originToRelativeUrl(originatedRequest.origin)}")
       val sjResponse: SjResponse = SjResponse(nextUrl, journey.journeyId)
       val response: Result = Created(Json.toJson(sjResponse))
-      JourneyLogger.info(s"Started $description [journeyId:${journey.id}]")
+      JourneyLogger.info(s"Started $description [journeyId:${journey.id.toString}]")
       response
     }
   }

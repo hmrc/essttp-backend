@@ -28,7 +28,7 @@ final case class AmountInPence(value: Long) {
   //removes trailing decimal and zeros, i.e. if £x.00
   def gdsFormatInPounds: String = formatInPounds.replace(".00", "")
 
-  def formatInDecimal: String = inPounds.formatted("%,1.2f")
+  def formatInDecimal: String = "%,1.2f".format(inPounds)
 
   def inPounds: BigDecimal = AmountInPence.toPounds(this)
 
@@ -52,9 +52,9 @@ object AmountInPence {
 
   implicit val format: Format[AmountInPence] = Format(
     Reads{
-      case JsNumber(n) if n.isWhole() => JsSuccess(AmountInPence(n.toLong))
-      case JsNumber(_)                => JsError("Expected positive integer but got non-integral number")
-      case other                      => JsError(s"Expected positive integer but got type ${other.getClass.getSimpleName}")
+      case JsNumber(n) if n.isWhole => JsSuccess(AmountInPence(n.toLong))
+      case JsNumber(_)              => JsError("Expected positive integer but got non-integral number")
+      case other                    => JsError(s"Expected positive integer but got type ${other.getClass.getSimpleName}")
     },
     Writes(a => JsNumber(BigDecimal(a.value)))
   )

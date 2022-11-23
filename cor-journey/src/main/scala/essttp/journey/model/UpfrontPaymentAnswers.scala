@@ -27,5 +27,6 @@ object UpfrontPaymentAnswers {
 
   final case class DeclaredUpfrontPayment(amount: UpfrontPaymentAmount) extends UpfrontPaymentAnswers
 
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[UpfrontPaymentAnswers] = derived.oformat[UpfrontPaymentAnswers]()
 }

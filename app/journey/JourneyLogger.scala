@@ -70,19 +70,19 @@ object JourneyLogger {
 
   private def context(implicit request: RequestHeader) = s"[context: ${request.method} ${request.path}] $sessionId $referer $deviceId"
 
-  private def sessionId(implicit request: RequestHeader) = s"[${hc.sessionId}]"
+  private def sessionId(implicit request: RequestHeader) = s"[${hc.sessionId.toString}]"
 
   private def referer(implicit r: RequestHeader) = s"[Referer: ${r.headers.headers.find(_._1 === "Referer").map(_._2).getOrElse("")}]"
 
   private def deviceId(implicit r: RequestHeader) = s"[deviceId: ${r.cookies.find(_.name === CookieNames.deviceID).map(_.value).getOrElse("")}]"
 
-  private def origin(implicit r: JourneyRequest[_]) = s"[${r.journey.origin}]"
+  private def origin(implicit r: JourneyRequest[_]) = s"[${r.journey.origin.toString}]"
 
-  private def journeyId(implicit r: JourneyRequest[_]) = s"[${r.journey.id}]"
+  private def journeyId(implicit r: JourneyRequest[_]) = s"[${r.journey.id.toString}]"
 
-  private def taxRegime(implicit r: JourneyRequest[_]) = s"[${r.journey.taxRegime}]"
+  private def taxRegime(implicit r: JourneyRequest[_]) = s"[${r.journey.taxRegime.toString}]"
 
-  private def stage(implicit r: JourneyRequest[_]) = s"[${r.journey.stage}]"
+  private def stage(implicit r: JourneyRequest[_]) = s"[${r.journey.stage.toString}]"
 
   private def journeyName(implicit r: JourneyRequest[_]) = s"[${r.journey.name}]"
 
@@ -98,7 +98,7 @@ object JourneyLogger {
 
   private def makeRichMessage(message: => String, journeyId: JourneyId)(implicit request: RequestHeader): String = {
     val traceId: TraceId = TraceId(journeyId)
-    s"$message $traceId $journeyId $context "
+    s"$message ${traceId.toString} ${journeyId.toString} ${context} "
   }
 
   private sealed trait LogLevel

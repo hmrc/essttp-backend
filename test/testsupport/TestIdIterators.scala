@@ -17,5 +17,5 @@
 package testsupport
 
 object TestIdIterators {
-  def ids(prefix: String = "id"): Iterator[String] = Stream.from(0).map(i => s"$prefix$i").iterator
+  def ids(prefix: String = "id"): Iterator[String] = LazyList.from(0).map(i => s"$prefix${i.toString}").iterator
 }

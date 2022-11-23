@@ -36,5 +36,6 @@ final case class Charges(
 )
 
 object Charges {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[Charges] = Json.format[Charges]
 }

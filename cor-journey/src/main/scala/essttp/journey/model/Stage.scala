@@ -35,6 +35,7 @@ object Stage {
   sealed trait AfterStarted extends Stage with EnumEntry
 
   object AfterStarted extends Enum[AfterStarted] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterStarted] = derived.oformat[AfterStarted]()
     val values: immutable.IndexedSeq[AfterStarted] = findValues
 
@@ -49,6 +50,7 @@ object Stage {
   sealed trait AfterComputedTaxId extends Stage with EnumEntry
 
   object AfterComputedTaxId extends Enum[AfterComputedTaxId] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterComputedTaxId] = derived.oformat[AfterComputedTaxId]()
     val values: immutable.IndexedSeq[AfterComputedTaxId] = findValues
 
@@ -64,6 +66,7 @@ object Stage {
    * [[Journey]] has been orchestrated with eligibility check result.
    */
   object AfterEligibilityCheck extends Enum[AfterEligibilityCheck] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterEligibilityCheck] = derived.oformat[AfterEligibilityCheck]()
     val values: immutable.IndexedSeq[AfterEligibilityCheck] = findValues
 
@@ -78,6 +81,7 @@ object Stage {
    * [[Journey]] has been orchestrated with can user make an upfront payment.
    */
   object AfterCanPayUpfront extends Enum[AfterCanPayUpfront] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterCanPayUpfront] = derived.oformat[AfterCanPayUpfront]()
     val values: immutable.IndexedSeq[AfterCanPayUpfront] = findValues
 
@@ -89,6 +93,7 @@ object Stage {
   sealed trait AfterUpfrontPaymentAmount extends Stage with EnumEntry
 
   object AfterUpfrontPaymentAmount extends Enum[AfterUpfrontPaymentAmount] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterUpfrontPaymentAmount] = derived.oformat[AfterUpfrontPaymentAmount]()
     val values: immutable.IndexedSeq[AfterUpfrontPaymentAmount] = findValues
 
@@ -101,6 +106,7 @@ object Stage {
   sealed trait AfterUpfrontPaymentAnswers extends Stage with EnumEntry
 
   object AfterUpfrontPaymentAnswers extends Enum[AfterUpfrontPaymentAnswers] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterUpfrontPaymentAnswers] = derived.oformat[AfterUpfrontPaymentAnswers]()
     val values: immutable.IndexedSeq[AfterUpfrontPaymentAnswers] = findValues
 
@@ -113,6 +119,7 @@ object Stage {
   sealed trait AfterExtremeDatesResponse extends Stage with EnumEntry
 
   object AfterExtremeDatesResponse extends Enum[AfterExtremeDatesResponse] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterExtremeDatesResponse] = derived.oformat[AfterExtremeDatesResponse]()
     val values: immutable.IndexedSeq[AfterExtremeDatesResponse] = findValues
 
@@ -125,6 +132,7 @@ object Stage {
   sealed trait AfterAffordabilityResult extends Stage with EnumEntry
 
   object AfterAffordabilityResult extends Enum[AfterAffordabilityResult] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterAffordabilityResult] = derived.oformat[AfterAffordabilityResult]()
     val values: immutable.IndexedSeq[AfterAffordabilityResult] = findValues
 
@@ -137,6 +145,7 @@ object Stage {
   sealed trait AfterMonthlyPaymentAmount extends Stage with EnumEntry
 
   object AfterMonthlyPaymentAmount extends Enum[AfterMonthlyPaymentAmount] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterMonthlyPaymentAmount] = derived.oformat[AfterMonthlyPaymentAmount]()
     val values: immutable.IndexedSeq[AfterMonthlyPaymentAmount] = findValues
 
@@ -152,6 +161,7 @@ object Stage {
    * [[Journey]] has been orchestrated with day of month
    */
   object AfterEnteredDayOfMonth extends Enum[AfterEnteredDayOfMonth] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterEnteredDayOfMonth] = derived.oformat[AfterEnteredDayOfMonth]()
     val values: immutable.IndexedSeq[AfterEnteredDayOfMonth] = findValues
 
@@ -164,6 +174,7 @@ object Stage {
    * [[Journey]] has been orchestrated with start dates api call
    */
   object AfterStartDatesResponse extends Enum[AfterStartDatesResponse] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterStartDatesResponse] = derived.oformat[AfterStartDatesResponse]()
     val values: immutable.IndexedSeq[AfterStartDatesResponse] = findValues
 
@@ -176,6 +187,7 @@ object Stage {
    * [[Journey]] has been orchestrated with affordable quotes api call from ttp
    */
   object AfterAffordableQuotesResponse extends Enum[AfterAffordableQuotesResponse] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterAffordableQuotesResponse] = derived.oformat[AfterAffordableQuotesResponse]()
     val values: immutable.IndexedSeq[AfterAffordableQuotesResponse] = findValues
 
@@ -188,6 +200,7 @@ object Stage {
    * [[Journey]] has been orchestrated with selected instalment plan
    */
   object AfterSelectedPlan extends Enum[AfterSelectedPlan] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterSelectedPlan] = derived.oformat[AfterSelectedPlan]()
     val values: immutable.IndexedSeq[AfterSelectedPlan] = findValues
 
@@ -200,6 +213,7 @@ object Stage {
    * [[Journey]] has been orchestrated to indicate the user has checked and accepted the a payment plan
    */
   object AfterCheckedPlan extends Enum[AfterCheckedPlan] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterCheckedPlan] = derived.oformat[AfterCheckedPlan]()
     val values: immutable.IndexedSeq[AfterCheckedPlan] = findValues
 
@@ -212,6 +226,7 @@ object Stage {
    * [[Journey]] has been orchestrated with details about the user's bank account
    */
   object AfterEnteredDetailsAboutBankAccount extends Enum[AfterEnteredDetailsAboutBankAccount] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterEnteredDetailsAboutBankAccount] = derived.oformat[AfterEnteredDetailsAboutBankAccount]()
     val values: immutable.IndexedSeq[AfterEnteredDetailsAboutBankAccount] = findValues
 
@@ -228,6 +243,7 @@ object Stage {
    * [[Journey]] has been orchestrated to indicate the user has checked and accepted the a payment plan
    */
   object AfterEnteredDirectDebitDetails extends Enum[AfterEnteredDirectDebitDetails] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterEnteredDirectDebitDetails] = derived.oformat[AfterEnteredDirectDebitDetails]()
     val values: immutable.IndexedSeq[AfterEnteredDirectDebitDetails] = findValues
 
@@ -241,6 +257,7 @@ object Stage {
    * [[Journey]] has been orchestrated to indicate the user has checked and confirmed their direct debit details
    */
   object AfterConfirmedDirectDebitDetails extends Enum[AfterConfirmedDirectDebitDetails] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterConfirmedDirectDebitDetails] = derived.oformat[AfterConfirmedDirectDebitDetails]()
     val values: immutable.IndexedSeq[AfterConfirmedDirectDebitDetails] = findValues
 
@@ -253,6 +270,7 @@ object Stage {
    * [[Journey]] has been orchestrated to indicate the user has agreed to terms and conditions
    */
   object AfterAgreedTermsAndConditions extends Enum[AfterAgreedTermsAndConditions] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterAgreedTermsAndConditions] = derived.oformat[AfterAgreedTermsAndConditions]()
     val values: immutable.IndexedSeq[AfterAgreedTermsAndConditions] = findValues
 
@@ -268,6 +286,7 @@ object Stage {
    * [[Journey]] has been orchestrated to indicate the user has selected an email to verify
    */
   object AfterSelectedAnEmailToBeVerified extends Enum[AfterSelectedAnEmailToBeVerified] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterSelectedAnEmailToBeVerified] = derived.oformat[AfterSelectedAnEmailToBeVerified]()
     val values: immutable.IndexedSeq[AfterSelectedAnEmailToBeVerified] = findValues
 
@@ -280,6 +299,7 @@ object Stage {
    * [[Journey]] has been orchestrated to indicate the user has gone through email verification
    */
   object AfterEmailVerificationPhase extends Enum[AfterEmailVerificationPhase] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterEmailVerificationPhase] = derived.oformat[AfterEmailVerificationPhase]()
     val values: immutable.IndexedSeq[AfterEmailVerificationPhase] = findValues
 
@@ -294,6 +314,7 @@ object Stage {
    * [[Journey]] has been orchestrated to indicate the user has submitted their arrangement to ttp api
    */
   object AfterSubmittedArrangement extends Enum[AfterSubmittedArrangement] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[AfterSubmittedArrangement] = derived.oformat[AfterSubmittedArrangement]()
     val values: immutable.IndexedSeq[AfterSubmittedArrangement] = findValues
 

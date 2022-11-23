@@ -21,7 +21,6 @@ import play.api.libs.json.{Json, OFormat}
 final case class Identification(idType: IdType, idValue: IdValue)
 
 object Identification {
-
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[Identification] = Json.format
-
 }

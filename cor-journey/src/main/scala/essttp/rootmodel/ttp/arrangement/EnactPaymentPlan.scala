@@ -32,5 +32,6 @@ final case class EnactPaymentPlan(
 )
 
 object EnactPaymentPlan {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[EnactPaymentPlan] = Json.format[EnactPaymentPlan]
 }
