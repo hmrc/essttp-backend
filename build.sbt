@@ -10,14 +10,15 @@ val majorVer = 1
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-val appScalaVersion = "2.12.15"
+val appScalaVersion = "2.13.8"
 
 lazy val playSettings : Seq[Setting[_]] = Seq.empty
 
 lazy val scalaCompilerOptions = Seq(
   "-Xfatal-warnings",
   "-Xlint:-missing-interpolator,_",
-  "-Yno-adapted-args",
+  "-Xlint:adapted-args",
+  "-Xlint:-byname-implicit",
   "-Ywarn-unused:implicits",
   "-Ywarn-unused:imports",
   "-Ywarn-unused:locals",
@@ -30,7 +31,6 @@ lazy val scalaCompilerOptions = Seq(
   "-feature",
   "-unchecked",
   "-language:implicitConversions",
-  "-Ypartial-unification", //required by cats
   "-Wconf:cat=unused-imports&src=html/.*:s",
   "-Wconf:src=routes/.*:s"
 )

@@ -30,6 +30,7 @@ final case class PaymentPlan(
 )
 
 object PaymentPlan {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[PaymentPlan] = Json.format[PaymentPlan]
   implicit val eq: Eq[PaymentPlan] = Eq.fromUniversalEquals
 }

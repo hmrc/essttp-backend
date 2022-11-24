@@ -49,7 +49,7 @@ class UpdateDatesController @Inject() (
           case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingExtremeDatesValue (j, request.body)
           case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update ExtremeDates when journey is in completed state")
         }
-        case j: Journey.BeforeUpfrontPaymentAnswers => Errors.throwBadRequestExceptionF(s"UpdateExtremeDatesResponse update is not possible in that state: [${j.stage}]")
+        case j: Journey.BeforeUpfrontPaymentAnswers => Errors.throwBadRequestExceptionF(s"UpdateExtremeDatesResponse update is not possible in that state: [${j.stage.toString}]")
       }
     } yield Ok(newJourney.json)
   }
@@ -233,7 +233,7 @@ class UpdateDatesController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       newJourney <- journey match {
-        case j: Journey.BeforeEnteredDayOfMonth  => Errors.throwBadRequestExceptionF(s"UpdateStartDates is not possible when we don't have a chosen day of month, stage: [ ${j.stage} ]")
+        case j: Journey.BeforeEnteredDayOfMonth  => Errors.throwBadRequestExceptionF(s"UpdateStartDates is not possible when we don't have a chosen day of month, stage: [ ${j.stage.toString} ]")
         case j: Journey.Stages.EnteredDayOfMonth => updateJourneyWithNewStartDatesValue(j, request.body)
         case j: Journey.AfterStartDatesResponse => j match {
           case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingStartDatesValue(j, request.body)

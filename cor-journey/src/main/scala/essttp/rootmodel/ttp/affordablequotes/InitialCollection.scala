@@ -21,5 +21,6 @@ import play.api.libs.json.{OFormat, Json}
 final case class InitialCollection(dueDate: DueDate, amountDue: AmountDue)
 
 object InitialCollection {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[InitialCollection] = Json.format[InitialCollection]
 }

@@ -40,7 +40,7 @@ class UpdateAffordableQuotesController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       newJourney <- journey match {
-        case j: Journey.BeforeStartDatesResponse   => Errors.throwBadRequestExceptionF(s"UpdateAffordableQuotes is not possible in that state: [${j.stage}]")
+        case j: Journey.BeforeStartDatesResponse   => Errors.throwBadRequestExceptionF(s"UpdateAffordableQuotes is not possible in that state: [${j.stage.toString}]")
         case j: Journey.Stages.RetrievedStartDates => updateJourneyWithNewValue(j, request.body)
         case j: Journey.AfterAffordableQuotesResponse => j match {
           case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(j, request.body)

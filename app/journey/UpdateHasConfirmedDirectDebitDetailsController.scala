@@ -38,7 +38,7 @@ class UpdateHasConfirmedDirectDebitDetailsController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       newJourney <- journey match {
-        case j: Journey.BeforeEnteredDirectDebitDetails  => Errors.throwBadRequestExceptionF(s"UpdateHasConfirmedDirectDebitDetails is not possible in that state: [${j.stage}]")
+        case j: Journey.BeforeEnteredDirectDebitDetails  => Errors.throwBadRequestExceptionF(s"UpdateHasConfirmedDirectDebitDetails is not possible in that state: [${j.stage.toString}]")
         case j: Journey.Stages.EnteredDirectDebitDetails => updateJourneyWithNewValue(j)
         case j: Journey.AfterConfirmedDirectDebitDetails => j match {
           case _: Journey.BeforeArrangementSubmitted => Future.successful(j)

@@ -26,6 +26,7 @@ sealed trait TaxId {
 }
 
 object TaxId {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[TaxId] = derived.oformat[TaxId]()
 
   implicit val eq: Eq[TaxId] = Eq.fromUniversalEquals
@@ -38,6 +39,7 @@ final case class EmpRef(value: String) extends TaxId
  * Tax Id for Epaye.
  */
 object EmpRef {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[EmpRef] = derived.oformat[EmpRef]()
 
   def makeEmpRef(taxOfficeNumber: TaxOfficeNumber, taxOfficeReference: TaxOfficeReference): EmpRef = EmpRef(
@@ -53,5 +55,6 @@ object EmpRef {
 final case class Vrn(value: String) extends TaxId
 
 object Vrn {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[Vrn] = derived.oformat[Vrn]()
 }

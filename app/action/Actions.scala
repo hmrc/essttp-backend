@@ -26,6 +26,7 @@ class Actions @Inject() (
     authenticatedActionRefiner: AuthenticatedActionRefiner
 ) {
 
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   val authenticatedAction: ActionBuilder[AuthenticatedRequest, AnyContent] =
     actionBuilder.andThen(authenticatedActionRefiner)
 

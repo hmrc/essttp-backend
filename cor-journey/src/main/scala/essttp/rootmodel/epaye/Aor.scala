@@ -27,5 +27,6 @@ import play.api.libs.json.OFormat
 final case class Aor(value: String)
 
 object Aor {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[Aor] = derived.oformat[Aor]()
 }

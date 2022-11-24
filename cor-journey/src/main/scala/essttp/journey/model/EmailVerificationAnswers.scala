@@ -30,6 +30,7 @@ object EmailVerificationAnswers {
 
   final case class EmailVerified(email: Email, emailVerificationStatus: EmailVerificationStatus) extends EmailVerificationAnswers
 
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[EmailVerificationAnswers] =
     derived.oformat[EmailVerificationAnswers]()
 

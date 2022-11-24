@@ -70,6 +70,7 @@ final case class EligibilityRules(
 }
 
 object EligibilityRules {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[EligibilityRules] = Json.format[EligibilityRules]
 }
 

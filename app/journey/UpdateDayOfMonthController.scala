@@ -41,7 +41,7 @@ class UpdateDayOfMonthController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       newJourney <- journey match {
-        case j: Journey.BeforeEnteredMonthlyPaymentAmount  => Errors.throwBadRequestExceptionF(s"UpdateDayOfMonth update is not possible in that state: [${j.stage}]")
+        case j: Journey.BeforeEnteredMonthlyPaymentAmount  => Errors.throwBadRequestExceptionF(s"UpdateDayOfMonth update is not possible in that state: [${j.stage.toString}]")
         case j: Journey.Stages.EnteredMonthlyPaymentAmount => updateJourneyWithNewValue(j, request.body)
         case j: Journey.AfterEnteredDayOfMonth => j match {
           case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(j, request.body)

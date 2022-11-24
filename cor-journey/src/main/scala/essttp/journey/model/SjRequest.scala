@@ -29,6 +29,7 @@ sealed trait SjRequest
 
 object SjRequest {
 
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[SjRequest] = derived.oformat[SjRequest]()
 
   def isAbsoluteUrl(urlStr: String): Boolean = Try(java.net.URI.create(urlStr).isAbsolute).getOrElse(false)
@@ -43,6 +44,7 @@ object SjRequest {
    */
   object Epaye {
 
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[SjRequest.Epaye] = derived.oformat[SjRequest.Epaye]()
 
     /**
@@ -58,6 +60,7 @@ object SjRequest {
       with Epaye
 
     object Simple {
+      @SuppressWarnings(Array("org.wartremover.warts.Any"))
       implicit val format: OFormat[Simple] = Json.format
     }
 
@@ -85,6 +88,7 @@ object SjRequest {
    */
   object Vat {
 
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
     implicit val format: OFormat[SjRequest.Vat] = derived.oformat[SjRequest.Vat]()
 
     /**
@@ -99,6 +103,7 @@ object SjRequest {
       with Vat
 
     object Simple {
+      @SuppressWarnings(Array("org.wartremover.warts.Any"))
       implicit val format: OFormat[Simple] = Json.format
     }
 

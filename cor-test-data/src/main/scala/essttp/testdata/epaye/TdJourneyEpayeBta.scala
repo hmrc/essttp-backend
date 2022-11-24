@@ -394,7 +394,7 @@ trait TdJourneyEpayeBta {
 
     def updateDirectDebitDetailsRequestJson(): JsObject = read("/testdata/epaye/bta/UpdateDirectDebitDetailsRequest.json").asJson
 
-    def journeyAfterEnteredDirectDebitDetails: Journey.Epaye.EnteredDirectDebitDetails = Journey.Epaye.EnteredDirectDebitDetails(
+    def journeyAfterEnteredDirectDebitDetails(): Journey.Epaye.EnteredDirectDebitDetails = Journey.Epaye.EnteredDirectDebitDetails(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Epaye.Bta,
       createdOn                = dependencies.createdOn,

@@ -56,13 +56,13 @@ class JourneyController @Inject() (
 
     journeyService.findLatestJourney(sessionId).map {
       case Some(journey: Journey) => Ok(Json.toJson(journey))
-      case None                   => notFound(s"sessionId:$sessionId")
+      case None                   => notFound(s"sessionId:${sessionId.toString}")
     }
   }
 
   private def notFound[Key](key: Key)(implicit request: RequestHeader): Result = {
-    JourneyLogger.warn(s"Journey not found [$key]")
-    val response = ErrorResponse(NOT_FOUND, s"Journey not found [$key]")
+    JourneyLogger.warn(s"Journey not found [${key.toString}]")
+    val response = ErrorResponse(NOT_FOUND, s"Journey not found [${key.toString}]")
     NotFound(Json.toJson(response))
   }
 }

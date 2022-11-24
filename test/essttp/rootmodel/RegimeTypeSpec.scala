@@ -28,8 +28,8 @@ class RegimeTypeSpec extends UnitSpec {
       "VAT" -> RegimeType("VAT")
     ).foreach { rt =>
         val jsValue = Json.toJson(rt._2)
-        jsValue shouldBe JsString(rt._1) withClue s"serialize $rt"
-        jsValue.as[RegimeType] shouldBe rt._2 withClue s"deserialize $rt"
+        jsValue shouldBe JsString(rt._1) withClue s"serialize ${rt.toString()}"
+        jsValue.as[RegimeType] shouldBe rt._2 withClue s"deserialize ${rt.toString()}"
       }
   }
 

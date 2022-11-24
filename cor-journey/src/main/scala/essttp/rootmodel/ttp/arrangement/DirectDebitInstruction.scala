@@ -27,7 +27,7 @@ final case class DirectDebitInstruction(
 )
 
 object DirectDebitInstruction {
-
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[DirectDebitInstruction] = Json.format
 
 }

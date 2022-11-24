@@ -42,7 +42,7 @@ class UpdateEmailVerificationStatusController @Inject() (
         journey <- journeyService.get(journeyId)
         newJourney <- journey match {
           case j: Journey.BeforeEmailAddressSelectedToBeVerified =>
-            Errors.throwBadRequestExceptionF(s"UpdateEmailVerificationStatus is not possible in that state: [${j.stage}]")
+            Errors.throwBadRequestExceptionF(s"UpdateEmailVerificationStatus is not possible in that state: [${j.stage.toString}]")
 
           case _: Journey.AfterArrangementSubmitted =>
             Errors.throwBadRequestExceptionF("Cannot update EmailVerificationStatus when journey is in completed state.")

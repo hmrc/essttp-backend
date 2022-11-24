@@ -55,7 +55,7 @@ class UpdateTaxIdController @Inject() (
           case _: EmpRef => Errors.throwBadRequestExceptionF("Why is there an empref, this is for Vat...")
         }
       case j: Journey.AfterComputedTaxId =>
-        Errors.throwBadRequestExceptionF(s"UpdateTaxId is not possible in this stage, why is it happening? Debug me... [${j.stage}]")
+        Errors.throwBadRequestExceptionF(s"UpdateTaxId is not possible in this stage, why is it happening? Debug me... [${j.stage.toString}]")
     }
   }
 

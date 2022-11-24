@@ -29,6 +29,7 @@ object EmailVerificationStatus extends Enum[EmailVerificationStatus] {
 
   implicit val eq: Eq[EmailVerificationStatus] = Eq.fromUniversalEquals
 
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[EmailVerificationStatus] = derived.oformat[EmailVerificationStatus]()
 
   case object Verified extends EmailVerificationStatus

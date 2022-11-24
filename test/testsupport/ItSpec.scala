@@ -110,8 +110,8 @@ trait ItSpec
 
   implicit def hc: HeaderCarrier = HeaderCarrier()
 
-  val testServerPort = 19001
-  val baseUrl: String = s"http://localhost:$testServerPort"
+  val testServerPort: Int = 19001
+  val baseUrl: String = s"http://localhost:${testServerPort.toString}"
   val databaseName: String = "essttp-backend-it"
 
   def conf: Map[String, Any] = Map(
@@ -180,7 +180,7 @@ final case class TestJourneyIdPrefix(value: String)
 
 class TestJourneyIdGenerator(testJourneyIdPrefix: TestJourneyIdPrefix) extends JourneyIdGenerator {
 
-  private val idIterator: Iterator[JourneyId] = Stream.from(0).map(i => JourneyId(s"${testJourneyIdPrefix.value}$i")).iterator
+  private val idIterator: Iterator[JourneyId] = LazyList.from(0).map(i => JourneyId(s"${testJourneyIdPrefix.value}${i.toString}")).iterator
   private val nextJourneyIdCached = new AtomicReference[JourneyId](idIterator.next())
 
   def readNextJourneyId(): JourneyId = nextJourneyIdCached.get()
@@ -194,7 +194,7 @@ final case class TestCorrelationIdPrefix(value: String)
 
 class TestCorrelationIdGenerator(testCorrelationIdPrefix: TestCorrelationIdPrefix) extends CorrelationIdGenerator {
   private val correlationIdIterator: Iterator[CorrelationId] =
-    Stream.from(0).map(i => CorrelationId(UUID.fromString(s"${testCorrelationIdPrefix.value.dropRight(1)}$i"))).iterator
+    LazyList.from(0).map(i => CorrelationId(UUID.fromString(s"${testCorrelationIdPrefix.value.dropRight(1)}${i.toString}"))).iterator
   private val nextCorrelationIdCached = new AtomicReference[CorrelationId](correlationIdIterator.next())
 
   def readNextCorrelationId(): CorrelationId = nextCorrelationIdCached.get()

@@ -23,7 +23,7 @@ import org.scalatest._
 import org.scalatest.matchers.should.Matchers
 import play.api.libs.json.{JsValue, Json}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.concurrent.ExecutionContext
 
 trait RichMatchers
@@ -59,6 +59,6 @@ trait RichMatchers
     }
   }
 
-  def assertThereWasOnlyOneReqeust() = getRecordedRequest()
+  def assertThereWasOnlyOneRequest(): LoggedRequest = getRecordedRequest()
 
 }

@@ -17,6 +17,7 @@
 package controllers
 
 import essttp.journey.JourneyConnector
+import essttp.journey.model.Journey
 import essttp.testdata.TdAll
 import testsupport.ItSpec
 
@@ -37,13 +38,13 @@ class UpdateHasConfirmedDirectDebitDetailsControllerSpec extends ItSpec {
     "should return an unchanged journey when Direct debit details have already been confirmed" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
-      val result1 = journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
+      val result1: Journey = journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
       result1 shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails
 
-      val result2 = journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
+      val result2: Journey = journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
       result2 shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails
 
       verifyCommonActions(numberOfAuthCalls = 3)

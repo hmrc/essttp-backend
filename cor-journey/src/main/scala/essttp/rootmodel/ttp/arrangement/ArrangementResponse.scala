@@ -22,7 +22,7 @@ import play.api.libs.json.{Json, OFormat}
 final case class ArrangementResponse(processingDateTime: ProcessingDateTime, customerReference: CustomerReference)
 
 object ArrangementResponse {
-
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[ArrangementResponse] = Json.format
 
 }

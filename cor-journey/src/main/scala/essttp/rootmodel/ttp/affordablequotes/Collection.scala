@@ -21,5 +21,6 @@ import play.api.libs.json.{Json, OFormat}
 final case class Collection(initialCollection: Option[InitialCollection], regularCollections: List[RegularCollection])
 
 object Collection {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[Collection] = Json.format[Collection]
 }

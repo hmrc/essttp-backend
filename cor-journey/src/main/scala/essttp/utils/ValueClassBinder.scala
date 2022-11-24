@@ -27,12 +27,12 @@ object ValueClassBinder {
       def parseString(str: String) =
         JsString(str).validate[A] match {
           case JsSuccess(a, _) => Right(a)
-          case JsError(error)  => Left(s"No valid value in path: $str. Error: $error")
+          case JsError(error)  => Left(s"No valid value in path: $str. Error: ${error.toString}")
         }
 
     new PathBindable[A] {
       override def bind(key: String, value: String): Either[String, A] =
-        stringBinder.bind(key, value).right.flatMap(parseString)
+        stringBinder.bind(key, value).flatMap(parseString)
 
       override def unbind(key: String, a: A): String =
         stringBinder.unbind(key, fromAtoString(a))

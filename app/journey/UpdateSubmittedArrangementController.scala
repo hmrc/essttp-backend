@@ -41,21 +41,21 @@ class UpdateSubmittedArrangementController @Inject() (
       journey <- journeyService.get(journeyId)
       newJourney <- journey match {
         case j: Journey.BeforeAgreedTermsAndConditions =>
-          Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user hasn't agreed to the terms and conditions, state: [${j.stage}]")
+          Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user hasn't agreed to the terms and conditions, state: [${j.stage.toString}]")
 
         case j: Journey.Stages.AgreedTermsAndConditions =>
           if (j.isEmailAddressRequired)
-            Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user still requires and email address, state: [${j.stage}]")
+            Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user still requires and email address, state: [${j.stage.toString}]")
           else
             updateJourneyWithNewValue(Left(j), request.body)
 
         case j: Journey.Stages.SelectedEmailToBeVerified =>
-          Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user has not verified their email address yet, state: [${j.stage}]")
+          Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user has not verified their email address yet, state: [${j.stage.toString}]")
 
         case j: Journey.Stages.EmailVerificationComplete =>
           j.emailVerificationStatus match {
             case EmailVerificationStatus.Locked =>
-              Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user has been locked out from verifying their email address, state: [${j.stage}]")
+              Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user has been locked out from verifying their email address, state: [${j.stage.toString}]")
 
             case EmailVerificationStatus.Verified =>
               updateJourneyWithNewValue(Right(j), request.body)

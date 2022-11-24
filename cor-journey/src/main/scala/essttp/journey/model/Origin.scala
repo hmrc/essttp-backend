@@ -32,7 +32,7 @@ sealed trait Origin extends EnumEntry {
     val className: String = this.getClass.getName
     className
       .replaceFirst(packageName + ".", "")
-      .replaceAllLiterally("$", ".")
+      .replaceAll("\\$", ".")
       .dropRight(1)
   }
 }

@@ -51,6 +51,7 @@ object EligibilityCheckResult {
 
   }
 
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[EligibilityCheckResult] = Json.format[EligibilityCheckResult]
 
 }

@@ -27,5 +27,7 @@ final case class InstalmentAmounts(
 
 object InstalmentAmounts {
   implicit val eqInstalmentAmounts: Eq[InstalmentAmounts] = Eq.fromUniversalEquals
+
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[InstalmentAmounts] = Json.format[InstalmentAmounts]
 }

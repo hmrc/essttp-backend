@@ -40,7 +40,7 @@ class UpdateChosenEmailController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       newJourney <- journey match {
-        case j: Journey.BeforeAgreedTermsAndConditions => Errors.throwBadRequestExceptionF(s"UpdateChosenEmail is not possible in that state: [${j.stage}]")
+        case j: Journey.BeforeAgreedTermsAndConditions => Errors.throwBadRequestExceptionF(s"UpdateChosenEmail is not possible in that state: [${j.stage.toString}]")
         case j: Journey.AfterAgreedTermsAndConditions =>
           j match {
             case j1: Journey.Stages.AgreedTermsAndConditions =>
