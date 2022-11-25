@@ -212,6 +212,12 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
+        case j: Journey.Vat.AgreedTermsAndConditions =>
+          j.into[Journey.Vat.RetrievedExtremeDates]
+            .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+            .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+            .transform
+
         case j: Journey.Epaye.SelectedEmailToBeVerified =>
           j.into[Journey.Epaye.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
@@ -347,6 +353,12 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
             .withFieldConst(_.startDatesResponse, startDatesResponse)
             .transform
+        case j: Journey.Vat.AgreedTermsAndConditions =>
+          j.into[Journey.Vat.RetrievedStartDates]
+            .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
+            .withFieldConst(_.startDatesResponse, startDatesResponse)
+            .transform
+
         case j: Journey.Epaye.SelectedEmailToBeVerified =>
           j.into[Journey.Epaye.RetrievedStartDates]
             .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)

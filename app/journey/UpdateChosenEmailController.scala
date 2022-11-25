@@ -19,7 +19,7 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.Epaye
+import essttp.journey.model.Journey.{Epaye, Vat}
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.Email
 import essttp.utils.Errors
@@ -64,6 +64,7 @@ class UpdateChosenEmailController @Inject() (
           .withFieldConst(_.stage, Stage.AfterSelectedAnEmailToBeVerified.EmailChosen)
           .withFieldConst(_.emailToBeVerified, email)
           .transform
+      case _: Vat.AgreedTermsAndConditions => Errors.notImplemented("Not built yet...")
     }
     journeyService.upsert(newJourney)
   }

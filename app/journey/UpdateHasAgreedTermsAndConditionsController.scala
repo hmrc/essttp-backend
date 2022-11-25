@@ -58,7 +58,11 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
           .withFieldConst(_.stage, toStage(isEmailAddressRequired))
           .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired)
           .transform
-      case _: Journey.Vat.ConfirmedDirectDebitDetails => Errors.notImplemented("Not built yet...")
+      case j: Journey.Vat.ConfirmedDirectDebitDetails =>
+        j.into[Journey.Vat.AgreedTermsAndConditions]
+          .withFieldConst(_.stage, toStage(isEmailAddressRequired))
+          .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
@@ -72,6 +76,12 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
         Errors.throwBadRequestException("Cannot update AgreedTermsAndConditions when journey is in completed state")
 
       case j: Journey.Epaye.AgreedTermsAndConditions =>
+        upsertIfChanged(j, isEmailAddressRequired,
+                        j.copy(
+            isEmailAddressRequired = isEmailAddressRequired,
+            stage                  = toStage(isEmailAddressRequired)
+          ))
+      case j: Journey.Vat.AgreedTermsAndConditions =>
         upsertIfChanged(j, isEmailAddressRequired,
                         j.copy(
             isEmailAddressRequired = isEmailAddressRequired,

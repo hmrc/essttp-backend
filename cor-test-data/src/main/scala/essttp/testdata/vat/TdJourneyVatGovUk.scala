@@ -21,7 +21,7 @@ import essttp.journey.model._
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
-import essttp.rootmodel.{CanPayUpfront, DayOfMonth, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
+import essttp.rootmodel.{CanPayUpfront, DayOfMonth, IsEmailAddressRequired, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import essttp.rootmodel.ttp.EligibilityCheckResult
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
@@ -435,5 +435,40 @@ trait TdJourneyVatGovUk {
     )
 
     def journeyAfterConfirmedDirectDebitDetailsJson: JsObject = read("/testdata/vat/govuk/JourneyAfterUpdateConfirmedDirectDebitDetails.json").asJson
+
+    def updateAgreedTermsAndConditionsRequest(isEmailAddressRequired: Boolean): IsEmailAddressRequired = IsEmailAddressRequired(isEmailAddressRequired)
+
+    def updateAgreedTermsAndConditionsJson(): JsObject = read("/testdata/vat/govuk/UpdateAgreedTermsAndConditions.json").asJson
+
+    def journeyAfterAgreedTermsAndConditions(isEmailAddressRequired: Boolean): Journey.AfterAgreedTermsAndConditions = {
+      val stage =
+        if (isEmailAddressRequired) Stage.AfterAgreedTermsAndConditions.EmailAddressRequired
+        else Stage.AfterAgreedTermsAndConditions.EmailAddressNotRequired
+
+      Journey.Vat.AgreedTermsAndConditions(
+        _id                      = dependencies.journeyId,
+        origin                   = Origins.Vat.GovUk,
+        createdOn                = dependencies.createdOn,
+        sjRequest                = sjRequest,
+        sessionId                = dependencies.sessionId,
+        stage                    = stage,
+        correlationId            = dependencies.correlationId,
+        taxId                    = vrn,
+        eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+        upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts        = dependencies.instalmentAmounts,
+        monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+        dayOfMonth               = dependencies.dayOfMonth,
+        startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+        affordableQuotesResponse = dependencies.affordableQuotesResponse,
+        selectedPaymentPlan      = dependencies.paymentPlan(1),
+        detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+        directDebitDetails       = directDebitDetails,
+        isEmailAddressRequired   = IsEmailAddressRequired(isEmailAddressRequired)
+      )
+    }
+
+    def journeyAfterAgreedTermsAndConditionsJson: JsObject = read("/testdata/vat/govuk/JourneyAfterUpdateAgreedTermsAndConditions.json").asJson
   }
 }

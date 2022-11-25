@@ -443,7 +443,8 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateHasCheckedPaymentPlan]" +
       "[EnteredDetailsAboutBankAccount]" +
       "[UpdateEnteredDirectDebitDetails]" +
-      "[UpdateConfirmedDirectDebitDetails]"
+      "[UpdateConfirmedDirectDebitDetails]" +
+      "[UpdateHasAgreedTermsAndConditions]"
 
   "[Vat]" - {
     s"[Bta]$vatTestNameJourneyStages" in {
@@ -519,7 +520,11 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterConfirmedDirectDebitDetails
 
-      verifyCommonActions(numberOfAuthCalls = 32)
+      /** Update Agreed terms and conditions */
+      journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+
+      verifyCommonActions(numberOfAuthCalls = 34)
     }
 
     s"[GovUk]$vatTestNameJourneyStages" in {
@@ -595,7 +600,11 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterConfirmedDirectDebitDetails
 
-      verifyCommonActions(numberOfAuthCalls = 32)
+      /** Update Agreed terms and conditions */
+      journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+
+      verifyCommonActions(numberOfAuthCalls = 34)
     }
 
     s"[DetachedUrl]$vatTestNameJourneyStages" in {
@@ -671,7 +680,11 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterConfirmedDirectDebitDetails
 
-      verifyCommonActions(numberOfAuthCalls = 32)
+      /** Update Agreed terms and conditions */
+      journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+
+      verifyCommonActions(numberOfAuthCalls = 34)
     }
 
     s"[VatService]$vatTestNameJourneyStages" in {
@@ -747,7 +760,11 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterConfirmedDirectDebitDetails
 
-      verifyCommonActions(numberOfAuthCalls = 32)
+      /** Update Agreed terms and conditions */
+      journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+
+      verifyCommonActions(numberOfAuthCalls = 34)
     }
   }
 
