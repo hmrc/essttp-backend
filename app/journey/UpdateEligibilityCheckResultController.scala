@@ -239,6 +239,12 @@ class UpdateEligibilityCheckResultController @Inject() (
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
+        case j: Vat.AgreedTermsAndConditions =>
+          j.into[Journey.Vat.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+
         case j: Epaye.SelectedEmailToBeVerified =>
           j.into[Journey.Epaye.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))

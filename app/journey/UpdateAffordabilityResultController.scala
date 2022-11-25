@@ -186,6 +186,12 @@ class UpdateAffordabilityResultController @Inject() (
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
+        case j: Journey.Vat.AgreedTermsAndConditions =>
+          j.into[Journey.Vat.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
+
         case j: Journey.Epaye.SelectedEmailToBeVerified =>
           j.into[Journey.Epaye.RetrievedAffordabilityResult]
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)

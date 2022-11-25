@@ -117,6 +117,12 @@ class UpdateDetailsAboutBankAccountController @Inject() (
             .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
             .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
             .transform
+        case j: Journey.Vat.AgreedTermsAndConditions =>
+          j.into[Journey.Vat.EnteredDetailsAboutBankAccount]
+            .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
+            .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
+            .transform
+
         case j: Journey.Epaye.SelectedEmailToBeVerified =>
           j.into[Journey.Epaye.EnteredDetailsAboutBankAccount]
             .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)

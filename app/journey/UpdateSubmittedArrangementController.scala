@@ -78,6 +78,7 @@ class UpdateSubmittedArrangementController @Inject() (
           .withFieldConst(_.emailVerificationAnswers, EmailVerificationAnswers.NoEmailJourney)
           .withFieldConst(_.arrangementResponse, arrangementResponse)
           .transform
+      case Left(_: Journey.Vat.AgreedTermsAndConditions) => Errors.notImplemented("Not built yet...")
 
       case Right(j: Journey.Epaye.EmailVerificationComplete) =>
         j.into[Journey.Epaye.SubmittedArrangement]

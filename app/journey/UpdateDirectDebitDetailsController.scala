@@ -106,6 +106,12 @@ class UpdateDirectDebitDetailsController @Inject() (
             .withFieldConst(_.directDebitDetails, directDebitDetails)
             .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
             .transform
+        case j: Journey.Vat.AgreedTermsAndConditions =>
+          j.into[Journey.Vat.EnteredDirectDebitDetails]
+            .withFieldConst(_.directDebitDetails, directDebitDetails)
+            .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
+            .transform
+
         case j: Journey.Epaye.SelectedEmailToBeVerified =>
           j.into[Journey.Epaye.EnteredDirectDebitDetails]
             .withFieldConst(_.directDebitDetails, directDebitDetails)

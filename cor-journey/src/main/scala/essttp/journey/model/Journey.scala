@@ -1668,5 +1668,35 @@ object Journey {
       extends Journey
       with Journey.Stages.ConfirmedDirectDebitDetails
       with Journey.Vat
+
+    /**
+     * [[Journey]] after Agreeing terms and conditions
+     * Vat
+     */
+    final case class AgreedTermsAndConditions(
+        override val _id:                      JourneyId,
+        override val origin:                   Origins.Vat,
+        override val createdOn:                Instant,
+        override val sjRequest:                SjRequest.Vat,
+        override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
+        override val stage:                    Stage.AfterAgreedTermsAndConditions,
+        override val taxId:                    Vrn,
+        override val eligibilityCheckResult:   EligibilityCheckResult,
+        override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
+        override val extremeDatesResponse:     ExtremeDatesResponse,
+        override val instalmentAmounts:        InstalmentAmounts,
+        override val monthlyPaymentAmount:     MonthlyPaymentAmount,
+        override val dayOfMonth:               DayOfMonth,
+        override val startDatesResponse:       StartDatesResponse,
+        override val affordableQuotesResponse: AffordableQuotesResponse,
+        override val selectedPaymentPlan:      PaymentPlan,
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount,
+        override val directDebitDetails:       BankDetails,
+        override val isEmailAddressRequired:   IsEmailAddressRequired
+    )
+      extends Journey
+      with Journey.Stages.AgreedTermsAndConditions
+      with Journey.Vat
   }
 }

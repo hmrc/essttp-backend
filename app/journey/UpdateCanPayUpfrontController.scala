@@ -287,6 +287,14 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
+          case j1: Journey.Vat.AgreedTermsAndConditions =>
+            upsertIfChanged(
+              j1.into[Journey.Vat.AnsweredCanPayUpfront]
+                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+                .withFieldConst(_.canPayUpfront, canPayUpfront)
+                .transform
+            )
+
           case j1: Journey.Epaye.SelectedEmailToBeVerified =>
             upsertIfChanged(
               j1.into[Journey.Epaye.AnsweredCanPayUpfront]
