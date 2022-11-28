@@ -30,7 +30,7 @@ final case class EligibilityRules(
     missingFiledReturns:               Boolean,
     hasInvalidInterestSignals:         Option[Boolean],
     dmSpecialOfficeProcessingRequired: Option[Boolean],
-    noDueDatesReached:                 Option[Boolean]
+    noDueDatesReached:                 Boolean
 
 ) {
 
@@ -47,7 +47,7 @@ final case class EligibilityRules(
       missingFiledReturns,
       hasInvalidInterestSignals.getOrElse(false),
       dmSpecialOfficeProcessingRequired.getOrElse(false),
-      noDueDatesReached.getOrElse(false)
+      noDueDatesReached
     ).map{ if (_) 1 else 0 }.sum > 1
   }
 
@@ -64,7 +64,7 @@ final case class EligibilityRules(
       missingFiledReturns,
       hasInvalidInterestSignals.getOrElse(false),
       dmSpecialOfficeProcessingRequired.getOrElse(false),
-      noDueDatesReached.getOrElse(false)
+      noDueDatesReached
     ).forall(flag => !flag) //if all flags are false then isEligible is true
   }
 }

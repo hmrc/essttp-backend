@@ -82,14 +82,14 @@ trait TdEpaye {
                 )
               )
             ),
-            dueDateNotReached    = Some(false)
+            dueDateNotReached    = false
           )
         )
       )
     ),
     customerDetails                 = None,
     regimeDigitalCorrespondence     = None,
-    futureChargeLiabilitiesExcluded = Some(false)
+    futureChargeLiabilitiesExcluded = false
   )
 
   def ineligibleEligibilityCheckResult: EligibilityCheckResult = eligibleEligibilityCheckResult.copy(

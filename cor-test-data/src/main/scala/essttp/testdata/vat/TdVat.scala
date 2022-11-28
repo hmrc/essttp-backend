@@ -70,13 +70,13 @@ trait TdVat {
                 )
               )
             ),
-            dueDateNotReached    = Some(false)
+            dueDateNotReached    = false
           )
         )
       )
     ),
     customerDetails                 = None,
     regimeDigitalCorrespondence     = None,
-    futureChargeLiabilitiesExcluded = Some(false)
+    futureChargeLiabilitiesExcluded = false
   )
 }

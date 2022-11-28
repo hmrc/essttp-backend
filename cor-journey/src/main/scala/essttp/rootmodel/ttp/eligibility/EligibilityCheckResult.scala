@@ -38,7 +38,7 @@ final case class EligibilityCheckResult(
     chargeTypeAssessment:            List[ChargeTypeAssessment],
     customerDetails:                 Option[List[CustomerDetail]],
     regimeDigitalCorrespondence:     Option[RegimeDigitalCorrespondence],
-    futureChargeLiabilitiesExcluded: Option[Boolean]
+    futureChargeLiabilitiesExcluded: Boolean
 )
 
 object EligibilityCheckResult {

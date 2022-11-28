@@ -32,7 +32,7 @@ final case class Charges(
     ineligibleChargeType: IneligibleChargeType,
     chargeOverMaxDebtAge: ChargeOverMaxDebtAge,
     locks:                Option[List[Lock]],
-    dueDateNotReached:    Option[Boolean]
+    dueDateNotReached:    Boolean
 )
 
 object Charges {

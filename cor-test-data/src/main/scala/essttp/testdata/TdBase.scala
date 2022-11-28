@@ -52,7 +52,7 @@ trait TdBase {
     hasRlsOnAddress                   = false, markedAsInsolvent = false, isLessThanMinDebtAllowance = false,
     isMoreThanMaxDebtAllowance        = false, disallowedChargeLockTypes = false, existingTTP = false,
     chargesOverMaxDebtAge             = false, ineligibleChargeTypes = false, missingFiledReturns = false,
-    hasInvalidInterestSignals         = None, dmSpecialOfficeProcessingRequired = None, noDueDatesReached = Some(false)
+    hasInvalidInterestSignals         = None, dmSpecialOfficeProcessingRequired = None, noDueDatesReached = false
   )
 
   def ineligibleEligibilityCheckResult(eligibleEligibilityCheckResult: EligibilityCheckResult): EligibilityCheckResult =
