@@ -17,8 +17,9 @@
 package essttp.testdata.vat
 
 import essttp.rootmodel.ttp.affordablequotes.DueDate
+import essttp.rootmodel.ttp.eligibility.{AccruedInterest, ChargeOverMaxDebtAge, ChargeReference, ChargeType, ChargeTypeAssessment, Charges, CustomerPostcode, DebtTotalAmount, DisallowedChargeLockType, EligibilityCheckResult, EligibilityPass, EligibilityStatus, IdType, IdValue, IneligibleChargeType, InterestStartDate, Lock, LockReason, LockType, MainTrans, MainType, OutstandingAmount, Postcode, PostcodeDate, ProcessingDateTime, SubTrans, TaxPeriodFrom, TaxPeriodTo}
+import essttp.rootmodel.ttp._
 import essttp.rootmodel.{AmountInPence, TaxId, Vrn}
-import essttp.rootmodel.ttp.{AccruedInterest, ChargeOverMaxDebtAge, ChargeReference, ChargeType, ChargeTypeAssessment, Charges, CustomerPostcode, DebtTotalAmount, DisallowedChargeLockType, EligibilityCheckResult, EligibilityPass, EligibilityStatus, IdType, IdValue, Identification, IneligibleChargeType, InterestStartDate, Lock, LockReason, LockType, MainTrans, MainType, OutstandingAmount, PaymentPlanFrequencies, PaymentPlanMaxLength, PaymentPlanMinLength, Postcode, PostcodeDate, ProcessingDateTime, SubTrans, TaxPeriodFrom, TaxPeriodTo}
 import essttp.testdata.TdBase
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
@@ -27,10 +28,10 @@ trait TdVat {
 
   val vrn: Vrn = Vrn("101747001")
 
-  def eligibleEligibilityCheckResult(taxId: TaxId = vrn): EligibilityCheckResult = EligibilityCheckResult(
+  def eligibleEligibilityCheckResult(taxId: TaxId = vrn): EligibilityCheckResult = eligibility.EligibilityCheckResult(
     processingDateTime              = ProcessingDateTime(reusableDateAsString),
     identification                  = List(
-      Identification(
+      eligibility.Identification(
         idType  = IdType("VRN"),
         idValue = IdValue(taxId.value)
       )

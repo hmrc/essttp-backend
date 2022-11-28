@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.ttp.arrangement
+package essttp.rootmodel.ttp.eligibility
 
-import essttp.rootmodel.ttp.eligibility.ProcessingDateTime
-import play.api.libs.json.{Json, OFormat}
+import essttp.rootmodel.AmountInPence
+import play.api.libs.json.{Format, Json}
+final case class OutstandingAmount(value: AmountInPence) extends AnyVal
 
-final case class ArrangementResponse(processingDateTime: ProcessingDateTime, customerReference: CustomerReference)
-
-object ArrangementResponse {
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[ArrangementResponse] = Json.format
-
+object OutstandingAmount {
+  implicit val format: Format[OutstandingAmount] = Json.valueFormat
 }

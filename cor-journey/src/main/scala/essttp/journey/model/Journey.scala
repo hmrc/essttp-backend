@@ -22,10 +22,10 @@ import essttp.rootmodel._
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
-import essttp.rootmodel.ttp.EligibilityCheckResult
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
+import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import essttp.utils.Errors
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 import julienrf.json.derived

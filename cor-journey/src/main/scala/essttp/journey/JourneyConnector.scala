@@ -22,10 +22,10 @@ import essttp.journey.model.{Journey, JourneyId, SjRequest, SjResponse}
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
-import essttp.rootmodel.ttp.EligibilityCheckResult
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
+import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import essttp.rootmodel.{CanPayUpfront, DayOfMonth, Email, IsEmailAddressRequired, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}

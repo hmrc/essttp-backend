@@ -19,7 +19,8 @@ package essttp.testdata.epaye
 import essttp.rootmodel.epaye.{Aor, TaxOfficeNumber, TaxOfficeReference}
 import essttp.rootmodel.ttp._
 import essttp.rootmodel.ttp.affordablequotes.DueDate
-import essttp.rootmodel.ttp.arrangement.ArrangementResponse
+import essttp.rootmodel.ttp.arrangement.{ArrangementResponse, CustomerReference}
+import essttp.rootmodel.ttp.eligibility.{AccruedInterest, ChargeOverMaxDebtAge, ChargeReference, ChargeType, ChargeTypeAssessment, Charges, CustomerPostcode, DebtTotalAmount, DisallowedChargeLockType, EligibilityCheckResult, EligibilityPass, EligibilityStatus, IdType, IdValue, Identification, IneligibleChargeType, InterestStartDate, Lock, LockReason, LockType, MainTrans, MainType, OutstandingAmount, Postcode, PostcodeDate, ProcessingDateTime, SubTrans, TaxPeriodFrom, TaxPeriodTo}
 import essttp.rootmodel.{AmountInPence, EmpRef}
 import essttp.testdata.TdBase
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
@@ -35,14 +36,14 @@ trait TdEpaye {
 
   val aor: Aor = Aor("123PA44545546")
 
-  val eligibleEligibilityCheckResult: EligibilityCheckResult = EligibilityCheckResult(
+  val eligibleEligibilityCheckResult: EligibilityCheckResult = eligibility.EligibilityCheckResult(
     processingDateTime              = ProcessingDateTime(reusableDateAsString),
     identification                  = List(
       Identification(
         idType  = IdType("EMPREF"),
         idValue = IdValue(empRef.value)
       ),
-      Identification(
+      eligibility.Identification(
         idType  = IdType("BROCS"),
         idValue = IdValue("123PA44545546")
       )

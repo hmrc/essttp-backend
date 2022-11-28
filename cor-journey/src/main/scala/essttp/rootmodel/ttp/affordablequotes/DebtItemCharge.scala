@@ -16,7 +16,7 @@
 
 package essttp.rootmodel.ttp.affordablequotes
 
-import essttp.rootmodel.ttp.{ChargeReference, InterestStartDate, MainTrans, OutstandingDebtAmount, SubTrans}
+import essttp.rootmodel.ttp.eligibility.{ChargeReference, InterestStartDate, MainTrans, SubTrans}
 import play.api.libs.json.{Json, OFormat}
 
 final case class DebtItemCharge(

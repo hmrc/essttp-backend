@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.ttp.arrangement
+package essttp.rootmodel.ttp.eligibility
 
-import essttp.rootmodel.ttp.eligibility.ProcessingDateTime
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json}
 
-final case class ArrangementResponse(processingDateTime: ProcessingDateTime, customerReference: CustomerReference)
+final case class PostcodeDate(value: String) extends AnyVal
 
-object ArrangementResponse {
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[ArrangementResponse] = Json.format
-
+object PostcodeDate {
+  implicit val format: Format[PostcodeDate] = Json.valueFormat[PostcodeDate]
 }

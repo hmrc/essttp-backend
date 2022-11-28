@@ -14,22 +14,17 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.ttp.affordablequotes
+package essttp.rootmodel.ttp.eligibility
 
-import essttp.rootmodel.ttp.eligibility.ChargeReference
+import essttp.crypto.CryptoFormat
 import play.api.libs.json.{Json, OFormat}
 
-final case class Instalment(
-    instalmentNumber:          InstalmentNumber,
-    dueDate:                   DueDate,
-    instalmentInterestAccrued: InterestAccrued,
-    instalmentBalance:         InstalmentBalance,
-    debtItemChargeId:          ChargeReference,
-    amountDue:                 AmountDue,
-    debtItemOriginalDueDate:   DebtItemOriginalDueDate
+final case class CustomerPostcode(
+    addressPostcode: Postcode,
+    postcodeDate:    PostcodeDate
 )
 
-object Instalment {
+object CustomerPostcode {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[Instalment] = Json.format[Instalment]
+  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[CustomerPostcode] = Json.format[CustomerPostcode]
 }

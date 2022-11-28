@@ -20,10 +20,10 @@ import essttp.journey.model.{Journey, SjRequest, SjResponse}
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
-import essttp.rootmodel.ttp.EligibilityCheckResult
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
+import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import essttp.rootmodel.{CanPayUpfront, DayOfMonth, IsEmailAddressRequired, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import play.api.libs.json.{JsNull, JsObject}
 

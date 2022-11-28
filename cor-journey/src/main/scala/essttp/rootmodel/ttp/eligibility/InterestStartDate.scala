@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.ttp.arrangement
+package essttp.rootmodel.ttp.eligibility
 
-import essttp.rootmodel.ttp.eligibility.ProcessingDateTime
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json}
 
-final case class ArrangementResponse(processingDateTime: ProcessingDateTime, customerReference: CustomerReference)
+import java.time.LocalDate
 
-object ArrangementResponse {
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[ArrangementResponse] = Json.format
+final case class InterestStartDate(value: LocalDate) extends AnyVal
 
+object InterestStartDate {
+  implicit val format: Format[InterestStartDate] = Json.valueFormat
 }
