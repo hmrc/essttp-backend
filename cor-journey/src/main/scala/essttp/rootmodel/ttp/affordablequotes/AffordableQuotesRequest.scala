@@ -20,7 +20,8 @@ import essttp.crypto.CryptoFormat
 import essttp.rootmodel.dates.InitialPaymentDate
 import essttp.rootmodel.dates.startdates.InstalmentStartDate
 import essttp.rootmodel.UpfrontPaymentAmount
-import essttp.rootmodel.ttp.{CustomerPostcode, PaymentPlanFrequency, PaymentPlanMaxLength, PaymentPlanMinLength}
+import essttp.rootmodel.ttp.eligibility.CustomerPostcode
+import essttp.rootmodel.ttp.{PaymentPlanFrequency, PaymentPlanMaxLength, PaymentPlanMinLength}
 import play.api.libs.json.{Json, OFormat}
 
 final case class AffordableQuotesRequest(

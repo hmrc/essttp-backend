@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.ttp.arrangement
+package essttp.rootmodel.ttp.eligibility
 
-import essttp.rootmodel.ttp.eligibility.ProcessingDateTime
-import play.api.libs.json.{Json, OFormat}
+import essttp.crypto.CryptoFormat
+import play.api.libs.json.{Format, Json}
+import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
-final case class ArrangementResponse(processingDateTime: ProcessingDateTime, customerReference: CustomerReference)
+final case class Postcode(value: SensitiveString) extends AnyVal
 
-object ArrangementResponse {
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[ArrangementResponse] = Json.format
+object Postcode {
+
+  implicit def format(implicit cryptoFormat: CryptoFormat): Format[Postcode] = {
+    implicit val sensitiveStringFormat: Format[SensitiveString] = essttp.crypto.sensitiveStringFormat(cryptoFormat)
+    Json.valueFormat
+  }
 
 }

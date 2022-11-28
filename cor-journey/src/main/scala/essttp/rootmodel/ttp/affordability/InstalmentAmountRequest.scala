@@ -21,7 +21,8 @@ import essttp.rootmodel.AmountInPence
 import essttp.rootmodel.dates.InitialPaymentDate
 import essttp.rootmodel.dates.extremedates.{EarliestPaymentPlanStartDate, LatestPaymentPlanStartDate}
 import essttp.rootmodel.ttp.affordablequotes.{AccruedDebtInterest, ChannelIdentifier, DebtItemCharge}
-import essttp.rootmodel.ttp.{CustomerPostcode, PaymentPlanFrequency, PaymentPlanMaxLength, PaymentPlanMinLength}
+import essttp.rootmodel.ttp.eligibility.CustomerPostcode
+import essttp.rootmodel.ttp.{PaymentPlanFrequency, PaymentPlanMaxLength, PaymentPlanMinLength}
 import play.api.libs.json.{Json, OFormat}
 
 final case class InstalmentAmountRequest(

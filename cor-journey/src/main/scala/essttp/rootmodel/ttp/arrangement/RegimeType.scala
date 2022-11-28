@@ -16,13 +16,12 @@
 
 package essttp.rootmodel.ttp.arrangement
 
-import essttp.rootmodel.ttp.eligibility.ProcessingDateTime
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, Json}
 
-final case class ArrangementResponse(processingDateTime: ProcessingDateTime, customerReference: CustomerReference)
+final case class RegimeType(value: String) extends AnyVal
 
-object ArrangementResponse {
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[ArrangementResponse] = Json.format
-
+object RegimeType {
+  implicit val format: Format[RegimeType] = Json.valueFormat
+  val `PAYE`: RegimeType = RegimeType("PAYE")
+  val `VAT`: RegimeType = RegimeType("VATC")
 }

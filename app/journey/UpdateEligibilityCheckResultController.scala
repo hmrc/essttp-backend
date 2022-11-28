@@ -23,7 +23,7 @@ import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.Journey.{Epaye, Stages, Vat}
 import essttp.journey.model._
-import essttp.rootmodel.ttp.EligibilityCheckResult
+import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl._
 import play.api.mvc._

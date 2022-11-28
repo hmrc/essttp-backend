@@ -25,7 +25,7 @@ import essttp.rootmodel.dates.extremedates.{EarliestPaymentPlanStartDate, Extrem
 import essttp.rootmodel.dates.startdates.{InstalmentStartDate, StartDatesResponse}
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes._
-import essttp.rootmodel.ttp.{ChargeReference, EligibilityCheckResult, EligibilityPass, EligibilityRules, EligibilityStatus, InterestAccrued}
+import essttp.rootmodel.ttp.eligibility.{ChargeReference, EligibilityCheckResult, EligibilityPass, EligibilityRules, EligibilityStatus}
 import essttp.utils.TdSupport.FakeRequestOps
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
@@ -52,7 +52,7 @@ trait TdBase {
     hasRlsOnAddress                   = false, markedAsInsolvent = false, isLessThanMinDebtAllowance = false,
     isMoreThanMaxDebtAllowance        = false, disallowedChargeLockTypes = false, existingTTP = false,
     chargesOverMaxDebtAge             = false, ineligibleChargeTypes = false, missingFiledReturns = false,
-    hasInvalidInterestSignals         = None, dmSpecialOfficeProcessingRequired = None, noDueDatesReached = Some(false)
+    hasInvalidInterestSignals         = None, dmSpecialOfficeProcessingRequired = None, noDueDatesReached = false
   )
 
   def ineligibleEligibilityCheckResult(eligibleEligibilityCheckResult: EligibilityCheckResult): EligibilityCheckResult =

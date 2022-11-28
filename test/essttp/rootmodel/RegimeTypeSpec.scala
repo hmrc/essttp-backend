@@ -16,7 +16,7 @@
 
 package essttp.rootmodel
 
-import essttp.rootmodel.ttp.RegimeType
+import essttp.rootmodel.ttp.arrangement.RegimeType
 import play.api.libs.json.{JsString, Json}
 import testsupport.UnitSpec
 
