@@ -1698,5 +1698,101 @@ object Journey {
       extends Journey
       with Journey.Stages.AgreedTermsAndConditions
       with Journey.Vat
+
+    /**
+     * [[Journey]] after Selecting email address to be verified
+     * Vat
+     */
+    final case class SelectedEmailToBeVerified(
+        override val _id:                      JourneyId,
+        override val origin:                   Origins.Vat,
+        override val createdOn:                Instant,
+        override val sjRequest:                SjRequest.Vat,
+        override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
+        override val stage:                    Stage.AfterSelectedAnEmailToBeVerified,
+        override val taxId:                    Vrn,
+        override val eligibilityCheckResult:   EligibilityCheckResult,
+        override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
+        override val extremeDatesResponse:     ExtremeDatesResponse,
+        override val instalmentAmounts:        InstalmentAmounts,
+        override val monthlyPaymentAmount:     MonthlyPaymentAmount,
+        override val dayOfMonth:               DayOfMonth,
+        override val startDatesResponse:       StartDatesResponse,
+        override val affordableQuotesResponse: AffordableQuotesResponse,
+        override val selectedPaymentPlan:      PaymentPlan,
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount,
+        override val directDebitDetails:       BankDetails,
+        override val isEmailAddressRequired:   IsEmailAddressRequired,
+        override val emailToBeVerified:        Email
+    )
+      extends Journey
+      with Journey.Stages.SelectedEmailToBeVerified
+      with Journey.Vat
+
+    /**
+     * [[Journey]] after email verification status journey is complete
+     * Vat
+     */
+    final case class EmailVerificationComplete(
+        override val _id:                      JourneyId,
+        override val origin:                   Origins.Vat,
+        override val createdOn:                Instant,
+        override val sjRequest:                SjRequest.Vat,
+        override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
+        override val stage:                    Stage.AfterEmailVerificationPhase,
+        override val taxId:                    Vrn,
+        override val eligibilityCheckResult:   EligibilityCheckResult,
+        override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
+        override val extremeDatesResponse:     ExtremeDatesResponse,
+        override val instalmentAmounts:        InstalmentAmounts,
+        override val monthlyPaymentAmount:     MonthlyPaymentAmount,
+        override val dayOfMonth:               DayOfMonth,
+        override val startDatesResponse:       StartDatesResponse,
+        override val affordableQuotesResponse: AffordableQuotesResponse,
+        override val selectedPaymentPlan:      PaymentPlan,
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount,
+        override val directDebitDetails:       BankDetails,
+        override val isEmailAddressRequired:   IsEmailAddressRequired,
+        override val emailToBeVerified:        Email,
+        override val emailVerificationStatus:  EmailVerificationStatus,
+        override val emailVerificationAnswers: EmailVerificationAnswers
+    )
+      extends Journey
+      with Journey.Stages.EmailVerificationComplete
+      with Journey.Vat
+
+    /**
+     * [[Journey]] after Submission of their arrangement to the enact api
+     * Vat
+     */
+    final case class SubmittedArrangement(
+        override val _id:                      JourneyId,
+        override val origin:                   Origins.Vat,
+        override val createdOn:                Instant,
+        override val sjRequest:                SjRequest.Vat,
+        override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
+        override val stage:                    Stage.AfterSubmittedArrangement,
+        override val taxId:                    Vrn,
+        override val eligibilityCheckResult:   EligibilityCheckResult,
+        override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
+        override val extremeDatesResponse:     ExtremeDatesResponse,
+        override val instalmentAmounts:        InstalmentAmounts,
+        override val monthlyPaymentAmount:     MonthlyPaymentAmount,
+        override val dayOfMonth:               DayOfMonth,
+        override val startDatesResponse:       StartDatesResponse,
+        override val affordableQuotesResponse: AffordableQuotesResponse,
+        override val selectedPaymentPlan:      PaymentPlan,
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount,
+        override val directDebitDetails:       BankDetails,
+        override val isEmailAddressRequired:   IsEmailAddressRequired,
+        override val arrangementResponse:      ArrangementResponse,
+        override val emailVerificationAnswers: EmailVerificationAnswers
+    )
+      extends Journey
+      with Journey.Stages.SubmittedArrangement
+      with Journey.Vat
   }
 }

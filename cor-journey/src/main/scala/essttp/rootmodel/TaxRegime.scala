@@ -20,7 +20,7 @@ import enumeratum._
 
 import scala.collection.immutable
 
-sealed trait TaxRegime extends EnumEntry
+sealed trait TaxRegime extends EnumEntry with Product with Serializable
 
 object TaxRegime extends Enum[TaxRegime] {
 

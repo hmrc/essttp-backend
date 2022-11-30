@@ -19,7 +19,7 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.{Epaye, Vat}
+import essttp.journey.model.Journey.{Epaye, Stages, Vat}
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.Email
 import essttp.utils.Errors
@@ -48,7 +48,7 @@ class UpdateChosenEmailController @Inject() (
               else Errors.throwBadRequestExceptionF(s"Cannot update selected email address when isEmailAddressRequired is false for journey.")
             case j1: Journey.Stages.SelectedEmailToBeVerified => updateJourneyWithExistingValue(j1, request.body)
             case j1: Journey.Stages.EmailVerificationComplete => updateJourneyWithExistingValue(j1, request.body)
-            case _: Journey.Epaye.SubmittedArrangement        => Errors.throwBadRequestExceptionF(s"Cannot update ChosenEmail when journey is in completed state.")
+            case _: Journey.Stages.SubmittedArrangement       => Errors.throwBadRequestExceptionF(s"Cannot update ChosenEmail when journey is in completed state.")
           }
       }
     } yield Ok(newJourney.json)
@@ -58,13 +58,17 @@ class UpdateChosenEmailController @Inject() (
       journey: Journey.Stages.AgreedTermsAndConditions,
       email:   Email
   )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney = journey match {
+    val newJourney: Stages.SelectedEmailToBeVerified = journey match {
       case j: Epaye.AgreedTermsAndConditions =>
         j.into[Epaye.SelectedEmailToBeVerified]
           .withFieldConst(_.stage, Stage.AfterSelectedAnEmailToBeVerified.EmailChosen)
           .withFieldConst(_.emailToBeVerified, email)
           .transform
-      case _: Vat.AgreedTermsAndConditions => Errors.notImplemented("Not built yet...")
+      case j: Vat.AgreedTermsAndConditions =>
+        j.into[Vat.SelectedEmailToBeVerified]
+          .withFieldConst(_.stage, Stage.AfterSelectedAnEmailToBeVerified.EmailChosen)
+          .withFieldConst(_.emailToBeVerified, email)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
@@ -74,12 +78,19 @@ class UpdateChosenEmailController @Inject() (
       email:   Email
   )(implicit request: Request[_]): Future[Journey] = {
     // don't check to see if email is same to allow for passcodes to be requested again for same email
-    val newJourney = journey match {
+    val newJourney: Stages.SelectedEmailToBeVerified = journey match {
       case j: Journey.Epaye.SelectedEmailToBeVerified =>
+        j.copy(emailToBeVerified = email)
+      case j: Journey.Vat.SelectedEmailToBeVerified =>
         j.copy(emailToBeVerified = email)
 
       case j: Journey.Epaye.EmailVerificationComplete =>
         j.into[Journey.Epaye.SelectedEmailToBeVerified]
+          .withFieldConst(_.emailToBeVerified, email)
+          .withFieldConst(_.stage, Stage.AfterSelectedAnEmailToBeVerified.EmailChosen)
+          .transform
+      case j: Journey.Vat.EmailVerificationComplete =>
+        j.into[Journey.Vat.SelectedEmailToBeVerified]
           .withFieldConst(_.emailToBeVerified, email)
           .withFieldConst(_.stage, Stage.AfterSelectedAnEmailToBeVerified.EmailChosen)
           .transform

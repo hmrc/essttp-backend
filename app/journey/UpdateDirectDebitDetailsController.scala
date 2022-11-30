@@ -117,12 +117,24 @@ class UpdateDirectDebitDetailsController @Inject() (
             .withFieldConst(_.directDebitDetails, directDebitDetails)
             .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
             .transform
+        case j: Journey.Vat.SelectedEmailToBeVerified =>
+          j.into[Journey.Vat.EnteredDirectDebitDetails]
+            .withFieldConst(_.directDebitDetails, directDebitDetails)
+            .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
+            .transform
+
         case j: Journey.Epaye.EmailVerificationComplete =>
           j.into[Journey.Epaye.EnteredDirectDebitDetails]
             .withFieldConst(_.directDebitDetails, directDebitDetails)
             .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
             .transform
-        case _: Journey.Epaye.SubmittedArrangement =>
+        case j: Journey.Vat.EmailVerificationComplete =>
+          j.into[Journey.Vat.EnteredDirectDebitDetails]
+            .withFieldConst(_.directDebitDetails, directDebitDetails)
+            .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
+            .transform
+
+        case _: Journey.Stages.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update DirectDebitDetails when journey is in completed state")
       }
 

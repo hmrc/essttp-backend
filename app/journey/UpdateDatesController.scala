@@ -223,12 +223,24 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
+        case j: Journey.Vat.SelectedEmailToBeVerified =>
+          j.into[Journey.Vat.RetrievedExtremeDates]
+            .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+            .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+            .transform
+
         case j: Journey.Epaye.EmailVerificationComplete =>
           j.into[Journey.Epaye.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case _: Journey.Epaye.SubmittedArrangement =>
+        case j: Journey.Vat.EmailVerificationComplete =>
+          j.into[Journey.Vat.RetrievedExtremeDates]
+            .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+            .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+            .transform
+
+        case _: Journey.Stages.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update ExtremeDates when journey is in completed state")
       }
       journeyService.upsert(newJourney)
@@ -364,12 +376,24 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
             .withFieldConst(_.startDatesResponse, startDatesResponse)
             .transform
+        case j: Journey.Vat.SelectedEmailToBeVerified =>
+          j.into[Journey.Vat.RetrievedStartDates]
+            .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
+            .withFieldConst(_.startDatesResponse, startDatesResponse)
+            .transform
+
         case j: Journey.Epaye.EmailVerificationComplete =>
           j.into[Journey.Epaye.RetrievedStartDates]
             .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
             .withFieldConst(_.startDatesResponse, startDatesResponse)
             .transform
-        case _: Journey.Epaye.SubmittedArrangement =>
+        case j: Journey.Vat.EmailVerificationComplete =>
+          j.into[Journey.Vat.RetrievedStartDates]
+            .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
+            .withFieldConst(_.startDatesResponse, startDatesResponse)
+            .transform
+
+        case _: Journey.Stages.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update StartDates when journey is in completed state")
       }
       journeyService.upsert(newJourney)

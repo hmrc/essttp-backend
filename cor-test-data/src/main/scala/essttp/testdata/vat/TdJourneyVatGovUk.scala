@@ -16,14 +16,16 @@
 
 package essttp.testdata.vat
 
+import essttp.emailverification.EmailVerificationStatus
 import essttp.journey.model.SjRequest.Vat
 import essttp.journey.model._
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
-import essttp.rootmodel.{CanPayUpfront, DayOfMonth, IsEmailAddressRequired, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
+import essttp.rootmodel.{CanPayUpfront, DayOfMonth, Email, IsEmailAddressRequired, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
+import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import essttp.testdata.TdBase
 import essttp.utils.JsonSyntax._
@@ -470,5 +472,104 @@ trait TdJourneyVatGovUk {
     }
 
     def journeyAfterAgreedTermsAndConditionsJson: JsObject = read("/testdata/vat/govuk/JourneyAfterUpdateAgreedTermsAndConditions.json").asJson
+
+    def updateSelectedEmailRequest(): Email = dependencies.email
+
+    def updateSelectedEmailRequestJson(): JsObject = read("/testdata/vat/govuk/UpdateSelectedEmailRequest.json").asJson
+
+    def journeyAfterSelectedEmail: Journey.Vat.SelectedEmailToBeVerified = Journey.Vat.SelectedEmailToBeVerified(
+      _id                      = dependencies.journeyId,
+      origin                   = Origins.Vat.GovUk,
+      createdOn                = dependencies.createdOn,
+      sjRequest                = sjRequest,
+      sessionId                = dependencies.sessionId,
+      stage                    = Stage.AfterSelectedAnEmailToBeVerified.EmailChosen,
+      correlationId            = dependencies.correlationId,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts        = dependencies.instalmentAmounts,
+      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+      dayOfMonth               = dependencies.dayOfMonth,
+      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan      = dependencies.paymentPlan(1),
+      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+      directDebitDetails       = directDebitDetails,
+      isEmailAddressRequired   = IsEmailAddressRequired(true),
+      emailToBeVerified        = dependencies.email
+    )
+
+    def journeyAfterSelectedEmailJson: JsObject = read("/testdata/vat/govuk/JourneyAfterUpdateSelectedEmail.json").asJson
+
+    def updateEmailVerificationStatusRequestJson(): JsObject = read("/testdata/vat/govuk/UpdateEmailVerificationStatusRequest.json").asJson
+
+    def journeyAfterEmailVerificationStatus(status: EmailVerificationStatus): Journey.Vat.EmailVerificationComplete = Journey.Vat.EmailVerificationComplete(
+      _id                      = dependencies.journeyId,
+      origin                   = Origins.Vat.GovUk,
+      createdOn                = dependencies.createdOn,
+      sjRequest                = sjRequest,
+      sessionId                = dependencies.sessionId,
+      stage                    = status match {
+        case EmailVerificationStatus.Verified => Stage.AfterEmailVerificationPhase.VerificationSuccess
+        case EmailVerificationStatus.Locked   => Stage.AfterEmailVerificationPhase.Locked
+      },
+      correlationId            = dependencies.correlationId,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts        = dependencies.instalmentAmounts,
+      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+      dayOfMonth               = dependencies.dayOfMonth,
+      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan      = dependencies.paymentPlan(1),
+      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+      directDebitDetails       = directDebitDetails,
+      isEmailAddressRequired   = IsEmailAddressRequired(true),
+      emailToBeVerified        = dependencies.email,
+      emailVerificationStatus  = status,
+      emailVerificationAnswers = emailVerificationAnswers(Some(status))
+    )
+
+    def journeyAfterEmailVerificationStatusJson: JsObject = read("/testdata/vat/govuk/JourneyAfterUpdateEmailVerificationStatus.json").asJson
+
+    def updateArrangementRequest(): ArrangementResponse = dependencies.arrangementResponseVat
+
+    def updateArrangementRequestJson(): JsObject = read("/testdata/vat/govuk/UpdateSubmittedArrangementRequest.json").asJson
+
+    def journeyAfterSubmittedArrangement(isEmailAddressRequired: Boolean): Journey.AfterArrangementSubmitted = Journey.Vat.SubmittedArrangement(
+      _id                      = dependencies.journeyId,
+      origin                   = Origins.Vat.GovUk,
+      createdOn                = dependencies.createdOn,
+      sjRequest                = sjRequest,
+      sessionId                = dependencies.sessionId,
+      correlationId            = dependencies.correlationId,
+      stage                    = Stage.AfterSubmittedArrangement.Submitted,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts        = dependencies.instalmentAmounts,
+      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
+      dayOfMonth               = dependencies.dayOfMonth,
+      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan      = dependencies.paymentPlan(1),
+      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+      directDebitDetails       = directDebitDetails,
+      isEmailAddressRequired   = IsEmailAddressRequired(isEmailAddressRequired),
+      emailVerificationAnswers = if (isEmailAddressRequired) {
+        EmailVerificationAnswers.EmailVerified(dependencies.email, EmailVerificationStatus.Verified)
+      } else {
+        EmailVerificationAnswers.NoEmailJourney
+      },
+      arrangementResponse      = dependencies.arrangementResponseVat
+    )
+
+    def journeyAfterSubmittedArrangementJson: JsObject = read("/testdata/vat/govuk/JourneyAfterUpdateSubmittedArrangement.json").asJson
+
   }
 }
