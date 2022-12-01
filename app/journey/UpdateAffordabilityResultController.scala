@@ -197,12 +197,24 @@ class UpdateAffordabilityResultController @Inject() (
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
+        case j: Journey.Vat.SelectedEmailToBeVerified =>
+          j.into[Journey.Vat.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
+
         case j: Journey.Epaye.EmailVerificationComplete =>
           j.into[Journey.Epaye.RetrievedAffordabilityResult]
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
-        case _: Journey.Epaye.SubmittedArrangement =>
+        case j: Journey.Vat.EmailVerificationComplete =>
+          j.into[Journey.Vat.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
+
+        case _: Journey.Stages.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update AffordabilityResult when journey is in completed state")
       }
       journeyService.upsert(newJourney)

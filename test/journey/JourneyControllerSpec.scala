@@ -524,7 +524,19 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 34)
+      /** Update Email Address */
+      journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterSelectedEmail
+
+      /** Update Email Verification Status */
+      journeyConnector.updateEmailVerificationStatus(tdAll.journeyId, EmailVerificationStatus.Verified).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterEmailVerificationStatus(EmailVerificationStatus.Verified)
+
+      /** Update Arrangement (journey completed) */
+      journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatBta.updateArrangementRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+
+      verifyCommonActions(numberOfAuthCalls = 40)
     }
 
     s"[GovUk]$vatTestNameJourneyStages" in {
@@ -604,7 +616,19 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 34)
+      /** Update Email Address */
+      journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterSelectedEmail
+
+      /** Update Email Verification Status */
+      journeyConnector.updateEmailVerificationStatus(tdAll.journeyId, EmailVerificationStatus.Verified).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterEmailVerificationStatus(EmailVerificationStatus.Verified)
+
+      /** Update Arrangement (journey completed) */
+      journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatGovUk.updateArrangementRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+
+      verifyCommonActions(numberOfAuthCalls = 40)
     }
 
     s"[DetachedUrl]$vatTestNameJourneyStages" in {
@@ -684,7 +708,19 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 34)
+      /** Update Email Address */
+      journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterSelectedEmail
+
+      /** Update Email Verification Status */
+      journeyConnector.updateEmailVerificationStatus(tdAll.journeyId, EmailVerificationStatus.Verified).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterEmailVerificationStatus(EmailVerificationStatus.Verified)
+
+      /** Update Arrangement (journey completed) */
+      journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatDetachedUrl.updateArrangementRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+
+      verifyCommonActions(numberOfAuthCalls = 40)
     }
 
     s"[VatService]$vatTestNameJourneyStages" in {
@@ -764,7 +800,19 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 34)
+      /** Update Email Address */
+      journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterSelectedEmail
+
+      /** Update Email Verification Status */
+      journeyConnector.updateEmailVerificationStatus(tdAll.journeyId, EmailVerificationStatus.Verified).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterEmailVerificationStatus(EmailVerificationStatus.Verified)
+
+      /** Update Arrangement (journey completed) */
+      journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatVatService.updateArrangementRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+
+      verifyCommonActions(numberOfAuthCalls = 40)
     }
   }
 

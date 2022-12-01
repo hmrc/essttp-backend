@@ -17,12 +17,13 @@
 package essttp.journey.model
 
 import enumeratum.{Enum, EnumEntry}
+import essttp.rootmodel.TaxRegime
 import essttp.utils.EnumFormat
 import play.api.libs.json.Format
 
 import scala.collection.immutable
 
-sealed trait Origin extends EnumEntry {
+sealed trait Origin extends EnumEntry with Product with Serializable {
 
   /**
    * Better toString which shows portion of a package
@@ -38,7 +39,17 @@ sealed trait Origin extends EnumEntry {
 }
 
 object Origin {
+
   implicit val format: Format[Origin] = EnumFormat(Origins)
+
+  implicit class OriginOps(private val o: Origin) extends AnyVal {
+
+    def taxRegime: TaxRegime = o match {
+      case _: Origins.Epaye => TaxRegime.Epaye
+      case _: Origins.Vat   => TaxRegime.Vat
+    }
+  }
+
 }
 
 object Origins extends Enum[Origin] {

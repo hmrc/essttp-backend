@@ -302,6 +302,14 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
+          case j1: Journey.Vat.SelectedEmailToBeVerified =>
+            upsertIfChanged(
+              j1.into[Journey.Vat.AnsweredCanPayUpfront]
+                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+                .withFieldConst(_.canPayUpfront, canPayUpfront)
+                .transform
+            )
+
           case j1: Journey.Epaye.EmailVerificationComplete =>
             upsertIfChanged(
               j1.into[Journey.Epaye.AnsweredCanPayUpfront]
@@ -309,7 +317,15 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
-          case _: Journey.Epaye.SubmittedArrangement =>
+          case j1: Journey.Vat.EmailVerificationComplete =>
+            upsertIfChanged(
+              j1.into[Journey.Vat.AnsweredCanPayUpfront]
+                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+                .withFieldConst(_.canPayUpfront, canPayUpfront)
+                .transform
+            )
+
+          case _: Journey.Stages.SubmittedArrangement =>
             Errors.throwBadRequestException("Cannot update AnsweredCanPayUpFront when journey is in completed state")
         }
     }

@@ -153,12 +153,24 @@ class UpdateAffordableQuotesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
             .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
             .transform
+        case j: Journey.Vat.SelectedEmailToBeVerified =>
+          j.into[Journey.Vat.RetrievedAffordableQuotes]
+            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+            .transform
+
         case j: Journey.Epaye.EmailVerificationComplete =>
           j.into[Journey.Epaye.RetrievedAffordableQuotes]
             .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
             .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
             .transform
-        case _: Journey.Epaye.SubmittedArrangement =>
+        case j: Journey.Vat.EmailVerificationComplete =>
+          j.into[Journey.Vat.RetrievedAffordableQuotes]
+            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+            .transform
+
+        case _: Journey.Stages.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update AffordableQuotes when journey is in completed state")
       }
 

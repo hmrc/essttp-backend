@@ -176,12 +176,24 @@ class UpdateDayOfMonthController @Inject() (
             .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
             .withFieldConst(_.dayOfMonth, dayOfMonth)
             .transform
+        case j: Journey.Vat.SelectedEmailToBeVerified =>
+          j.into[Journey.Vat.EnteredDayOfMonth]
+            .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
+            .withFieldConst(_.dayOfMonth, dayOfMonth)
+            .transform
+
         case j: Journey.Epaye.EmailVerificationComplete =>
           j.into[Journey.Epaye.EnteredDayOfMonth]
             .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
             .withFieldConst(_.dayOfMonth, dayOfMonth)
             .transform
-        case _: Journey.Epaye.SubmittedArrangement =>
+        case j: Journey.Vat.EmailVerificationComplete =>
+          j.into[Journey.Vat.EnteredDayOfMonth]
+            .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
+            .withFieldConst(_.dayOfMonth, dayOfMonth)
+            .transform
+
+        case _: Journey.Stages.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update DayOfMonth when journey is in completed state")
       }
       journeyService.upsert(updatedJourney)

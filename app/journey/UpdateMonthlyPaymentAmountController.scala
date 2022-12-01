@@ -224,6 +224,14 @@ class UpdateMonthlyPaymentAmountController @Inject() (
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
         )
+      case j: Vat.SelectedEmailToBeVerified =>
+        upsertIfChanged(
+          j.into[Vat.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
+
       case j: Epaye.EmailVerificationComplete =>
         upsertIfChanged(
           j.into[Epaye.EnteredMonthlyPaymentAmount]
@@ -231,7 +239,15 @@ class UpdateMonthlyPaymentAmountController @Inject() (
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
         )
-      case _: Epaye.SubmittedArrangement =>
+      case j: Vat.EmailVerificationComplete =>
+        upsertIfChanged(
+          j.into[Vat.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
+
+      case _: Stages.SubmittedArrangement =>
         Errors.throwBadRequestException("Cannot update MonthlyAmount when journey is in completed state")
 
     }

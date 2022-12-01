@@ -21,7 +21,7 @@ import cats.syntax.eq._
 import com.google.inject.Inject
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.emailverification.EmailVerificationStatus
-import essttp.journey.model.Journey.Epaye
+import essttp.journey.model.Journey.{Epaye, Stages, Vat}
 import essttp.journey.model.{EmailVerificationAnswers, Journey, JourneyId, Stage}
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformerOps
@@ -61,9 +61,15 @@ class UpdateEmailVerificationStatusController @Inject() (
       journey: Journey.Stages.SelectedEmailToBeVerified,
       status:  EmailVerificationStatus
   )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney = journey match {
+    val newJourney: Stages.EmailVerificationComplete = journey match {
       case j: Epaye.SelectedEmailToBeVerified =>
         j.into[Epaye.EmailVerificationComplete]
+          .withFieldConst(_.stage, determineStage(status))
+          .withFieldConst(_.emailVerificationAnswers, EmailVerificationAnswers.EmailVerified(j.emailToBeVerified, status))
+          .withFieldConst(_.emailVerificationStatus, status)
+          .transform
+      case j: Vat.SelectedEmailToBeVerified =>
+        j.into[Vat.EmailVerificationComplete]
           .withFieldConst(_.stage, determineStage(status))
           .withFieldConst(_.emailVerificationAnswers, EmailVerificationAnswers.EmailVerified(j.emailToBeVerified, status))
           .withFieldConst(_.emailVerificationStatus, status)
@@ -84,8 +90,14 @@ class UpdateEmailVerificationStatusController @Inject() (
     if (journey.emailVerificationStatus === status) {
       Future.successful(journey)
     } else {
-      val newJourney = journey match {
+      val newJourney: Stages.EmailVerificationComplete = journey match {
         case j: Epaye.EmailVerificationComplete =>
+          j.copy(
+            stage                    = determineStage(status),
+            emailVerificationStatus  = status,
+            emailVerificationAnswers = EmailVerificationAnswers.EmailVerified(j.emailToBeVerified, status)
+          )
+        case j: Vat.EmailVerificationComplete =>
           j.copy(
             stage                    = determineStage(status),
             emailVerificationStatus  = status,

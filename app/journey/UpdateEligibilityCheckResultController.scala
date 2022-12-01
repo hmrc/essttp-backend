@@ -250,12 +250,24 @@ class UpdateEligibilityCheckResultController @Inject() (
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
+        case j: Vat.SelectedEmailToBeVerified =>
+          j.into[Journey.Vat.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+
         case j: Epaye.EmailVerificationComplete =>
           j.into[Journey.Epaye.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
-        case _: Epaye.SubmittedArrangement =>
+        case j: Vat.EmailVerificationComplete =>
+          j.into[Journey.Vat.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+
+        case _: Stages.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update Eligibility when journey is in completed state")
       }
 

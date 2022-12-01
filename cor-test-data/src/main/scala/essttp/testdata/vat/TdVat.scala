@@ -19,6 +19,7 @@ package essttp.testdata.vat
 import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.ttp.eligibility.{AccruedInterest, ChargeOverMaxDebtAge, ChargeReference, ChargeType, ChargeTypeAssessment, Charges, CustomerPostcode, DebtTotalAmount, DisallowedChargeLockType, EligibilityCheckResult, EligibilityPass, EligibilityStatus, IdType, IdValue, IneligibleChargeType, InterestStartDate, Lock, LockReason, LockType, MainTrans, MainType, OutstandingAmount, Postcode, PostcodeDate, ProcessingDateTime, SubTrans, TaxPeriodFrom, TaxPeriodTo}
 import essttp.rootmodel.ttp._
+import essttp.rootmodel.ttp.arrangement.{ArrangementResponse, CustomerReference}
 import essttp.rootmodel.{AmountInPence, TaxId, Vrn}
 import essttp.testdata.TdBase
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
@@ -79,4 +80,7 @@ trait TdVat {
     regimeDigitalCorrespondence     = None,
     futureChargeLiabilitiesExcluded = false
   )
+
+  val arrangementResponseVat: ArrangementResponse = ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(vrn.value))
+
 }
