@@ -514,7 +514,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatBta.updateDirectDebitDetailsRequest).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterEnteredDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterEnteredDirectDebitDetails()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
@@ -606,7 +606,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatGovUk.updateDirectDebitDetailsRequest).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterEnteredDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterEnteredDirectDebitDetails()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
@@ -698,7 +698,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatDetachedUrl.updateDirectDebitDetailsRequest).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterEnteredDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterEnteredDirectDebitDetails()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
@@ -790,7 +790,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatVatService.updateDirectDebitDetailsRequest).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterEnteredDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterEnteredDirectDebitDetails()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue

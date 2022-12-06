@@ -22,21 +22,17 @@ import essttp.journey.model._
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
-import essttp.rootmodel.{CanPayUpfront, DayOfMonth, Email, IsEmailAddressRequired, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
-import essttp.testdata.TdBase
-import essttp.utils.ResourceReader.read
-import play.api.libs.json.{JsNull, JsObject}
-import essttp.utils.JsonSyntax._
-
-import scala.language.reflectiveCalls
+import essttp.rootmodel._
+import essttp.testdata.{TdBase, TdJourneyStructure}
+import play.api.libs.json.JsNull
 
 trait TdJourneyVatBta {
   dependencies: TdBase with TdVat =>
-  object VatBta { // todo uncomment this when we are closer to finishing vat... //extends TdJourneyStructure {
+  object VatBta extends TdJourneyStructure {
     def sjRequest: Vat.Simple = SjRequest.Vat.Simple(
       dependencies.returnUrl,
       dependencies.backUrl
@@ -49,8 +45,6 @@ trait TdJourneyVatBta {
 
     def postPath: String = "/vat/bta/journey/start"
 
-    def sjRequestJson: JsObject = read("/testdata/vat/bta/SjRequest.json").asJson
-
     def journeyAfterStarted: Journey.Vat.Started = Journey.Vat.Started(
       _id           = dependencies.journeyId,
       origin        = Origins.Vat.Bta,
@@ -61,11 +55,7 @@ trait TdJourneyVatBta {
       correlationId = dependencies.correlationId,
     )
 
-    def journeyAfterStartedJson: JsObject = read("/testdata/vat/bta/JourneyAfterStarted.json").asJson
-
     def updateTaxIdRequest(): TaxId = vrn
-
-    def updateTaxIdRequestJson(): JsObject = read("/testdata/vat/bta/UpdateTaxIdRequest.json").asJson
 
     def journeyAfterDetermineTaxIds: Journey.Vat.ComputedTaxId = Journey.Vat.ComputedTaxId(
       _id           = dependencies.journeyId,
@@ -78,11 +68,7 @@ trait TdJourneyVatBta {
       taxId         = vrn
     )
 
-    def journeyAfterDetermineTaxIdsJson: JsObject = read("testdata/vat/bta/JourneyAfterComputedTaxIds.json").asJson
-
     def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResult()
-
-    def updateEligibilityCheckRequestJson(): JsObject = read("/testdata/vat/bta/UpdateEligibilityCheckRequest.json").asJson
 
     def journeyAfterEligibilityCheckEligible: Journey.Vat.EligibilityChecked = Journey.Vat.EligibilityChecked(
       _id                    = dependencies.journeyId,
@@ -96,8 +82,6 @@ trait TdJourneyVatBta {
       eligibilityCheckResult = eligibleEligibilityCheckResult()
     )
 
-    def journeyAfterEligibilityCheckEligibleJson: JsObject = read("/testdata/vat/bta/JourneyAfterEligibilityCheck.json").asJson
-
     def journeyAfterEligibilityCheckNotEligible: Journey.Vat.EligibilityChecked = Journey.Vat.EligibilityChecked(
       _id                    = dependencies.journeyId,
       origin                 = Origins.Vat.Bta,
@@ -110,15 +94,9 @@ trait TdJourneyVatBta {
       eligibilityCheckResult = ineligibleEligibilityCheckResult(eligibleEligibilityCheckResult())
     )
 
-    def journeyAfterEligibilityCheckNotEligibleJson: JsObject = read("/testdata/vat/bta/JourneyAfterEligibilityCheckNotEligible.json").asJson
-
     def updateCanPayUpfrontYesRequest(): CanPayUpfront = canPayUpfrontYes
 
     def updateCanPayUpfrontNoRequest(): CanPayUpfront = canPayUpfrontNo
-
-    def updateCanPayUpfrontYesRequestJson(): JsObject = read("/testdata/vat/bta/UpdateCanPayUpfrontYes.json").asJson
-
-    def updateCanPayUpfrontNoRequestJson(): JsObject = read("/testdata/vat/bta/UpdateCanPayUpfrontNo.json").asJson
 
     def journeyAfterCanPayUpfrontYes: Journey.Vat.AnsweredCanPayUpfront = Journey.Vat.AnsweredCanPayUpfront(
       _id                    = dependencies.journeyId,
@@ -133,8 +111,6 @@ trait TdJourneyVatBta {
       canPayUpfront          = canPayUpfrontYes
     )
 
-    def journeyAfterCanPayUpfrontYesJson: JsObject = read("/testdata/vat/bta/JourneyAfterCanPayUpfrontYes.json").asJson
-
     def journeyAfterCanPayUpfrontNo: Journey.Vat.AnsweredCanPayUpfront = Journey.Vat.AnsweredCanPayUpfront(
       _id                    = dependencies.journeyId,
       origin                 = Origins.Vat.Bta,
@@ -148,11 +124,7 @@ trait TdJourneyVatBta {
       canPayUpfront          = canPayUpfrontNo
     )
 
-    def journeyAfterCanPayUpfrontNoJson: JsObject = read("/testdata/vat/bta/JourneyAfterCanPayUpfrontNo.json").asJson
-
     def updateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.upfrontPaymentAmount
-
-    def updateUpfrontPaymentAmountRequestJson(): JsObject = read("/testdata/vat/bta/UpdateUpfrontPaymentAmountRequest.json").asJson
 
     def journeyAfterUpfrontPaymentAmount: Journey.Vat.EnteredUpfrontPaymentAmount = Journey.Vat.EnteredUpfrontPaymentAmount(
       _id                    = dependencies.journeyId,
@@ -168,11 +140,7 @@ trait TdJourneyVatBta {
       upfrontPaymentAmount   = dependencies.upfrontPaymentAmount
     )
 
-    def journeyAfterUpfrontPaymentAmountJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateUpfrontPaymentAmount.json").asJson
-
     def updateExtremeDatesRequest(): ExtremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment
-
-    def updateExtremeDatesRequestJson(): JsObject = read("/testdata/vat/bta/UpdateExtremeDatesRequest.json").asJson
 
     def journeyAfterExtremeDates: Journey.Vat.RetrievedExtremeDates = Journey.Vat.RetrievedExtremeDates(
       _id                    = dependencies.journeyId,
@@ -188,11 +156,7 @@ trait TdJourneyVatBta {
       extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment
     )
 
-    def journeyAfterExtremeDatesJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateExtremeDates.json").asJson
-
     def updateInstalmentAmountsRequest(): InstalmentAmounts = dependencies.instalmentAmounts
-
-    def updateInstalmentAmountsRequestJson(): JsObject = read("/testdata/vat/bta/UpdateInstalmentAmountsRequest.json").asJson
 
     def journeyAfterInstalmentAmounts: Journey.Vat.RetrievedAffordabilityResult = Journey.Vat.RetrievedAffordabilityResult(
       _id                    = dependencies.journeyId,
@@ -209,11 +173,7 @@ trait TdJourneyVatBta {
       instalmentAmounts      = dependencies.instalmentAmounts
     )
 
-    def journeyAfterInstalmentAmountsJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateInstalmentAmounts.json").asJson
-
     def updateMonthlyPaymentAmountRequest(): MonthlyPaymentAmount = dependencies.monthlyPaymentAmount
-
-    def updateMonthlyPaymentAmountRequestJson(): JsObject = read("/testdata/vat/bta/UpdateMonthlyPaymentAmountRequest.json").asJson
 
     def journeyAfterMonthlyPaymentAmount: Journey.Vat.EnteredMonthlyPaymentAmount = Journey.Vat.EnteredMonthlyPaymentAmount(
       _id                    = dependencies.journeyId,
@@ -231,11 +191,7 @@ trait TdJourneyVatBta {
       monthlyPaymentAmount   = dependencies.monthlyPaymentAmount
     )
 
-    def journeyAfterMonthlyPaymentAmountJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateMonthlyPaymentAmount.json").asJson
-
     def updateDayOfMonthRequest(): DayOfMonth = dependencies.dayOfMonth
-
-    def updateDayOfMonthRequestJson(): JsObject = read("/testdata/vat/bta/UpdateDayOfMonthRequest.json").asJson
 
     def journeyAfterDayOfMonth: Journey.Vat.EnteredDayOfMonth = Journey.Vat.EnteredDayOfMonth(
       _id                    = dependencies.journeyId,
@@ -254,11 +210,7 @@ trait TdJourneyVatBta {
       dayOfMonth             = dependencies.dayOfMonth
     )
 
-    def journeyAfterDayOfMonthJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateDayOfMonth.json").asJson
-
     def updateStartDatesResponse(): StartDatesResponse = dependencies.startDatesResponseWithInitialPayment
-
-    def updateStartDatesResponseJson(): JsObject = read("/testdata/vat/bta/UpdateStartDatesResponse.json").asJson
 
     def journeyAfterStartDatesResponse: Journey.Vat.RetrievedStartDates = Journey.Vat.RetrievedStartDates(
       _id                    = dependencies.journeyId,
@@ -278,11 +230,7 @@ trait TdJourneyVatBta {
       startDatesResponse     = dependencies.startDatesResponseWithInitialPayment
     )
 
-    def journeyAfterStartDatesResponseJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateStartDatesResponse.json").asJson
-
     def updateAffordableQuotesResponse(): AffordableQuotesResponse = dependencies.affordableQuotesResponse
-
-    def updateAffordableQuotesResponseJson(): JsObject = read("/testdata/vat/bta/UpdateAffordableQuotesRequest.json").asJson
 
     def journeyAfterAffordableQuotesResponse: Journey.Vat.RetrievedAffordableQuotes = Journey.Vat.RetrievedAffordableQuotes(
       _id                      = dependencies.journeyId,
@@ -303,11 +251,7 @@ trait TdJourneyVatBta {
       affordableQuotesResponse = dependencies.affordableQuotesResponse
     )
 
-    def journeyAfterAffordableQuotesResponseJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateAffordableQuotesResponse.json").asJson
-
     def updateSelectedPaymentPlanRequest(): PaymentPlan = dependencies.paymentPlan(1)
-
-    def updateSelectedPaymentPlanRequestJson(): JsObject = read("/testdata/vat/bta/UpdateSelectedPaymentPlanRequest.json").asJson
 
     def journeyAfterSelectedPaymentPlan: Journey.Vat.ChosenPaymentPlan = Journey.Vat.ChosenPaymentPlan(
       _id                      = dependencies.journeyId,
@@ -329,11 +273,7 @@ trait TdJourneyVatBta {
       selectedPaymentPlan      = dependencies.paymentPlan(1)
     )
 
-    def journeyAfterSelectedPaymentPlanJson: JsObject = read("/testdata/vat/bta/JourneyAfterSelectedPaymentPlan.json").asJson
-
     def updateCheckedPaymentPlanRequest(): JsNull.type = JsNull
-
-    def updateCheckedPaymentPlanRequestJson(): JsObject = read("/testdata/vat/bta/UpdateCheckedPaymentPlanRequest.json").asJson
 
     def journeyAfterCheckedPaymentPlan: Journey.Vat.CheckedPaymentPlan = Journey.Vat.CheckedPaymentPlan(
       _id                      = dependencies.journeyId,
@@ -355,12 +295,8 @@ trait TdJourneyVatBta {
       selectedPaymentPlan      = dependencies.paymentPlan(1)
     )
 
-    def journeyAfterCheckedPaymentPlanJson: JsObject = read("/testdata/vat/bta/JourneyAfterCheckedPaymentPlan.json").asJson
-
     def updateDetailsAboutBankAccountRequest(isAccountHolder: Boolean): DetailsAboutBankAccount =
       DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder)
-
-    def updateDetailsAboutBankAccountRequestJson(): JsObject = read("/testdata/vat/bta/JourneyAfterEnteredDetailsAboutBankAccount.json").asJson
 
     def journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder: Boolean): Journey.AfterEnteredDetailsAboutBankAccount = Journey.Vat.EnteredDetailsAboutBankAccount(
       _id                      = dependencies.journeyId,
@@ -383,13 +319,9 @@ trait TdJourneyVatBta {
       detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder)
     )
 
-    def journeyAfterEnteredDetailsAboutBankAccountJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateDetailsAboutBankAccountRequest.json").asJson
-
     val updateDirectDebitDetailsRequest: BankDetails = dependencies.directDebitDetails
 
-    def updateDirectDebitDetailsRequestJson(): JsObject = read("/testdata/vat/bta/UpdateDirectDebitDetailsRequest.json").asJson
-
-    def journeyAfterEnteredDirectDebitDetails: Journey.Vat.EnteredDirectDebitDetails = Journey.Vat.EnteredDirectDebitDetails(
+    def journeyAfterEnteredDirectDebitDetails(): Journey.Vat.EnteredDirectDebitDetails = Journey.Vat.EnteredDirectDebitDetails(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Vat.Bta,
       createdOn                = dependencies.createdOn,
@@ -411,11 +343,7 @@ trait TdJourneyVatBta {
       directDebitDetails       = directDebitDetails
     )
 
-    def journeyAfterEnteredDirectDebitDetailsJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateDirectDebitDetails.json").asJson
-
     def updateConfirmedDirectDebitDetailsRequest(): JsNull.type = JsNull
-
-    def updateConfirmedDirectDebitDetailsJson(): JsObject = read("/testdata/vat/bta/UpdateConfirmedDirectDebitDetailsRequest.json").asJson
 
     def journeyAfterConfirmedDirectDebitDetails: Journey.Vat.ConfirmedDirectDebitDetails = Journey.Vat.ConfirmedDirectDebitDetails(
       _id                      = dependencies.journeyId,
@@ -439,11 +367,7 @@ trait TdJourneyVatBta {
       directDebitDetails       = directDebitDetails
     )
 
-    def journeyAfterConfirmedDirectDebitDetailsJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateConfirmedDirectDebitDetails.json").asJson
-
     def updateAgreedTermsAndConditionsRequest(isEmailAddressRequired: Boolean): IsEmailAddressRequired = IsEmailAddressRequired(isEmailAddressRequired)
-
-    def updateAgreedTermsAndConditionsJson(): JsObject = read("/testdata/vat/bta/UpdateAgreedTermsAndConditions.json").asJson
 
     def journeyAfterAgreedTermsAndConditions(isEmailAddressRequired: Boolean): Journey.AfterAgreedTermsAndConditions = {
       val stage =
@@ -474,11 +398,7 @@ trait TdJourneyVatBta {
       )
     }
 
-    def journeyAfterAgreedTermsAndConditionsJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateAgreedTermsAndConditions.json").asJson
-
     def updateSelectedEmailRequest(): Email = dependencies.email
-
-    def updateSelectedEmailRequestJson(): JsObject = read("/testdata/vat/bta/UpdateSelectedEmailRequest.json").asJson
 
     def journeyAfterSelectedEmail: Journey.Vat.SelectedEmailToBeVerified = Journey.Vat.SelectedEmailToBeVerified(
       _id                      = dependencies.journeyId,
@@ -503,10 +423,6 @@ trait TdJourneyVatBta {
       isEmailAddressRequired   = IsEmailAddressRequired(true),
       emailToBeVerified        = dependencies.email
     )
-
-    def journeyAfterSelectedEmailJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateSelectedEmail.json").asJson
-
-    def updateEmailVerificationStatusRequestJson(): JsObject = read("/testdata/vat/bta/UpdateEmailVerificationStatusRequest.json").asJson
 
     def journeyAfterEmailVerificationStatus(status: EmailVerificationStatus): Journey.Vat.EmailVerificationComplete = Journey.Vat.EmailVerificationComplete(
       _id                      = dependencies.journeyId,
@@ -537,11 +453,7 @@ trait TdJourneyVatBta {
       emailVerificationAnswers = emailVerificationAnswers(Some(status))
     )
 
-    def journeyAfterEmailVerificationStatusJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateEmailVerificationStatus.json").asJson
-
     def updateArrangementRequest(): ArrangementResponse = dependencies.arrangementResponseVat
-
-    def updateArrangementRequestJson(): JsObject = read("/testdata/vat/bta/UpdateSubmittedArrangementRequest.json").asJson
 
     def journeyAfterSubmittedArrangement(isEmailAddressRequired: Boolean): Journey.Vat.SubmittedArrangement = Journey.Vat.SubmittedArrangement(
       _id                      = dependencies.journeyId,
@@ -571,8 +483,6 @@ trait TdJourneyVatBta {
       },
       arrangementResponse      = dependencies.arrangementResponseVat
     )
-
-    def journeyAfterSubmittedArrangementJson: JsObject = read("/testdata/vat/bta/JourneyAfterUpdateSubmittedArrangement.json").asJson
 
   }
 }
