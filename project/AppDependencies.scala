@@ -10,7 +10,7 @@ object AppDependencies {
   val chimneyVersion = "0.6.2"
   val catsVersion = "2.9.0"
   val playJsonDerivedCodesVersion = "7.0.0"
-  val enumeratumVersion = "1.7.0"
+  val enumeratumVersion = "1.7.2"
   val cryptoVersion = "7.3.0"
   val hmrcJsonEncryptionVersion = "5.1.0-play-28"
 
