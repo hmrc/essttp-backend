@@ -27,6 +27,7 @@ final case class ArrangementRequest(
     regimeType:                  RegimeType,
     regimePaymentFrequency:      PaymentPlanFrequency,
     arrangementAgreedDate:       ArrangementAgreedDate,
+    lockFromDate:                LockFromDate,
     identification:              List[Identification],
     directDebitInstruction:      DirectDebitInstruction,
     paymentPlan:                 EnactPaymentPlan,
