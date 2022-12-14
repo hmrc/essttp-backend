@@ -18,9 +18,8 @@ package essttp.rootmodel.ttp.arrangement
 
 import play.api.libs.json.{Format, Json}
 
-//todo remove this as part of SUPP-688
-final case class ArrangementAgreedDate(value: String) extends AnyVal
+final case class LockFromDate(value: String) extends AnyVal
 
-object ArrangementAgreedDate {
-  implicit val format: Format[ArrangementAgreedDate] = Json.valueFormat
+object LockFromDate {
+  implicit val format: Format[LockFromDate] = Json.valueFormat
 }
