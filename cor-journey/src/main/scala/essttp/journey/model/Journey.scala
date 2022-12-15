@@ -17,7 +17,7 @@
 package essttp.journey.model
 
 import essttp.crypto.CryptoFormat
-import essttp.emailverification.EmailVerificationStatus
+import essttp.emailverification.EmailVerificationResult
 import essttp.rootmodel._
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
@@ -198,7 +198,7 @@ object Journey {
   sealed trait BeforeEmailAddressVerificationResult extends Journey with Stages.JourneyStage
 
   sealed trait AfterEmailAddressVerificationResult extends Journey with Stages.JourneyStage {
-    def emailVerificationStatus: EmailVerificationStatus
+    def emailVerificationResult: EmailVerificationResult
   }
 
   sealed trait BeforeEmailVerificationPhase extends Journey with Stages.JourneyStage
@@ -1237,7 +1237,7 @@ object Journey {
         override val directDebitDetails:       BankDetails,
         override val isEmailAddressRequired:   IsEmailAddressRequired,
         override val emailToBeVerified:        Email,
-        override val emailVerificationStatus:  EmailVerificationStatus,
+        override val emailVerificationResult:  EmailVerificationResult,
         override val emailVerificationAnswers: EmailVerificationAnswers
     )
       extends Journey
@@ -1756,7 +1756,7 @@ object Journey {
         override val directDebitDetails:       BankDetails,
         override val isEmailAddressRequired:   IsEmailAddressRequired,
         override val emailToBeVerified:        Email,
-        override val emailVerificationStatus:  EmailVerificationStatus,
+        override val emailVerificationResult:  EmailVerificationResult,
         override val emailVerificationAnswers: EmailVerificationAnswers
     )
       extends Journey

@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package generators
+package essttp.emailverification
 
-import services.JourneyIdGenerator
-import testsupport.UnitSpec
+import julienrf.json.derived
+import play.api.libs.json.OFormat
 
-class JourneyIdGeneratorSpec extends UnitSpec {
-  "JourneyId should be generated as a hex string" in {
-    val gen = new JourneyIdGenerator
-    gen.nextJourneyId().value should fullyMatch regex """^[a-f\d]{24}$"""
-  }
+sealed trait StartEmailVerificationJourneyResponse
+
+object StartEmailVerificationJourneyResponse {
+
+  final case class Success(redirectUrl: String) extends StartEmailVerificationJourneyResponse
+
+  case object Locked extends StartEmailVerificationJourneyResponse
+
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  implicit val format: OFormat[StartEmailVerificationJourneyResponse] = derived.oformat[StartEmailVerificationJourneyResponse]()
+
 }

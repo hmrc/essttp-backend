@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package journey
+package config
 
 import com.google.inject.Inject
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig

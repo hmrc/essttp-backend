@@ -16,7 +16,7 @@
 
 package essttp.testdata.vat
 
-import essttp.emailverification.EmailVerificationStatus
+import essttp.emailverification.EmailVerificationResult
 import essttp.journey.model.SjRequest.Vat
 import essttp.journey.model._
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
@@ -424,15 +424,15 @@ trait TdJourneyVatBta {
       emailToBeVerified        = dependencies.email
     )
 
-    def journeyAfterEmailVerificationStatus(status: EmailVerificationStatus): Journey.Vat.EmailVerificationComplete = Journey.Vat.EmailVerificationComplete(
+    def journeyAfterEmailVerificationResult(result: EmailVerificationResult): Journey.Vat.EmailVerificationComplete = Journey.Vat.EmailVerificationComplete(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Vat.Bta,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
-      stage                    = status match {
-        case EmailVerificationStatus.Verified => Stage.AfterEmailVerificationPhase.VerificationSuccess
-        case EmailVerificationStatus.Locked   => Stage.AfterEmailVerificationPhase.Locked
+      stage                    = result match {
+        case EmailVerificationResult.Verified => Stage.AfterEmailVerificationPhase.VerificationSuccess
+        case EmailVerificationResult.Locked   => Stage.AfterEmailVerificationPhase.Locked
       },
       correlationId            = dependencies.correlationId,
       taxId                    = vrn,
@@ -449,8 +449,8 @@ trait TdJourneyVatBta {
       directDebitDetails       = directDebitDetails,
       isEmailAddressRequired   = IsEmailAddressRequired(true),
       emailToBeVerified        = dependencies.email,
-      emailVerificationStatus  = status,
-      emailVerificationAnswers = emailVerificationAnswers(Some(status))
+      emailVerificationResult  = result,
+      emailVerificationAnswers = emailVerificationAnswers(Some(result))
     )
 
     def updateArrangementRequest(): ArrangementResponse = dependencies.arrangementResponseVat
@@ -477,7 +477,7 @@ trait TdJourneyVatBta {
       directDebitDetails       = directDebitDetails,
       isEmailAddressRequired   = IsEmailAddressRequired(isEmailAddressRequired),
       emailVerificationAnswers = if (isEmailAddressRequired) {
-        EmailVerificationAnswers.EmailVerified(dependencies.email, EmailVerificationStatus.Verified)
+        EmailVerificationAnswers.EmailVerified(dependencies.email, EmailVerificationResult.Verified)
       } else {
         EmailVerificationAnswers.NoEmailJourney
       },

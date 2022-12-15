@@ -16,27 +16,16 @@
 
 package essttp.emailverification
 
-import cats.Eq
-import enumeratum.{Enum, EnumEntry}
-import julienrf.json.derived
-import play.api.libs.json.OFormat
+import essttp.crypto.CryptoFormat
+import essttp.rootmodel.{Email, GGCredId}
+import play.api.libs.json.{Json, OFormat}
 
-import scala.collection.immutable
+final case class GetEmailVerificationResultRequest(credId: GGCredId, email: Email)
 
-sealed trait EmailVerificationStatus extends EnumEntry
-
-object EmailVerificationStatus extends Enum[EmailVerificationStatus] {
-
-  implicit val eq: Eq[EmailVerificationStatus] = Eq.fromUniversalEquals
+object GetEmailVerificationResultRequest {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[EmailVerificationStatus] = derived.oformat[EmailVerificationStatus]()
-
-  case object Verified extends EmailVerificationStatus
-
-  case object Locked extends EmailVerificationStatus
-
-  override val values: immutable.IndexedSeq[EmailVerificationStatus] = findValues
+  implicit def writes(implicit cryptoFormat: CryptoFormat): OFormat[GetEmailVerificationResultRequest] =
+    Json.format
 
 }
-

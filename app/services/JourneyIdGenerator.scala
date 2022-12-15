@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package journey
+package services
 
-import com.google.inject.Singleton
-import essttp.journey.model.CorrelationId
+import essttp.journey.model.JourneyId
+import org.bson.types.ObjectId
+
+import javax.inject.Singleton
 
 @Singleton
-class CorrelationIdGenerator {
-  def nextCorrelationId(): CorrelationId = CorrelationId(java.util.UUID.randomUUID())
+class JourneyIdGenerator {
+  def nextJourneyId(): JourneyId = JourneyId(ObjectId.get().toHexString)
 }

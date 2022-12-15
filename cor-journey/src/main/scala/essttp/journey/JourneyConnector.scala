@@ -17,7 +17,7 @@
 package essttp.journey
 
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.emailverification.EmailVerificationStatus
+import essttp.emailverification.EmailVerificationResult
 import essttp.journey.model.{Journey, JourneyId, SjRequest, SjResponse}
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
@@ -102,8 +102,8 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
   def updateSelectedEmailToBeVerified(journeyId: JourneyId, email: Email)(implicit request: RequestHeader): Future[Journey] =
     httpClient.POST[Email, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-chosen-email", email)
 
-  def updateEmailVerificationStatus(journeyId: JourneyId, status: EmailVerificationStatus)(implicit request: RequestHeader): Future[Journey] =
-    httpClient.POST[EmailVerificationStatus, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-email-verification-status", status)
+  def updateEmailVerificationResult(journeyId: JourneyId, status: EmailVerificationResult)(implicit request: RequestHeader): Future[Journey] =
+    httpClient.POST[EmailVerificationResult, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-email-verification-status", status)
 
   def updateArrangement(journeyId: JourneyId, arrangementResponse: ArrangementResponse)(implicit request: RequestHeader): Future[Journey] =
     httpClient.POST[ArrangementResponse, Journey](s"$baseUrl/essttp-backend/journey/${journeyId.value}/update-arrangement", arrangementResponse)

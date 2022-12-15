@@ -16,13 +16,13 @@
 
 package controllers
 
-import essttp.emailverification.EmailVerificationStatus
+import essttp.emailverification.EmailVerificationResult
 import essttp.journey.JourneyConnector
 import essttp.rootmodel.IsEmailAddressRequired
 import essttp.testdata.TdAll
 import testsupport.ItSpec
 
-class UpdateEmailVerificationStatusControllerSpec extends ItSpec {
+class UpdateEmailVerificationResultControllerSpec extends ItSpec {
 
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
@@ -32,8 +32,8 @@ class UpdateEmailVerificationStatusControllerSpec extends ItSpec {
       stubCommonActions()
 
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
-      val result: Throwable = journeyConnector.updateEmailVerificationStatus(tdAll.journeyId, EmailVerificationStatus.Verified).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"UpdateEmailVerificationStatus is not possible in that state: [Started]"}""")
+      val result: Throwable = journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Verified).failed.futureValue
+      result.getMessage should include("""{"statusCode":400,"message":"UpdateEmailVerificationResult is not possible in that state: [Started]"}""")
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }
@@ -47,13 +47,13 @@ class UpdateEmailVerificationStatusControllerSpec extends ItSpec {
           .copy(correlationId = tdAll.correlationId)
       )
 
-      val result1 = journeyConnector.updateEmailVerificationStatus(tdAll.journeyId, EmailVerificationStatus.Verified).futureValue
-      val expectedUpdatedJourney1 = tdAll.EpayeBta.journeyAfterEmailVerificationStatus(EmailVerificationStatus.Verified)
+      val result1 = journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Verified).futureValue
+      val expectedUpdatedJourney1 = tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
       result1 shouldBe expectedUpdatedJourney1
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney1
 
-      val result2 = journeyConnector.updateEmailVerificationStatus(tdAll.journeyId, EmailVerificationStatus.Locked).futureValue
-      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterEmailVerificationStatus(EmailVerificationStatus.Locked)
+      val result2 = journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Locked).futureValue
+      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Locked)
       result2 shouldBe expectedUpdatedJourney2
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
 
@@ -68,8 +68,8 @@ class UpdateEmailVerificationStatusControllerSpec extends ItSpec {
           .copy(correlationId = tdAll.correlationId)
           .copy(isEmailAddressRequired = IsEmailAddressRequired(true))
       )
-      val result: Throwable = journeyConnector.updateEmailVerificationStatus(tdAll.journeyId, EmailVerificationStatus.Locked).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"Cannot update EmailVerificationStatus when journey is in completed state."}""")
+      val result: Throwable = journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Locked).failed.futureValue
+      result.getMessage should include("""{"statusCode":400,"message":"Cannot update EmailVerificationResult when journey is in completed state."}""")
       verifyCommonActions(numberOfAuthCalls = 1)
     }
 

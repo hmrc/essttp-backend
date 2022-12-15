@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package generators
+package services
 
-import services.JourneyIdGenerator
-import testsupport.UnitSpec
+import com.google.inject.Singleton
+import essttp.journey.model.CorrelationId
 
-class JourneyIdGeneratorSpec extends UnitSpec {
-  "JourneyId should be generated as a hex string" in {
-    val gen = new JourneyIdGenerator
-    gen.nextJourneyId().value should fullyMatch regex """^[a-f\d]{24}$"""
-  }
+@Singleton
+class CorrelationIdGenerator {
+  def nextCorrelationId(): CorrelationId = CorrelationId(java.util.UUID.randomUUID())
 }

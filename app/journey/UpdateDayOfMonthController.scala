@@ -20,12 +20,13 @@ import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.{Epaye, Vat, Stages}
+import essttp.journey.model.Journey.{Epaye, Stages, Vat}
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.DayOfMonth
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformerOps
 import play.api.mvc.{Action, ControllerComponents, Request}
+import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.{ExecutionContext, Future}

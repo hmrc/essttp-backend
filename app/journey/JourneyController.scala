@@ -23,6 +23,7 @@ import essttp.journey.model._
 import essttp.rootmodel.SessionId
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents, Request, RequestHeader, Result}
+import services.JourneyService
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.play.bootstrap.backend.http.ErrorResponse

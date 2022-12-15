@@ -16,7 +16,7 @@
 
 package controllers
 
-import essttp.emailverification.EmailVerificationStatus
+import essttp.emailverification.EmailVerificationResult
 import essttp.journey.JourneyConnector
 import essttp.rootmodel.{Email, IsEmailAddressRequired}
 import essttp.testdata.TdAll
@@ -63,7 +63,7 @@ class UpdateChosenEmailControllerSpec extends ItSpec {
       stubCommonActions()
 
       insertJourneyForTest(
-        TdAll.EpayeBta.journeyAfterEmailVerificationStatus(EmailVerificationStatus.Locked)
+        TdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Locked)
           .copy(_id = tdAll.journeyId)
           .copy(correlationId = tdAll.correlationId)
       )
