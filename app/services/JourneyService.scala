@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package journey
+package services
 
 import essttp.journey.model.{Journey, JourneyId}
 import essttp.rootmodel.SessionId
+import journey.JourneyLogger
 import play.api.mvc.Request
 import repository.JourneyRepo
 

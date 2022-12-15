@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package journey
+package services
 
 import essttp.journey.model.{Journey, OriginatedSjRequest, Stage}
 import essttp.rootmodel.SessionId

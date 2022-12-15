@@ -22,15 +22,15 @@ import essttp.journey.model.{Journey, JourneyId}
 import essttp.rootmodel.SessionId
 import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, Indexes}
-import repository.Repo.{Id, IdExtractor}
 import repository.JourneyRepo._
+import repository.Repo.{Id, IdExtractor}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs
 
 import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 final class JourneyRepo @Inject() (

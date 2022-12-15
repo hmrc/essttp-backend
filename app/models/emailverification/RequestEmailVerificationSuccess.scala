@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package generators
+package models.emailverification
 
-import services.JourneyIdGenerator
-import testsupport.UnitSpec
+import play.api.libs.json.{Json, Reads}
 
-class JourneyIdGeneratorSpec extends UnitSpec {
-  "JourneyId should be generated as a hex string" in {
-    val gen = new JourneyIdGenerator
-    gen.nextJourneyId().value should fullyMatch regex """^[a-f\d]{24}$"""
-  }
+final case class RequestEmailVerificationSuccess(redirectUri: String)
+
+object RequestEmailVerificationSuccess {
+
+  implicit val reads: Reads[RequestEmailVerificationSuccess] = Json.reads
 }

@@ -16,7 +16,7 @@
 
 package generators
 
-import journey.CorrelationIdGenerator
+import services.CorrelationIdGenerator
 import testsupport.UnitSpec
 
 class CorrelationIdGeneratorSpec extends UnitSpec {

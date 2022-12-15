@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-package journey
+package models.emailverification
 
-import essttp.journey.model.JourneyId
-import org.bson.types.ObjectId
+import models.emailverification.EmailVerificationResultResponse.EmailResult
+import play.api.libs.json.{Json, Reads}
 
-import javax.inject.Singleton
+final case class EmailVerificationResultResponse(emails: List[EmailResult])
 
-@Singleton
-class JourneyIdGenerator {
-  def nextJourneyId(): JourneyId = JourneyId(ObjectId.get().toHexString)
+object EmailVerificationResultResponse {
+
+  final case class EmailResult(emailAddress: String, verified: Boolean, locked: Boolean)
+
+  object EmailResult {
+
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
+    implicit val reads: Reads[EmailResult] = Json.reads
+
+  }
+
+  implicit val reads: Reads[EmailVerificationResultResponse] = Json.reads
+
 }

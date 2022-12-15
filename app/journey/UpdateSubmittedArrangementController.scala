@@ -19,12 +19,13 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.emailverification.EmailVerificationStatus
+import essttp.emailverification.EmailVerificationResult
 import essttp.journey.model.{EmailVerificationAnswers, Journey, JourneyId, Stage}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformerOps
 import play.api.mvc.{Action, ControllerComponents, Request}
+import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -53,11 +54,11 @@ class UpdateSubmittedArrangementController @Inject() (
           Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user has not verified their email address yet, state: [${j.stage.toString}]")
 
         case j: Journey.Stages.EmailVerificationComplete =>
-          j.emailVerificationStatus match {
-            case EmailVerificationStatus.Locked =>
+          j.emailVerificationResult match {
+            case EmailVerificationResult.Locked =>
               Errors.throwBadRequestExceptionF(s"UpdateArrangement is not possible if the user has been locked out from verifying their email address, state: [${j.stage.toString}]")
 
-            case EmailVerificationStatus.Verified =>
+            case EmailVerificationResult.Verified =>
               updateJourneyWithNewValue(Right(j), request.body)
           }
 

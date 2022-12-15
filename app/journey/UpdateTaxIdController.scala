@@ -24,6 +24,7 @@ import essttp.rootmodel.{EmpRef, TaxId, Vrn}
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl._
 import play.api.mvc._
+import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.{ExecutionContext, Future}

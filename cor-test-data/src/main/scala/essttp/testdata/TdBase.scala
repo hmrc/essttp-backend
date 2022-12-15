@@ -16,7 +16,7 @@
 
 package essttp.testdata
 
-import essttp.emailverification.EmailVerificationStatus
+import essttp.emailverification.EmailVerificationResult
 import essttp.journey.model.{CorrelationId, EmailVerificationAnswers, JourneyId, UpfrontPaymentAnswers}
 import essttp.rootmodel._
 import essttp.rootmodel.bank._
@@ -117,9 +117,9 @@ trait TdBase {
 
   val email: Email = Email(SensitiveString("bobross@joyofpainting.com"))
 
-  val emailVerificationSuccess: EmailVerificationStatus = EmailVerificationStatus.Verified
+  val emailVerificationSuccess: EmailVerificationResult = EmailVerificationResult.Verified
 
-  val emailVerificationLocked: EmailVerificationStatus = EmailVerificationStatus.Locked
+  val emailVerificationLocked: EmailVerificationResult = EmailVerificationResult.Locked
 
   val emailVerificationAnswersEmailNotNeeded: EmailVerificationAnswers = EmailVerificationAnswers.NoEmailJourney
 
@@ -127,9 +127,9 @@ trait TdBase {
 
   val emailVerificationAnswersLocked: EmailVerificationAnswers = EmailVerificationAnswers.EmailVerified(email, emailVerificationLocked)
 
-  def emailVerificationAnswers(status: Option[EmailVerificationStatus]): EmailVerificationAnswers = status match {
-    case Some(EmailVerificationStatus.Verified) => emailVerificationAnswersSuccess
-    case Some(EmailVerificationStatus.Locked)   => emailVerificationAnswersLocked
+  def emailVerificationAnswers(status: Option[EmailVerificationResult]): EmailVerificationAnswers = status match {
+    case Some(EmailVerificationResult.Verified) => emailVerificationAnswersSuccess
+    case Some(EmailVerificationResult.Locked)   => emailVerificationAnswersLocked
     case None                                   => emailVerificationAnswersEmailNotNeeded
   }
 

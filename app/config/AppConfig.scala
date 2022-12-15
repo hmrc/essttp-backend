@@ -17,16 +17,27 @@
 package config
 
 import javax.inject.{Inject, Singleton}
-import play.api.Configuration
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import java.util.concurrent.TimeUnit
 import scala.concurrent.duration.FiniteDuration
 
 @Singleton
 class AppConfig @Inject() (
-    config: Configuration
+    config: ServicesConfig
 ) {
-  val barsVerifyRepoTtl: FiniteDuration = config.get[FiniteDuration]("bars.verify.repoTtl")
-  val barsVerifyMaxAttempts: Int = config.get[Int]("bars.verify.maxAttempts")
 
-  val journeyRepoTtl: FiniteDuration = config.get[FiniteDuration]("journey.repoTtl")
+  private def configFiniteDuration(key: String): FiniteDuration = {
+    val duration = config.getDuration(key)
+    if (duration.isFinite) FiniteDuration(duration.toNanos, TimeUnit.NANOSECONDS)
+    else sys.error(s"Duration ${duration.toString} for key $key was not finite")
+  }
+
+  val barsVerifyRepoTtl: FiniteDuration = configFiniteDuration("bars.verify.repoTtl")
+  val barsVerifyMaxAttempts: Int = config.getInt("bars.verify.maxAttempts")
+
+  val journeyRepoTtl: FiniteDuration = configFiniteDuration("journey.repoTtl")
+
+  val emailVerificationUrl: String = config.baseUrl("email-verification")
+  val emailVerificationFrontendLocalUrl: String = config.baseUrl("email-verification-frontend-local")
 }

@@ -19,9 +19,9 @@ package testsupport
 import bars.BarsVerifyStatusRepo
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import com.google.inject.{AbstractModule, Provides}
+import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{CorrelationId, Journey, JourneyId}
 import essttp.testdata.TdAll
-import journey.{CorrelationIdGenerator, JourneyIdGenerator}
 import org.mongodb.scala.bson.BsonDocument
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.time.{Millis, Seconds, Span}
@@ -32,9 +32,12 @@ import play.api.test.{DefaultTestServerFactory, FakeRequest, RunningServer}
 import play.api.{Application, Mode}
 import play.core.server.ServerConfig
 import repository.JourneyRepo
+import services.{CorrelationIdGenerator, JourneyIdGenerator}
 import testsupport.stubs.AuthStub
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
 import uk.gov.hmrc.auth.core.AuthProviders
+import uk.gov.hmrc.crypto.{AesCrypto, Decrypter, Encrypter, PlainText}
+import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.format.DateTimeFormatter
@@ -51,6 +54,10 @@ trait ItSpec
   with GuiceOneServerPerSuite
   with WireMockSupport { self =>
 
+  implicit val testCrypto: Encrypter with Decrypter = new AesCrypto {
+    override protected val encryptionKey: String = "P5xsJ9Nt+quxGZzB4DeLfw=="
+  }
+
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(
     timeout  = scaled(Span(20, Seconds)),
     interval = scaled(Span(300, Millis))
@@ -66,6 +73,11 @@ trait ItSpec
 
   lazy val overridingsModule: AbstractModule = new AbstractModule {
     override def configure(): Unit = ()
+
+    @Provides
+    @Singleton
+    @nowarn // silence "method never used" warning
+    def operationalCryptoFormat: OperationalCryptoFormat = OperationalCryptoFormat(testCrypto)
 
     @Provides
     @Singleton
@@ -121,7 +133,8 @@ trait ItSpec
     "microservice.services.essttp-backend.port" -> testServerPort,
     "microservice.services.auth.protocol" -> "http",
     "microservice.services.auth.host" -> "localhost",
-    "microservice.services.auth.port" -> WireMockSupport.port
+    "microservice.services.auth.port" -> WireMockSupport.port,
+    "microservice.services.email-verification.port" -> WireMockSupport.port
   )
 
   //in tests use `app`
@@ -174,6 +187,10 @@ trait ItSpec
   def verifyCommonActions(numberOfAuthCalls: Int): Unit =
     AuthStub.ensureAuthoriseCalled(numberOfAuthCalls, AuthProviders(GovernmentGateway))
 
+  def encryptString(s: String, encrypter: Encrypter): String =
+    encrypter.encrypt(
+      PlainText("\"" + SensitiveString(s).decryptedValue + "\"")
+    ).value
 }
 
 final case class TestJourneyIdPrefix(value: String)

@@ -27,6 +27,7 @@ import essttp.rootmodel.CanPayUpfront
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformerOps
 import play.api.mvc._
+import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.{ExecutionContext, Future}
