@@ -1,0 +1,46 @@
+POST http://localhost:9216/essttp-backend/email-verification/verification-state
+Accept: */*
+Cache-Control: no-cache
+Content-Type: Application/Json
+X-Session-ID: sialalalabta
+Authorization: add bearer from auth wizard
+
+{
+  "credId": "aaaaa",
+  "email": "3/SDbTjSwxLlI0ZyLwIxBF86qTCmTxMEtCuviNCGghGJ40V5QkP3CsNz5rcU6l0="
+}
+
+###
+
+POST http://localhost:9216/essttp-backend/email-verification/verification-state/update
+Accept: */*
+Cache-Control: no-cache
+Content-Type: Application/Json
+X-Session-ID: sialalalabta
+Authorization: add bearer from auth wizard
+
+{
+  "credId": "aaaaa",
+  "email": "3/SDbTjSwxLlI0ZyLwIxBF86qTCmTxMEtCuviNCGghGJ40V5QkP3CsNz5rcU6l0="
+}
+
+###
+
+PUT http://localhost:9216/essttp-backend/email-verification/verification-state/result-update
+Accept: */*
+Cache-Control: no-cache
+Content-Type: Application/Json
+X-Session-ID: sialalalabta
+Authorization: add bearer from auth wizard
+
+{
+  "getEmailVerificationResultRequest": {
+    "credId": "aaaaa",
+    "email": "3/SDbTjSwxLlI0ZyLwIxBF86qTCmTxMEtCuviNCGghGJ40V5QkP3CsNz5rcU6l0="
+  },
+  "emailVerificationResult": {
+    "Locked": ""
+  }
+}
+
+###

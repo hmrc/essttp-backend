@@ -40,4 +40,8 @@ class AppConfig @Inject() (
 
   val emailVerificationUrl: String = config.baseUrl("email-verification")
   val emailVerificationFrontendLocalUrl: String = config.baseUrl("email-verification-frontend-local")
+
+  val emailVerificationStatusRepoTtl: FiniteDuration = configFiniteDuration("email-verification-status.repoTtl")
+  val emailVerificationStatusMaxAttemptsPerEmail: Int = config.getInt("email-verification-status.maxAttemptsPerEmail")
+  val emailVerificationStatusMaxUniqueEmailsAllowed: Int = config.getInt("email-verification-status.maxUniqueEmailsAllowed")
 }

@@ -20,7 +20,10 @@ import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import config.AppConfig
 import connectors.EmailVerificationConnector
-import essttp.emailverification.{EmailVerificationResult, GetEmailVerificationResultRequest, StartEmailVerificationJourneyRequest, StartEmailVerificationJourneyResponse}
+import email.EmailVerificationStatusService
+import essttp.emailverification.EmailVerificationState.OkToBeVerified
+import essttp.emailverification._
+import essttp.rootmodel.{Email, GGCredId}
 import essttp.utils.HttpResponseUtils.HttpResponseOps
 import models.emailverification.RequestEmailVerificationRequest.EmailDetails
 import models.emailverification.{RequestEmailVerificationRequest, RequestEmailVerificationSuccess}
@@ -32,9 +35,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class EmailVerificationService @Inject() (
-    connector: EmailVerificationConnector,
-    appConfig: AppConfig
+    appConfig:                      AppConfig,
+    connector:                      EmailVerificationConnector,
+    emailVerificationStatusService: EmailVerificationStatusService
 )(implicit ec: ExecutionContext) {
+
+  private val maxPasscodeJourneysPerEmailAddress: Int = appConfig.emailVerificationStatusMaxAttemptsPerEmail
+  private val maxNumberOfDifferentEmails: Int = appConfig.emailVerificationStatusMaxUniqueEmailsAllowed
 
   def startEmailVerificationJourney(request: StartEmailVerificationJourneyRequest)(implicit hc: HeaderCarrier): Future[StartEmailVerificationJourneyResponse] = {
     val emailVerificationRequest = RequestEmailVerificationRequest(
@@ -52,7 +59,7 @@ class EmailVerificationService @Inject() (
       request.lang
     )
 
-    connector.requestEmailVerification(emailVerificationRequest).map{ response =>
+    connector.requestEmailVerification(emailVerificationRequest).map { response =>
       if (response.status === CREATED) {
         response.parseJSON[RequestEmailVerificationSuccess]
           .fold(
@@ -94,5 +101,44 @@ class EmailVerificationService @Inject() (
       }
 
     }
+
+  def getEmailVerificationStatuses(credId: GGCredId): Future[List[EmailVerificationStatus]] =
+    emailVerificationStatusService.findEmailVerificationStatuses(credId).map {
+      case Some(value) => value
+      case None        => Nil
+    }
+
+  def getEmailVerificationStatus(credId: GGCredId, email: Email): Future[Option[EmailVerificationStatus]] = {
+    emailVerificationStatusService.findEmailVerificationStatuses(credId).map {
+      case Some(value) => value.find(_.email === email)
+      case None        => None
+    }
+  }
+
+  def updateState(email: Email, credId: GGCredId): Future[Unit] = emailVerificationStatusService.update(credId, email, None)
+
+  def updateState(emailVerificationStateResultRequest: EmailVerificationStateResultRequest): Future[Unit] =
+    emailVerificationStatusService.update(
+      credId                  = emailVerificationStateResultRequest.getEmailVerificationResultRequest.credId,
+      email                   = emailVerificationStateResultRequest.getEmailVerificationResultRequest.email,
+      emailVerificationResult = Some(emailVerificationStateResultRequest.emailVerificationResult)
+    )
+
+  def getState(currentEmail: Email, statuses: List[EmailVerificationStatus]): EmailVerificationState = {
+    if (statuses.isEmpty) OkToBeVerified
+    else {
+      val statusForCurrentEmail: Option[EmailVerificationStatus] = statuses.find(_.email === currentEmail)
+      val alreadyVerified: Boolean = statusForCurrentEmail.exists(_.verificationResult.contains(EmailVerificationResult.Verified))
+      val tooManyPasscodeAttempts: Boolean = statusForCurrentEmail.exists(_.verificationResult.contains(EmailVerificationResult.Locked))
+      val tooManyPasscodeJourneysStarted: Boolean = statusForCurrentEmail.exists(_.numberOfPasscodeJourneysStarted.value >= maxPasscodeJourneysPerEmailAddress)
+      val tooManyDifferentEmailAddresses: Boolean = statuses.sizeIs >= maxNumberOfDifferentEmails
+
+      if (alreadyVerified) EmailVerificationState.AlreadyVerified
+      else if (tooManyDifferentEmailAddresses) EmailVerificationState.TooManyDifferentEmailAddresses
+      else if (tooManyPasscodeAttempts) EmailVerificationState.TooManyPasscodeAttempts
+      else if (tooManyPasscodeJourneysStarted) EmailVerificationState.TooManyPasscodeJourneysStarted
+      else EmailVerificationState.OkToBeVerified
+    }
+  }
 
 }

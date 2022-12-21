@@ -47,3 +47,7 @@ POST        /journey/:journeyId/update-arrangement                          jour
 # email verification
 POST        /email-verification/start                                       journey.EmailVerificationController.startEmailVerificationJourney
 POST        /email-verification/result                                      journey.EmailVerificationController.getEmailVerificationResult
+
+POST        /email-verification/verification-state                          journey.EmailVerificationController.state
+POST        /email-verification/verification-state/update                   journey.EmailVerificationController.updateState
+POST        /email-verification/verification-state/result-update            journey.EmailVerificationController.updateStateResult
