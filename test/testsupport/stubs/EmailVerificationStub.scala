@@ -101,4 +101,10 @@ object EmailVerificationStub {
         }
     )
 
+  def verifyNoneRequestVerification(): Unit =
+    verify(exactly(0), postRequestedFor(urlPathEqualTo(requestVerificationUrl)))
+
+  def verifyNoneGetVerificationStatus(ggCredId: GGCredId): Unit =
+    verify(exactly(0), postRequestedFor(urlPathEqualTo(getVerificationStatusUrl(ggCredId))))
+
 }

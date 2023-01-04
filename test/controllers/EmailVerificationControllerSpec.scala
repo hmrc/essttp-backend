@@ -37,12 +37,11 @@ class EmailVerificationControllerSpec extends ItSpec {
 
   val controller: EmailVerificationController = app.injector.instanceOf[EmailVerificationController]
 
+  val emailVerificationStatusRepo: EmailVerificationStatusRepo = app.injector.instanceOf[EmailVerificationStatusRepo]
+
   "POST /email-verification/start" - {
 
-    "return a redirect url if a journey is successfully started" in new JourneyItTest {
-      val redirectUri: String = "/redirect"
-
-      val startRequest = StartEmailVerificationJourneyRequest(
+      def startEmailVerificationJourneyRequest(isLocal: Boolean) = StartEmailVerificationJourneyRequest(
         GGCredId(s"authId-${UUID.randomUUID().toString}"),
         "continue",
         "origin",
@@ -53,8 +52,22 @@ class EmailVerificationControllerSpec extends ItSpec {
         "enter",
         Email(SensitiveString(s"email${UUID.randomUUID().toString}@test.com")),
         "en",
-        isLocal = false
+        isLocal = isLocal
       )
+
+      def emailVerificationStatus(ggCredId: GGCredId, email: Email): EmailVerificationStatus = EmailVerificationStatus(
+        _id                             = UUID.randomUUID().toString,
+        credId                          = ggCredId,
+        email                           = email,
+        numberOfPasscodeJourneysStarted = NumberOfPasscodeJourneysStarted(1),
+        verificationResult              = None,
+        createdAt                       = Instant.now,
+        lastUpdated                     = Instant.now
+      )
+
+    "return a redirect url if a journey is successfully started" in new JourneyItTest {
+      val redirectUri: String = "/redirect"
+      val startRequest: StartEmailVerificationJourneyRequest = startEmailVerificationJourneyRequest(false)
 
       stubCommonActions()
       EmailVerificationStub.requestEmailVerification(Right(RequestEmailVerificationSuccess(redirectUri)))
@@ -69,20 +82,7 @@ class EmailVerificationControllerSpec extends ItSpec {
     "prefix the uri in the redirecturi with the email-verification-frontend host and port if the redirectUri if the " +
       "environment is local and the uri is absolute" in new JourneyItTest {
         val redirectUri: String = "/redirect"
-
-        val startRequest = StartEmailVerificationJourneyRequest(
-          GGCredId(s"authId-${UUID.randomUUID().toString}"),
-          "continue",
-          "origin",
-          "deskpro",
-          "accessibility",
-          "title",
-          "back",
-          "enter",
-          Email(SensitiveString("email@test.com")),
-          "en",
-          isLocal = true
-        )
+        val startRequest: StartEmailVerificationJourneyRequest = startEmailVerificationJourneyRequest(true)
 
         stubCommonActions()
         EmailVerificationStub.requestEmailVerification(Right(RequestEmailVerificationSuccess(redirectUri)))
@@ -96,20 +96,7 @@ class EmailVerificationControllerSpec extends ItSpec {
 
     "maintain the redirectUri in the email verification response if the environment is local and the uri is absolute" in new JourneyItTest {
       val redirectUri: String = "http:///host:12345/redirect"
-
-      val startRequest = StartEmailVerificationJourneyRequest(
-        GGCredId(s"authId-${UUID.randomUUID().toString}"),
-        "continue",
-        "origin",
-        "deskpro",
-        "accessibility",
-        "title",
-        "back",
-        "enter",
-        Email(SensitiveString("email@test.com")),
-        "en",
-        isLocal = true
-      )
+      val startRequest: StartEmailVerificationJourneyRequest = startEmailVerificationJourneyRequest(true)
 
       stubCommonActions()
       EmailVerificationStub.requestEmailVerification(Right(RequestEmailVerificationSuccess(redirectUri)))
@@ -122,19 +109,7 @@ class EmailVerificationControllerSpec extends ItSpec {
     }
 
     "return a locked response if the email-verification service gives a 401 (UNAUTHORIZED) response" in new JourneyItTest {
-      val startRequest = StartEmailVerificationJourneyRequest(
-        GGCredId(s"authId-${UUID.randomUUID().toString}"),
-        "continue",
-        "origin",
-        "deskpro",
-        "accessibility",
-        "title",
-        "back",
-        "enter",
-        Email(SensitiveString("email@test.com")),
-        "en",
-        isLocal = false
-      )
+      val startRequest: StartEmailVerificationJourneyRequest = startEmailVerificationJourneyRequest(false)
 
       stubCommonActions()
       EmailVerificationStub.requestEmailVerification(Left(UNAUTHORIZED))
@@ -144,6 +119,73 @@ class EmailVerificationControllerSpec extends ItSpec {
       contentAsJson(result).as[StartEmailVerificationJourneyResponse] shouldBe StartEmailVerificationJourneyResponse.Error(EmailVerificationState.TooManyPasscodeAttempts)
 
       EmailVerificationStub.verifyRequestEmailVerification(startRequest)
+    }
+
+    "return 'AlreadyVerified' and not call email-verification if email is already verified" in new JourneyItTest {
+      stubCommonActions()
+      val startRequest: StartEmailVerificationJourneyRequest = startEmailVerificationJourneyRequest(false)
+
+      emailVerificationStatusRepo.upsert(emailVerificationStatus(startRequest.credId, startRequest.email)
+        .copy(verificationResult = Some(EmailVerificationResult.Verified))).futureValue
+
+      val result: Future[Result] = controller.startEmailVerificationJourney(request.withBody(startRequest))
+      status(result) shouldBe OK
+      contentAsJson(result).as[StartEmailVerificationJourneyResponse] shouldBe StartEmailVerificationJourneyResponse.AlreadyVerified
+      EmailVerificationStub.verifyNoneRequestVerification()
+    }
+
+    "return 'TooManyPasscodeAttempts' if that is the status in mongo" in new JourneyItTest {
+      stubCommonActions()
+      val startRequest: StartEmailVerificationJourneyRequest = startEmailVerificationJourneyRequest(false)
+
+      emailVerificationStatusRepo.upsert(emailVerificationStatus(startRequest.credId, startRequest.email)
+        .copy(verificationResult = Some(EmailVerificationResult.Locked))).futureValue
+
+      val result: Future[Result] = controller.startEmailVerificationJourney(request.withBody(startRequest))
+      status(result) shouldBe OK
+      contentAsJson(result).as[StartEmailVerificationJourneyResponse] shouldBe StartEmailVerificationJourneyResponse.Error(EmailVerificationState.TooManyPasscodeAttempts)
+      EmailVerificationStub.verifyNoneRequestVerification()
+    }
+
+    "return 'TooManyPasscodeJourneysStarted' if that is the status in mongo" in new JourneyItTest {
+      stubCommonActions()
+      val startRequest: StartEmailVerificationJourneyRequest = startEmailVerificationJourneyRequest(false)
+
+      emailVerificationStatusRepo.upsert(emailVerificationStatus(startRequest.credId, startRequest.email)
+        .copy(numberOfPasscodeJourneysStarted = NumberOfPasscodeJourneysStarted(5))).futureValue
+
+      val result: Future[Result] = controller.startEmailVerificationJourney(request.withBody(startRequest))
+      status(result) shouldBe OK
+      contentAsJson(result).as[StartEmailVerificationJourneyResponse] shouldBe StartEmailVerificationJourneyResponse.Error(EmailVerificationState.TooManyPasscodeJourneysStarted)
+      EmailVerificationStub.verifyNoneRequestVerification()
+    }
+
+    "return 'TooManyDifferentEmailAddresses' if that is the status in mongo" in new JourneyItTest {
+      stubCommonActions()
+      val startRequest: StartEmailVerificationJourneyRequest = startEmailVerificationJourneyRequest(false)
+
+      val emailVerificationStatus: EmailVerificationStatus = EmailVerificationStatus(
+        _id                             = UUID.randomUUID().toString,
+        credId                          = startRequest.credId,
+        email                           = startRequest.email,
+        numberOfPasscodeJourneysStarted = NumberOfPasscodeJourneysStarted(1),
+        verificationResult              = None,
+        createdAt                       = Instant.now,
+        lastUpdated                     = Instant.now
+      )
+      val nineOtherEntries: Seq[EmailVerificationStatus] =
+        (1 to 9).map(_ => emailVerificationStatus.copy(
+          _id   = UUID.randomUUID().toString,
+          email = Email(SensitiveString(s"email${UUID.randomUUID().toString}@test.com"))
+        ))
+      emailVerificationStatusRepo.upsert(emailVerificationStatus)
+      nineOtherEntries.foreach(emailVerificationStatusRepo.upsert(_).futureValue)
+      emailVerificationStatusRepo.findAllEntries(startRequest.credId).futureValue.size shouldBe 10
+
+      val result: Future[Result] = controller.startEmailVerificationJourney(request.withBody(startRequest))
+      status(result) shouldBe OK
+      contentAsJson(result).as[StartEmailVerificationJourneyResponse] shouldBe StartEmailVerificationJourneyResponse.Error(EmailVerificationState.TooManyDifferentEmailAddresses)
+      EmailVerificationStub.verifyNoneRequestVerification()
     }
 
   }
@@ -160,6 +202,7 @@ class EmailVerificationControllerSpec extends ItSpec {
       val result: Future[Result] = controller.getEmailVerificationResult(request.withBody(getResultRequest))
       status(result) shouldBe OK
       contentAsJson(result).as[EmailVerificationState] shouldBe EmailVerificationState.AlreadyVerified
+      EmailVerificationStub.verifyNoneGetVerificationStatus(ggCredId)
     }
 
     "return a 'TooManyPasscodeAttempts' response if the email address has been locked with the GG cred id" in new JourneyItTest {
@@ -172,6 +215,7 @@ class EmailVerificationControllerSpec extends ItSpec {
       val result: Future[Result] = controller.getEmailVerificationResult(request.withBody(getResultRequest))
       status(result) shouldBe OK
       contentAsJson(result).as[EmailVerificationState] shouldBe EmailVerificationState.TooManyPasscodeAttempts
+      EmailVerificationStub.verifyNoneGetVerificationStatus(ggCredId)
     }
 
     "return 'TooManyPasscodeJourneysStarted' when numberOfPasscodeJourneysStarted is >= 5 in the EmailVerificationStatus" in new JourneyItTest {
@@ -190,12 +234,12 @@ class EmailVerificationControllerSpec extends ItSpec {
         lastUpdated                     = Instant.now
       )
 
-      def repo: EmailVerificationStatusRepo = app.injector.instanceOf[EmailVerificationStatusRepo]
-      repo.upsert(emailVerificationStatus)
+      emailVerificationStatusRepo.upsert(emailVerificationStatus)
 
       val result: Future[Result] = controller.getEmailVerificationResult(request.withBody(getResultRequest))
       status(result) shouldBe OK
       contentAsJson(result).as[EmailVerificationState] shouldBe EmailVerificationState.TooManyPasscodeJourneysStarted
+      EmailVerificationStub.verifyNoneGetVerificationStatus(ggCredId)
     }
 
     "return 'TooManyDifferentEmailAddresses' when there are >= 10 entries for a given cred id" in new JourneyItTest {
@@ -219,14 +263,14 @@ class EmailVerificationControllerSpec extends ItSpec {
           email = Email(SensitiveString(s"email${UUID.randomUUID().toString}@test.com"))
         ))
 
-      def repo: EmailVerificationStatusRepo = app.injector.instanceOf[EmailVerificationStatusRepo]
-      repo.upsert(emailVerificationStatus).futureValue
-      nineOtherEntries.foreach(repo.upsert(_).futureValue)
-      repo.findAllEntries(ggCredId).futureValue.size shouldBe 10
+      emailVerificationStatusRepo.upsert(emailVerificationStatus).futureValue
+      nineOtherEntries.foreach(emailVerificationStatusRepo.upsert(_).futureValue)
+      emailVerificationStatusRepo.findAllEntries(ggCredId).futureValue.size shouldBe 10
 
       val result: Future[Result] = controller.getEmailVerificationResult(request.withBody(getResultRequest))
       status(result) shouldBe OK
       contentAsJson(result).as[EmailVerificationState] shouldBe EmailVerificationState.TooManyDifferentEmailAddresses
+      EmailVerificationStub.verifyNoneGetVerificationStatus(ggCredId)
     }
 
     "return 'AlreadyVerified' when there are < 10 entries for a given cred id and email verification return verified" in new JourneyItTest {
@@ -245,19 +289,19 @@ class EmailVerificationControllerSpec extends ItSpec {
         createdAt                       = Instant.now,
         lastUpdated                     = Instant.now
       )
-      val nineOtherEntries: Seq[EmailVerificationStatus] =
+      val eightOtherEntries: Seq[EmailVerificationStatus] =
         (1 to 8).map(_ => emailVerificationStatus.copy(
           _id   = UUID.randomUUID().toString,
           email = Email(SensitiveString(s"email${UUID.randomUUID().toString}@test.com"))
         ))
 
-      def repo: EmailVerificationStatusRepo = app.injector.instanceOf[EmailVerificationStatusRepo]
-      repo.upsert(emailVerificationStatus)
-      nineOtherEntries.foreach(repo.upsert(_))
+      emailVerificationStatusRepo.upsert(emailVerificationStatus)
+      eightOtherEntries.foreach(emailVerificationStatusRepo.upsert(_))
 
       val result: Future[Result] = controller.getEmailVerificationResult(request.withBody(getResultRequest))
       status(result) shouldBe OK
       contentAsJson(result).as[EmailVerificationState] shouldBe EmailVerificationState.AlreadyVerified
+      EmailVerificationStub.verifyNoneGetVerificationStatus(ggCredId)
     }
 
     "should throw an error when" - {
