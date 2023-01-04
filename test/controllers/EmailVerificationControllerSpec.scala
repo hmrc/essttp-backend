@@ -220,8 +220,8 @@ class EmailVerificationControllerSpec extends ItSpec {
         ))
 
       def repo: EmailVerificationStatusRepo = app.injector.instanceOf[EmailVerificationStatusRepo]
-      repo.upsert(emailVerificationStatus)
-      nineOtherEntries.foreach(repo.upsert(_))
+      repo.upsert(emailVerificationStatus).futureValue
+      nineOtherEntries.foreach(repo.upsert(_).futureValue)
       repo.findAllEntries(ggCredId).futureValue.size shouldBe 10
 
       val result: Future[Result] = controller.getEmailVerificationResult(request.withBody(getResultRequest))
