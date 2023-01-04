@@ -73,7 +73,7 @@ object EmailVerificationStatusRepo {
     ),
     IndexModel(
       keys         = Indexes.ascending("credId"),
-      indexOptions = IndexOptions().expireAfter(cacheTtlInSeconds, TimeUnit.SECONDS).name("credIdIdx")
+      indexOptions = IndexOptions().name("credIdIdx")
     )
   )
 }
