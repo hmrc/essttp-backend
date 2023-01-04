@@ -73,7 +73,7 @@ class EmailVerificationService @Inject() (
                       success.redirectUri
                     }
                   updateState(emailVerificationRequest.email.address, emailVerificationRequest.credId)
-                    .flatMap(_ => Future.successful(StartEmailVerificationJourneyResponse.Success(redirectUrl)))
+                    .map(_ => StartEmailVerificationJourneyResponse.Success(redirectUrl))
                 }
               )
           } else {

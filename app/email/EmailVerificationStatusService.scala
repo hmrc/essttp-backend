@@ -21,6 +21,7 @@ import essttp.emailverification.{EmailVerificationResult, EmailVerificationStatu
 import essttp.rootmodel.{Email, GGCredId}
 import services.CorrelationIdGenerator
 
+import java.time.Instant
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -55,7 +56,8 @@ class EmailVerificationStatusService @Inject() (
                     if (emailVerificationResult === Some(EmailVerificationResult.Verified)) emailVerificationStatus.numberOfPasscodeJourneysStarted
                     else emailVerificationStatus.numberOfPasscodeJourneysStarted.increment
                   },
-                  verificationResult              = emailVerificationResult
+                  verificationResult              = emailVerificationResult,
+                  lastUpdated                     = Instant.now
                 ))
             }
         }

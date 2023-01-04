@@ -70,6 +70,10 @@ object EmailVerificationStatusRepo {
     IndexModel(
       keys         = Indexes.ascending("lastUpdated"),
       indexOptions = IndexOptions().expireAfter(cacheTtlInSeconds, TimeUnit.SECONDS).name("lastUpdatedIdx")
+    ),
+    IndexModel(
+      keys         = Indexes.ascending("credId"),
+      indexOptions = IndexOptions().expireAfter(cacheTtlInSeconds, TimeUnit.SECONDS).name("credIdIdx")
     )
   )
 }
