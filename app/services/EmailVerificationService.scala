@@ -60,7 +60,7 @@ class EmailVerificationService @Inject() (
     )
 
       def makeEmailVerificationCall: Future[StartEmailVerificationJourneyResponse] = {
-        connector.requestEmailVerification(emailVerificationRequest).flatMap { response =>
+        connector.requestEmailVerification(emailVerificationRequest).map { response =>
           if (response.status === CREATED) {
             response.parseJSON[RequestEmailVerificationSuccess]
               .fold(
@@ -72,8 +72,7 @@ class EmailVerificationService @Inject() (
                     } else {
                       success.redirectUri
                     }
-                  updateState(emailVerificationRequest.email.address, emailVerificationRequest.credId)
-                    .map(_ => StartEmailVerificationJourneyResponse.Success(redirectUrl))
+                  StartEmailVerificationJourneyResponse.Success(redirectUrl)
                 }
               )
           } else {
@@ -85,15 +84,17 @@ class EmailVerificationService @Inject() (
         }
       }
 
-    emailVerificationStatusService.findEmailVerificationStatuses(request.credId).flatMap {
-      case Some(value) => getState(request.email, value) match {
-        case EmailVerificationState.OkToBeVerified                 => makeEmailVerificationCall
-        case EmailVerificationState.AlreadyVerified                => Future.successful(StartEmailVerificationJourneyResponse.AlreadyVerified)
-        case EmailVerificationState.TooManyPasscodeAttempts        => Future.successful(StartEmailVerificationJourneyResponse.Error(TooManyPasscodeAttempts))
-        case EmailVerificationState.TooManyPasscodeJourneysStarted => Future.successful(StartEmailVerificationJourneyResponse.Error(TooManyPasscodeJourneysStarted))
-        case EmailVerificationState.TooManyDifferentEmailAddresses => Future.successful(StartEmailVerificationJourneyResponse.Error(TooManyDifferentEmailAddresses))
+    updateState(emailVerificationRequest.email.address, emailVerificationRequest.credId).flatMap { _ =>
+      emailVerificationStatusService.findEmailVerificationStatuses(request.credId).flatMap {
+        case Some(value) => getState(request.email, value) match {
+          case EmailVerificationState.OkToBeVerified                 => makeEmailVerificationCall
+          case EmailVerificationState.AlreadyVerified                => Future.successful(StartEmailVerificationJourneyResponse.AlreadyVerified)
+          case EmailVerificationState.TooManyPasscodeAttempts        => Future.successful(StartEmailVerificationJourneyResponse.Error(TooManyPasscodeAttempts))
+          case EmailVerificationState.TooManyPasscodeJourneysStarted => Future.successful(StartEmailVerificationJourneyResponse.Error(TooManyPasscodeJourneysStarted))
+          case EmailVerificationState.TooManyDifferentEmailAddresses => Future.successful(StartEmailVerificationJourneyResponse.Error(TooManyDifferentEmailAddresses))
+        }
+        case None => makeEmailVerificationCall
       }
-      case None => makeEmailVerificationCall
     }
   }
 
