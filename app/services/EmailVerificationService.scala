@@ -23,7 +23,7 @@ import connectors.EmailVerificationConnector
 import email.EmailVerificationStatusService
 import essttp.emailverification.EmailVerificationState.{OkToBeVerified, TooManyDifferentEmailAddresses, TooManyPasscodeAttempts, TooManyPasscodeJourneysStarted}
 import essttp.emailverification._
-import essttp.rootmodel.{Email, GGCredId}
+import essttp.rootmodel.Email
 import essttp.utils.HttpResponseUtils.HttpResponseOps
 import models.emailverification.RequestEmailVerificationRequest.EmailDetails
 import models.emailverification.{RequestEmailVerificationRequest, RequestEmailVerificationSuccess}
@@ -84,7 +84,7 @@ class EmailVerificationService @Inject() (
         }
       }
 
-    updateState(emailVerificationRequest.email.address, emailVerificationRequest.credId).flatMap { _ =>
+    emailVerificationStatusService.updateNumberOfPasscodeJourneys(emailVerificationRequest.credId, emailVerificationRequest.email.address).flatMap { _ =>
       emailVerificationStatusService.findEmailVerificationStatuses(request.credId).flatMap {
         case Some(value) => getState(request.email, value) match {
           case EmailVerificationState.OkToBeVerified                 => makeEmailVerificationCall
@@ -107,10 +107,10 @@ class EmailVerificationService @Inject() (
           case Some(status) =>
             (status.verified, status.locked) match {
               case (true, false) =>
-                emailVerificationStatusService.update(request.credId, request.email, Some(EmailVerificationResult.Verified))
+                emailVerificationStatusService.updateEmailVerificationStatusResult(request.credId, request.email, EmailVerificationResult.Verified)
                   .map(_ => EmailVerificationState.AlreadyVerified)
               case (false, true) =>
-                emailVerificationStatusService.update(request.credId, request.email, Some(EmailVerificationResult.Locked))
+                emailVerificationStatusService.updateEmailVerificationStatusResult(request.credId, request.email, EmailVerificationResult.Locked)
                   .map(_ => EmailVerificationState.TooManyPasscodeAttempts)
               case _ =>
                 throw UpstreamErrorResponse(s"Got unexpected combination of verified=${status.verified.toString} and " +
@@ -124,6 +124,7 @@ class EmailVerificationService @Inject() (
         case Some(value) => getState(request.email, value)
         case None        => OkToBeVerified
       }
+
     emailVerificationResult.flatMap {
       case EmailVerificationState.OkToBeVerified                 => isVerifiedOrNot
       case EmailVerificationState.AlreadyVerified                => Future.successful(EmailVerificationState.AlreadyVerified)
@@ -133,9 +134,7 @@ class EmailVerificationService @Inject() (
     }
   }
 
-  def updateState(email: Email, credId: GGCredId): Future[Unit] = emailVerificationStatusService.update(credId, email, None)
-
-  def getState(currentEmail: Email, statuses: List[EmailVerificationStatus]): EmailVerificationState = {
+  private def getState(currentEmail: Email, statuses: List[EmailVerificationStatus]): EmailVerificationState = {
     if (statuses.isEmpty) OkToBeVerified
     else {
       val statusForCurrentEmail: Option[EmailVerificationStatus] = statuses.find(_.email === currentEmail)

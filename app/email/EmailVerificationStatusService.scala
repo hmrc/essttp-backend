@@ -40,29 +40,45 @@ class EmailVerificationStatusService @Inject() (
    * increment the verification attempts for EmailVerificationStatus entry that matches given credId and email,
    * or create one if it doesn't exist
    */
-  def update(credId: GGCredId, email: Email, emailVerificationResult: Option[EmailVerificationResult]): Future[Unit] = {
+  def updateNumberOfPasscodeJourneys(credId: GGCredId, email: Email): Future[Unit] =
     findEmailVerificationStatuses(credId).flatMap { maybeListOfVerificationStatuses: Option[List[EmailVerificationStatus]] =>
-      maybeListOfVerificationStatuses
-        .fold {
-          upsert(EmailVerificationStatus(correlationIdGenerator.nextCorrelationId(), credId, email, emailVerificationResult))
-        } { emailVerificationStatuses =>
-          emailVerificationStatuses.find(_.email === email)
-            .fold {
-              upsert(EmailVerificationStatus(correlationIdGenerator.nextCorrelationId(), credId, email, emailVerificationResult))
-            } {
-              emailVerificationStatus =>
-                upsert(emailVerificationStatus.copy(
-                  numberOfPasscodeJourneysStarted = {
-                    if (emailVerificationResult === Some(EmailVerificationResult.Verified)) emailVerificationStatus.numberOfPasscodeJourneysStarted
-                    else emailVerificationStatus.numberOfPasscodeJourneysStarted.increment
-                  },
-                  verificationResult              = emailVerificationResult,
-                  lastUpdated                     = Instant.now
-                ))
-            }
-        }
+      maybeListOfVerificationStatuses.fold {
+        upsert(EmailVerificationStatus(correlationIdGenerator.nextCorrelationId(), credId, email, None))
+      } { emailVerificationStatuses =>
+        emailVerificationStatuses.find(_.email === email)
+          .fold{
+            upsert(EmailVerificationStatus(correlationIdGenerator.nextCorrelationId(), credId, email, None))
+          } {
+            emailVerificationStatus =>
+              upsert(emailVerificationStatus.copy(
+                numberOfPasscodeJourneysStarted = emailVerificationStatus.numberOfPasscodeJourneysStarted.increment,
+                lastUpdated                     = Instant.now
+              ))
+          }
+      }
     }
-  }
+
+  /*
+   * update the emailVerificationResult for EmailVerificationStatus entry that matches given credId and email,
+   * or create one if it doesn't exist
+   */
+  def updateEmailVerificationStatusResult(credId: GGCredId, email: Email, emailVerificationResult: EmailVerificationResult): Future[Unit] =
+    findEmailVerificationStatuses(credId).flatMap { maybeListOfVerificationStatuses: Option[List[EmailVerificationStatus]] =>
+      maybeListOfVerificationStatuses.fold {
+        upsert(EmailVerificationStatus(correlationIdGenerator.nextCorrelationId(), credId, email, Some(emailVerificationResult)))
+      } { emailVerificationStatuses =>
+        emailVerificationStatuses.find(_.email === email)
+          .fold {
+            upsert(EmailVerificationStatus(correlationIdGenerator.nextCorrelationId(), credId, email, Some(emailVerificationResult)))
+          } {
+            emailVerificationStatus =>
+              upsert(emailVerificationStatus.copy(
+                verificationResult = Some(emailVerificationResult),
+                lastUpdated        = Instant.now
+              ))
+          }
+      }
+    }
 
   private def find(ggCredId: GGCredId): Future[Option[List[EmailVerificationStatus]]] =
     emailVerificationStatusRepo.findAllEntries(ggCredId).map {
