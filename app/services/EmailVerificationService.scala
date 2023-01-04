@@ -21,7 +21,7 @@ import com.google.inject.{Inject, Singleton}
 import config.AppConfig
 import connectors.EmailVerificationConnector
 import email.EmailVerificationStatusService
-import essttp.emailverification.EmailVerificationState.OkToBeVerified
+import essttp.emailverification.EmailVerificationState.{OkToBeVerified, TooManyDifferentEmailAddresses, TooManyPasscodeAttempts, TooManyPasscodeJourneysStarted}
 import essttp.emailverification._
 import essttp.rootmodel.{Email, GGCredId}
 import essttp.utils.HttpResponseUtils.HttpResponseOps
@@ -59,70 +59,80 @@ class EmailVerificationService @Inject() (
       request.lang
     )
 
-    connector.requestEmailVerification(emailVerificationRequest).map { response =>
-      if (response.status === CREATED) {
-        response.parseJSON[RequestEmailVerificationSuccess]
-          .fold(
-            msg => throw UpstreamErrorResponse(msg, INTERNAL_SERVER_ERROR),
-            { success =>
-              val redirectUrl =
-                if (request.isLocal && !URI.create(success.redirectUri).isAbsolute) {
-                  s"${appConfig.emailVerificationFrontendLocalUrl}${success.redirectUri}"
-                } else {
-                  success.redirectUri
+      def makeEmailVerificationCall: Future[StartEmailVerificationJourneyResponse] = {
+        connector.requestEmailVerification(emailVerificationRequest).flatMap { response =>
+          if (response.status === CREATED) {
+            response.parseJSON[RequestEmailVerificationSuccess]
+              .fold(
+                msg => throw UpstreamErrorResponse(msg, INTERNAL_SERVER_ERROR),
+                { success =>
+                  val redirectUrl =
+                    if (request.isLocal && !URI.create(success.redirectUri).isAbsolute) {
+                      s"${appConfig.emailVerificationFrontendLocalUrl}${success.redirectUri}"
+                    } else {
+                      success.redirectUri
+                    }
+                  updateState(emailVerificationRequest.email.address, emailVerificationRequest.credId)
+                    .flatMap(_ => Future.successful(StartEmailVerificationJourneyResponse.Success(redirectUrl)))
                 }
-              StartEmailVerificationJourneyResponse.Success(redirectUrl)
-            }
-          )
-      } else {
-        throw UpstreamErrorResponse(s"Call to request email verification came back with unexpected status ${response.status.toString}", response.status)
+              )
+          } else {
+            throw UpstreamErrorResponse(s"Call to request email verification came back with unexpected status ${response.status.toString}", response.status)
+          }
+        }.recover {
+          case u: UpstreamErrorResponse if u.statusCode === UNAUTHORIZED =>
+            StartEmailVerificationJourneyResponse.Error(TooManyPasscodeAttempts)
+        }
       }
-    }.recover {
-      case u: UpstreamErrorResponse if u.statusCode === UNAUTHORIZED => StartEmailVerificationJourneyResponse.Locked
+
+    emailVerificationStatusService.findEmailVerificationStatuses(request.credId).flatMap {
+      case Some(value) => getState(request.email, value) match {
+        case EmailVerificationState.OkToBeVerified                 => makeEmailVerificationCall
+        case EmailVerificationState.AlreadyVerified                => Future.successful(StartEmailVerificationJourneyResponse.AlreadyVerified)
+        case EmailVerificationState.TooManyPasscodeAttempts        => Future.successful(StartEmailVerificationJourneyResponse.Error(TooManyPasscodeAttempts))
+        case EmailVerificationState.TooManyPasscodeJourneysStarted => Future.successful(StartEmailVerificationJourneyResponse.Error(TooManyPasscodeJourneysStarted))
+        case EmailVerificationState.TooManyDifferentEmailAddresses => Future.successful(StartEmailVerificationJourneyResponse.Error(TooManyDifferentEmailAddresses))
+      }
+      case None => makeEmailVerificationCall
     }
   }
 
-  def getVerificationResult(request: GetEmailVerificationResultRequest)(implicit hc: HeaderCarrier): Future[EmailVerificationResult] =
-    connector.getVerificationStatus(request.credId).map{ statusResponse =>
-      statusResponse.emails.find(_.emailAddress === request.email.value.decryptedValue) match {
-        case None =>
-          throw UpstreamErrorResponse("Verification result not found for email address", NOT_FOUND)
+  def getVerificationResult(request: GetEmailVerificationResultRequest)(implicit hc: HeaderCarrier): Future[EmailVerificationState] = {
 
-        case Some(status) =>
-          (status.verified, status.locked) match {
-            case (true, false) =>
-              EmailVerificationResult.Verified
-            case (false, true) =>
-              EmailVerificationResult.Locked
-            case _ =>
-              throw UpstreamErrorResponse(s"Got unexpected combination of verified=${status.verified.toString} and " +
-                s"locked=${status.locked.toString} in email verification status response", INTERNAL_SERVER_ERROR)
-          }
+      def isVerifiedOrNot: Future[EmailVerificationState] = connector.getVerificationStatus(request.credId).flatMap{ statusResponse =>
+        statusResponse.emails.find(_.emailAddress === request.email.value.decryptedValue) match {
+          case None =>
+            throw UpstreamErrorResponse("Verification result not found for email address", NOT_FOUND)
+          case Some(status) =>
+            (status.verified, status.locked) match {
+              case (true, false) =>
+                emailVerificationStatusService.update(request.credId, request.email, Some(EmailVerificationResult.Verified))
+                  .map(_ => EmailVerificationState.AlreadyVerified)
+              case (false, true) =>
+                emailVerificationStatusService.update(request.credId, request.email, Some(EmailVerificationResult.Locked))
+                  .map(_ => EmailVerificationState.TooManyPasscodeAttempts)
+              case _ =>
+                throw UpstreamErrorResponse(s"Got unexpected combination of verified=${status.verified.toString} and " +
+                  s"locked=${status.locked.toString} in email verification status response", INTERNAL_SERVER_ERROR)
+            }
+        }
       }
 
-    }
-
-  def getEmailVerificationStatuses(credId: GGCredId): Future[List[EmailVerificationStatus]] =
-    emailVerificationStatusService.findEmailVerificationStatuses(credId).map {
-      case Some(value) => value
-      case None        => Nil
-    }
-
-  def getEmailVerificationStatus(credId: GGCredId, email: Email): Future[Option[EmailVerificationStatus]] = {
-    emailVerificationStatusService.findEmailVerificationStatuses(credId).map {
-      case Some(value) => value.find(_.email === email)
-      case None        => None
+    val emailVerificationResult: Future[EmailVerificationState] =
+      emailVerificationStatusService.findEmailVerificationStatuses(request.credId).map {
+        case Some(value) => getState(request.email, value)
+        case None        => OkToBeVerified
+      }
+    emailVerificationResult.flatMap {
+      case EmailVerificationState.OkToBeVerified                 => isVerifiedOrNot
+      case EmailVerificationState.AlreadyVerified                => Future.successful(EmailVerificationState.AlreadyVerified)
+      case EmailVerificationState.TooManyPasscodeAttempts        => Future.successful(EmailVerificationState.TooManyPasscodeAttempts)
+      case EmailVerificationState.TooManyPasscodeJourneysStarted => Future.successful(EmailVerificationState.TooManyPasscodeJourneysStarted)
+      case EmailVerificationState.TooManyDifferentEmailAddresses => Future.successful(EmailVerificationState.TooManyDifferentEmailAddresses)
     }
   }
 
   def updateState(email: Email, credId: GGCredId): Future[Unit] = emailVerificationStatusService.update(credId, email, None)
-
-  def updateState(emailVerificationStateResultRequest: EmailVerificationStateResultRequest): Future[Unit] =
-    emailVerificationStatusService.update(
-      credId                  = emailVerificationStateResultRequest.getEmailVerificationResultRequest.credId,
-      email                   = emailVerificationStateResultRequest.getEmailVerificationResultRequest.email,
-      emailVerificationResult = Some(emailVerificationStateResultRequest.emailVerificationResult)
-    )
 
   def getState(currentEmail: Email, statuses: List[EmailVerificationStatus]): EmailVerificationState = {
     if (statuses.isEmpty) OkToBeVerified

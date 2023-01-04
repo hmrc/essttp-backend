@@ -19,7 +19,7 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.emailverification.{EmailVerificationStateResultRequest, GetEmailVerificationResultRequest, StartEmailVerificationJourneyRequest}
+import essttp.emailverification.{GetEmailVerificationResultRequest, StartEmailVerificationJourneyRequest}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, ControllerComponents}
 import services.EmailVerificationService
@@ -44,25 +44,6 @@ class EmailVerificationController @Inject() (
     actions.authenticatedAction(parse.json[GetEmailVerificationResultRequest]).async{ implicit request =>
       emailVerificationService.getVerificationResult(request.body)
         .map(result => Ok(Json.toJson(result)))
-    }
-
-  val state: Action[GetEmailVerificationResultRequest] =
-    actions.authenticatedAction(parse.json[GetEmailVerificationResultRequest]).async { implicit request =>
-      emailVerificationService.getEmailVerificationStatuses(credId = request.body.credId)
-        .map(emailVerificationStatuses => emailVerificationService.getState(request.body.email, emailVerificationStatuses))
-        .map(status => Ok(Json.toJson(status)))
-    }
-
-  val updateState: Action[GetEmailVerificationResultRequest] =
-    actions.authenticatedAction(parse.json[GetEmailVerificationResultRequest]).async { implicit request =>
-      emailVerificationService.updateState(request.body.email, request.body.credId)
-        .map(_ => Ok)
-    }
-
-  val updateStateResult: Action[EmailVerificationStateResultRequest] =
-    actions.authenticatedAction(parse.json[EmailVerificationStateResultRequest]).async { implicit request =>
-      emailVerificationService.updateState(request.body)
-        .map(_ => Ok)
     }
 
 }
