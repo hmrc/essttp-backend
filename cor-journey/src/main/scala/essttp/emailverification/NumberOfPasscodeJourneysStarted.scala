@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-package generators
+package essttp.emailverification
 
-import services.CorrelationIdGenerator
-import testsupport.UnitSpec
+import play.api.libs.json.{Format, Json}
 
-class CorrelationIdGeneratorSpec extends UnitSpec {
-  "CorrelationId should be generated as a UUID" in {
-    val gen = new CorrelationIdGenerator
-    gen.nextCorrelationId().value.toString should fullyMatch regex """[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"""
+final case class NumberOfPasscodeJourneysStarted(value: Int) extends AnyVal
+
+object NumberOfPasscodeJourneysStarted {
+
+  val zero: NumberOfPasscodeJourneysStarted = NumberOfPasscodeJourneysStarted(0)
+
+  implicit class NumberOfBarsVerifyAttemptsOps(private val n: NumberOfPasscodeJourneysStarted) {
+
+    def increment: NumberOfPasscodeJourneysStarted = NumberOfPasscodeJourneysStarted(n.value + 1)
+
   }
+
+  implicit val format: Format[NumberOfPasscodeJourneysStarted] = Json.valueFormat
+
 }

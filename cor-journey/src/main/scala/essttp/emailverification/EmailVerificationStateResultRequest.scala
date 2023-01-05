@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package generators
+package essttp.emailverification
 
-import services.CorrelationIdGenerator
-import testsupport.UnitSpec
+import essttp.crypto.CryptoFormat
+import play.api.libs.json.{Json, OFormat}
 
-class CorrelationIdGeneratorSpec extends UnitSpec {
-  "CorrelationId should be generated as a UUID" in {
-    val gen = new CorrelationIdGenerator
-    gen.nextCorrelationId().value.toString should fullyMatch regex """[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"""
-  }
+final case class EmailVerificationStateResultRequest(
+    getEmailVerificationResultRequest: GetEmailVerificationResultRequest,
+    emailVerificationResult:           EmailVerificationResult
+)
+object EmailVerificationStateResultRequest {
+
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[EmailVerificationStateResultRequest] = Json.format
+
 }
