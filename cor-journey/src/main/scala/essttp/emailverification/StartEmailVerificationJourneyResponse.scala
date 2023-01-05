@@ -27,7 +27,7 @@ object StartEmailVerificationJourneyResponse {
 
   case object AlreadyVerified extends StartEmailVerificationJourneyResponse
 
-  final case class Error(reason: EmailVerificationState) extends StartEmailVerificationJourneyResponse
+  final case class Error(reason: EmailVerificationStateError) extends StartEmailVerificationJourneyResponse
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[StartEmailVerificationJourneyResponse] = derived.oformat[StartEmailVerificationJourneyResponse]()
