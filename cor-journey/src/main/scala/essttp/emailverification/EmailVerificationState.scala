@@ -24,20 +24,25 @@ import scala.collection.immutable
 
 sealed trait EmailVerificationState extends EnumEntry
 
+sealed trait EmailVerificationStateError extends EmailVerificationState
+
 object EmailVerificationState extends Enum[EmailVerificationState] {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[EmailVerificationState] = derived.oformat[EmailVerificationState]()
+  implicit val stateFormat: OFormat[EmailVerificationState] = derived.oformat[EmailVerificationState]()
+
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  implicit val stateErrorFormat: OFormat[EmailVerificationStateError] = derived.oformat[EmailVerificationStateError]()
 
   case object OkToBeVerified extends EmailVerificationState
 
-  case object AlreadyVerified extends EmailVerificationState
+  case object AlreadyVerified extends EmailVerificationStateError
 
-  case object TooManyPasscodeAttempts extends EmailVerificationState
+  case object TooManyPasscodeAttempts extends EmailVerificationStateError
 
-  case object TooManyPasscodeJourneysStarted extends EmailVerificationState
+  case object TooManyPasscodeJourneysStarted extends EmailVerificationStateError
 
-  case object TooManyDifferentEmailAddresses extends EmailVerificationState
+  case object TooManyDifferentEmailAddresses extends EmailVerificationStateError
 
   override val values: immutable.IndexedSeq[EmailVerificationState] = findValues
 
