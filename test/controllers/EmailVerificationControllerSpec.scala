@@ -205,7 +205,7 @@ class EmailVerificationControllerSpec extends ItSpec {
       EmailVerificationStub.verifyNoneGetVerificationStatus(ggCredId)
     }
 
-    "return a 'Locked' response if the email address has been locked with the GG cred id" in new JourneyItTest {
+    "return a 'TooManyPasscodeAttempts' response if the email address has been locked with the GG cred id" in new JourneyItTest {
       stubCommonActions()
       val ggCredId = GGCredId(s"authId-${UUID.randomUUID().toString}")
       val email = Email(SensitiveString(s"email${UUID.randomUUID().toString}@test.com"))
@@ -217,7 +217,7 @@ class EmailVerificationControllerSpec extends ItSpec {
       contentAsJson(result).as[EmailVerificationResult] shouldBe EmailVerificationResult.Locked
       EmailVerificationStub.verifyNoneGetVerificationStatus(ggCredId)
     }
-
+    
     "return 'Verified' response when there are < 10 entries for a given cred id and email verification return verified" in new JourneyItTest {
       stubCommonActions()
       val ggCredId = GGCredId(s"authId-${UUID.randomUUID().toString}")
