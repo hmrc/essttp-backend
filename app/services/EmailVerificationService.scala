@@ -99,35 +99,23 @@ class EmailVerificationService @Inject() (
   }
 
   def getVerificationResult(request: GetEmailVerificationResultRequest)(implicit hc: HeaderCarrier): Future[EmailVerificationResult] = {
-
-      def isVerifiedOrNot: Future[EmailVerificationResult] = connector.getVerificationStatus(request.credId).flatMap { statusResponse =>
-        statusResponse.emails.find(_.emailAddress === request.email.value.decryptedValue) match {
-          case None =>
-            throw UpstreamErrorResponse("Verification result not found for email address", NOT_FOUND)
-          case Some(status) =>
-            (status.verified, status.locked) match {
-              case (true, false) =>
-                emailVerificationStatusService.updateEmailVerificationStatusResult(request.credId, request.email, EmailVerificationResult.Verified)
-                  .map(_ => EmailVerificationResult.Verified)
-              case (false, true) =>
-                emailVerificationStatusService.updateEmailVerificationStatusResult(request.credId, request.email, EmailVerificationResult.Locked)
-                  .map(_ => EmailVerificationResult.Locked)
-              case _ =>
-                throw UpstreamErrorResponse(s"Got unexpected combination of verified=${status.verified.toString} and " +
-                  s"locked=${status.locked.toString} in email verification status response", INTERNAL_SERVER_ERROR)
-            }
-        }
+    connector.getVerificationStatus(request.credId).flatMap { statusResponse =>
+      statusResponse.emails.find(_.emailAddress === request.email.value.decryptedValue) match {
+        case None =>
+          throw UpstreamErrorResponse("Verification result not found for email address", NOT_FOUND)
+        case Some(status) =>
+          (status.verified, status.locked) match {
+            case (true, false) =>
+              emailVerificationStatusService.updateEmailVerificationStatusResult(request.credId, request.email, EmailVerificationResult.Verified)
+                .map(_ => EmailVerificationResult.Verified)
+            case (false, true) =>
+              emailVerificationStatusService.updateEmailVerificationStatusResult(request.credId, request.email, EmailVerificationResult.Locked)
+                .map(_ => EmailVerificationResult.Locked)
+            case _ =>
+              throw UpstreamErrorResponse(s"Got unexpected combination of verified=${status.verified.toString} and " +
+                s"locked=${status.locked.toString} in email verification status response", INTERNAL_SERVER_ERROR)
+          }
       }
-
-    emailVerificationStatusService.findEmailVerificationStatuses(request.credId).map {
-      case Some(value) => getState(request.email, value)
-      case None        => OkToBeVerified
-    }.flatMap {
-      case EmailVerificationState.OkToBeVerified                 => isVerifiedOrNot
-      case EmailVerificationState.AlreadyVerified                => Future.successful(EmailVerificationResult.Verified)
-      case EmailVerificationState.TooManyPasscodeAttempts        => Future.successful(EmailVerificationResult.Locked)
-      case EmailVerificationState.TooManyPasscodeJourneysStarted => Future.successful(EmailVerificationResult.Locked)
-      case EmailVerificationState.TooManyDifferentEmailAddresses => Future.successful(EmailVerificationResult.Locked)
     }
   }
 

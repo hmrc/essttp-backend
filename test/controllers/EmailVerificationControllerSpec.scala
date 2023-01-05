@@ -218,61 +218,6 @@ class EmailVerificationControllerSpec extends ItSpec {
       EmailVerificationStub.verifyNoneGetVerificationStatus(ggCredId)
     }
 
-    "return 'Locked' response when numberOfPasscodeJourneysStarted is >= 5 in the EmailVerificationStatus" in new JourneyItTest {
-      stubCommonActions()
-      val ggCredId = GGCredId(s"authId-${UUID.randomUUID().toString}")
-      val email = Email(SensitiveString(s"email${UUID.randomUUID().toString}@test.com"))
-      val getResultRequest = GetEmailVerificationResultRequest(ggCredId, email)
-
-      val emailVerificationStatus: EmailVerificationStatus = EmailVerificationStatus(
-        _id                             = UUID.randomUUID().toString,
-        credId                          = ggCredId,
-        email                           = email,
-        numberOfPasscodeJourneysStarted = NumberOfPasscodeJourneysStarted(5),
-        verificationResult              = None,
-        createdAt                       = Instant.now,
-        lastUpdated                     = Instant.now
-      )
-
-      emailVerificationStatusRepo.upsert(emailVerificationStatus)
-
-      val result: Future[Result] = controller.getEmailVerificationResult(request.withBody(getResultRequest))
-      status(result) shouldBe OK
-      contentAsJson(result).as[EmailVerificationResult] shouldBe EmailVerificationResult.Locked
-      EmailVerificationStub.verifyNoneGetVerificationStatus(ggCredId)
-    }
-
-    "return 'Locked' response when there are >= 10 entries for a given cred id" in new JourneyItTest {
-      stubCommonActions()
-      val ggCredId = GGCredId(s"authId-${UUID.randomUUID().toString}")
-      val email = Email(SensitiveString(s"email${UUID.randomUUID().toString}@test.com"))
-      val getResultRequest = GetEmailVerificationResultRequest(ggCredId, email)
-
-      val emailVerificationStatus: EmailVerificationStatus = EmailVerificationStatus(
-        _id                             = UUID.randomUUID().toString,
-        credId                          = ggCredId,
-        email                           = email,
-        numberOfPasscodeJourneysStarted = NumberOfPasscodeJourneysStarted(1),
-        verificationResult              = None,
-        createdAt                       = Instant.now,
-        lastUpdated                     = Instant.now
-      )
-      val nineOtherEntries: Seq[EmailVerificationStatus] =
-        (1 to 9).map(_ => emailVerificationStatus.copy(
-          _id   = UUID.randomUUID().toString,
-          email = Email(SensitiveString(s"email${UUID.randomUUID().toString}@test.com"))
-        ))
-
-      emailVerificationStatusRepo.upsert(emailVerificationStatus).futureValue
-      nineOtherEntries.foreach(emailVerificationStatusRepo.upsert(_).futureValue)
-      emailVerificationStatusRepo.findAllEntries(ggCredId).futureValue.size shouldBe 10
-
-      val result: Future[Result] = controller.getEmailVerificationResult(request.withBody(getResultRequest))
-      status(result) shouldBe OK
-      contentAsJson(result).as[EmailVerificationResult] shouldBe EmailVerificationResult.Locked
-      EmailVerificationStub.verifyNoneGetVerificationStatus(ggCredId)
-    }
-
     "return 'Verified' response when there are < 10 entries for a given cred id and email verification return verified" in new JourneyItTest {
       stubCommonActions()
       val ggCredId = GGCredId(s"authId-${UUID.randomUUID().toString}")
