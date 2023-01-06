@@ -47,3 +47,5 @@ POST        /journey/:journeyId/update-arrangement                          jour
 # email verification
 POST        /email-verification/start                                       journey.EmailVerificationController.startEmailVerificationJourney
 POST        /email-verification/result                                      journey.EmailVerificationController.getEmailVerificationResult
+
+POST        /email-verification/earliest-created-at                         journey.EmailVerificationController.getEarliestCreatedAt
