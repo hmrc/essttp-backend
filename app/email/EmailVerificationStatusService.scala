@@ -21,7 +21,7 @@ import essttp.emailverification.{EmailVerificationResult, EmailVerificationStatu
 import essttp.rootmodel.{Email, GGCredId}
 import services.CorrelationIdGenerator
 
-import java.time.Instant
+import java.time.{Instant, LocalDateTime, ZoneOffset}
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -35,6 +35,18 @@ class EmailVerificationStatusService @Inject() (
    * return list of EmailVerificationStatus associated with given credId
    */
   def findEmailVerificationStatuses(ggCredId: GGCredId): Future[Option[List[EmailVerificationStatus]]] = find(ggCredId)
+
+  def findEarliestCreatedAt(ggCredId: GGCredId): Future[Option[LocalDateTime]] = {
+    find(ggCredId).map { maybeStatus: Option[List[EmailVerificationStatus]] =>
+      maybeStatus.flatMap { listOfStatuses: List[EmailVerificationStatus] =>
+        implicit val localDateTimeOrdering: Ordering[LocalDateTime] = _ compareTo _
+        listOfStatuses
+          .map(status => LocalDateTime.ofInstant(status.createdAt, ZoneOffset.UTC))
+          .sorted
+          .minOption
+      }
+    }
+  }
 
   /*
    * increment the verification attempts for EmailVerificationStatus entry that matches given credId and email,

@@ -18,8 +18,10 @@ package journey
 
 import action.Actions
 import com.google.inject.{Inject, Singleton}
+import email.EmailVerificationStatusService
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.emailverification.{GetEmailVerificationResultRequest, StartEmailVerificationJourneyRequest}
+import essttp.rootmodel.GGCredId
 import play.api.libs.json.Json
 import play.api.mvc.{Action, ControllerComponents}
 import services.EmailVerificationService
@@ -29,9 +31,10 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class EmailVerificationController @Inject() (
-    actions:                  Actions,
-    emailVerificationService: EmailVerificationService,
-    cc:                       ControllerComponents
+    actions:                        Actions,
+    emailVerificationService:       EmailVerificationService,
+    emailVerificationStatusService: EmailVerificationStatusService,
+    cc:                             ControllerComponents
 )(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
   val startEmailVerificationJourney: Action[StartEmailVerificationJourneyRequest] =
@@ -43,6 +46,12 @@ class EmailVerificationController @Inject() (
   val getEmailVerificationResult: Action[GetEmailVerificationResultRequest] =
     actions.authenticatedAction(parse.json[GetEmailVerificationResultRequest]).async{ implicit request =>
       emailVerificationService.getVerificationResult(request.body)
+        .map(result => Ok(Json.toJson(result)))
+    }
+
+  val getEarliestCreatedAt: Action[GGCredId] =
+    actions.authenticatedAction(parse.json[GGCredId]).async { implicit request =>
+      emailVerificationStatusService.findEarliestCreatedAt(request.body)
         .map(result => Ok(Json.toJson(result)))
     }
 

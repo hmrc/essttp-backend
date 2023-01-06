@@ -29,7 +29,8 @@ import testsupport.stubs.EmailVerificationStub
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.http.UpstreamErrorResponse
 
-import java.time.Instant
+import java.time.temporal.ChronoUnit
+import java.time.{Instant, LocalDateTime, ZoneOffset}
 import java.util.UUID
 import scala.concurrent.Future
 
@@ -217,7 +218,7 @@ class EmailVerificationControllerSpec extends ItSpec {
       contentAsJson(result).as[EmailVerificationResult] shouldBe EmailVerificationResult.Locked
       EmailVerificationStub.verifyNoneGetVerificationStatus(ggCredId)
     }
-    
+
     "return 'Verified' response when there are < 10 entries for a given cred id and email verification return verified" in new JourneyItTest {
       stubCommonActions()
       val ggCredId = GGCredId(s"authId-${UUID.randomUUID().toString}")
@@ -288,6 +289,37 @@ class EmailVerificationControllerSpec extends ItSpec {
 
     }
 
+  }
+
+  "POST /email-verification/lockout-created-at" - {
+    "should return the earliest created at date" in new JourneyItTest {
+      stubCommonActions()
+      val credId: GGCredId = GGCredId(s"authId-${UUID.randomUUID().toString}")
+      val emailVerificationStatusEarlier: EmailVerificationStatus = EmailVerificationStatus(
+        _id                             = UUID.randomUUID().toString,
+        credId                          = credId,
+        email                           = Email(SensitiveString(s"email${UUID.randomUUID().toString}@test.com")),
+        numberOfPasscodeJourneysStarted = NumberOfPasscodeJourneysStarted(1),
+        verificationResult              = None,
+        createdAt                       = Instant.now,
+        lastUpdated                     = Instant.now
+      )
+      val emailVerificationStatusLater: EmailVerificationStatus = EmailVerificationStatus(
+        _id                             = UUID.randomUUID().toString,
+        credId                          = credId,
+        email                           = Email(SensitiveString(s"email${UUID.randomUUID().toString}@test.com")),
+        numberOfPasscodeJourneysStarted = NumberOfPasscodeJourneysStarted(1),
+        verificationResult              = None,
+        createdAt                       = emailVerificationStatusEarlier.createdAt.plus(1, ChronoUnit.MINUTES),
+        lastUpdated                     = Instant.now
+      )
+
+      emailVerificationStatusRepo.upsert(emailVerificationStatusEarlier).futureValue
+      emailVerificationStatusRepo.upsert(emailVerificationStatusLater).futureValue
+      val result: Future[Result] = controller.getEarliestCreatedAt(request.withBody(credId))
+      status(result) shouldBe OK
+      contentAsJson(result).as[LocalDateTime].withNano(0) shouldBe LocalDateTime.ofInstant(emailVerificationStatusEarlier.createdAt, ZoneOffset.UTC).withNano(0)
+    }
   }
 
 }
