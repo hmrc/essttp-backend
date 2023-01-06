@@ -291,7 +291,7 @@ class EmailVerificationControllerSpec extends ItSpec {
 
   }
 
-  "POST /email-verification/lockout-created-at" - {
+  "POST /email-verification/earliest-created-at" - {
     "should return the earliest created at date" in new JourneyItTest {
       stubCommonActions()
       val credId: GGCredId = GGCredId(s"authId-${UUID.randomUUID().toString}")

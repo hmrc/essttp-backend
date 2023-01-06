@@ -48,4 +48,4 @@ POST        /journey/:journeyId/update-arrangement                          jour
 POST        /email-verification/start                                       journey.EmailVerificationController.startEmailVerificationJourney
 POST        /email-verification/result                                      journey.EmailVerificationController.getEmailVerificationResult
 
-POST        /email-verification/lockout-created-at                          journey.EmailVerificationController.getEarliestCreatedAt
+POST        /email-verification/earliest-created-at                         journey.EmailVerificationController.getEarliestCreatedAt

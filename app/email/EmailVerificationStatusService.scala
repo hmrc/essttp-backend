@@ -36,10 +36,11 @@ class EmailVerificationStatusService @Inject() (
    */
   def findEmailVerificationStatuses(ggCredId: GGCredId): Future[Option[List[EmailVerificationStatus]]] = find(ggCredId)
 
+  implicit val localDateTimeOrdering: Ordering[LocalDateTime] = _ compareTo _
+
   def findEarliestCreatedAt(ggCredId: GGCredId): Future[Option[LocalDateTime]] = {
     find(ggCredId).map { maybeStatus: Option[List[EmailVerificationStatus]] =>
       maybeStatus.flatMap { listOfStatuses: List[EmailVerificationStatus] =>
-        implicit val localDateTimeOrdering: Ordering[LocalDateTime] = _ compareTo _
         listOfStatuses
           .map(status => LocalDateTime.ofInstant(status.createdAt, ZoneOffset.UTC))
           .sorted
