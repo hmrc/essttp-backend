@@ -21,7 +21,7 @@ import com.google.inject.{Inject, Singleton}
 import config.AppConfig
 import connectors.EmailVerificationConnector
 import email.EmailVerificationStatusService
-import essttp.emailverification.EmailVerificationState.{OkToBeVerified, TooManyDifferentEmailAddresses, TooManyPasscodeAttempts, TooManyPasscodeJourneysStarted}
+import essttp.emailverification.EmailVerificationState.{AlreadyVerified, OkToBeVerified, TooManyDifferentEmailAddresses, TooManyPasscodeAttempts, TooManyPasscodeJourneysStarted}
 import essttp.emailverification._
 import essttp.rootmodel.Email
 import essttp.utils.HttpResponseUtils.HttpResponseOps
@@ -88,7 +88,7 @@ class EmailVerificationService @Inject() (
       emailVerificationStatusService.findEmailVerificationStatuses(request.credId).flatMap {
         case Some(value) => getState(request.email, value) match {
           case EmailVerificationState.OkToBeVerified                 => makeEmailVerificationCall
-          case EmailVerificationState.AlreadyVerified                => Future.successful(StartEmailVerificationJourneyResponse.AlreadyVerified)
+          case EmailVerificationState.AlreadyVerified                => Future.successful(StartEmailVerificationJourneyResponse.Error(AlreadyVerified))
           case EmailVerificationState.TooManyPasscodeAttempts        => Future.successful(StartEmailVerificationJourneyResponse.Error(TooManyPasscodeAttempts))
           case EmailVerificationState.TooManyPasscodeJourneysStarted => Future.successful(StartEmailVerificationJourneyResponse.Error(TooManyPasscodeJourneysStarted))
           case EmailVerificationState.TooManyDifferentEmailAddresses => Future.successful(StartEmailVerificationJourneyResponse.Error(TooManyDifferentEmailAddresses))
