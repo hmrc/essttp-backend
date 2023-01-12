@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package essttp.utils
+package testsupport
 
-import play.api.libs.json.{JsObject, Json}
+import scala.io.{Codec, Source}
 
-object JsonSyntax extends JsonSyntax
+object ResourceReader {
 
-trait JsonSyntax {
-
-  @SuppressWarnings(Array("org.wartremover.warts.ExplicitImplicitTypes", "org.wartremover.warts.PublicInference"))
-  implicit def toJsonOps(s: String) = new {
-    def asJson: JsObject = Json.parse(s) match {
-      case d: JsObject => d
-      case _           => throw new RuntimeException(s"Cant parse as JsObject: $s ")
-    }
-  }
+  def read(resourcePath: String): String = Source
+    .fromInputStream(
+      this.getClass.getResourceAsStream(resourcePath)
+    )(Codec.UTF8)
+    .getLines()
+    .mkString("\n")
 }

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package essttp.utils
+package testsupport
 
-import essttp.testdata.TdAll
 import play.api.test.FakeRequest
+import testsupport.testdata.TdAll
 import uk.gov.hmrc.http.{HeaderNames, SessionKeys}
 
 object TdSupport {

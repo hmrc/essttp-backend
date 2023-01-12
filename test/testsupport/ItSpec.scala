@@ -21,7 +21,6 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import com.google.inject.{AbstractModule, Provides}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{CorrelationId, Journey, JourneyId}
-import essttp.testdata.TdAll
 import org.mongodb.scala.bson.BsonDocument
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.time.{Millis, Seconds, Span}
@@ -34,6 +33,7 @@ import play.core.server.ServerConfig
 import repository.JourneyRepo
 import services.{CorrelationIdGenerator, JourneyIdGenerator}
 import testsupport.stubs.AuthStub
+import testsupport.testdata.TdAll
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
 import uk.gov.hmrc.auth.core.AuthProviders
 import uk.gov.hmrc.crypto.{AesCrypto, Decrypter, Encrypter, PlainText}
@@ -166,7 +166,7 @@ trait ItSpec
   }
 
   trait BarsVerifyStatusItTest {
-    import essttp.utils.TdSupport._
+    import testsupport.TdSupport._
 
     implicit val request: Request[_] = FakeRequest()
       .withSessionId()

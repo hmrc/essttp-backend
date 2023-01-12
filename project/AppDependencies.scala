@@ -33,7 +33,7 @@ object AppDependencies {
       "org.scalatestplus.play"  %% "scalatestplus-play"         % "5.1.0" ,
       "org.pegdown"             %  "pegdown"                    % "1.6.0" ,
       "com.typesafe.play"       %% "play-test"                  % PlayVersion.current,
-      "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-28"    % hmrcMongoVersion,
+      "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-28"    % hmrcMongoVersion
     ).map(_ % Test)
 
     compile ++ test
@@ -58,11 +58,6 @@ object AppDependencies {
     "uk.gov.hmrc"           %% "crypto-json-play-28"      % AppDependencies.cryptoVersion,
     "uk.gov.hmrc"           %% "crypto"                   % AppDependencies.cryptoVersion,
     "uk.gov.hmrc"           %% "json-encryption"          % hmrcJsonEncryptionVersion
-  )
-
-  lazy val corTestDataDependencies: Seq[ModuleID] = Seq(
-    "com.typesafe.play" %% "play"      % play.core.PlayVersion.current % Provided,
-    "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % Provided
   )
 
 }

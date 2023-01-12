@@ -19,8 +19,8 @@ package controllers
 import essttp.journey.JourneyConnector
 import essttp.journey.model.Stage.AfterEnteredDetailsAboutBankAccount
 import essttp.rootmodel.bank.DetailsAboutBankAccount
-import essttp.testdata.TdAll
 import testsupport.ItSpec
+import testsupport.testdata.TdAll
 
 class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec {
 

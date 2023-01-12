@@ -18,8 +18,8 @@ package controllers
 
 import essttp.journey.JourneyConnector
 import essttp.journey.model.Journey
-import essttp.testdata.TdAll
 import testsupport.ItSpec
+import testsupport.testdata.TdAll
 
 class UpdateHasConfirmedDirectDebitDetailsControllerSpec extends ItSpec {
 

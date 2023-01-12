@@ -18,10 +18,10 @@ package journey
 
 import essttp.journey.JourneyConnector
 import essttp.journey.model.{Journey, JourneyId}
-import essttp.testdata.TdAll
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import testsupport.ItSpec
+import testsupport.testdata.TdAll
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, SessionId, SessionKeys}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 

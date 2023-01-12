@@ -20,8 +20,8 @@ import essttp.journey.JourneyConnector
 import essttp.journey.model.Journey
 import essttp.journey.model.Journey.Epaye
 import essttp.rootmodel.bank.{AccountNumber, BankDetails}
-import essttp.testdata.TdAll
 import testsupport.ItSpec
+import testsupport.testdata.TdAll
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
 class UpdateDirectDebitDetailsControllerSpec extends ItSpec {

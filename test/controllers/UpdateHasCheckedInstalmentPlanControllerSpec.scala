@@ -17,8 +17,8 @@
 package controllers
 
 import essttp.journey.JourneyConnector
-import essttp.testdata.TdAll
 import testsupport.ItSpec
+import testsupport.testdata.TdAll
 
 class UpdateHasCheckedInstalmentPlanControllerSpec extends ItSpec {
 

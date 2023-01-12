@@ -20,9 +20,9 @@ import essttp.emailverification.EmailVerificationResult
 import essttp.journey.JourneyConnector
 import essttp.journey.model.{CorrelationId, JourneyId, SjResponse}
 import essttp.rootmodel.IsEmailAddressRequired
-import essttp.testdata.TdAll
 import play.api.mvc.Request
 import testsupport.ItSpec
+import testsupport.testdata.TdAll
 
 class JourneyControllerSpec extends ItSpec {
 

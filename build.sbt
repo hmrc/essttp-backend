@@ -4,6 +4,7 @@ import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
 import wartremover.WartRemover.autoImport.wartremoverExcluded
 import uk.gov.hmrc.ShellPrompt
+import sbt.Resolver
 
 val appName = "essttp-backend"
 val majorVer = 1
@@ -41,6 +42,11 @@ def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = {
   }
 }
 
+lazy val projectResolvers: Seq[MavenRepository] = Seq(
+  Resolver.sonatypeOssRepos("releases"),
+  Seq(Resolver.jcenterRepo)
+).flatten
+
 lazy val commonSettings = Seq(
   majorVersion := majorVer,
   scalacOptions ++= scalaCompilerOptions,
@@ -50,10 +56,7 @@ lazy val commonSettings = Seq(
   buildInfoPackage := name.value.toLowerCase().replaceAllLiterally("-", ""),
   targetJvm := "jvm-1.8",
   Compile / doc / scalacOptions := Seq(), //this will allow to have warnings in `doc` task and not fail the build
-  resolvers ++= Seq(
-    Resolver.sonatypeRepo("releases"),
-    Resolver.jcenterRepo
-  )
+  resolvers ++= projectResolvers
 ).++(WartRemoverSettings.wartRemoverSettings)
   .++(ScoverageSettings.scoverageSettings)
   .++(scalaSettings)
@@ -83,8 +86,8 @@ lazy val microservice = Project(appName, file("."))
         state
     }
   )
-  .dependsOn(corJourney, corTestData)
-  .aggregate(corJourney, corTestData)
+  .dependsOn(corJourney, corJourney)
+  .aggregate(corJourney, corJourney)
   .settings(publishingSettings: _*)
   .settings(resolvers += Resolver.jcenterRepo)
 
@@ -100,17 +103,3 @@ lazy val corJourney = Project(appName + "-cor-journey", file("cor-journey"))
     majorVersion := majorVer,
     libraryDependencies ++= AppDependencies.corJourneyDependencies
   )
-
-/**
- * Collection Of Routines - test data
- */
-lazy val corTestData = Project(appName + "-cor-test-data", file("cor-test-data"))
-  .enablePlugins(SbtAutoBuildPlugin, SbtGitVersioning)
-  .settings(commonSettings: _*)
-  .settings(
-    scalaVersion := appScalaVersion,
-    majorVersion := majorVer,
-    libraryDependencies ++= AppDependencies.corTestDataDependencies
-  )
-  .dependsOn(corJourney)
-  .aggregate(corJourney)

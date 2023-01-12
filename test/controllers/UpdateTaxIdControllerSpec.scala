@@ -18,8 +18,8 @@ package controllers
 
 import essttp.journey.JourneyConnector
 import essttp.rootmodel.{EmpRef, Vrn}
-import essttp.testdata.TdAll
 import testsupport.ItSpec
+import testsupport.testdata.TdAll
 
 class UpdateTaxIdControllerSpec extends ItSpec {
 

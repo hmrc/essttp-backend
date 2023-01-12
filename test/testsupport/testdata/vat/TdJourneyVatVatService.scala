@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package essttp.testdata.epaye
+package testsupport.testdata.vat
 
 import essttp.emailverification.EmailVerificationResult
-import essttp.journey.model.SjRequest.Epaye
+import essttp.journey.model.SjRequest.Vat
 import essttp.journey.model._
-import essttp.rootmodel._
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
@@ -27,146 +26,148 @@ import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
-import essttp.testdata.{TdBase, TdJourneyStructure}
+import essttp.rootmodel._
 import play.api.libs.json.JsNull
+import testsupport.testdata.{TdBase, TdJourneyStructure}
 
-trait TdJourneyEpayeGovUk {
-  dependencies: TdBase with TdEpaye =>
-
-  object EpayeGovUk extends TdJourneyStructure {
-
-    def sjRequest: Epaye.Empty = SjRequest.Epaye.Empty()
+trait TdJourneyVatVatService {
+  dependencies: TdBase with TdVat =>
+  object VatVatService extends TdJourneyStructure {
+    def sjRequest: Vat.Simple = SjRequest.Vat.Simple(
+      dependencies.returnUrl,
+      dependencies.backUrl
+    )
 
     def sjResponse: SjResponse = SjResponse(
-      nextUrl   = NextUrl(s"http://localhost:9215/set-up-a-payment-plan/epaye-payment-plan"),
+      nextUrl   = NextUrl(s"http://localhost:9215/set-up-a-payment-plan/vat-payment-plan"),
       journeyId = dependencies.journeyId
     )
 
-    def postPath: String = "/epaye/gov-uk/journey/start"
+    def postPath: String = "/vat/vatservice/journey/start"
 
-    def journeyAfterStarted: Journey.Epaye.Started = Journey.Epaye.Started(
+    def journeyAfterStarted: Journey.Vat.Started = Journey.Vat.Started(
       _id           = dependencies.journeyId,
-      origin        = Origins.Epaye.GovUk,
+      origin        = Origins.Vat.VatService,
       createdOn     = dependencies.createdOn,
       sjRequest     = sjRequest,
       sessionId     = dependencies.sessionId,
+      stage         = Stage.AfterStarted.Started,
       correlationId = dependencies.correlationId,
-      stage         = Stage.AfterStarted.Started
     )
 
-    def updateTaxIdRequest(): TaxId = empRef
+    def updateTaxIdRequest(): TaxId = vrn
 
-    def journeyAfterDetermineTaxIds: Journey.Epaye.ComputedTaxId = Journey.Epaye.ComputedTaxId(
+    def journeyAfterDetermineTaxIds: Journey.Vat.ComputedTaxId = Journey.Vat.ComputedTaxId(
       _id           = dependencies.journeyId,
-      origin        = Origins.Epaye.GovUk,
+      origin        = Origins.Vat.VatService,
       createdOn     = dependencies.createdOn,
       sjRequest     = sjRequest,
       sessionId     = dependencies.sessionId,
-      correlationId = dependencies.correlationId,
       stage         = Stage.AfterComputedTaxId.ComputedTaxId,
-      taxId         = empRef
+      correlationId = dependencies.correlationId,
+      taxId         = vrn
     )
 
-    def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResult
+    def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResult()
 
-    def journeyAfterEligibilityCheckEligible: Journey.Epaye.EligibilityChecked = Journey.Epaye.EligibilityChecked(
+    def journeyAfterEligibilityCheckEligible: Journey.Vat.EligibilityChecked = Journey.Vat.EligibilityChecked(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Epaye.GovUk,
+      origin                 = Origins.Vat.VatService,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
-      correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterEligibilityCheck.Eligible,
-      taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult()
     )
 
-    def journeyAfterEligibilityCheckNotEligible: Journey.Epaye.EligibilityChecked = Journey.Epaye.EligibilityChecked(
+    def journeyAfterEligibilityCheckNotEligible: Journey.Vat.EligibilityChecked = Journey.Vat.EligibilityChecked(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Epaye.GovUk,
+      origin                 = Origins.Vat.VatService,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
-      correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterEligibilityCheck.Ineligible,
-      taxId                  = empRef,
-      eligibilityCheckResult = ineligibleEligibilityCheckResult
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = ineligibleEligibilityCheckResult(eligibleEligibilityCheckResult())
     )
 
     def updateCanPayUpfrontYesRequest(): CanPayUpfront = canPayUpfrontYes
 
     def updateCanPayUpfrontNoRequest(): CanPayUpfront = canPayUpfrontNo
 
-    def journeyAfterCanPayUpfrontYes: Journey.Epaye.AnsweredCanPayUpfront = Journey.Epaye.AnsweredCanPayUpfront(
+    def journeyAfterCanPayUpfrontYes: Journey.Vat.AnsweredCanPayUpfront = Journey.Vat.AnsweredCanPayUpfront(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Epaye.GovUk,
+      origin                 = Origins.Vat.VatService,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
-      correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterCanPayUpfront.Yes,
-      taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
       canPayUpfront          = canPayUpfrontYes
     )
 
-    def journeyAfterCanPayUpfrontNo: Journey.Epaye.AnsweredCanPayUpfront = Journey.Epaye.AnsweredCanPayUpfront(
+    def journeyAfterCanPayUpfrontNo: Journey.Vat.AnsweredCanPayUpfront = Journey.Vat.AnsweredCanPayUpfront(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Epaye.GovUk,
+      origin                 = Origins.Vat.VatService,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
-      correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterCanPayUpfront.No,
-      taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
       canPayUpfront          = canPayUpfrontNo
     )
 
-    override def updateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.upfrontPaymentAmount
+    def updateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.upfrontPaymentAmount
 
-    override def journeyAfterUpfrontPaymentAmount: Journey.Epaye.EnteredUpfrontPaymentAmount = Journey.Epaye.EnteredUpfrontPaymentAmount(
+    def journeyAfterUpfrontPaymentAmount: Journey.Vat.EnteredUpfrontPaymentAmount = Journey.Vat.EnteredUpfrontPaymentAmount(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Epaye.GovUk,
+      origin                 = Origins.Vat.VatService,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
-      correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
-      taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
       canPayUpfront          = canPayUpfrontYes,
       upfrontPaymentAmount   = dependencies.upfrontPaymentAmount
     )
 
     def updateExtremeDatesRequest(): ExtremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment
 
-    def journeyAfterExtremeDates: Journey.Epaye.RetrievedExtremeDates = Journey.Epaye.RetrievedExtremeDates(
+    def journeyAfterExtremeDates: Journey.Vat.RetrievedExtremeDates = Journey.Vat.RetrievedExtremeDates(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Epaye.GovUk,
+      origin                 = Origins.Vat.VatService,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
-      correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved,
-      taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment
     )
 
     def updateInstalmentAmountsRequest(): InstalmentAmounts = dependencies.instalmentAmounts
 
-    def journeyAfterInstalmentAmounts: Journey.Epaye.RetrievedAffordabilityResult = Journey.Epaye.RetrievedAffordabilityResult(
+    def journeyAfterInstalmentAmounts: Journey.Vat.RetrievedAffordabilityResult = Journey.Vat.RetrievedAffordabilityResult(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Epaye.GovUk,
+      origin                 = Origins.Vat.VatService,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
-      correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterAffordabilityResult.RetrievedAffordabilityResult,
-      taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts      = dependencies.instalmentAmounts
@@ -174,16 +175,16 @@ trait TdJourneyEpayeGovUk {
 
     def updateMonthlyPaymentAmountRequest(): MonthlyPaymentAmount = dependencies.monthlyPaymentAmount
 
-    def journeyAfterMonthlyPaymentAmount: Journey.Epaye.EnteredMonthlyPaymentAmount = Journey.Epaye.EnteredMonthlyPaymentAmount(
+    def journeyAfterMonthlyPaymentAmount: Journey.Vat.EnteredMonthlyPaymentAmount = Journey.Vat.EnteredMonthlyPaymentAmount(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Epaye.GovUk,
+      origin                 = Origins.Vat.VatService,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
-      correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount,
-      taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts      = dependencies.instalmentAmounts,
@@ -192,16 +193,16 @@ trait TdJourneyEpayeGovUk {
 
     def updateDayOfMonthRequest(): DayOfMonth = dependencies.dayOfMonth
 
-    def journeyAfterDayOfMonth: Journey.Epaye.EnteredDayOfMonth = Journey.Epaye.EnteredDayOfMonth(
+    def journeyAfterDayOfMonth: Journey.Vat.EnteredDayOfMonth = Journey.Vat.EnteredDayOfMonth(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Epaye.GovUk,
+      origin                 = Origins.Vat.VatService,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
-      correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth,
-      taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts      = dependencies.instalmentAmounts,
@@ -211,16 +212,16 @@ trait TdJourneyEpayeGovUk {
 
     def updateStartDatesResponse(): StartDatesResponse = dependencies.startDatesResponseWithInitialPayment
 
-    def journeyAfterStartDatesResponse: Journey.AfterStartDatesResponse = Journey.Epaye.RetrievedStartDates(
+    def journeyAfterStartDatesResponse: Journey.Vat.RetrievedStartDates = Journey.Vat.RetrievedStartDates(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Epaye.GovUk,
+      origin                 = Origins.Vat.VatService,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
-      correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterStartDatesResponse.StartDatesResponseRetrieved,
-      taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      correlationId          = dependencies.correlationId,
+      taxId                  = vrn,
+      eligibilityCheckResult = eligibleEligibilityCheckResult(),
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts      = dependencies.instalmentAmounts,
@@ -231,16 +232,16 @@ trait TdJourneyEpayeGovUk {
 
     def updateAffordableQuotesResponse(): AffordableQuotesResponse = dependencies.affordableQuotesResponse
 
-    def journeyAfterAffordableQuotesResponse: Journey.AfterAffordableQuotesResponse = Journey.Epaye.RetrievedAffordableQuotes(
+    def journeyAfterAffordableQuotesResponse: Journey.Vat.RetrievedAffordableQuotes = Journey.Vat.RetrievedAffordableQuotes(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Epaye.GovUk,
+      origin                   = Origins.Vat.VatService,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
-      correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved,
-      taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      correlationId            = dependencies.correlationId,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -252,16 +253,16 @@ trait TdJourneyEpayeGovUk {
 
     def updateSelectedPaymentPlanRequest(): PaymentPlan = dependencies.paymentPlan(1)
 
-    def journeyAfterSelectedPaymentPlan: Journey.AfterSelectedPaymentPlan = Journey.Epaye.ChosenPaymentPlan(
+    def journeyAfterSelectedPaymentPlan: Journey.Vat.ChosenPaymentPlan = Journey.Vat.ChosenPaymentPlan(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Epaye.GovUk,
+      origin                   = Origins.Vat.VatService,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
-      correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterSelectedPlan.SelectedPlan,
-      taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      correlationId            = dependencies.correlationId,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -274,16 +275,16 @@ trait TdJourneyEpayeGovUk {
 
     def updateCheckedPaymentPlanRequest(): JsNull.type = JsNull
 
-    def journeyAfterCheckedPaymentPlan: Journey.AfterCheckedPaymentPlan = Journey.Epaye.CheckedPaymentPlan(
+    def journeyAfterCheckedPaymentPlan: Journey.Vat.CheckedPaymentPlan = Journey.Vat.CheckedPaymentPlan(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Epaye.GovUk,
+      origin                   = Origins.Vat.VatService,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
-      correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterCheckedPlan.AcceptedPlan,
-      taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      correlationId            = dependencies.correlationId,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -297,16 +298,16 @@ trait TdJourneyEpayeGovUk {
     def updateDetailsAboutBankAccountRequest(isAccountHolder: Boolean): DetailsAboutBankAccount =
       DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder)
 
-    def journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder: Boolean): Journey.AfterEnteredDetailsAboutBankAccount = Journey.Epaye.EnteredDetailsAboutBankAccount(
+    def journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder: Boolean): Journey.AfterEnteredDetailsAboutBankAccount = Journey.Vat.EnteredDetailsAboutBankAccount(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Epaye.GovUk,
+      origin                   = Origins.Vat.VatService,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       correlationId            = dependencies.correlationId,
       stage                    = if (isAccountHolder) Stage.AfterEnteredDetailsAboutBankAccount.Business else Stage.AfterEnteredDetailsAboutBankAccount.IsNotAccountHolder,
-      taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -318,18 +319,18 @@ trait TdJourneyEpayeGovUk {
       detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder)
     )
 
-    def updateDirectDebitDetailsRequest(): BankDetails = dependencies.directDebitDetails
+    val updateDirectDebitDetailsRequest: BankDetails = dependencies.directDebitDetails
 
-    def journeyAfterEnteredDirectDebitDetails(): Journey.AfterEnteredDirectDebitDetails = Journey.Epaye.EnteredDirectDebitDetails(
+    def journeyAfterEnteredDirectDebitDetails(): Journey.Vat.EnteredDirectDebitDetails = Journey.Vat.EnteredDirectDebitDetails(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Epaye.GovUk,
+      origin                   = Origins.Vat.VatService,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
-      correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails,
-      taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      correlationId            = dependencies.correlationId,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -342,18 +343,18 @@ trait TdJourneyEpayeGovUk {
       directDebitDetails       = directDebitDetails
     )
 
-    override def updateConfirmedDirectDebitDetailsRequest(): JsNull.type = JsNull
+    def updateConfirmedDirectDebitDetailsRequest(): JsNull.type = JsNull
 
-    override def journeyAfterConfirmedDirectDebitDetails: Journey.AfterConfirmedDirectDebitDetails = Journey.Epaye.ConfirmedDirectDebitDetails(
+    def journeyAfterConfirmedDirectDebitDetails: Journey.Vat.ConfirmedDirectDebitDetails = Journey.Vat.ConfirmedDirectDebitDetails(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Epaye.GovUk,
+      origin                   = Origins.Vat.VatService,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
-      correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails,
-      taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      correlationId            = dependencies.correlationId,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -373,16 +374,16 @@ trait TdJourneyEpayeGovUk {
         if (isEmailAddressRequired) Stage.AfterAgreedTermsAndConditions.EmailAddressRequired
         else Stage.AfterAgreedTermsAndConditions.EmailAddressNotRequired
 
-      Journey.Epaye.AgreedTermsAndConditions(
+      Journey.Vat.AgreedTermsAndConditions(
         _id                      = dependencies.journeyId,
-        origin                   = Origins.Epaye.GovUk,
+        origin                   = Origins.Vat.VatService,
         createdOn                = dependencies.createdOn,
         sjRequest                = sjRequest,
         sessionId                = dependencies.sessionId,
-        correlationId            = dependencies.correlationId,
         stage                    = stage,
-        taxId                    = empRef,
-        eligibilityCheckResult   = eligibleEligibilityCheckResult,
+        correlationId            = dependencies.correlationId,
+        taxId                    = vrn,
+        eligibilityCheckResult   = eligibleEligibilityCheckResult(),
         upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
         extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
         instalmentAmounts        = dependencies.instalmentAmounts,
@@ -399,16 +400,16 @@ trait TdJourneyEpayeGovUk {
 
     def updateSelectedEmailRequest(): Email = dependencies.email
 
-    def journeyAfterSelectedEmail: Journey.Epaye.SelectedEmailToBeVerified = Journey.Epaye.SelectedEmailToBeVerified(
+    def journeyAfterSelectedEmail: Journey.Vat.SelectedEmailToBeVerified = Journey.Vat.SelectedEmailToBeVerified(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Epaye.GovUk,
+      origin                   = Origins.Vat.VatService,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterSelectedAnEmailToBeVerified.EmailChosen,
       correlationId            = dependencies.correlationId,
-      taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -423,9 +424,9 @@ trait TdJourneyEpayeGovUk {
       emailToBeVerified        = dependencies.email
     )
 
-    def journeyAfterEmailVerificationResult(result: EmailVerificationResult): Journey.Epaye.EmailVerificationComplete = Journey.Epaye.EmailVerificationComplete(
+    def journeyAfterEmailVerificationResult(result: EmailVerificationResult): Journey.Vat.EmailVerificationComplete = Journey.Vat.EmailVerificationComplete(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Epaye.GovUk,
+      origin                   = Origins.Vat.VatService,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
@@ -434,8 +435,8 @@ trait TdJourneyEpayeGovUk {
         case EmailVerificationResult.Locked   => Stage.AfterEmailVerificationPhase.Locked
       },
       correlationId            = dependencies.correlationId,
-      taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -452,18 +453,18 @@ trait TdJourneyEpayeGovUk {
       emailVerificationAnswers = emailVerificationAnswers(Some(result))
     )
 
-    def updateArrangementRequest(): ArrangementResponse = dependencies.arrangementResponse
+    def updateArrangementRequest(): ArrangementResponse = dependencies.arrangementResponseVat
 
-    def journeyAfterSubmittedArrangement(isEmailAddressRequired: Boolean): Journey.AfterArrangementSubmitted = Journey.Epaye.SubmittedArrangement(
+    def journeyAfterSubmittedArrangement(isEmailAddressRequired: Boolean): Journey.AfterArrangementSubmitted = Journey.Vat.SubmittedArrangement(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Epaye.GovUk,
+      origin                   = Origins.Vat.VatService,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
-      correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterSubmittedArrangement.Submitted,
-      taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      correlationId            = dependencies.correlationId,
+      taxId                    = vrn,
+      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -480,7 +481,7 @@ trait TdJourneyEpayeGovUk {
       } else {
         EmailVerificationAnswers.NoEmailJourney
       },
-      arrangementResponse      = dependencies.arrangementResponse
+      arrangementResponse      = dependencies.arrangementResponseVat
     )
 
   }
