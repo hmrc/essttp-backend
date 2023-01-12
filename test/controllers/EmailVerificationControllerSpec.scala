@@ -131,7 +131,7 @@ class EmailVerificationControllerSpec extends ItSpec {
 
       val result: Future[Result] = controller.startEmailVerificationJourney(request.withBody(startRequest))
       status(result) shouldBe OK
-      contentAsJson(result).as[StartEmailVerificationJourneyResponse] shouldBe StartEmailVerificationJourneyResponse.AlreadyVerified
+      contentAsJson(result).as[StartEmailVerificationJourneyResponse] shouldBe StartEmailVerificationJourneyResponse.Error(EmailVerificationState.AlreadyVerified)
       EmailVerificationStub.verifyNoneRequestVerification()
     }
 
