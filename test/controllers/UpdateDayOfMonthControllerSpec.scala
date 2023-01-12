@@ -18,8 +18,8 @@ package controllers
 
 import essttp.journey.JourneyConnector
 import essttp.rootmodel.DayOfMonth
-import essttp.testdata.TdAll
 import testsupport.ItSpec
+import testsupport.testdata.TdAll
 
 class UpdateDayOfMonthControllerSpec extends ItSpec {
 

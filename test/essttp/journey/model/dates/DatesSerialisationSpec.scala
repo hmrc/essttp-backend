@@ -16,12 +16,12 @@
 
 package essttp.journey.model.dates
 
-import essttp.dates.DatesTdAll
 import essttp.rootmodel.dates.InitialPayment
 import essttp.rootmodel.dates.extremedates.{ExtremeDatesRequest, ExtremeDatesResponse}
 import essttp.rootmodel.dates.startdates.{PreferredDayOfMonth, StartDatesRequest, StartDatesResponse}
 import play.api.libs.json.Json
 import testsupport.UnitSpec
+import testsupport.testdata.dates.DatesTdAll
 
 class DatesSerialisationSpec extends UnitSpec {
 

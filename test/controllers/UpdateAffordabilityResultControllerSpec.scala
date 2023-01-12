@@ -18,8 +18,8 @@ package controllers
 
 import essttp.journey.JourneyConnector
 import essttp.rootmodel.AmountInPence
-import essttp.testdata.TdAll
 import testsupport.ItSpec
+import testsupport.testdata.TdAll
 
 class UpdateAffordabilityResultControllerSpec extends ItSpec {
 

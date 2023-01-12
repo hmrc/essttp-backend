@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package essttp.testdata.epaye
+package testsupport.testdata.epaye
 
 import essttp.emailverification.EmailVerificationResult
 import essttp.journey.model.SjRequest.Epaye
@@ -27,10 +27,10 @@ import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentP
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.rootmodel._
 import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
-import essttp.testdata.{TdBase, TdJourneyStructure}
-import essttp.utils.ResourceReader.read
-import essttp.utils.JsonSyntax._
+import testsupport.ResourceReader.read
+import testsupport.JsonSyntax._
 import play.api.libs.json.{JsNull, JsObject}
+import testsupport.testdata.{TdBase, TdJourneyStructure}
 
 import scala.language.reflectiveCalls
 

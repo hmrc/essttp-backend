@@ -19,9 +19,9 @@ package journey
 import essttp.journey.JourneyConnector
 import essttp.journey.model.{CorrelationId, JourneyId, SjResponse}
 import essttp.rootmodel.{AmountInPence, UpfrontPaymentAmount}
-import essttp.testdata.TdAll
 import play.api.mvc.Request
 import testsupport.ItSpec
+import testsupport.testdata.TdAll
 
 class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]

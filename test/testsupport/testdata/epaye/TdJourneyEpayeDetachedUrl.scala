@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package essttp.testdata.epaye
+package testsupport.testdata.epaye
 
 import essttp.emailverification.EmailVerificationResult
 import essttp.journey.model.SjRequest.Epaye
@@ -27,8 +27,8 @@ import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
-import essttp.testdata.{TdBase, TdJourneyStructure}
 import play.api.libs.json.JsNull
+import testsupport.testdata.{TdBase, TdJourneyStructure}
 
 trait TdJourneyEpayeDetachedUrl {
   dependencies: TdBase with TdEpaye =>

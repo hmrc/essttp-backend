@@ -19,8 +19,8 @@ package controllers
 import essttp.emailverification.EmailVerificationResult
 import essttp.journey.JourneyConnector
 import essttp.rootmodel.{Email, IsEmailAddressRequired}
-import essttp.testdata.TdAll
 import testsupport.ItSpec
+import testsupport.testdata.TdAll
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
 class UpdateChosenEmailControllerSpec extends ItSpec {

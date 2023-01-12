@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package essttp.dates
+package testsupport.testdata.dates
 
-import essttp.rootmodel.dates.{InitialPayment, InitialPaymentDate}
 import essttp.rootmodel.dates.extremedates.{EarliestPaymentPlanStartDate, ExtremeDatesRequest, ExtremeDatesResponse, LatestPaymentPlanStartDate}
 import essttp.rootmodel.dates.startdates.{InstalmentStartDate, PreferredDayOfMonth, StartDatesRequest, StartDatesResponse}
+import essttp.rootmodel.dates.{InitialPayment, InitialPaymentDate}
 import play.api.libs.json.{JsValue, Json}
 
 import java.time.LocalDate

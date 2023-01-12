@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package essttp.testdata
+package testsupport.testdata
 
 import essttp.journey.model.{Journey, SjRequest, SjResponse}
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
@@ -23,8 +23,8 @@ import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
+import essttp.rootmodel.{CanPayUpfront, DayOfMonth, IsEmailAddressRequired, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
-import essttp.rootmodel._
 import play.api.libs.json.JsNull
 
 trait TdJourneyStructure {
@@ -32,7 +32,9 @@ trait TdJourneyStructure {
    * Defining all td requirements for each journey
    */
   def sjRequest: SjRequest
+
   def sjResponse: SjResponse
+
   def postPath: String
 
   def journeyAfterStarted: Journey
@@ -48,6 +50,7 @@ trait TdJourneyStructure {
   def journeyAfterEligibilityCheckNotEligible: Journey
 
   def updateCanPayUpfrontYesRequest(): CanPayUpfront
+
   def updateCanPayUpfrontNoRequest(): CanPayUpfront
 
   def journeyAfterCanPayUpfrontYes: Journey

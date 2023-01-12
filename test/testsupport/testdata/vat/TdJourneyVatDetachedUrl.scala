@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package essttp.testdata.vat
+package testsupport.testdata.vat
 
 import essttp.emailverification.EmailVerificationResult
 import essttp.journey.model.SjRequest.Vat
@@ -27,12 +27,13 @@ import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentP
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import essttp.rootmodel._
-import essttp.testdata.{TdBase, TdJourneyStructure}
-import play.api.libs.json.JsNull
 
-trait TdJourneyVatGovUk {
+import play.api.libs.json.JsNull
+import testsupport.testdata.{TdBase, TdJourneyStructure}
+
+trait TdJourneyVatDetachedUrl {
   dependencies: TdBase with TdVat =>
-  object VatGovUk extends TdJourneyStructure {
+  object VatDetachedUrl extends TdJourneyStructure {
     def sjRequest: Vat.Empty = SjRequest.Vat.Empty()
 
     def sjResponse: SjResponse = SjResponse(
@@ -40,11 +41,11 @@ trait TdJourneyVatGovUk {
       journeyId = dependencies.journeyId
     )
 
-    def postPath: String = "/vat/govuk/journey/start"
+    def postPath: String = "/vat/detachedurl/journey/start"
 
     def journeyAfterStarted: Journey.Vat.Started = Journey.Vat.Started(
       _id           = dependencies.journeyId,
-      origin        = Origins.Vat.GovUk,
+      origin        = Origins.Vat.DetachedUrl,
       createdOn     = dependencies.createdOn,
       sjRequest     = sjRequest,
       sessionId     = dependencies.sessionId,
@@ -56,7 +57,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterDetermineTaxIds: Journey.Vat.ComputedTaxId = Journey.Vat.ComputedTaxId(
       _id           = dependencies.journeyId,
-      origin        = Origins.Vat.GovUk,
+      origin        = Origins.Vat.DetachedUrl,
       createdOn     = dependencies.createdOn,
       sjRequest     = sjRequest,
       sessionId     = dependencies.sessionId,
@@ -69,7 +70,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterEligibilityCheckEligible: Journey.Vat.EligibilityChecked = Journey.Vat.EligibilityChecked(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Vat.GovUk,
+      origin                 = Origins.Vat.DetachedUrl,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
@@ -81,7 +82,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterEligibilityCheckNotEligible: Journey.Vat.EligibilityChecked = Journey.Vat.EligibilityChecked(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Vat.GovUk,
+      origin                 = Origins.Vat.DetachedUrl,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
@@ -97,7 +98,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterCanPayUpfrontYes: Journey.Vat.AnsweredCanPayUpfront = Journey.Vat.AnsweredCanPayUpfront(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Vat.GovUk,
+      origin                 = Origins.Vat.DetachedUrl,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
@@ -110,7 +111,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterCanPayUpfrontNo: Journey.Vat.AnsweredCanPayUpfront = Journey.Vat.AnsweredCanPayUpfront(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Vat.GovUk,
+      origin                 = Origins.Vat.DetachedUrl,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
@@ -125,7 +126,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterUpfrontPaymentAmount: Journey.Vat.EnteredUpfrontPaymentAmount = Journey.Vat.EnteredUpfrontPaymentAmount(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Vat.GovUk,
+      origin                 = Origins.Vat.DetachedUrl,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
@@ -141,7 +142,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterExtremeDates: Journey.Vat.RetrievedExtremeDates = Journey.Vat.RetrievedExtremeDates(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Vat.GovUk,
+      origin                 = Origins.Vat.DetachedUrl,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
@@ -157,7 +158,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterInstalmentAmounts: Journey.Vat.RetrievedAffordabilityResult = Journey.Vat.RetrievedAffordabilityResult(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Vat.GovUk,
+      origin                 = Origins.Vat.DetachedUrl,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
@@ -174,7 +175,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterMonthlyPaymentAmount: Journey.Vat.EnteredMonthlyPaymentAmount = Journey.Vat.EnteredMonthlyPaymentAmount(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Vat.GovUk,
+      origin                 = Origins.Vat.DetachedUrl,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
@@ -192,7 +193,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterDayOfMonth: Journey.Vat.EnteredDayOfMonth = Journey.Vat.EnteredDayOfMonth(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Vat.GovUk,
+      origin                 = Origins.Vat.DetachedUrl,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
@@ -211,7 +212,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterStartDatesResponse: Journey.Vat.RetrievedStartDates = Journey.Vat.RetrievedStartDates(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Vat.GovUk,
+      origin                 = Origins.Vat.DetachedUrl,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
@@ -231,7 +232,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterAffordableQuotesResponse: Journey.Vat.RetrievedAffordableQuotes = Journey.Vat.RetrievedAffordableQuotes(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Vat.GovUk,
+      origin                   = Origins.Vat.DetachedUrl,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
@@ -252,7 +253,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterSelectedPaymentPlan: Journey.Vat.ChosenPaymentPlan = Journey.Vat.ChosenPaymentPlan(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Vat.GovUk,
+      origin                   = Origins.Vat.DetachedUrl,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
@@ -274,7 +275,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterCheckedPaymentPlan: Journey.Vat.CheckedPaymentPlan = Journey.Vat.CheckedPaymentPlan(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Vat.GovUk,
+      origin                   = Origins.Vat.DetachedUrl,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
@@ -297,7 +298,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder: Boolean): Journey.AfterEnteredDetailsAboutBankAccount = Journey.Vat.EnteredDetailsAboutBankAccount(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Vat.GovUk,
+      origin                   = Origins.Vat.DetachedUrl,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
@@ -320,7 +321,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterEnteredDirectDebitDetails(): Journey.Vat.EnteredDirectDebitDetails = Journey.Vat.EnteredDirectDebitDetails(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Vat.GovUk,
+      origin                   = Origins.Vat.DetachedUrl,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
@@ -344,7 +345,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterConfirmedDirectDebitDetails: Journey.Vat.ConfirmedDirectDebitDetails = Journey.Vat.ConfirmedDirectDebitDetails(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Vat.GovUk,
+      origin                   = Origins.Vat.DetachedUrl,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
@@ -373,7 +374,7 @@ trait TdJourneyVatGovUk {
 
       Journey.Vat.AgreedTermsAndConditions(
         _id                      = dependencies.journeyId,
-        origin                   = Origins.Vat.GovUk,
+        origin                   = Origins.Vat.DetachedUrl,
         createdOn                = dependencies.createdOn,
         sjRequest                = sjRequest,
         sessionId                = dependencies.sessionId,
@@ -399,7 +400,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterSelectedEmail: Journey.Vat.SelectedEmailToBeVerified = Journey.Vat.SelectedEmailToBeVerified(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Vat.GovUk,
+      origin                   = Origins.Vat.DetachedUrl,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
@@ -423,7 +424,7 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterEmailVerificationResult(result: EmailVerificationResult): Journey.Vat.EmailVerificationComplete = Journey.Vat.EmailVerificationComplete(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Vat.GovUk,
+      origin                   = Origins.Vat.DetachedUrl,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
@@ -454,12 +455,12 @@ trait TdJourneyVatGovUk {
 
     def journeyAfterSubmittedArrangement(isEmailAddressRequired: Boolean): Journey.AfterArrangementSubmitted = Journey.Vat.SubmittedArrangement(
       _id                      = dependencies.journeyId,
-      origin                   = Origins.Vat.GovUk,
+      origin                   = Origins.Vat.DetachedUrl,
       createdOn                = dependencies.createdOn,
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
-      correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterSubmittedArrangement.Submitted,
+      correlationId            = dependencies.correlationId,
       taxId                    = vrn,
       eligibilityCheckResult   = eligibleEligibilityCheckResult(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,

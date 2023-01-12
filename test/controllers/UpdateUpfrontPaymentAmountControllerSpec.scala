@@ -19,8 +19,8 @@ package controllers
 import essttp.journey.JourneyConnector
 import essttp.journey.model.UpfrontPaymentAnswers
 import essttp.rootmodel.{AmountInPence, UpfrontPaymentAmount}
-import essttp.testdata.TdAll
 import testsupport.ItSpec
+import testsupport.testdata.TdAll
 
 class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec {
 

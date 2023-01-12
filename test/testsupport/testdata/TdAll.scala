@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package essttp.testdata
+package testsupport.testdata
 
-import essttp.testdata.vat.{TdJourneyVatBta, TdJourneyVatDetachedUrl, TdJourneyVatGovUk, TdJourneyVatVatService, TdVat}
-import essttp.testdata.epaye.{TdEpaye, TdJourneyEpayeBta, TdJourneyEpayeDetachedUrl, TdJourneyEpayeEpayeService, TdJourneyEpayeGovUk}
+import testsupport.testdata.epaye._
+import testsupport.testdata.vat._
 
 /**
  * Test Data (Td) all test instances

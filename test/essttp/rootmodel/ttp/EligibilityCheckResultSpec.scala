@@ -18,8 +18,8 @@ package essttp.rootmodel.ttp
 
 import essttp.rootmodel.Email
 import essttp.rootmodel.ttp.eligibility.CustomerDetail
-import essttp.testdata.TdAll
 import testsupport.UnitSpec
+import testsupport.testdata.TdAll
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
 class EligibilityCheckResultSpec extends UnitSpec {

@@ -14,27 +14,38 @@
  * limitations under the License.
  */
 
-package essttp.testdata.vat
+package testsupport.testdata.epaye
 
-import essttp.rootmodel.ttp.affordablequotes.DueDate
-import essttp.rootmodel.ttp.eligibility.{AccruedInterest, ChargeOverMaxDebtAge, ChargeReference, ChargeType, ChargeTypeAssessment, Charges, CustomerPostcode, DebtTotalAmount, DisallowedChargeLockType, EligibilityCheckResult, EligibilityPass, EligibilityStatus, IdType, IdValue, IneligibleChargeType, InterestStartDate, Lock, LockReason, LockType, MainTrans, MainType, OutstandingAmount, Postcode, PostcodeDate, ProcessingDateTime, SubTrans, TaxPeriodFrom, TaxPeriodTo}
+import essttp.rootmodel.epaye.{Aor, TaxOfficeNumber, TaxOfficeReference}
 import essttp.rootmodel.ttp._
+import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.ttp.arrangement.{ArrangementResponse, CustomerReference}
-import essttp.rootmodel.{AmountInPence, TaxId, Vrn}
-import essttp.testdata.TdBase
+import essttp.rootmodel.ttp.eligibility.{AccruedInterest, ChargeOverMaxDebtAge, ChargeReference, ChargeType, ChargeTypeAssessment, Charges, CustomerPostcode, DebtTotalAmount, DisallowedChargeLockType, EligibilityCheckResult, EligibilityPass, EligibilityStatus, IdType, IdValue, Identification, IneligibleChargeType, InterestStartDate, Lock, LockReason, LockType, MainTrans, MainType, OutstandingAmount, Postcode, PostcodeDate, ProcessingDateTime, SubTrans, TaxPeriodFrom, TaxPeriodTo}
+import essttp.rootmodel.{AmountInPence, EmpRef}
+import testsupport.testdata.TdBase
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
-trait TdVat {
+trait TdEpaye {
   dependencies: TdBase =>
 
-  val vrn: Vrn = Vrn("101747001")
+  val taxOfficeNumber: TaxOfficeNumber = TaxOfficeNumber("840")
 
-  def eligibleEligibilityCheckResult(taxId: TaxId = vrn): EligibilityCheckResult = eligibility.EligibilityCheckResult(
+  val taxOfficeReference: TaxOfficeReference = TaxOfficeReference("GZ00064")
+
+  val empRef: EmpRef = EmpRef("864FZ00049")
+
+  val aor: Aor = Aor("123PA44545546")
+
+  val eligibleEligibilityCheckResult: EligibilityCheckResult = eligibility.EligibilityCheckResult(
     processingDateTime              = ProcessingDateTime(reusableDateAsString),
     identification                  = List(
+      Identification(
+        idType  = IdType("EMPREF"),
+        idValue = IdValue(empRef.value)
+      ),
       eligibility.Identification(
-        idType  = IdType("VRN"),
-        idValue = IdValue(taxId.value)
+        idType  = IdType("BROCS"),
+        idValue = IdValue("123PA44545546")
       )
     ),
     customerPostcodes               = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate("2020-01-01"))),
@@ -81,6 +92,11 @@ trait TdVat {
     futureChargeLiabilitiesExcluded = false
   )
 
-  val arrangementResponseVat: ArrangementResponse = ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(vrn.value))
+  def ineligibleEligibilityCheckResult: EligibilityCheckResult = eligibleEligibilityCheckResult.copy(
+    eligibilityStatus = EligibilityStatus(EligibilityPass(false)),
+    eligibilityRules  = hasRlsAddressOn
+  )
+
+  val arrangementResponse: ArrangementResponse = ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(aor.value))
 
 }

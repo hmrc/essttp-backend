@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package essttp.testdata
+package testsupport.testdata
 
 import essttp.emailverification.EmailVerificationResult
 import essttp.journey.model.{CorrelationId, EmailVerificationAnswers, JourneyId, UpfrontPaymentAnswers}
@@ -26,7 +26,7 @@ import essttp.rootmodel.dates.startdates.{InstalmentStartDate, StartDatesRespons
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes._
 import essttp.rootmodel.ttp.eligibility.{ChargeReference, EligibilityCheckResult, EligibilityPass, EligibilityRules, EligibilityStatus}
-import essttp.utils.TdSupport.FakeRequestOps
+import testsupport.TdSupport.FakeRequestOps
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
@@ -37,12 +37,17 @@ import java.util.UUID
 
 trait TdBase {
   def journeyId: JourneyId = JourneyId("b6217497-ab5b-4e93-855a-afc9f9e933b6")
+
   def sessionId: SessionId = SessionId("session-2082fcd4-70f6-49cc-a4bf-845917981cd7")
+
   def correlationId: CorrelationId = CorrelationId(UUID.fromString("5838794a-5419-496c-a5dd-e807f91d6da6"))
+
   def authorization: Authorization = Authorization("Bearer xyz")
 
   def createdOn: Instant = LocalDateTime.parse("2057-11-02T16:28:55.185").toInstant(ZoneOffset.UTC)
+
   def amountToUpdate: AmountInPence = AmountInPence(123499)
+
   def amountInPence: AmountInPence = AmountInPence(1000)
 
   val reusableDateAsString: String = "2022-05-17"
@@ -65,22 +70,39 @@ trait TdBase {
 
   val canPayUpfrontYes: CanPayUpfront = CanPayUpfront(true)
   val canPayUpfrontNo: CanPayUpfront = CanPayUpfront(false)
+
   def upfrontPaymentAmount: UpfrontPaymentAmount = UpfrontPaymentAmount(amountInPence)
+
   def anotherUpfrontPaymentAmount: UpfrontPaymentAmount = UpfrontPaymentAmount(amountInPence.copy(value = 1001))
+
   def instalmentAmounts: InstalmentAmounts = InstalmentAmounts(AmountInPence(1000), AmountInPence(2000))
+
   def upfrontPaymentAnswersDeclared: UpfrontPaymentAnswers = UpfrontPaymentAnswers.DeclaredUpfrontPayment(upfrontPaymentAmount)
+
   def upfrontPaymentAnswersNoUpfrontPayment: UpfrontPaymentAnswers = UpfrontPaymentAnswers.NoUpfrontPayment
+
   def initialPaymentDate: InitialPaymentDate = InitialPaymentDate(LocalDate.parse("2022-01-01"))
+
   def earliestPlanStartDate: EarliestPaymentPlanStartDate = EarliestPaymentPlanStartDate(LocalDate.parse("2022-02-01"))
+
   def latestPlanStartDate: LatestPaymentPlanStartDate = LatestPaymentPlanStartDate(LocalDate.parse("2022-03-01"))
+
   def extremeDatesWithUpfrontPayment: ExtremeDatesResponse = ExtremeDatesResponse(Some(initialPaymentDate), earliestPlanStartDate, latestPlanStartDate)
+
   def extremeDatesWithoutUpfrontPayment: ExtremeDatesResponse = extremeDatesWithUpfrontPayment.copy(initialPaymentDate = None)
+
   def monthlyPaymentAmount: MonthlyPaymentAmount = MonthlyPaymentAmount(AmountInPence(20000))
+
   def dayOfMonth: DayOfMonth = DayOfMonth(1)
+
   def startDatesResponseWithInitialPayment: StartDatesResponse = StartDatesResponse(Some(InitialPaymentDate(LocalDate.parse("2022-01-01"))), InstalmentStartDate(LocalDate.parse("2022-01-01")))
+
   def startDatesResponseWithoutInitialPayment: StartDatesResponse = StartDatesResponse(None, InstalmentStartDate(LocalDate.parse("2022-01-01")))
+
   def dueDate: DueDate = DueDate(LocalDate.parse("2022-02-01"))
+
   def amountDue: AmountDue = AmountDue(amountInPence)
+
   def paymentPlan(numberOfInstalments: Int): PaymentPlan = PaymentPlan(
     numberOfInstalments = NumberOfInstalments(numberOfInstalments),
     planDuration        = PlanDuration(numberOfInstalments),
@@ -103,9 +125,11 @@ trait TdBase {
   )
 
   def affordableQuotesResponse: AffordableQuotesResponse = AffordableQuotesResponse(List(paymentPlan(1)))
+
   def affordableQuotesResponseWith2Plans: AffordableQuotesResponse = AffordableQuotesResponse(List(paymentPlan(2)))
 
   def businessBankAccount: TypeOfBankAccount = TypesOfBankAccount.Business
+
   def personalBankAccount: TypeOfBankAccount = TypesOfBankAccount.Personal
 
   val directDebitDetails: BankDetails =
@@ -134,6 +158,7 @@ trait TdBase {
   }
 
   def backUrl: BackUrl = BackUrl("https://www.tax.service.gov.uk/back-url")
+
   def returnUrl: ReturnUrl = ReturnUrl("https://www.tax.service.gov.uk/return-url")
 
   def request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
@@ -154,10 +179,15 @@ trait TdBase {
     .withDeviceId()
 
   def authToken: String = "authorization-value-123"
+
   def akamaiReputationValue: String = "akamai-reputation-value-123"
+
   def requestId: String = "request-id-value-123"
+
   def trueClientIp: String = "client-ip-123"
+
   def trueClientPort: String = "client-port-123"
+
   def deviceId: String = "device-id-123"
 
 }

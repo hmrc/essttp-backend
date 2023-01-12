@@ -14,17 +14,18 @@ object AppDependencies {
   val cryptoVersion = "7.3.0"
   val hmrcJsonEncryptionVersion = "5.1.0-play-28"
 
+  /**
+   * Note we pull in various libraries from corJourneyDependencies such as:
+   * [hmrc-mongo-play-28, crypto-json-play-28, crypto, json-encryption]
+   * due to dependsOn and aggregate in build.sbt
+   */
   lazy val microserviceDependencies: Seq[ModuleID] = {
     val compile: Seq[ModuleID] = Seq(
       "uk.gov.hmrc"             %% "bootstrap-backend-play-28"  % bootstrapVersion,
-      "uk.gov.hmrc.mongo"       %% "hmrc-mongo-play-28"         % hmrcMongoVersion,
       "com.beachape"            %% "enumeratum"                 % enumeratumVersion,
       "org.julienrf"            %% "play-json-derived-codecs"   % playJsonDerivedCodesVersion, //choose carefully
       "io.scalaland"            %% "chimney"                    % chimneyVersion,
       "org.typelevel"           %% "cats-core"                  % catsVersion,
-      "uk.gov.hmrc"             %% "crypto-json-play-28"        % cryptoVersion,
-      "uk.gov.hmrc"             %% "crypto"                     % cryptoVersion,
-      "uk.gov.hmrc"             %% "json-encryption"            % hmrcJsonEncryptionVersion
     )
 
     val test: Seq[ModuleID] = Seq(
@@ -33,7 +34,7 @@ object AppDependencies {
       "org.scalatestplus.play"  %% "scalatestplus-play"         % "5.1.0" ,
       "org.pegdown"             %  "pegdown"                    % "1.6.0" ,
       "com.typesafe.play"       %% "play-test"                  % PlayVersion.current,
-      "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-28"    % hmrcMongoVersion,
+      "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-28"    % hmrcMongoVersion
     ).map(_ % Test)
 
     compile ++ test
@@ -58,11 +59,6 @@ object AppDependencies {
     "uk.gov.hmrc"           %% "crypto-json-play-28"      % AppDependencies.cryptoVersion,
     "uk.gov.hmrc"           %% "crypto"                   % AppDependencies.cryptoVersion,
     "uk.gov.hmrc"           %% "json-encryption"          % hmrcJsonEncryptionVersion
-  )
-
-  lazy val corTestDataDependencies: Seq[ModuleID] = Seq(
-    "com.typesafe.play" %% "play"      % play.core.PlayVersion.current % Provided,
-    "com.typesafe.play" %% "play-test" % play.core.PlayVersion.current % Provided
   )
 
 }

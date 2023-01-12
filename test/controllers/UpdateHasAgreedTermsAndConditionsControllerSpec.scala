@@ -18,8 +18,8 @@ package controllers
 
 import essttp.rootmodel.IsEmailAddressRequired
 import essttp.journey.JourneyConnector
-import essttp.testdata.TdAll
 import testsupport.ItSpec
+import testsupport.testdata.TdAll
 
 class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec {
 

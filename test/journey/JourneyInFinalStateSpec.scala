@@ -19,11 +19,11 @@ package journey
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.JourneyConnector
 import essttp.rootmodel.AmountInPence
-import essttp.testdata.TdAll
 import journey.JourneyInFinalStateSpec.TestScenario
 import org.scalatest.Assertion
 import play.api.libs.json.{JsNull, Writes}
 import testsupport.ItSpec
+import testsupport.testdata.TdAll
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HttpClient, HttpResponse}
 
