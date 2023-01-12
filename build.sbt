@@ -86,10 +86,9 @@ lazy val microservice = Project(appName, file("."))
         state
     }
   )
-  .dependsOn(corJourney, corJourney)
-  .aggregate(corJourney, corJourney)
+  .dependsOn(corJourney)
+  .aggregate(corJourney)
   .settings(publishingSettings: _*)
-  .settings(resolvers += Resolver.jcenterRepo)
 
 
 /**
