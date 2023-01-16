@@ -17,6 +17,7 @@ object SbtUpdatesSettings {
     // version of the Java Runtime only recognizes class file versions up to 52.0
     // ---
     dependencyUpdatesFilter -= moduleFilter("com.vladsch.flexmark", "flexmark-all"),
+    dependencyUpdatesFilter -= moduleFilter("uk.gov.hmrc", "auth-client"),
     // locked to the version of play
     dependencyUpdatesFilter -= moduleFilter("org.julienrf", "play-json-derived-codecs"),
     // I have had to add enumeratum to the ignore list, due to:

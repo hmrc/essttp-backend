@@ -21,10 +21,11 @@ import com.google.inject.{Inject, Singleton}
 import email.EmailVerificationStatusService
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.emailverification.{GetEmailVerificationResultRequest, StartEmailVerificationJourneyRequest}
+import essttp.journey.model.JourneyId
 import essttp.rootmodel.GGCredId
 import play.api.libs.json.Json
 import play.api.mvc.{Action, ControllerComponents}
-import services.EmailVerificationService
+import services.{EmailVerificationService, JourneyService}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.ExecutionContext
@@ -34,19 +35,24 @@ class EmailVerificationController @Inject() (
     actions:                        Actions,
     emailVerificationService:       EmailVerificationService,
     emailVerificationStatusService: EmailVerificationStatusService,
+    journeyService:                 JourneyService,
     cc:                             ControllerComponents
 )(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
-  val startEmailVerificationJourney: Action[StartEmailVerificationJourneyRequest] =
-    actions.authenticatedAction(parse.json[StartEmailVerificationJourneyRequest]).async{ implicit request =>
-      emailVerificationService.startEmailVerificationJourney(request.body)
-        .map(result => Ok(Json.toJson(result)))
+  def startEmailVerificationJourney(journeyId: JourneyId): Action[StartEmailVerificationJourneyRequest] =
+    actions.authenticatedAction(parse.json[StartEmailVerificationJourneyRequest]).async { implicit request =>
+      for {
+        journey <- journeyService.get(journeyId)
+        result <- emailVerificationService.startEmailVerificationJourney(request.body, journey)
+      } yield Ok(Json.toJson(result))
     }
 
-  val getEmailVerificationResult: Action[GetEmailVerificationResultRequest] =
+  def getEmailVerificationResult(journeyId: JourneyId): Action[GetEmailVerificationResultRequest] =
     actions.authenticatedAction(parse.json[GetEmailVerificationResultRequest]).async{ implicit request =>
-      emailVerificationService.getVerificationResult(request.body)
-        .map(result => Ok(Json.toJson(result)))
+      for {
+        journey <- journeyService.get(journeyId)
+        result <- emailVerificationService.getVerificationResult(request.body, journey)
+      } yield Ok(Json.toJson(result))
     }
 
   val getEarliestCreatedAt: Action[GGCredId] =
