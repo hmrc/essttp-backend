@@ -45,7 +45,7 @@ POST        /journey/:journeyId/update-email-verification-status            jour
 POST        /journey/:journeyId/update-arrangement                          journey.UpdateSubmittedArrangementController.updateArrangement(journeyId: JourneyId)
 
 # email verification
-POST        /email-verification/start                                       journey.EmailVerificationController.startEmailVerificationJourney
-POST        /email-verification/result                                      journey.EmailVerificationController.getEmailVerificationResult
+POST        /email-verification/:journeyId/start                            journey.EmailVerificationController.startEmailVerificationJourney(journeyId: JourneyId)
+POST        /email-verification/:journeyId/result                           journey.EmailVerificationController.getEmailVerificationResult(journeyId: JourneyId)
 
 POST        /email-verification/earliest-created-at                         journey.EmailVerificationController.getEarliestCreatedAt

@@ -17,15 +17,19 @@
 package controllers
 
 import email.EmailVerificationStatusRepo
+import essttp.emailverification.EmailVerificationState.{AlreadyVerified, TooManyDifferentEmailAddresses, TooManyPasscodeAttempts, TooManyPasscodeJourneysStarted}
 import essttp.emailverification._
+import essttp.rootmodel.ttp.eligibility.CustomerDetail
 import essttp.rootmodel.{Email, GGCredId}
 import journey.EmailVerificationController
 import models.emailverification.EmailVerificationResultResponse.EmailResult
 import models.emailverification.RequestEmailVerificationSuccess
+import play.api.libs.json.{JsObject, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers._
 import testsupport.ItSpec
-import testsupport.stubs.EmailVerificationStub
+import testsupport.stubs.{AuditConnectorStub, EmailVerificationStub}
+import testsupport.testdata.TdAll
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.http.UpstreamErrorResponse
 
@@ -69,15 +73,40 @@ class EmailVerificationControllerSpec extends ItSpec {
     "return a redirect url if a journey is successfully started" in new JourneyItTest {
       val redirectUri: String = "/redirect"
       val startRequest: StartEmailVerificationJourneyRequest = startEmailVerificationJourneyRequest(false)
-
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSelectedEmail
+        .copy(_id = tdAll.journeyId)
+        .copy(correlationId = tdAll.correlationId)
+        .copy(emailToBeVerified = startRequest.email)
+        .copy(eligibilityCheckResult = TdAll.EpayeBta.journeyAfterSelectedEmail.eligibilityCheckResult.copy(
+          customerDetails = Some(List(CustomerDetail(Some(startRequest.email), None)))
+        )))
       stubCommonActions()
       EmailVerificationStub.requestEmailVerification(Right(RequestEmailVerificationSuccess(redirectUri)))
 
-      val result: Future[Result] = controller.startEmailVerificationJourney(request.withBody(startRequest))
+      val result: Future[Result] = controller.startEmailVerificationJourney(tdAll.journeyId)(request.withBody(startRequest))
       status(result) shouldBe OK
       contentAsJson(result).as[StartEmailVerificationJourneyResponse] shouldBe StartEmailVerificationJourneyResponse.Success(redirectUri)
 
       EmailVerificationStub.verifyRequestEmailVerification(startRequest)
+      AuditConnectorStub.verifyEventAudited(
+        "EmailVerificationRequested",
+        Json.parse(
+          s"""
+             |{
+             |  "origin" : "Bta",
+             |  "taxType" : "Epaye",
+             |  "taxDetail" : {
+             |    "employerRef" : "864FZ00049",
+             |    "accountsOfficeRef" : "123PA44545546"
+             |  },
+             |  "correlationId" : "${tdAll.correlationId.value.toString}",
+             |  "emailAddress" : "${startRequest.email.value.decryptedValue}",
+             |  "emailSource" : "ETMP",
+             |  "result" : "Started"
+             |}
+             |""".stripMargin
+        ).as[JsObject]
+      )
     }
 
     "prefix the uri in the redirecturi with the email-verification-frontend host and port if the redirectUri if the " +
@@ -85,10 +114,11 @@ class EmailVerificationControllerSpec extends ItSpec {
         val redirectUri: String = "/redirect"
         val startRequest: StartEmailVerificationJourneyRequest = startEmailVerificationJourneyRequest(true)
 
+        insertJourneyForTest(TdAll.EpayeBta.journeyAfterSelectedEmail.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
         stubCommonActions()
         EmailVerificationStub.requestEmailVerification(Right(RequestEmailVerificationSuccess(redirectUri)))
 
-        val result: Future[Result] = controller.startEmailVerificationJourney(request.withBody(startRequest))
+        val result: Future[Result] = controller.startEmailVerificationJourney(tdAll.journeyId)(request.withBody(startRequest))
         status(result) shouldBe OK
         contentAsJson(result).as[StartEmailVerificationJourneyResponse] shouldBe StartEmailVerificationJourneyResponse.Success(s"http://localhost:9890$redirectUri")
 
@@ -99,10 +129,11 @@ class EmailVerificationControllerSpec extends ItSpec {
       val redirectUri: String = "http:///host:12345/redirect"
       val startRequest: StartEmailVerificationJourneyRequest = startEmailVerificationJourneyRequest(true)
 
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSelectedEmail.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       stubCommonActions()
       EmailVerificationStub.requestEmailVerification(Right(RequestEmailVerificationSuccess(redirectUri)))
 
-      val result: Future[Result] = controller.startEmailVerificationJourney(request.withBody(startRequest))
+      val result: Future[Result] = controller.startEmailVerificationJourney(tdAll.journeyId)(request.withBody(startRequest))
       status(result) shouldBe OK
       contentAsJson(result).as[StartEmailVerificationJourneyResponse] shouldBe StartEmailVerificationJourneyResponse.Success(redirectUri)
 
@@ -112,59 +143,140 @@ class EmailVerificationControllerSpec extends ItSpec {
     "return a locked response if the email-verification service gives a 401 (UNAUTHORIZED) response" in new JourneyItTest {
       val startRequest: StartEmailVerificationJourneyRequest = startEmailVerificationJourneyRequest(false)
 
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSelectedEmail.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       stubCommonActions()
       EmailVerificationStub.requestEmailVerification(Left(UNAUTHORIZED))
 
-      val result: Future[Result] = controller.startEmailVerificationJourney(request.withBody(startRequest))
+      val result: Future[Result] = controller.startEmailVerificationJourney(tdAll.journeyId)(request.withBody(startRequest))
       status(result) shouldBe OK
       contentAsJson(result).as[StartEmailVerificationJourneyResponse] shouldBe StartEmailVerificationJourneyResponse.Error(EmailVerificationState.TooManyPasscodeAttempts)
 
       EmailVerificationStub.verifyRequestEmailVerification(startRequest)
+      AuditConnectorStub.verifyEventAudited(
+        "EmailVerificationRequested",
+        Json.parse(
+          s"""
+             |{
+             |  "origin" : "Bta",
+             |  "taxType" : "Epaye",
+             |  "taxDetail" : {
+             |    "employerRef" : "864FZ00049",
+             |    "accountsOfficeRef" : "123PA44545546"
+             |  },
+             |  "correlationId" : "${tdAll.correlationId.value.toString}",
+             |  "emailAddress" : "${startRequest.email.value.decryptedValue}",
+             |  "emailSource" : "TEMP",
+             |  "result" : "${TooManyPasscodeAttempts.entryName}"
+             |}
+             |""".stripMargin
+        ).as[JsObject]
+      )
     }
 
     "return 'AlreadyVerified' and not call email-verification if email is already verified" in new JourneyItTest {
       stubCommonActions()
       val startRequest: StartEmailVerificationJourneyRequest = startEmailVerificationJourneyRequest(false)
 
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSelectedEmail.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       emailVerificationStatusRepo.upsert(emailVerificationStatus(startRequest.credId, startRequest.email)
         .copy(verificationResult = Some(EmailVerificationResult.Verified))).futureValue
 
-      val result: Future[Result] = controller.startEmailVerificationJourney(request.withBody(startRequest))
+      val result: Future[Result] = controller.startEmailVerificationJourney(tdAll.journeyId)(request.withBody(startRequest))
       status(result) shouldBe OK
       contentAsJson(result).as[StartEmailVerificationJourneyResponse] shouldBe StartEmailVerificationJourneyResponse.Error(EmailVerificationState.AlreadyVerified)
       EmailVerificationStub.verifyNoneRequestVerification()
+      AuditConnectorStub.verifyEventAudited(
+        "EmailVerificationRequested",
+        Json.parse(
+          s"""
+             |{
+             |  "origin" : "Bta",
+             |  "taxType" : "Epaye",
+             |  "taxDetail" : {
+             |    "employerRef" : "864FZ00049",
+             |    "accountsOfficeRef" : "123PA44545546"
+             |  },
+             |  "correlationId" : "${tdAll.correlationId.value.toString}",
+             |  "emailAddress" : "${startRequest.email.value.decryptedValue}",
+             |  "emailSource" : "TEMP",
+             |  "result" : "${AlreadyVerified.entryName}"
+             |}
+             |""".stripMargin
+        ).as[JsObject]
+      )
     }
 
     "return 'TooManyPasscodeAttempts' if that is the status in mongo" in new JourneyItTest {
       stubCommonActions()
       val startRequest: StartEmailVerificationJourneyRequest = startEmailVerificationJourneyRequest(false)
 
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSelectedEmail.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       emailVerificationStatusRepo.upsert(emailVerificationStatus(startRequest.credId, startRequest.email)
         .copy(verificationResult = Some(EmailVerificationResult.Locked))).futureValue
 
-      val result: Future[Result] = controller.startEmailVerificationJourney(request.withBody(startRequest))
+      val result: Future[Result] = controller.startEmailVerificationJourney(tdAll.journeyId)(request.withBody(startRequest))
       status(result) shouldBe OK
       contentAsJson(result).as[StartEmailVerificationJourneyResponse] shouldBe StartEmailVerificationJourneyResponse.Error(EmailVerificationState.TooManyPasscodeAttempts)
       EmailVerificationStub.verifyNoneRequestVerification()
+      AuditConnectorStub.verifyEventAudited(
+        "EmailVerificationRequested",
+        Json.parse(
+          s"""
+             |{
+             |  "origin" : "Bta",
+             |  "taxType" : "Epaye",
+             |  "taxDetail" : {
+             |    "employerRef" : "864FZ00049",
+             |    "accountsOfficeRef" : "123PA44545546"
+             |  },
+             |  "correlationId" : "${tdAll.correlationId.value.toString}",
+             |  "emailAddress" : "${startRequest.email.value.decryptedValue}",
+             |  "emailSource" : "TEMP",
+             |  "result" : "${TooManyPasscodeAttempts.entryName}"
+             |}
+             |""".stripMargin
+        ).as[JsObject]
+      )
     }
 
     "return 'TooManyPasscodeJourneysStarted' if that is the status in mongo" in new JourneyItTest {
       stubCommonActions()
       val startRequest: StartEmailVerificationJourneyRequest = startEmailVerificationJourneyRequest(false)
 
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSelectedEmail.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       emailVerificationStatusRepo.upsert(emailVerificationStatus(startRequest.credId, startRequest.email)
         .copy(numberOfPasscodeJourneysStarted = NumberOfPasscodeJourneysStarted(5))).futureValue
 
-      val result: Future[Result] = controller.startEmailVerificationJourney(request.withBody(startRequest))
+      val result: Future[Result] = controller.startEmailVerificationJourney(tdAll.journeyId)(request.withBody(startRequest))
       status(result) shouldBe OK
       contentAsJson(result).as[StartEmailVerificationJourneyResponse] shouldBe StartEmailVerificationJourneyResponse.Error(EmailVerificationState.TooManyPasscodeJourneysStarted)
       EmailVerificationStub.verifyNoneRequestVerification()
+      AuditConnectorStub.verifyEventAudited(
+        "EmailVerificationRequested",
+        Json.parse(
+          s"""
+             |{
+             |  "origin" : "Bta",
+             |  "taxType" : "Epaye",
+             |  "taxDetail" : {
+             |    "employerRef" : "864FZ00049",
+             |    "accountsOfficeRef" : "123PA44545546"
+             |  },
+             |  "correlationId" : "${tdAll.correlationId.value.toString}",
+             |  "emailAddress" : "${startRequest.email.value.decryptedValue}",
+             |  "emailSource" : "TEMP",
+             |  "result" : "${TooManyPasscodeJourneysStarted.entryName}"
+             |}
+             |""".stripMargin
+        ).as[JsObject]
+      )
     }
 
     "return 'TooManyDifferentEmailAddresses' if that is the status in mongo" in new JourneyItTest {
       stubCommonActions()
       val startRequest: StartEmailVerificationJourneyRequest = startEmailVerificationJourneyRequest(false)
 
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSelectedEmail.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       val emailVerificationStatus: EmailVerificationStatus = EmailVerificationStatus(
         _id                             = UUID.randomUUID().toString,
         credId                          = startRequest.credId,
@@ -183,10 +295,29 @@ class EmailVerificationControllerSpec extends ItSpec {
       nineOtherEntries.foreach(emailVerificationStatusRepo.upsert(_).futureValue)
       emailVerificationStatusRepo.findAllEntries(startRequest.credId).futureValue.size shouldBe 10
 
-      val result: Future[Result] = controller.startEmailVerificationJourney(request.withBody(startRequest))
+      val result: Future[Result] = controller.startEmailVerificationJourney(tdAll.journeyId)(request.withBody(startRequest))
       status(result) shouldBe OK
       contentAsJson(result).as[StartEmailVerificationJourneyResponse] shouldBe StartEmailVerificationJourneyResponse.Error(EmailVerificationState.TooManyDifferentEmailAddresses)
       EmailVerificationStub.verifyNoneRequestVerification()
+      AuditConnectorStub.verifyEventAudited(
+        "EmailVerificationRequested",
+        Json.parse(
+          s"""
+             |{
+             |  "origin" : "Bta",
+             |  "taxType" : "Epaye",
+             |  "taxDetail" : {
+             |    "employerRef" : "864FZ00049",
+             |    "accountsOfficeRef" : "123PA44545546"
+             |  },
+             |  "correlationId" : "${tdAll.correlationId.value.toString}",
+             |  "emailAddress" : "${startRequest.email.value.decryptedValue}",
+             |  "emailSource" : "TEMP",
+             |  "result" : "${TooManyDifferentEmailAddresses.entryName}"
+             |}
+             |""".stripMargin
+        ).as[JsObject]
+      )
     }
 
   }
@@ -194,32 +325,74 @@ class EmailVerificationControllerSpec extends ItSpec {
   "POST /email-verification/result" - {
 
     "return a 'Verified' response if the email address has been verified with the GG cred id" in new JourneyItTest {
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSelectedEmail.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       stubCommonActions()
       val ggCredId = GGCredId(s"authId-${UUID.randomUUID().toString}")
       val email = Email(SensitiveString(s"email${UUID.randomUUID().toString}@test.com"))
       val getResultRequest = GetEmailVerificationResultRequest(ggCredId, email)
       EmailVerificationStub.getVerificationResult(ggCredId, Right(List(EmailResult(email.value.decryptedValue, verified = true, locked = false))))
 
-      val result: Future[Result] = controller.getEmailVerificationResult(request.withBody(getResultRequest))
+      val result: Future[Result] = controller.getEmailVerificationResult(tdAll.journeyId)(request.withBody(getResultRequest))
       status(result) shouldBe OK
       contentAsJson(result).as[EmailVerificationResult] shouldBe EmailVerificationResult.Verified
       EmailVerificationStub.verifyNoneGetVerificationStatus(ggCredId)
+      AuditConnectorStub.verifyEventAudited(
+        "EmailVerificationResult",
+        Json.parse(
+          s"""
+             |{
+             |  "origin" : "Bta",
+             |  "taxType" : "Epaye",
+             |  "taxDetail" : {
+             |    "employerRef" : "864FZ00049",
+             |    "accountsOfficeRef" : "123PA44545546"
+             |  },
+             |  "correlationId" : "${tdAll.correlationId.value.toString}",
+             |  "emailAddress" : "${email.value.decryptedValue}",
+             |  "emailSource" : "TEMP",
+             |  "result" : "Success"
+             |}
+             |""".stripMargin
+        ).as[JsObject]
+      )
     }
 
     "return a 'TooManyPasscodeAttempts' response if the email address has been locked with the GG cred id" in new JourneyItTest {
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSelectedEmail.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       stubCommonActions()
       val ggCredId = GGCredId(s"authId-${UUID.randomUUID().toString}")
       val email = Email(SensitiveString(s"email${UUID.randomUUID().toString}@test.com"))
       val getResultRequest = GetEmailVerificationResultRequest(ggCredId, email)
       EmailVerificationStub.getVerificationResult(ggCredId, Right(List(EmailResult(email.value.decryptedValue, verified = false, locked = true))))
 
-      val result: Future[Result] = controller.getEmailVerificationResult(request.withBody(getResultRequest))
+      val result: Future[Result] = controller.getEmailVerificationResult(tdAll.journeyId)(request.withBody(getResultRequest))
       status(result) shouldBe OK
       contentAsJson(result).as[EmailVerificationResult] shouldBe EmailVerificationResult.Locked
       EmailVerificationStub.verifyNoneGetVerificationStatus(ggCredId)
+      AuditConnectorStub.verifyEventAudited(
+        "EmailVerificationResult",
+        Json.parse(
+          s"""
+             |{
+             |  "origin" : "Bta",
+             |  "taxType" : "Epaye",
+             |  "taxDetail" : {
+             |    "employerRef" : "864FZ00049",
+             |    "accountsOfficeRef" : "123PA44545546"
+             |  },
+             |  "correlationId" : "${tdAll.correlationId.value.toString}",
+             |  "emailAddress" : "${email.value.decryptedValue}",
+             |  "emailSource" : "TEMP",
+             |  "result" : "Failed",
+             |  "failureReason" : "TooManyPasscodeAttempts"
+             |}
+             |""".stripMargin
+        ).as[JsObject]
+      )
     }
 
     "return 'Verified' response when there are < 10 entries for a given cred id and email verification return verified" in new JourneyItTest {
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSelectedEmail.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       stubCommonActions()
       val ggCredId = GGCredId(s"authId-${UUID.randomUUID().toString}")
       val email = Email(SensitiveString(s"email${UUID.randomUUID().toString}@test.com"))
@@ -244,10 +417,29 @@ class EmailVerificationControllerSpec extends ItSpec {
       emailVerificationStatusRepo.upsert(emailVerificationStatus)
       eightOtherEntries.foreach(emailVerificationStatusRepo.upsert)
 
-      val result: Future[Result] = controller.getEmailVerificationResult(request.withBody(getResultRequest))
+      val result: Future[Result] = controller.getEmailVerificationResult(tdAll.journeyId)(request.withBody(getResultRequest))
       status(result) shouldBe OK
       contentAsJson(result).as[EmailVerificationResult] shouldBe EmailVerificationResult.Verified
       EmailVerificationStub.verifyNoneGetVerificationStatus(ggCredId)
+      AuditConnectorStub.verifyEventAudited(
+        "EmailVerificationResult",
+        Json.parse(
+          s"""
+             |{
+             |  "origin" : "Bta",
+             |  "taxType" : "Epaye",
+             |  "taxDetail" : {
+             |    "employerRef" : "864FZ00049",
+             |    "accountsOfficeRef" : "123PA44545546"
+             |  },
+             |  "correlationId" : "${tdAll.correlationId.value.toString}",
+             |  "emailAddress" : "${email.value.decryptedValue}",
+             |  "emailSource" : "TEMP",
+             |  "result" : "Success"
+             |}
+             |""".stripMargin
+        ).as[JsObject]
+      )
     }
 
     "should throw an error when" - {
@@ -264,27 +456,33 @@ class EmailVerificationControllerSpec extends ItSpec {
         }
 
       "a result cannot be found for the given email address" in new JourneyItTest {
+        insertJourneyForTest(TdAll.EpayeBta.journeyAfterSelectedEmail.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
         stubCommonActions()
         EmailVerificationStub.getVerificationResult(ggCredId, Right(List()))
 
         testIsUpstreamErrorResponse(
-          controller.getEmailVerificationResult(request.withBody(getResultRequest)),
+          controller.getEmailVerificationResult(tdAll.journeyId)(request.withBody(getResultRequest)),
           NOT_FOUND
         )
+        AuditConnectorStub.verifyNoAuditEvent()
       }
 
       "verified=true and locked=true for the given email address" in new JourneyItTest {
+        insertJourneyForTest(TdAll.EpayeBta.journeyAfterSelectedEmail.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
         stubCommonActions()
         EmailVerificationStub.getVerificationResult(ggCredId, Right(List(EmailResult(email.value.decryptedValue, verified = true, locked = true))))
 
-        testIsUpstreamErrorResponse(controller.getEmailVerificationResult(request.withBody(getResultRequest)))
+        testIsUpstreamErrorResponse(controller.getEmailVerificationResult(tdAll.journeyId)(request.withBody(getResultRequest)))
+        AuditConnectorStub.verifyNoAuditEvent()
       }
 
       "verified=false and locked=false for the given email address" in new JourneyItTest {
+        insertJourneyForTest(TdAll.EpayeBta.journeyAfterSelectedEmail.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
         stubCommonActions()
         EmailVerificationStub.getVerificationResult(ggCredId, Right(List(EmailResult(email.value.decryptedValue, verified = false, locked = false))))
 
-        testIsUpstreamErrorResponse(controller.getEmailVerificationResult(request.withBody(getResultRequest)))
+        testIsUpstreamErrorResponse(controller.getEmailVerificationResult(tdAll.journeyId)(request.withBody(getResultRequest)))
+        AuditConnectorStub.verifyNoAuditEvent()
       }
 
     }

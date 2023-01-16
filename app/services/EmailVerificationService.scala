@@ -23,8 +23,10 @@ import connectors.EmailVerificationConnector
 import email.EmailVerificationStatusService
 import essttp.emailverification.EmailVerificationState.{AlreadyVerified, OkToBeVerified, TooManyDifferentEmailAddresses, TooManyPasscodeAttempts, TooManyPasscodeJourneysStarted}
 import essttp.emailverification._
+import essttp.journey.model.Journey
 import essttp.rootmodel.Email
 import essttp.utils.HttpResponseUtils.HttpResponseOps
+import models.audit.EmailVerificationResultAudit
 import models.emailverification.RequestEmailVerificationRequest.EmailDetails
 import models.emailverification.{RequestEmailVerificationRequest, RequestEmailVerificationSuccess}
 import play.api.http.Status.{CREATED, INTERNAL_SERVER_ERROR, NOT_FOUND, UNAUTHORIZED}
@@ -37,13 +39,17 @@ import scala.concurrent.{ExecutionContext, Future}
 class EmailVerificationService @Inject() (
     appConfig:                      AppConfig,
     connector:                      EmailVerificationConnector,
-    emailVerificationStatusService: EmailVerificationStatusService
+    emailVerificationStatusService: EmailVerificationStatusService,
+    auditService:                   AuditService
 )(implicit ec: ExecutionContext) {
 
   private val maxPasscodeJourneysPerEmailAddress: Int = appConfig.emailVerificationStatusMaxAttemptsPerEmail
   private val maxNumberOfDifferentEmails: Int = appConfig.emailVerificationStatusMaxUniqueEmailsAllowed
 
-  def startEmailVerificationJourney(request: StartEmailVerificationJourneyRequest)(implicit hc: HeaderCarrier): Future[StartEmailVerificationJourneyResponse] = {
+  def startEmailVerificationJourney(
+      request: StartEmailVerificationJourneyRequest,
+      journey: Journey
+  )(implicit hc: HeaderCarrier): Future[StartEmailVerificationJourneyResponse] = {
     val emailVerificationRequest = RequestEmailVerificationRequest(
       request.credId,
       request.continueUrl,
@@ -95,10 +101,18 @@ class EmailVerificationService @Inject() (
         }
         case None => makeEmailVerificationCall
       }
+    }.map { (startEmailVerificationJourneyResponse: StartEmailVerificationJourneyResponse) =>
+      auditService.auditEmailVerificationRequested(
+        journey  = journey,
+        ggCredId = request.credId,
+        email    = request.email,
+        result   = auditResultFromStartEmailVerificationJourneyResponse(startEmailVerificationJourneyResponse)
+      )
+      startEmailVerificationJourneyResponse
     }
   }
 
-  def getVerificationResult(request: GetEmailVerificationResultRequest)(implicit hc: HeaderCarrier): Future[EmailVerificationResult] = {
+  def getVerificationResult(request: GetEmailVerificationResultRequest, journey: Journey)(implicit hc: HeaderCarrier): Future[EmailVerificationResult] = {
     connector.getVerificationStatus(request.credId).flatMap { statusResponse =>
       statusResponse.emails.find(_.emailAddress === request.email.value.decryptedValue) match {
         case None =>
@@ -107,9 +121,23 @@ class EmailVerificationService @Inject() (
           (status.verified, status.locked) match {
             case (true, false) =>
               emailVerificationStatusService.updateEmailVerificationStatusResult(request.credId, request.email, EmailVerificationResult.Verified)
+                .map(_ => auditService.auditEmailVerificationResult(
+                  journey       = journey,
+                  ggCredId      = request.credId,
+                  email         = request.email,
+                  result        = EmailVerificationResultAudit.Success,
+                  failureReason = None
+                ))
                 .map(_ => EmailVerificationResult.Verified)
             case (false, true) =>
               emailVerificationStatusService.updateEmailVerificationStatusResult(request.credId, request.email, EmailVerificationResult.Locked)
+                .map(_ => auditService.auditEmailVerificationResult(
+                  journey       = journey,
+                  ggCredId      = request.credId,
+                  email         = request.email,
+                  result        = EmailVerificationResultAudit.Failure,
+                  failureReason = Some(TooManyPasscodeAttempts.entryName)
+                ))
                 .map(_ => EmailVerificationResult.Locked)
             case _ =>
               throw UpstreamErrorResponse(s"Got unexpected combination of verified=${status.verified.toString} and " +
@@ -135,5 +163,11 @@ class EmailVerificationService @Inject() (
       else EmailVerificationState.OkToBeVerified
     }
   }
+
+  private def auditResultFromStartEmailVerificationJourneyResponse(startEmailVerificationJourneyResponse: StartEmailVerificationJourneyResponse): String =
+    startEmailVerificationJourneyResponse match {
+      case StartEmailVerificationJourneyResponse.Success(_)    => "Started"
+      case StartEmailVerificationJourneyResponse.Error(reason) => reason.entryName
+    }
 
 }

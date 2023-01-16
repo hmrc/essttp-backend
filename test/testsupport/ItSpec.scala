@@ -32,7 +32,7 @@ import play.api.{Application, Mode}
 import play.core.server.ServerConfig
 import repository.JourneyRepo
 import services.{CorrelationIdGenerator, JourneyIdGenerator}
-import testsupport.stubs.AuthStub
+import testsupport.stubs.{AuditConnectorStub, AuthStub}
 import testsupport.testdata.TdAll
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
 import uk.gov.hmrc.auth.core.AuthProviders
@@ -134,7 +134,10 @@ trait ItSpec
     "microservice.services.auth.protocol" -> "http",
     "microservice.services.auth.host" -> "localhost",
     "microservice.services.auth.port" -> WireMockSupport.port,
-    "microservice.services.email-verification.port" -> WireMockSupport.port
+    "microservice.services.email-verification.port" -> WireMockSupport.port,
+    "auditing.consumer.baseUri.port" -> WireMockSupport.port,
+    "auditing.enabled" -> true,
+    "auditing.traceRequests" -> false
   )
 
   //in tests use `app`
@@ -181,8 +184,10 @@ trait ItSpec
     barsRepo.collection.deleteMany(BsonDocument("{}")).toFuture().futureValue
   }
 
-  def stubCommonActions(): StubMapping =
+  def stubCommonActions(): StubMapping = {
+    AuditConnectorStub.audit()
     AuthStub.authorise()
+  }
 
   def verifyCommonActions(numberOfAuthCalls: Int): Unit =
     AuthStub.ensureAuthoriseCalled(numberOfAuthCalls, AuthProviders(GovernmentGateway))
