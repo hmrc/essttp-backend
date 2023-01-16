@@ -185,7 +185,6 @@ trait ItSpec
   }
 
   def stubCommonActions(): StubMapping = {
-    //todo jake check if this is needed, it isn't in frontend?
     AuditConnectorStub.audit()
     AuthStub.authorise()
   }
