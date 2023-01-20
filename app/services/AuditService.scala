@@ -79,12 +79,12 @@ class AuditService @Inject() (auditConnector: AuditConnector)(implicit ec: Execu
   }
 
   private def toEmailVerificationResult(
-                                         journey: Journey,
-                                         ggCredId: GGCredId,
-                                         email: Email,
-                                         result: EmailVerificationResultAudit,
-                                         failureReason: Option[String]
-                                       ): EmailVerificationResultAuditDetail = {
+      journey:       Journey,
+      ggCredId:      GGCredId,
+      email:         Email,
+      result:        EmailVerificationResultAudit,
+      failureReason: Option[String]
+  ): EmailVerificationResultAuditDetail = {
     EmailVerificationResultAuditDetail(
       origin         = toAuditString(journey.origin),
       taxType        = journey.taxRegime.toString,
