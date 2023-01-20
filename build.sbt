@@ -88,7 +88,6 @@ lazy val microservice = Project(appName, file("."))
   )
   .dependsOn(corJourney)
   .aggregate(corJourney)
-  .settings(publishingSettings: _*)
 
 
 /**
