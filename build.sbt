@@ -11,7 +11,7 @@ val majorVer = 1
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-val appScalaVersion = "2.13.8"
+val appScalaVersion = "2.13.10"
 
 lazy val playSettings : Seq[Setting[_]] = Seq.empty
 
@@ -54,7 +54,6 @@ lazy val commonSettings = Seq(
   ScalariformSettings.scalariformSettings,
   shellPrompt := ShellPrompt(version.value),
   buildInfoPackage := name.value.toLowerCase().replaceAllLiterally("-", ""),
-  targetJvm := "jvm-1.8",
   Compile / doc / scalacOptions := Seq(), //this will allow to have warnings in `doc` task and not fail the build
   resolvers ++= projectResolvers
 ).++(WartRemoverSettings.wartRemoverSettings)
