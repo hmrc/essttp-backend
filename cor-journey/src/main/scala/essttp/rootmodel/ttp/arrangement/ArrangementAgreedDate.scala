@@ -18,7 +18,6 @@ package essttp.rootmodel.ttp.arrangement
 
 import play.api.libs.json.{Format, Json}
 
-//todo remove this as part of SUPP-688
 final case class ArrangementAgreedDate(value: String) extends AnyVal
 
 object ArrangementAgreedDate {

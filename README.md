@@ -2,7 +2,7 @@
 # essttp-backend
 
 This repository contains the backend microservice for eSSTTP (Enhanced Self Service Time To Pay). 
-It is built using Scala (2.13) and the Play framework (2.8). We use linting tools such as WartRemover and Sclariform. 
+It is built using Scala (2.13) and the Play framework (2.8). We use linting tools such as WartRemover and Scalariform. 
 This microservice acts as a state machine, utilising mongodb. 
 As users progress through the [frontend](https://www.github.com/hmrc/essttp-frontend) journey various rest endpoints are called to update the state of the users journey. 
 This project makes use of sbt modules - which act as libraries for our models and anything else we may want to reuse in the frontend. We have coined the term `cor` for these modules - `collection of routines`

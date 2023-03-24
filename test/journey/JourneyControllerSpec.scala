@@ -16,10 +16,10 @@
 
 package journey
 
-import essttp.emailverification.EmailVerificationResult
 import essttp.journey.JourneyConnector
 import essttp.journey.model.{CorrelationId, JourneyId, SjResponse}
 import essttp.rootmodel.IsEmailAddressRequired
+import paymentsEmailVerification.models.EmailVerificationResult
 import play.api.mvc.Request
 import testsupport.ItSpec
 import testsupport.testdata.TdAll

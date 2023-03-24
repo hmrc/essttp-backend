@@ -20,7 +20,7 @@ import action.Actions
 import cats.syntax.eq._
 import com.google.inject.Inject
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.emailverification.EmailVerificationResult
+import paymentsEmailVerification.models.EmailVerificationResult
 import essttp.journey.model.Journey.{Epaye, Stages, Vat}
 import essttp.journey.model.{EmailVerificationAnswers, Journey, JourneyId, Stage}
 import essttp.utils.Errors

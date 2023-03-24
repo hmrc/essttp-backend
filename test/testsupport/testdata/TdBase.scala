@@ -16,7 +16,6 @@
 
 package testsupport.testdata
 
-import essttp.emailverification.EmailVerificationResult
 import essttp.journey.model.{CorrelationId, EmailVerificationAnswers, JourneyId, UpfrontPaymentAnswers}
 import essttp.rootmodel._
 import essttp.rootmodel.bank._
@@ -26,6 +25,7 @@ import essttp.rootmodel.dates.startdates.{InstalmentStartDate, StartDatesRespons
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes._
 import essttp.rootmodel.ttp.eligibility.{ChargeReference, EligibilityCheckResult, EligibilityPass, EligibilityRules, EligibilityStatus}
+import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.TdSupport.FakeRequestOps
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest

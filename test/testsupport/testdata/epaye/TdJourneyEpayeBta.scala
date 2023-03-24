@@ -16,7 +16,6 @@
 
 package testsupport.testdata.epaye
 
-import essttp.emailverification.EmailVerificationResult
 import essttp.journey.model.SjRequest.Epaye
 import essttp.journey.model._
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
@@ -27,6 +26,7 @@ import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentP
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.rootmodel._
 import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
+import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ResourceReader.read
 import testsupport.JsonSyntax._
 import play.api.libs.json.{JsNull, JsObject}

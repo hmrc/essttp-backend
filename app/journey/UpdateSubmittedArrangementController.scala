@@ -19,11 +19,11 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.emailverification.EmailVerificationResult
 import essttp.journey.model.{EmailVerificationAnswers, Journey, JourneyId, Stage}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformerOps
+import paymentsEmailVerification.models.EmailVerificationResult
 import play.api.mvc.{Action, ControllerComponents, Request}
 import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController

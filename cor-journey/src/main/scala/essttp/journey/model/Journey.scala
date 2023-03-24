@@ -17,7 +17,6 @@
 package essttp.journey.model
 
 import essttp.crypto.CryptoFormat
-import essttp.emailverification.EmailVerificationResult
 import essttp.rootmodel._
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
@@ -29,6 +28,7 @@ import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import essttp.utils.Errors
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 import julienrf.json.derived
+import paymentsEmailVerification.models.EmailVerificationResult
 import play.api.libs.json.{JsValue, Json, OFormat, OWrites}
 
 import java.time.{Clock, Instant}

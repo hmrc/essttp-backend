@@ -5,9 +5,9 @@ import sbt._
 
 object AppDependencies {
 
-  val bootstrapVersion = "7.13.0"
-  val hmrcMongoVersion = "0.74.0"
-  val chimneyVersion = "0.7.0"
+  val bootstrapVersion = "7.15.0"
+  val hmrcMongoVersion = "1.1.0"
+  val chimneyVersion = "0.7.2"
   val catsVersion = "2.9.0"
   val playJsonDerivedCodesVersion = "7.0.0"
   val enumeratumVersion = "1.7.0"
@@ -25,7 +25,7 @@ object AppDependencies {
       "com.beachape"            %% "enumeratum"                 % enumeratumVersion,
       "org.julienrf"            %% "play-json-derived-codecs"   % playJsonDerivedCodesVersion, //choose carefully
       "io.scalaland"            %% "chimney"                    % chimneyVersion,
-      "org.typelevel"           %% "cats-core"                  % catsVersion,
+      "org.typelevel"           %% "cats-core"                  % catsVersion
     )
 
     val test: Seq[ModuleID] = Seq(
@@ -46,19 +46,20 @@ object AppDependencies {
     //run `essttp-backend/dependencyTree::toFile deps.txt -f` and look for that line:
     // +-uk.gov.hmrc:auth-client_2.12:3.0.0-play-27 (evicted by: 5.1.0-play-27)
     //the correct version in this time was `3.0.0`
-    "uk.gov.hmrc"           %% "auth-client"              % "6.0.0-play-28",
-    "uk.gov.hmrc"           %% "bootstrap-common-play-28" % AppDependencies.bootstrapVersion % Provided,
-    "org.julienrf"          %% "play-json-derived-codecs" % AppDependencies.playJsonDerivedCodesVersion, //choose carefully
-    "com.github.kxbmap"     %% "configs"                  % "0.6.1",
-    "com.github.pureconfig" %% "pureconfig"               % "0.17.2",
-    "com.beachape"          %% "enumeratum-play"          % AppDependencies.enumeratumVersion,
-    "com.typesafe.play"     %% "play"                     % play.core.PlayVersion.current % Provided,
-    "io.scalaland"          %% "chimney"                  % AppDependencies.chimneyVersion,
-    "org.typelevel"         %% "cats-core"                % AppDependencies.catsVersion,
-    "uk.gov.hmrc.mongo"     %% "hmrc-mongo-play-28"       % AppDependencies.hmrcMongoVersion,
-    "uk.gov.hmrc"           %% "crypto-json-play-28"      % AppDependencies.cryptoVersion,
-    "uk.gov.hmrc"           %% "crypto"                   % AppDependencies.cryptoVersion,
-    "uk.gov.hmrc"           %% "json-encryption"          % hmrcJsonEncryptionVersion
+    "uk.gov.hmrc"           %% "auth-client"                     % "6.0.0-play-28",
+    "uk.gov.hmrc"           %% "bootstrap-common-play-28"        % AppDependencies.bootstrapVersion % Provided,
+    "org.julienrf"          %% "play-json-derived-codecs"        % AppDependencies.playJsonDerivedCodesVersion, //choose carefully
+    "com.github.kxbmap"     %% "configs"                         % "0.6.1",
+    "com.github.pureconfig" %% "pureconfig"                      % "0.17.2",
+    "com.beachape"          %% "enumeratum-play"                 % AppDependencies.enumeratumVersion,
+    "com.typesafe.play"     %% "play"                            % play.core.PlayVersion.current % Provided,
+    "io.scalaland"          %% "chimney"                         % AppDependencies.chimneyVersion,
+    "org.typelevel"         %% "cats-core"                       % AppDependencies.catsVersion,
+    "uk.gov.hmrc.mongo"     %% "hmrc-mongo-play-28"              % AppDependencies.hmrcMongoVersion,
+    "uk.gov.hmrc"           %% "crypto-json-play-28"             % AppDependencies.cryptoVersion,
+    "uk.gov.hmrc"           %% "crypto"                          % AppDependencies.cryptoVersion,
+    "uk.gov.hmrc"           %% "json-encryption"                 % hmrcJsonEncryptionVersion,
+    "uk.gov.hmrc"           %% "payments-email-verification-cor" % "0.2.0"
   )
 
 }

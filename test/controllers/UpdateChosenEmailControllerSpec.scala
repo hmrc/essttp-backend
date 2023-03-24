@@ -16,9 +16,11 @@
 
 package controllers
 
-import essttp.emailverification.EmailVerificationResult
 import essttp.journey.JourneyConnector
+import essttp.journey.model.Journey
+import essttp.journey.model.Journey.Epaye
 import essttp.rootmodel.{Email, IsEmailAddressRequired}
+import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
@@ -47,12 +49,12 @@ class UpdateChosenEmailControllerSpec extends ItSpec {
           .copy(correlationId = tdAll.correlationId)
       )
 
-      val result1 = journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest()).futureValue
+      val result1: Journey = journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest()).futureValue
       result1 shouldBe tdAll.EpayeBta.journeyAfterSelectedEmail
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedEmail
 
-      val result2 = journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest().copy(SensitiveString("billyJoel@pianoman.com"))).futureValue
-      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterSelectedEmail.copy(emailToBeVerified = Email(SensitiveString("billyJoel@pianoman.com")))
+      val result2: Journey = journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest().copy(SensitiveString("billyJoel@pianoman.com"))).futureValue
+      val expectedUpdatedJourney2: Epaye.SelectedEmailToBeVerified = tdAll.EpayeBta.journeyAfterSelectedEmail.copy(emailToBeVerified = Email(SensitiveString("billyJoel@pianoman.com")))
       result2 shouldBe expectedUpdatedJourney2
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
 
@@ -68,7 +70,7 @@ class UpdateChosenEmailControllerSpec extends ItSpec {
           .copy(correlationId = tdAll.correlationId)
       )
 
-      val result = journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest()).futureValue
+      val result: Journey = journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest()).futureValue
       result shouldBe tdAll.EpayeBta.journeyAfterSelectedEmail
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedEmail
 
