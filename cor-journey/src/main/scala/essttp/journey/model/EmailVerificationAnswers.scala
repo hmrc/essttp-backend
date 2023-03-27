@@ -17,9 +17,9 @@
 package essttp.journey.model
 
 import essttp.crypto.CryptoFormat
-import essttp.emailverification.EmailVerificationResult
 import essttp.rootmodel.Email
 import julienrf.json.derived
+import paymentsEmailVerification.models.EmailVerificationResult
 import play.api.libs.json.OFormat
 
 sealed trait EmailVerificationAnswers

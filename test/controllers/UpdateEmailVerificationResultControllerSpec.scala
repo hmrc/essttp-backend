@@ -16,9 +16,9 @@
 
 package controllers
 
-import essttp.emailverification.EmailVerificationResult
 import essttp.journey.JourneyConnector
 import essttp.rootmodel.IsEmailAddressRequired
+import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 

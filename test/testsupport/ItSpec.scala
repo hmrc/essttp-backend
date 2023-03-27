@@ -133,11 +133,7 @@ trait ItSpec
     "microservice.services.essttp-backend.port" -> testServerPort,
     "microservice.services.auth.protocol" -> "http",
     "microservice.services.auth.host" -> "localhost",
-    "microservice.services.auth.port" -> WireMockSupport.port,
-    "microservice.services.email-verification.port" -> WireMockSupport.port,
-    "auditing.consumer.baseUri.port" -> WireMockSupport.port,
-    "auditing.enabled" -> true,
-    "auditing.traceRequests" -> false
+    "microservice.services.auth.port" -> WireMockSupport.port
   )
 
   //in tests use `app`

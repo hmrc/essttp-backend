@@ -17,7 +17,6 @@
 package essttp.journey
 
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.emailverification.EmailVerificationResult
 import essttp.journey.model.{Journey, JourneyId, SjRequest, SjResponse}
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
@@ -34,6 +33,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import essttp.utils.RequestSupport._
+import paymentsEmailVerification.models.EmailVerificationResult
 import uk.gov.hmrc.http.HttpReads.Implicits.{readUnit => _, _}
 import play.api.libs.json.JsNull
 

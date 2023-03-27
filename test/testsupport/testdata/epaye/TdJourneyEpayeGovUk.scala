@@ -16,7 +16,6 @@
 
 package testsupport.testdata.epaye
 
-import essttp.emailverification.EmailVerificationResult
 import essttp.journey.model.SjRequest.Epaye
 import essttp.journey.model._
 import essttp.rootmodel._
@@ -27,6 +26,7 @@ import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
+import paymentsEmailVerification.models.EmailVerificationResult
 import play.api.libs.json.JsNull
 import testsupport.testdata.{TdBase, TdJourneyStructure}
 

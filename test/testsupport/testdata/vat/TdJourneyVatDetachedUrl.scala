@@ -16,7 +16,6 @@
 
 package testsupport.testdata.vat
 
-import essttp.emailverification.EmailVerificationResult
 import essttp.journey.model.SjRequest.Vat
 import essttp.journey.model._
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
@@ -27,7 +26,7 @@ import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentP
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import essttp.rootmodel._
-
+import paymentsEmailVerification.models.EmailVerificationResult
 import play.api.libs.json.JsNull
 import testsupport.testdata.{TdBase, TdJourneyStructure}
 
