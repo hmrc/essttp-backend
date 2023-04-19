@@ -19,7 +19,7 @@ package controllers.bars
 import essttp.bars.BarsVerifyStatusConnector
 import essttp.bars.model.{BarsVerifyStatusResponse, NumberOfBarsVerifyAttempts}
 import essttp.rootmodel.EmpRef
-import testsupport.ItSpec
+import testsupport.{FrozenTime, ItSpec}
 
 import java.time.temporal.ChronoUnit
 
@@ -31,7 +31,7 @@ class BarsVerifyStatusControllerSpec extends ItSpec {
     stubCommonActions()
 
     private val empRef = "123XYZ456"
-    private val expectedExpiry = frozenZonedDateTime.toInstant.plus(24, ChronoUnit.HOURS)
+    private val expectedExpiry = FrozenTime.getClock.instant().plus(24, ChronoUnit.HOURS)
 
     for (_ <- 1 to numberUpdates) {
       connector.update(EmpRef(empRef)).futureValue
