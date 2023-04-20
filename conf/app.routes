@@ -43,3 +43,7 @@ POST        /journey/:journeyId/update-chosen-email                         jour
 POST        /journey/:journeyId/update-email-verification-status            journey.UpdateEmailVerificationResultController.updateEmailVerificationResult(journeyId: JourneyId)
 
 POST        /journey/:journeyId/update-arrangement                          journey.UpdateSubmittedArrangementController.updateArrangement(journeyId: JourneyId)
+
+# dates
+POST        /start-dates                                                    dates.DatesController.startDates()
+POST        /extreme-dates                                                  dates.DatesController.extremeDates()

@@ -40,8 +40,7 @@ import uk.gov.hmrc.crypto.{AesCrypto, Decrypter, Encrypter, PlainText}
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.http.HeaderCarrier
 
-import java.time.format.DateTimeFormatter
-import java.time.{Clock, LocalDateTime, ZoneId, ZonedDateTime}
+import java.time.Clock
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Singleton
@@ -63,13 +62,7 @@ trait ItSpec
     interval = scaled(Span(300, Millis))
   )
 
-  lazy val frozenZonedDateTime: ZonedDateTime = {
-    val formatter = DateTimeFormatter.ISO_DATE_TIME
-    //the frozen time has to be in future otherwise the journeys will disappear from mongodb because of expiry index
-    LocalDateTime.parse("2057-11-02T16:28:55.185", formatter).atZone(ZoneId.of("Europe/London"))
-  }
-
-  val clock: Clock = Clock.fixed(frozenZonedDateTime.toInstant, ZoneId.of("UTC"))
+  def overrideClock: Option[Clock] = None
 
   lazy val overridingsModule: AbstractModule = new AbstractModule {
     override def configure(): Unit = ()
@@ -82,7 +75,12 @@ trait ItSpec
     @Provides
     @Singleton
     @nowarn // silence "method never used" warning
-    def clock: Clock = self.clock
+    def clock: Clock = {
+      overrideClock.getOrElse {
+        FrozenTime.reset()
+        FrozenTime.getClock
+      }
+    }
 
     /**
      * This one is randomised every time new test application is spawned. Thanks to that there will be no
@@ -122,15 +120,14 @@ trait ItSpec
 
   implicit def hc: HeaderCarrier = HeaderCarrier()
 
-  val testServerPort: Int = 19001
-  val baseUrl: String = s"http://localhost:${testServerPort.toString}"
+  val baseUrl: String = s"http://localhost:${ItSpec.testServerPort.toString}"
   val databaseName: String = "essttp-backend-it"
 
   def conf: Map[String, Any] = Map(
     "mongodb.uri" -> s"mongodb://localhost:27017/$databaseName",
     "microservice.services.essttp-backend.protocol" -> "http",
     "microservice.services.essttp-backend.host" -> "localhost",
-    "microservice.services.essttp-backend.port" -> testServerPort,
+    "microservice.services.essttp-backend.port" -> ItSpec.testServerPort,
     "microservice.services.auth.protocol" -> "http",
     "microservice.services.auth.host" -> "localhost",
     "microservice.services.auth.port" -> WireMockSupport.port
@@ -144,7 +141,7 @@ trait ItSpec
 
   object TestServerFactory extends DefaultTestServerFactory {
     override protected def serverConfig(app: Application): ServerConfig = {
-      val sc = ServerConfig(port    = Some(testServerPort), sslPort = Some(0), mode = Mode.Test, rootDir = app.path)
+      val sc = ServerConfig(port    = Some(ItSpec.testServerPort), sslPort = Some(0), mode = Mode.Test, rootDir = app.path)
       sc.copy(configuration = sc.configuration.withFallback(overrideServerConfiguration(app)))
     }
   }
@@ -192,6 +189,12 @@ trait ItSpec
     encrypter.encrypt(
       PlainText("\"" + SensitiveString(s).decryptedValue + "\"")
     ).value
+}
+
+object ItSpec {
+
+  val testServerPort: Int = 19001
+
 }
 
 final case class TestJourneyIdPrefix(value: String)

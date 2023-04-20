@@ -30,7 +30,7 @@ import java.util.UUID
 
 class FindLatestJourneyBySessionIdSpec extends ItSpec {
 
-  override val clock: Clock = Clock.systemDefaultZone()
+  override val overrideClock: Option[Clock] = Some(Clock.systemDefaultZone())
 
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 

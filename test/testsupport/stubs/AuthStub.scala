@@ -19,7 +19,8 @@ package testsupport.stubs
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, stubFor, urlPathEqualTo}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import uk.gov.hmrc.auth.core.AuthProviders
+import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
+import uk.gov.hmrc.auth.core.{AuthProviders, AuthenticateHeaderParser}
 
 object AuthStub {
 
@@ -31,7 +32,19 @@ object AuthStub {
         .willReturn(aResponse().withStatus(200).withBody("{}"))
     )
 
-  def ensureAuthoriseCalled(numberOfAuthCalls: Int, authProviders: AuthProviders) =
+  def authoriseError(authorisationExceptionString: String): StubMapping =
+    stubFor(
+      post(
+        urlPathEqualTo(authoriseUrl)
+      )
+        .willReturn(
+          aResponse()
+            .withStatus(401)
+            .withHeader(AuthenticateHeaderParser.WWW_AUTHENTICATE, s"""MDTP detail="$authorisationExceptionString"""")
+        )
+    )
+
+  def ensureAuthoriseCalled(numberOfAuthCalls: Int, authProviders: AuthProviders = AuthProviders(GovernmentGateway)) =
     verify(
       exactly(numberOfAuthCalls),
       postRequestedFor(urlPathEqualTo(authoriseUrl))
