@@ -7,7 +7,7 @@ object AppDependencies {
 
   val bootstrapVersion = "7.15.0"
   val hmrcMongoVersion = "1.1.0"
-  val chimneyVersion = "0.7.3"
+  val chimneyVersion = "0.7.4"
   val catsVersion = "2.9.0"
   val playJsonDerivedCodesVersion = "7.0.0"
   val enumeratumVersion = "1.7.0"
@@ -46,7 +46,7 @@ object AppDependencies {
     //run `essttp-backend/dependencyTree::toFile deps.txt -f` and look for that line:
     // +-uk.gov.hmrc:auth-client_2.12:3.0.0-play-27 (evicted by: 5.1.0-play-27)
     //the correct version in this time was `3.0.0`
-    "uk.gov.hmrc"           %% "auth-client"                     % "6.0.0-play-28",
+    "uk.gov.hmrc"           %% "auth-client"                     % "6.1.0-play-28",
     "uk.gov.hmrc"           %% "bootstrap-common-play-28"        % AppDependencies.bootstrapVersion % Provided,
     "org.julienrf"          %% "play-json-derived-codecs"        % AppDependencies.playJsonDerivedCodesVersion, //choose carefully
     "com.github.kxbmap"     %% "configs"                         % "0.6.1",
