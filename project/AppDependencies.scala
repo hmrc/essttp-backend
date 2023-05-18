@@ -6,7 +6,7 @@ import sbt._
 object AppDependencies {
 
   val bootstrapVersion = "7.15.0"
-  val hmrcMongoVersion = "1.1.0"
+  val hmrcMongoVersion = "1.2.0"
   val chimneyVersion = "0.7.4"
   val catsVersion = "2.9.0"
   val playJsonDerivedCodesVersion = "7.0.0"
@@ -50,7 +50,7 @@ object AppDependencies {
     "uk.gov.hmrc"           %% "bootstrap-common-play-28"        % AppDependencies.bootstrapVersion % Provided,
     "org.julienrf"          %% "play-json-derived-codecs"        % AppDependencies.playJsonDerivedCodesVersion, //choose carefully
     "com.github.kxbmap"     %% "configs"                         % "0.6.1",
-    "com.github.pureconfig" %% "pureconfig"                      % "0.17.3",
+    "com.github.pureconfig" %% "pureconfig"                      % "0.17.4",
     "com.beachape"          %% "enumeratum-play"                 % AppDependencies.enumeratumVersion,
     "com.typesafe.play"     %% "play"                            % play.core.PlayVersion.current % Provided,
     "io.scalaland"          %% "chimney"                         % AppDependencies.chimneyVersion,
