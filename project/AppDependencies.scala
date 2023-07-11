@@ -5,9 +5,9 @@ import sbt._
 
 object AppDependencies {
 
-  val bootstrapVersion = "7.15.0"
-  val hmrcMongoVersion = "1.2.0"
-  val chimneyVersion = "0.7.4"
+  val bootstrapVersion = "7.19.0"
+  val hmrcMongoVersion = "1.3.0"
+  val chimneyVersion = "0.7.5"
   val catsVersion = "2.9.0"
   val playJsonDerivedCodesVersion = "7.0.0"
   val enumeratumVersion = "1.7.0"
@@ -58,7 +58,7 @@ object AppDependencies {
     "uk.gov.hmrc.mongo"     %% "hmrc-mongo-play-28"              % AppDependencies.hmrcMongoVersion,
     "uk.gov.hmrc"           %% "crypto-json-play-28"             % AppDependencies.cryptoVersion,
     "uk.gov.hmrc"           %% "json-encryption"                 % hmrcJsonEncryptionVersion,
-    "uk.gov.hmrc"           %% "payments-email-verification-cor" % "0.3.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
+    "uk.gov.hmrc"           %% "payments-email-verification-cor" % "0.5.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
   )
 
 }
