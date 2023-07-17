@@ -37,7 +37,8 @@ class EligibilityRulesSpec extends UnitSpec {
         hasInvalidInterestSignals         = Some(false),
         dmSpecialOfficeProcessingRequired = Some(false),
         noDueDatesReached                 = false,
-        cannotFindLockReason              = Some(false)
+        cannotFindLockReason              = Some(false),
+        creditsNotAllowed                 = Some(false)
       ).isEligible shouldBe true
     }
 
@@ -55,7 +56,8 @@ class EligibilityRulesSpec extends UnitSpec {
         hasInvalidInterestSignals         = None,
         dmSpecialOfficeProcessingRequired = None,
         noDueDatesReached                 = false,
-        cannotFindLockReason              = None
+        cannotFindLockReason              = None,
+        creditsNotAllowed                 = None
       ).isEligible shouldBe true
     }
 

@@ -58,7 +58,8 @@ trait TdBase {
     isMoreThanMaxDebtAllowance        = false, disallowedChargeLockTypes = false, existingTTP = false,
     chargesOverMaxDebtAge             = false, ineligibleChargeTypes = false, missingFiledReturns = false,
     hasInvalidInterestSignals         = None, dmSpecialOfficeProcessingRequired = None, noDueDatesReached = false,
-    cannotFindLockReason              = None
+    cannotFindLockReason              = None,
+    creditsNotAllowed                 = None
   )
 
   def ineligibleEligibilityCheckResult(eligibleEligibilityCheckResult: EligibilityCheckResult): EligibilityCheckResult =
