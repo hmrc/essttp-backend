@@ -31,8 +31,8 @@ final case class EligibilityRules(
     hasInvalidInterestSignals:         Option[Boolean],
     dmSpecialOfficeProcessingRequired: Option[Boolean],
     noDueDatesReached:                 Boolean,
-    cannotFindLockReason:              Option[Boolean]
-
+    cannotFindLockReason:              Option[Boolean],
+    creditsNotAllowed:                 Option[Boolean]
 ) {
 
   val moreThanOneReasonForIneligibility: Boolean = {
@@ -49,7 +49,8 @@ final case class EligibilityRules(
       hasInvalidInterestSignals.getOrElse(false),
       dmSpecialOfficeProcessingRequired.getOrElse(false),
       noDueDatesReached,
-      cannotFindLockReason.getOrElse(false)
+      cannotFindLockReason.getOrElse(false),
+      creditsNotAllowed.getOrElse(false)
     ).map{ if (_) 1 else 0 }.sum > 1
   }
 
@@ -67,7 +68,8 @@ final case class EligibilityRules(
       hasInvalidInterestSignals.getOrElse(false),
       dmSpecialOfficeProcessingRequired.getOrElse(false),
       noDueDatesReached,
-      cannotFindLockReason.getOrElse(false)
+      cannotFindLockReason.getOrElse(false),
+      creditsNotAllowed.getOrElse(false)
     ).forall(flag => !flag) //if all flags are false then isEligible is true
   }
 }
