@@ -5,14 +5,14 @@ import sbt._
 
 object AppDependencies {
 
-  val bootstrapVersion = "7.19.0"
+  val bootstrapVersion = "7.21.0"
   val hmrcMongoVersion = "1.3.0"
   val chimneyVersion = "0.7.5"
-  val catsVersion = "2.9.0"
+  val catsVersion = "2.10.0"
   val playJsonDerivedCodesVersion = "7.0.0"
   val enumeratumVersion = "1.7.0"
   val cryptoVersion = "7.3.0"
-  val hmrcJsonEncryptionVersion = "5.1.0-play-28"
+  val hmrcJsonEncryptionVersion = "5.2.0-play-28"
 
   /**
    * Note we pull in various libraries from corJourneyDependencies such as:

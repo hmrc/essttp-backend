@@ -38,7 +38,8 @@ class EligibilityRulesSpec extends UnitSpec {
         dmSpecialOfficeProcessingRequired = Some(false),
         noDueDatesReached                 = false,
         cannotFindLockReason              = Some(false),
-        creditsNotAllowed                 = Some(false)
+        creditsNotAllowed                 = Some(false),
+        isMoreThanMaxLineItems            = Some(false)
       ).isEligible shouldBe true
     }
 
@@ -57,7 +58,8 @@ class EligibilityRulesSpec extends UnitSpec {
         dmSpecialOfficeProcessingRequired = None,
         noDueDatesReached                 = false,
         cannotFindLockReason              = None,
-        creditsNotAllowed                 = None
+        creditsNotAllowed                 = None,
+        isMoreThanMaxLineItems            = None
       ).isEligible shouldBe true
     }
 
