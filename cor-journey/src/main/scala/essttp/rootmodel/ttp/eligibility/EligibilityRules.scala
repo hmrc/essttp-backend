@@ -32,7 +32,8 @@ final case class EligibilityRules(
     dmSpecialOfficeProcessingRequired: Option[Boolean],
     noDueDatesReached:                 Boolean,
     cannotFindLockReason:              Option[Boolean],
-    creditsNotAllowed:                 Option[Boolean]
+    creditsNotAllowed:                 Option[Boolean],
+    isMoreThanMaxLineItems:            Option[Boolean]
 ) {
 
   val moreThanOneReasonForIneligibility: Boolean = {
@@ -50,7 +51,8 @@ final case class EligibilityRules(
       dmSpecialOfficeProcessingRequired.getOrElse(false),
       noDueDatesReached,
       cannotFindLockReason.getOrElse(false),
-      creditsNotAllowed.getOrElse(false)
+      creditsNotAllowed.getOrElse(false),
+      isMoreThanMaxLineItems.getOrElse(false)
     ).map{ if (_) 1 else 0 }.sum > 1
   }
 
@@ -69,7 +71,8 @@ final case class EligibilityRules(
       dmSpecialOfficeProcessingRequired.getOrElse(false),
       noDueDatesReached,
       cannotFindLockReason.getOrElse(false),
-      creditsNotAllowed.getOrElse(false)
+      creditsNotAllowed.getOrElse(false),
+      isMoreThanMaxLineItems.getOrElse(false)
     ).forall(flag => !flag) //if all flags are false then isEligible is true
   }
 }
