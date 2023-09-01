@@ -33,7 +33,7 @@ final case class EligibilityRules(
     noDueDatesReached:                 Boolean,
     cannotFindLockReason:              Option[Boolean],
     creditsNotAllowed:                 Option[Boolean],
-    isMoreThanMaxLineItems:            Option[Boolean]
+    isMoreThanMaxPaymentReference:     Option[Boolean]
 ) {
 
   val moreThanOneReasonForIneligibility: Boolean = {
@@ -52,7 +52,7 @@ final case class EligibilityRules(
       noDueDatesReached,
       cannotFindLockReason.getOrElse(false),
       creditsNotAllowed.getOrElse(false),
-      isMoreThanMaxLineItems.getOrElse(false)
+      isMoreThanMaxPaymentReference.getOrElse(false)
     ).map{ if (_) 1 else 0 }.sum > 1
   }
 
@@ -72,7 +72,7 @@ final case class EligibilityRules(
       noDueDatesReached,
       cannotFindLockReason.getOrElse(false),
       creditsNotAllowed.getOrElse(false),
-      isMoreThanMaxLineItems.getOrElse(false)
+      isMoreThanMaxPaymentReference.getOrElse(false)
     ).forall(flag => !flag) //if all flags are false then isEligible is true
   }
 }
