@@ -39,7 +39,7 @@ class EligibilityRulesSpec extends UnitSpec {
         noDueDatesReached                 = false,
         cannotFindLockReason              = Some(false),
         creditsNotAllowed                 = Some(false),
-        isMoreThanMaxLineItems            = Some(false)
+        isMoreThanMaxPaymentReference     = Some(false)
       ).isEligible shouldBe true
     }
 
@@ -59,7 +59,7 @@ class EligibilityRulesSpec extends UnitSpec {
         noDueDatesReached                 = false,
         cannotFindLockReason              = None,
         creditsNotAllowed                 = None,
-        isMoreThanMaxLineItems            = None
+        isMoreThanMaxPaymentReference     = None
       ).isEligible shouldBe true
     }
 
