@@ -16,23 +16,18 @@
 
 package essttp.rootmodel.ttp.arrangement
 
-import essttp.rootmodel.ttp.PaymentPlanFrequency
-import essttp.rootmodel.ttp.affordablequotes._
-import play.api.libs.json.{Json, OFormat}
+import essttp.rootmodel.ttp.affordablequotes.{DebtItemOriginalDueDate, OutstandingDebtAmount}
+import essttp.rootmodel.ttp.eligibility.{AccruedInterest, ChargeReference}
+import play.api.libs.json.{Format, Json}
 
-final case class EnactPaymentPlan(
-    planDuration:         PlanDuration,
-    paymentPlanFrequency: PaymentPlanFrequency,
-    numberOfInstalments:  NumberOfInstalments,
-    totalDebt:            TotalDebt,
-    totalDebtIncInt:      TotalDebtIncludingInterest,
-    planInterest:         PlanInterest,
-    collections:          Collection,
-    instalments:          List[Instalment],
-    debtItemCharges:      List[DebtItemCharges]
+final case class DebtItemCharges(
+    outstandingDebtAmount:   OutstandingDebtAmount,
+    debtItemChargeId:        ChargeReference,
+    debtItemOriginalDueDate: DebtItemOriginalDueDate,
+    accruedInterest:         AccruedInterest
 )
 
-object EnactPaymentPlan {
+object DebtItemCharges {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[EnactPaymentPlan] = Json.format[EnactPaymentPlan]
+  implicit val format: Format[DebtItemCharges] = Json.format[DebtItemCharges]
 }
