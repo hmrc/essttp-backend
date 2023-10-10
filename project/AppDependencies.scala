@@ -1,7 +1,5 @@
 import play.core.PlayVersion
-import play.sbt.PlayImport._
-import sbt.Keys.libraryDependencies
-import sbt._
+import sbt.*
 
 object AppDependencies {
 
@@ -10,7 +8,7 @@ object AppDependencies {
   val chimneyVersion = "0.7.5"
   val catsVersion = "2.10.0"
   val playJsonDerivedCodesVersion = "7.0.0"
-  val enumeratumVersion = "1.7.0"
+  val enumeratumVersion = "1.7.0" // breaks with later version
   val cryptoVersion = "7.3.0"
   val hmrcJsonEncryptionVersion = "5.2.0-play-28"
 
@@ -30,7 +28,7 @@ object AppDependencies {
 
     val test: Seq[ModuleID] = Seq(
       "uk.gov.hmrc"             %% "bootstrap-test-play-28"     % bootstrapVersion,
-      "com.vladsch.flexmark"    %  "flexmark-all"               % "0.36.8",
+      "com.vladsch.flexmark"    %  "flexmark-all"               % "0.64.6",
       "org.scalatestplus.play"  %% "scalatestplus-play"         % "5.1.0" ,
       "org.pegdown"             %  "pegdown"                    % "1.6.0" ,
       "com.typesafe.play"       %% "play-test"                  % PlayVersion.current,
