@@ -56,7 +56,7 @@ object AppDependencies {
     "uk.gov.hmrc.mongo"     %% "hmrc-mongo-play-28"              % AppDependencies.hmrcMongoVersion,
     "uk.gov.hmrc"           %% "crypto-json-play-28"             % AppDependencies.cryptoVersion,
     "uk.gov.hmrc"           %% "json-encryption"                 % hmrcJsonEncryptionVersion,
-    "uk.gov.hmrc"           %% "payments-email-verification-cor" % "0.6.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
+    "uk.gov.hmrc"           %% "payments-email-verification-cor" % "1.0.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
   )
 
 }
