@@ -28,7 +28,7 @@ object AppDependencies {
 
     val test: Seq[ModuleID] = Seq(
       "uk.gov.hmrc"             %% "bootstrap-test-play-28"     % bootstrapVersion,
-      "com.vladsch.flexmark"    %  "flexmark-all"               % "0.64.6",
+      "com.vladsch.flexmark"    %  "flexmark-all"               % "0.36.8",
       "org.scalatestplus.play"  %% "scalatestplus-play"         % "5.1.0" ,
       "org.pegdown"             %  "pegdown"                    % "1.6.0" ,
       "com.typesafe.play"       %% "play-test"                  % PlayVersion.current,
