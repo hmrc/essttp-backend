@@ -1,7 +1,5 @@
 import play.core.PlayVersion
-import play.sbt.PlayImport._
-import sbt.Keys.libraryDependencies
-import sbt._
+import sbt.*
 
 object AppDependencies {
 
@@ -10,7 +8,7 @@ object AppDependencies {
   val chimneyVersion = "0.7.5"
   val catsVersion = "2.10.0"
   val playJsonDerivedCodesVersion = "7.0.0"
-  val enumeratumVersion = "1.7.0"
+  val enumeratumVersion = "1.7.0" // breaks with later version
   val cryptoVersion = "7.3.0"
   val hmrcJsonEncryptionVersion = "5.2.0-play-28"
 
@@ -58,7 +56,7 @@ object AppDependencies {
     "uk.gov.hmrc.mongo"     %% "hmrc-mongo-play-28"              % AppDependencies.hmrcMongoVersion,
     "uk.gov.hmrc"           %% "crypto-json-play-28"             % AppDependencies.cryptoVersion,
     "uk.gov.hmrc"           %% "json-encryption"                 % hmrcJsonEncryptionVersion,
-    "uk.gov.hmrc"           %% "payments-email-verification-cor" % "0.6.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
+    "uk.gov.hmrc"           %% "payments-email-verification-cor" % "1.0.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
   )
 
 }

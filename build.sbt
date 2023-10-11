@@ -1,10 +1,9 @@
-import sbt.Tests.{Group, SubProcess}
-import uk.gov.hmrc.DefaultBuildSettings.{scalaSettings, targetJvm}
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
-import wartremover.WartRemover.autoImport.wartremoverExcluded
-import uk.gov.hmrc.ShellPrompt
 import sbt.Resolver
+import sbt.Tests.{Group, SubProcess}
+import uk.gov.hmrc.DefaultBuildSettings.scalaSettings
+import uk.gov.hmrc.ShellPrompt
+import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
+import wartremover.WartRemover.autoImport.wartremoverExcluded
 
 val appName = "essttp-backend"
 val majorVer = 1
@@ -50,11 +49,11 @@ lazy val projectResolvers: Seq[MavenRepository] = Seq(
 lazy val commonSettings = Seq(
   majorVersion := majorVer,
   scalacOptions ++= scalaCompilerOptions,
-  update / evictionWarningOptions := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
+  (update / evictionWarningOptions) := EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
   ScalariformSettings.scalariformSettings,
   shellPrompt := ShellPrompt(version.value),
   buildInfoPackage := name.value.toLowerCase().replaceAllLiterally("-", ""),
-  Compile / doc / scalacOptions := Seq(), //this will allow to have warnings in `doc` task and not fail the build
+  (Compile / doc / scalacOptions) := Seq(), //this will allow to have warnings in `doc` task and not fail the build
   resolvers ++= projectResolvers
 ).++(WartRemoverSettings.wartRemoverSettings)
   .++(ScoverageSettings.scoverageSettings)
@@ -64,14 +63,14 @@ lazy val commonSettings = Seq(
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin, SbtAutoBuildPlugin, SbtGitVersioning)
-  .settings(commonSettings: _*)
-  .settings(playSettings : _*)
+  .settings(commonSettings *)
+  .settings(playSettings *)
   .settings(PlayKeys.playDefaultPort := 9216)
   .settings(
     scalaVersion := appScalaVersion,
     libraryDependencies ++= AppDependencies.microserviceDependencies,
-    Test / parallelExecution := false,
-    Test / fork := false,
+    (Test / parallelExecution) := false,
+    (Test / fork) := false,
     routesImport ++= Seq("essttp.journey.model._"),
     wartremoverExcluded ++= (Compile / routes).value
   )
@@ -94,7 +93,7 @@ lazy val microservice = Project(appName, file("."))
  */
 lazy val corJourney = Project(appName + "-cor-journey", file("cor-journey"))
   .enablePlugins(SbtAutoBuildPlugin, SbtGitVersioning)
-  .settings(commonSettings: _*)
+  .settings(commonSettings *)
   .settings(
     scalaVersion := appScalaVersion,
     majorVersion := majorVer,
