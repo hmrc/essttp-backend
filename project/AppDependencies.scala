@@ -47,7 +47,7 @@ object AppDependencies {
     "uk.gov.hmrc"           %% "auth-client"                     % "6.1.0-play-28",
     "uk.gov.hmrc"           %% "bootstrap-common-play-28"        % AppDependencies.bootstrapVersion % Provided,
     "org.julienrf"          %% "play-json-derived-codecs"        % AppDependencies.playJsonDerivedCodesVersion, //choose carefully
-    "com.github.kxbmap"     %% "configs"                         % "0.6.1",
+    "com.github.kxbmap"     %% "configs"                         % "0.6.1" exclude("org.apache.commons", "commons-text"),
     "com.github.pureconfig" %% "pureconfig"                      % "0.17.4",
     "com.beachape"          %% "enumeratum-play"                 % AppDependencies.enumeratumVersion,
     "com.typesafe.play"     %% "play"                            % play.core.PlayVersion.current % Provided,
