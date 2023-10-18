@@ -22,7 +22,7 @@ import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{EmailVerificationAnswers, Journey, JourneyId, Stage}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.utils.Errors
-import io.scalaland.chimney.dsl.TransformerOps
+import io.scalaland.chimney.dsl.TransformationOps
 import paymentsEmailVerification.models.EmailVerificationResult
 import play.api.mvc.{Action, ControllerComponents, Request}
 import services.JourneyService

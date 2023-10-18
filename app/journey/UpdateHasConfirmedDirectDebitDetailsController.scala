@@ -21,7 +21,7 @@ import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.utils.Errors
-import io.scalaland.chimney.dsl.TransformerOps
+import io.scalaland.chimney.dsl.TransformationOps
 import play.api.mvc.{Action, AnyContent, ControllerComponents, Request}
 import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController

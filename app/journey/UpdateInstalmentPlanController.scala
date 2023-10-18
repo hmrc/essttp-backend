@@ -23,7 +23,7 @@ import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.ttp.affordablequotes.PaymentPlan
 import essttp.utils.Errors
-import io.scalaland.chimney.dsl.TransformerOps
+import io.scalaland.chimney.dsl.TransformationOps
 import play.api.mvc.{Action, ControllerComponents, Request}
 import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
