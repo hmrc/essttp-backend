@@ -62,18 +62,18 @@ trait TdEpaye {
         debtTotalAmount = DebtTotalAmount(AmountInPence(300000)),
         charges         = List(
           Charges(
-            chargeType           = ChargeType("InYearRTICharge-Tax"),
-            mainType             = MainType("InYearRTICharge(FPS)"),
-            chargeReference      = ChargeReference("A00000000001"),
-            mainTrans            = MainTrans("mainTrans"),
-            subTrans             = SubTrans("subTrans"),
-            outstandingAmount    = OutstandingAmount(AmountInPence(100000)),
-            dueDate              = DueDate(reusableDate),
-            interestStartDate    = Some(InterestStartDate(reusableDate)),
-            accruedInterest      = AccruedInterest(AmountInPence(1597)),
-            ineligibleChargeType = IneligibleChargeType(false),
-            chargeOverMaxDebtAge = ChargeOverMaxDebtAge(false),
-            locks                = Some(
+            chargeType              = ChargeType("InYearRTICharge-Tax"),
+            mainType                = MainType("InYearRTICharge(FPS)"),
+            chargeReference         = ChargeReference("A00000000001"),
+            mainTrans               = MainTrans("mainTrans"),
+            subTrans                = SubTrans("subTrans"),
+            outstandingAmount       = OutstandingAmount(AmountInPence(100000)),
+            dueDate                 = DueDate(reusableDate),
+            interestStartDate       = Some(InterestStartDate(reusableDate)),
+            accruedInterest         = AccruedInterest(AmountInPence(1597)),
+            ineligibleChargeType    = IneligibleChargeType(false),
+            chargeOverMaxDebtAge    = ChargeOverMaxDebtAge(false),
+            locks                   = Some(
               List(
                 Lock(
                   lockType                 = LockType("Payment"),
@@ -82,7 +82,9 @@ trait TdEpaye {
                 )
               )
             ),
-            dueDateNotReached    = false
+            dueDateNotReached       = false,
+            isInterestBearingCharge = None,
+            useChargeReference      = None
           )
         )
       )
