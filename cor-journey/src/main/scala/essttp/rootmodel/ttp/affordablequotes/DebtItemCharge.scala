@@ -23,6 +23,8 @@ final case class DebtItemCharge(
     outstandingDebtAmount:   OutstandingDebtAmount,
     mainTrans:               MainTrans,
     subTrans:                SubTrans,
+    isInterestBearingCharge: Option[Boolean],
+    useChargeReference:      Option[Boolean],
     debtItemChargeId:        ChargeReference,
     interestStartDate:       Option[InterestStartDate],
     debtItemOriginalDueDate: DebtItemOriginalDueDate
