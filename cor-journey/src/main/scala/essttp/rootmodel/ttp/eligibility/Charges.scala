@@ -34,8 +34,8 @@ final case class Charges(
     chargeOverMaxDebtAge:    ChargeOverMaxDebtAge,
     locks:                   Option[List[Lock]],
     dueDateNotReached:       Boolean,
-    isInterestBearingCharge: Option[IsInterestBearingCharge] = None,
-    useChargeReference:      Option[UseChargeReference]      = None
+    isInterestBearingCharge: Option[IsInterestBearingCharge],
+    useChargeReference:      Option[UseChargeReference]
 )
 
 object Charges {
