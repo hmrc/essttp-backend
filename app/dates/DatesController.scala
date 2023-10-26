@@ -24,6 +24,7 @@ import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 
 @Singleton()
 class DatesController @Inject() (
@@ -31,14 +32,18 @@ class DatesController @Inject() (
     startDatesService:   StartDatesService,
     extremeDatesService: ExtremeDatesService,
     cc:                  ControllerComponents
-) extends BackendController(cc) {
+)(implicit ec: ExecutionContext) extends BackendController(cc) {
 
-  def startDates(): Action[StartDatesRequest] = actions.authenticatedAction(parse.json[StartDatesRequest]) { implicit request =>
-    Ok(Json.toJson(startDatesService.calculateStartDates(request.body)))
+  def startDates(): Action[StartDatesRequest] = actions.authenticatedAction(parse.json[StartDatesRequest]).async { implicit request =>
+    startDatesService.calculateStartDates(request.body).map { result =>
+      Ok(Json.toJson(result))
+    }
   }
 
-  def extremeDates(): Action[ExtremeDatesRequest] = actions.authenticatedAction(parse.json[ExtremeDatesRequest]) { implicit request =>
-    Ok(Json.toJson(extremeDatesService.calculateExtremeDates(request.body)))
+  def extremeDates(): Action[ExtremeDatesRequest] = actions.authenticatedAction(parse.json[ExtremeDatesRequest]).async { implicit request =>
+    extremeDatesService.calculateExtremeDates(request.body).map { result =>
+      Ok(Json.toJson(result))
+    }
   }
 
 }
