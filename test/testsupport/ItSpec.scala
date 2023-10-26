@@ -123,15 +123,16 @@ trait ItSpec
   val baseUrl: String = s"http://localhost:${ItSpec.testServerPort.toString}"
   val databaseName: String = "essttp-backend-it"
 
-  def conf: Map[String, Any] = Map(
+  val overrideConfig: Map[String, Any] = Map.empty
+
+  def conf: Map[String, Any] = Map[String, Any](
     "mongodb.uri" -> s"mongodb://localhost:27017/$databaseName",
     "microservice.services.essttp-backend.protocol" -> "http",
     "microservice.services.essttp-backend.host" -> "localhost",
     "microservice.services.essttp-backend.port" -> ItSpec.testServerPort,
-    "microservice.services.auth.protocol" -> "http",
-    "microservice.services.auth.host" -> "localhost",
-    "microservice.services.auth.port" -> WireMockSupport.port
-  )
+    "microservice.services.auth.port" -> WireMockSupport.port,
+    "microservice.services.date-calculator.port" -> WireMockSupport.port
+  ) ++ overrideConfig
 
   //in tests use `app`
   override def fakeApplication(): Application = new GuiceApplicationBuilder()
