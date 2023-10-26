@@ -17,13 +17,15 @@
 package dates
 
 import com.google.inject.{Inject, Singleton}
+import config.AppConfig
 import essttp.rootmodel.dates.InitialPaymentDate
 import essttp.rootmodel.dates.startdates.{InstalmentStartDate, PreferredDayOfMonth, StartDatesRequest, StartDatesResponse}
 
 import java.time.LocalDate
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class StartDatesService @Inject() (datesService: DatesService) {
+class StartDatesService @Inject() (datesService: DatesService, appConfig: AppConfig)(implicit ec: ExecutionContext) {
 
   private def calculateInstalmentStartDate(preferredDayOfMonth: PreferredDayOfMonth, proposedStartDate: LocalDate): InstalmentStartDate = {
     // if the preferred day of month is before the proposed start date day of month it should be next month on that day
@@ -34,22 +36,27 @@ class StartDatesService @Inject() (datesService: DatesService) {
     }
   }
 
-  def calculateStartDates(startDatesRequest: StartDatesRequest): StartDatesResponse = {
-    val initialPaymentDate: Option[InitialPaymentDate] =
-      datesService.initialPaymentDate(
-        initialPayment    = startDatesRequest.initialPayment,
-        numberOfDaysToAdd = 10
-      )
-    val potentialInstalmentStartDate: InstalmentStartDate = initialPaymentDate match {
-      case Some(_) => InstalmentStartDate(datesService.todayPlusDays(30))
-      case None    => InstalmentStartDate(datesService.todayPlusDays(10))
-    }
-    val instalmentStartDate: InstalmentStartDate =
-      calculateInstalmentStartDate(
-        preferredDayOfMonth = startDatesRequest.preferredDayOfMonth,
-        proposedStartDate   = potentialInstalmentStartDate.value
-      )
+  def calculateStartDates(startDatesRequest: StartDatesRequest): Future[StartDatesResponse] = {
+    val earliestDatePaymentCanBeTakenF =
+      if (appConfig.useDateCalculatorService) datesService.todayPlusWorkingDays(6)
+      else Future.successful(datesService.todayPlusCalendarDays(10))
 
-    StartDatesResponse(initialPaymentDate, instalmentStartDate)
+    earliestDatePaymentCanBeTakenF.map { earliestDatePaymentCanBeTaken =>
+      val initialPaymentDate: Option[InitialPaymentDate] =
+        if (startDatesRequest.initialPayment.value) Some(InitialPaymentDate(earliestDatePaymentCanBeTaken))
+        else None
+
+      val potentialInstalmentStartDate: InstalmentStartDate = initialPaymentDate match {
+        case Some(_) => InstalmentStartDate(datesService.todayPlusCalendarDays(30))
+        case None    => InstalmentStartDate(earliestDatePaymentCanBeTaken)
+      }
+      val instalmentStartDate: InstalmentStartDate =
+        calculateInstalmentStartDate(
+          preferredDayOfMonth = startDatesRequest.preferredDayOfMonth,
+          proposedStartDate   = potentialInstalmentStartDate.value
+        )
+
+      StartDatesResponse(initialPaymentDate, instalmentStartDate)
+    }
   }
 }

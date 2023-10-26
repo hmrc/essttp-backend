@@ -17,30 +17,41 @@
 package dates
 
 import com.google.inject.{Inject, Singleton}
+import config.AppConfig
 import essttp.rootmodel.dates.extremedates.{EarliestPaymentPlanStartDate, ExtremeDatesRequest, ExtremeDatesResponse, LatestPaymentPlanStartDate}
 import essttp.rootmodel.dates.{InitialPayment, InitialPaymentDate}
 
+import scala.concurrent.{ExecutionContext, Future}
+
 @Singleton
-class ExtremeDatesService @Inject() (datesService: DatesService) {
-  def calculateExtremeDates(extremeDatesRequest: ExtremeDatesRequest): ExtremeDatesResponse = {
-    val initialPaymentDate: Option[InitialPaymentDate] =
-      datesService.initialPaymentDate(
-        initialPayment    = extremeDatesRequest.initialPayment,
-        numberOfDaysToAdd = 10
+class ExtremeDatesService @Inject() (datesService: DatesService, appConfig: AppConfig)(implicit ec: ExecutionContext) {
+
+  def calculateExtremeDates(extremeDatesRequest: ExtremeDatesRequest): Future[ExtremeDatesResponse] = {
+    val earliestDatePaymentCanBeTakenF =
+      if (appConfig.useDateCalculatorService) datesService.todayPlusWorkingDays(6)
+      else Future.successful(datesService.todayPlusCalendarDays(10))
+
+    earliestDatePaymentCanBeTakenF.map{ earliestDatePaymentCanBeTaken =>
+      val initialPaymentDate: Option[InitialPaymentDate] =
+        if (extremeDatesRequest.initialPayment.value) Some(InitialPaymentDate(earliestDatePaymentCanBeTaken))
+        else None
+
+      val earliestPlanStartDate: EarliestPaymentPlanStartDate = extremeDatesRequest.initialPayment match {
+        case InitialPayment(true)  => EarliestPaymentPlanStartDate(datesService.todayPlusCalendarDays(30))
+        case InitialPayment(false) => EarliestPaymentPlanStartDate(earliestDatePaymentCanBeTaken)
+      }
+      val latestPlanStartDate: LatestPaymentPlanStartDate = extremeDatesRequest.initialPayment match {
+        case InitialPayment(true)  => LatestPaymentPlanStartDate(datesService.todayPlusCalendarDays(60))
+        case InitialPayment(false) => LatestPaymentPlanStartDate(datesService.todayPlusCalendarDays(40))
+      }
+
+      ExtremeDatesResponse(
+        initialPaymentDate    = initialPaymentDate,
+        earliestPlanStartDate = earliestPlanStartDate,
+        latestPlanStartDate   = latestPlanStartDate
       )
-    val earliestPlanStartDate: EarliestPaymentPlanStartDate = extremeDatesRequest.initialPayment match {
-      case InitialPayment(true)  => EarliestPaymentPlanStartDate(datesService.todayPlusDays(30))
-      case InitialPayment(false) => EarliestPaymentPlanStartDate(datesService.todayPlusDays(10))
-    }
-    val latestPlanStartDate: LatestPaymentPlanStartDate = extremeDatesRequest.initialPayment match {
-      case InitialPayment(true)  => LatestPaymentPlanStartDate(datesService.todayPlusDays(60))
-      case InitialPayment(false) => LatestPaymentPlanStartDate(datesService.todayPlusDays(40))
+
     }
 
-    ExtremeDatesResponse(
-      initialPaymentDate    = initialPaymentDate,
-      earliestPlanStartDate = earliestPlanStartDate,
-      latestPlanStartDate   = latestPlanStartDate
-    )
   }
 }

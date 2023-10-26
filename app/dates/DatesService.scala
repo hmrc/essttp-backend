@@ -16,19 +16,34 @@
 
 package dates
 
+import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
-import essttp.rootmodel.dates.{InitialPayment, InitialPaymentDate}
+import dates.models.{AddWorkingDaysRequest, AddWorkingDaysResponse, Region}
+import play.api.libs.json.{JsError, JsSuccess}
 
 import java.time.{Clock, LocalDate}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DatesService @Inject() (clock: Clock) {
-  def today(): LocalDate = LocalDate.now(clock)
+class DatesService @Inject() (clock: Clock, dateCalculatorConnector: DateCalculatorConnector)(implicit ec: ExecutionContext) {
 
-  def todayPlusDays(numberOfDays: Int): LocalDate = today().plusDays(numberOfDays)
+  private def today(): LocalDate = LocalDate.now(clock)
 
-  def initialPaymentDate(initialPayment: InitialPayment, numberOfDaysToAdd: Int): Option[InitialPaymentDate] = initialPayment match {
-    case InitialPayment(true)  => Some(InitialPaymentDate(todayPlusDays(numberOfDaysToAdd)))
-    case InitialPayment(false) => None
+  def todayPlusCalendarDays(numberOfDays: Int): LocalDate = today().plusDays(numberOfDays)
+
+  def todayPlusWorkingDays(numberOfDaysToAdd: Int): Future[LocalDate] = {
+    dateCalculatorConnector
+      .addWorkingDays(AddWorkingDaysRequest(today(), numberOfDaysToAdd, Set(Region.EnglandAndWales)))
+      .map { response =>
+        if (response.status === 200) {
+          response.json.validate[AddWorkingDaysResponse] match {
+            case JsSuccess(result, _) => result.result
+            case JsError(_)           => throw new Exception("Could not parse date calculator response")
+          }
+        } else {
+          throw new Exception(s"Call to date-calculator came back with unexpected http status ${response.status.toString}")
+        }
+      }
   }
+
 }

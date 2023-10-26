@@ -38,4 +38,6 @@ class AppConfig @Inject() (
 
   val journeyRepoTtl: FiniteDuration = configFiniteDuration("journey.repoTtl")
 
+  val useDateCalculatorService: Boolean = config.getBoolean("features.call-date-calculator-service")
+
 }
