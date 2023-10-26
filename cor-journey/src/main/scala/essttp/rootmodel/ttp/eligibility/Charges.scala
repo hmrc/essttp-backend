@@ -16,23 +16,26 @@
 
 package essttp.rootmodel.ttp.eligibility
 
+import essttp.rootmodel.ttp.{IsInterestBearingCharge, UseChargeReference}
 import essttp.rootmodel.ttp.affordablequotes.DueDate
 import play.api.libs.json.{Json, OFormat}
 
 final case class Charges(
-    chargeType:           ChargeType,
-    mainType:             MainType,
-    chargeReference:      ChargeReference,
-    mainTrans:            MainTrans,
-    subTrans:             SubTrans,
-    outstandingAmount:    OutstandingAmount,
-    interestStartDate:    Option[InterestStartDate],
-    dueDate:              DueDate,
-    accruedInterest:      AccruedInterest,
-    ineligibleChargeType: IneligibleChargeType,
-    chargeOverMaxDebtAge: ChargeOverMaxDebtAge,
-    locks:                Option[List[Lock]],
-    dueDateNotReached:    Boolean
+    chargeType:              ChargeType,
+    mainType:                MainType,
+    chargeReference:         ChargeReference,
+    mainTrans:               MainTrans,
+    subTrans:                SubTrans,
+    outstandingAmount:       OutstandingAmount,
+    interestStartDate:       Option[InterestStartDate],
+    dueDate:                 DueDate,
+    accruedInterest:         AccruedInterest,
+    ineligibleChargeType:    IneligibleChargeType,
+    chargeOverMaxDebtAge:    ChargeOverMaxDebtAge,
+    locks:                   Option[List[Lock]],
+    dueDateNotReached:       Boolean,
+    isInterestBearingCharge: Option[IsInterestBearingCharge],
+    useChargeReference:      Option[UseChargeReference]
 )
 
 object Charges {
