@@ -21,12 +21,12 @@ import essttp.rootmodel.ttp.eligibility.{AccruedInterest, ChargeReference}
 import play.api.libs.json.{Format, Json}
 
 final case class DebtItemCharges(
-                                  outstandingDebtAmount:   OutstandingDebtAmount,
-                                  debtItemChargeId:        ChargeReference,
-                                  debtItemOriginalDueDate: DebtItemOriginalDueDate,
-                                  accruedInterest:         AccruedInterest,
-                                  isInterestBearingCharge: Option[Boolean],
-                                  useChargeReference: Option[Boolean]
+    outstandingDebtAmount:   OutstandingDebtAmount,
+    debtItemChargeId:        ChargeReference,
+    debtItemOriginalDueDate: DebtItemOriginalDueDate,
+    accruedInterest:         AccruedInterest,
+    isInterestBearingCharge: Option[Boolean],
+    useChargeReference:      Option[Boolean]
 )
 
 object DebtItemCharges {
