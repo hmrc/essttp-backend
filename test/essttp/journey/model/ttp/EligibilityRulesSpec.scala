@@ -31,7 +31,7 @@ class EligibilityRulesSpec extends UnitSpec {
         isMoreThanMaxDebtAllowance        = false,
         disallowedChargeLockTypes         = false,
         existingTTP                       = false,
-        chargesOverMaxDebtAge             = false,
+        chargesOverMaxDebtAge             = Some(false),
         ineligibleChargeTypes             = false,
         missingFiledReturns               = false,
         hasInvalidInterestSignals         = Some(false),
@@ -39,7 +39,8 @@ class EligibilityRulesSpec extends UnitSpec {
         noDueDatesReached                 = false,
         cannotFindLockReason              = Some(false),
         creditsNotAllowed                 = Some(false),
-        isMoreThanMaxPaymentReference     = Some(false)
+        isMoreThanMaxPaymentReference     = Some(false),
+        chargesBeforeMaxAccountingDate    = Some(false)
       ).isEligible shouldBe true
     }
 
@@ -51,7 +52,7 @@ class EligibilityRulesSpec extends UnitSpec {
         isMoreThanMaxDebtAllowance        = false,
         disallowedChargeLockTypes         = false,
         existingTTP                       = false,
-        chargesOverMaxDebtAge             = false,
+        chargesOverMaxDebtAge             = None,
         ineligibleChargeTypes             = false,
         missingFiledReturns               = false,
         hasInvalidInterestSignals         = None,
@@ -59,7 +60,8 @@ class EligibilityRulesSpec extends UnitSpec {
         noDueDatesReached                 = false,
         cannotFindLockReason              = None,
         creditsNotAllowed                 = None,
-        isMoreThanMaxPaymentReference     = None
+        isMoreThanMaxPaymentReference     = None,
+        chargesBeforeMaxAccountingDate    = None
       ).isEligible shouldBe true
     }
 

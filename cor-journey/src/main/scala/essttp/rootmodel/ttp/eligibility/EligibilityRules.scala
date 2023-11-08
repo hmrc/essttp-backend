@@ -25,7 +25,7 @@ final case class EligibilityRules(
     isMoreThanMaxDebtAllowance:        Boolean,
     disallowedChargeLockTypes:         Boolean,
     existingTTP:                       Boolean,
-    chargesOverMaxDebtAge:             Boolean,
+    chargesOverMaxDebtAge:             Option[Boolean],
     ineligibleChargeTypes:             Boolean,
     missingFiledReturns:               Boolean,
     hasInvalidInterestSignals:         Option[Boolean],
@@ -33,7 +33,8 @@ final case class EligibilityRules(
     noDueDatesReached:                 Boolean,
     cannotFindLockReason:              Option[Boolean],
     creditsNotAllowed:                 Option[Boolean],
-    isMoreThanMaxPaymentReference:     Option[Boolean]
+    isMoreThanMaxPaymentReference:     Option[Boolean],
+    chargesBeforeMaxAccountingDate:    Option[Boolean]
 ) {
 
   val moreThanOneReasonForIneligibility: Boolean = {
@@ -44,7 +45,7 @@ final case class EligibilityRules(
       isMoreThanMaxDebtAllowance,
       disallowedChargeLockTypes,
       existingTTP,
-      chargesOverMaxDebtAge,
+      chargesOverMaxDebtAge.getOrElse(false),
       ineligibleChargeTypes,
       missingFiledReturns,
       hasInvalidInterestSignals.getOrElse(false),
@@ -52,7 +53,8 @@ final case class EligibilityRules(
       noDueDatesReached,
       cannotFindLockReason.getOrElse(false),
       creditsNotAllowed.getOrElse(false),
-      isMoreThanMaxPaymentReference.getOrElse(false)
+      isMoreThanMaxPaymentReference.getOrElse(false),
+      chargesBeforeMaxAccountingDate.getOrElse(false)
     ).map{ if (_) 1 else 0 }.sum > 1
   }
 
@@ -64,7 +66,7 @@ final case class EligibilityRules(
       isMoreThanMaxDebtAllowance,
       disallowedChargeLockTypes,
       existingTTP,
-      chargesOverMaxDebtAge,
+      chargesOverMaxDebtAge.getOrElse(false),
       ineligibleChargeTypes,
       missingFiledReturns,
       hasInvalidInterestSignals.getOrElse(false),
@@ -72,7 +74,8 @@ final case class EligibilityRules(
       noDueDatesReached,
       cannotFindLockReason.getOrElse(false),
       creditsNotAllowed.getOrElse(false),
-      isMoreThanMaxPaymentReference.getOrElse(false)
+      isMoreThanMaxPaymentReference.getOrElse(false),
+      chargesBeforeMaxAccountingDate.getOrElse(false)
     ).forall(flag => !flag) //if all flags are false then isEligible is true
   }
 }

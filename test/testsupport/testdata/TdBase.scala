@@ -56,9 +56,10 @@ trait TdBase {
   val eligibleEligibilityRules: EligibilityRules = EligibilityRules(
     hasRlsOnAddress                   = false, markedAsInsolvent = false, isLessThanMinDebtAllowance = false,
     isMoreThanMaxDebtAllowance        = false, disallowedChargeLockTypes = false, existingTTP = false,
-    chargesOverMaxDebtAge             = false, ineligibleChargeTypes = false, missingFiledReturns = false,
+    chargesOverMaxDebtAge             = None, ineligibleChargeTypes = false, missingFiledReturns = false,
     hasInvalidInterestSignals         = None, dmSpecialOfficeProcessingRequired = None, noDueDatesReached = false,
-    cannotFindLockReason              = None, creditsNotAllowed = None, isMoreThanMaxPaymentReference = None
+    cannotFindLockReason              = None, creditsNotAllowed = None, isMoreThanMaxPaymentReference = None,
+    chargesBeforeMaxAccountingDate    = None
   )
 
   def ineligibleEligibilityCheckResult(eligibleEligibilityCheckResult: EligibilityCheckResult): EligibilityCheckResult =
