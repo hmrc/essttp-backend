@@ -9,7 +9,7 @@ object AppDependencies {
   val catsVersion = "2.10.0"
   val playJsonDerivedCodesVersion = "7.0.0"
   val enumeratumVersion = "1.7.0" // breaks with later version
-  val cryptoVersion = "7.4.0"
+  val cryptoVersion = "7.5.0"
   val hmrcJsonEncryptionVersion = "5.2.0-play-28"
 
   /**
