@@ -1,15 +1,15 @@
 import play.core.PlayVersion
-import sbt._
+import sbt.*
 
 object AppDependencies {
 
   val bootstrapVersion = "7.23.0"
-  val hmrcMongoVersion = "1.3.0"
+  val hmrcMongoVersion = "1.4.0"
   val chimneyVersion = "0.8.2"
   val catsVersion = "2.10.0"
   val playJsonDerivedCodesVersion = "7.0.0"
   val enumeratumVersion = "1.7.0" // breaks with later version
-  val cryptoVersion = "7.5.0"
+  val cryptoVersion = "7.6.0"
   val hmrcJsonEncryptionVersion = "5.2.0-play-28"
 
   /**
