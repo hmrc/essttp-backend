@@ -34,13 +34,13 @@ class DatesController @Inject() (
     cc:                  ControllerComponents
 )(implicit ec: ExecutionContext) extends BackendController(cc) {
 
-  def startDates(): Action[StartDatesRequest] = actions.authenticatedAction(parse.json[StartDatesRequest]).async { implicit request =>
+  val startDates: Action[StartDatesRequest] = actions.authenticatedAction(parse.json[StartDatesRequest]).async { implicit request =>
     startDatesService.calculateStartDates(request.body).map { result =>
       Ok(Json.toJson(result))
     }
   }
 
-  def extremeDates(): Action[ExtremeDatesRequest] = actions.authenticatedAction(parse.json[ExtremeDatesRequest]).async { implicit request =>
+  val extremeDates: Action[ExtremeDatesRequest] = actions.authenticatedAction(parse.json[ExtremeDatesRequest]).async { implicit request =>
     extremeDatesService.calculateExtremeDates(request.body).map { result =>
       Ok(Json.toJson(result))
     }

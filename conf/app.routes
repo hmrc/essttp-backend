@@ -1,20 +1,21 @@
 
 #EPAYE
-POST        /epaye/bta/journey/start                                        journey.SjController.startJourneyEpayeFromBta()
-POST        /epaye/epaye-service/journey/start                              journey.SjController.startJourneyEpayeFromEpayeService()
-POST        /epaye/gov-uk/journey/start                                     journey.SjController.startJourneyEpayeFromGovUk()
-POST        /epaye/detached-url/journey/start                               journey.SjController.startJourneyEpayeFromDetachedUrl()
+POST        /epaye/bta/journey/start                                        journey.SjController.startJourneyEpayeFromBta
+POST        /epaye/epaye-service/journey/start                              journey.SjController.startJourneyEpayeFromEpayeService
+POST        /epaye/gov-uk/journey/start                                     journey.SjController.startJourneyEpayeFromGovUk
+POST        /epaye/detached-url/journey/start                               journey.SjController.startJourneyEpayeFromDetachedUrl
 
 #VAT
-POST        /vat/bta/journey/start                                          journey.SjController.startJourneyVatFromBta()
-POST        /vat/vat-service/journey/start                                  journey.SjController.startJourneyVatFromVatService()
-POST        /vat/gov-uk/journey/start                                       journey.SjController.startJourneyVatFromGovUk()
-POST        /vat/detached-url/journey/start                                 journey.SjController.startJourneyVatFromDetachedUrl()
+POST        /vat/bta/journey/start                                          journey.SjController.startJourneyVatFromBta
+POST        /vat/vat-service/journey/start                                  journey.SjController.startJourneyVatFromVatService
+POST        /vat/gov-uk/journey/start                                       journey.SjController.startJourneyVatFromGovUk
+POST        /vat/detached-url/journey/start                                 journey.SjController.startJourneyVatFromDetachedUrl
+POST        /vat/vat-penalties/journey/start                                journey.SjController.startJourneyVatFroVatPenalties
 
-POST        /bars/verify/status                                             bars.BarsVerifyStatusController.status()
-POST        /bars/verify/update                                             bars.BarsVerifyStatusController.update()
+POST        /bars/verify/status                                             bars.BarsVerifyStatusController.status
+POST        /bars/verify/update                                             bars.BarsVerifyStatusController.update
 
-GET         /journey/find-latest-by-session-id                              journey.JourneyController.findLatestJourneyBySessionId()
+GET         /journey/find-latest-by-session-id                              journey.JourneyController.findLatestJourneyBySessionId
 
 GET         /journey/:journeyId                                             journey.JourneyController.getJourney(journeyId: JourneyId)
 POST        /journey/:journeyId/update-tax-id                               journey.UpdateTaxIdController.updateTaxId(journeyId: JourneyId)
@@ -45,5 +46,5 @@ POST        /journey/:journeyId/update-email-verification-status            jour
 POST        /journey/:journeyId/update-arrangement                          journey.UpdateSubmittedArrangementController.updateArrangement(journeyId: JourneyId)
 
 # dates
-POST        /start-dates                                                    dates.DatesController.startDates()
-POST        /extreme-dates                                                  dates.DatesController.extremeDates()
+POST        /start-dates                                                    dates.DatesController.startDates
+POST        /extreme-dates                                                  dates.DatesController.extremeDates

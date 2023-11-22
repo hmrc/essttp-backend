@@ -85,12 +85,14 @@ object Origins extends Enum[Origin] {
     case object Bta extends Origin with Vat with BetterName
     case object VatService extends Origin with Vat with BetterName
     case object GovUk extends Origin with Vat with BetterName
+    case object VatPenalties extends Origin with Vat with BetterName
 
     /**
      * This represents situation when user receives link to the application in whatsapp/email/etc and it's not clear
      * where the journey actually started from.
      */
     case object DetachedUrl extends Origin with Vat with BetterName
+
     override def values: immutable.IndexedSeq[Vat] = findValues
   }
 

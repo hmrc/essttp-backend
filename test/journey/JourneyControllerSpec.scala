@@ -447,6 +447,7 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateHasAgreedTermsAndConditions]"
 
   "[Vat]" - {
+
     s"[Bta]$vatTestNameJourneyStages" in {
       stubCommonActions()
       val tdAll = new TdAll {
@@ -811,6 +812,98 @@ class JourneyControllerSpec extends ItSpec {
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatVatService.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+
+      verifyCommonActions(numberOfAuthCalls = 40)
+    }
+
+    s"[VatPenalties]$vatTestNameJourneyStages" in {
+      stubCommonActions()
+      val tdAll = new TdAll {
+        override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
+        override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
+      }
+      implicit val request: Request[_] = tdAll.request
+      val response: SjResponse = journeyConnector.Vat.startJourneyVatPenalties(tdAll.VatVatPenalties.sjRequest).futureValue
+
+      /** Start journey */
+      response shouldBe tdAll.VatVatPenalties.sjResponse
+      journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterStarted
+
+      /** Update tax id */
+      journeyConnector.updateTaxId(tdAll.journeyId, tdAll.VatVatPenalties.updateTaxIdRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterDetermineTaxIds
+
+      /** Update eligibility result * */
+      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.VatVatPenalties.updateEligibilityCheckRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterEligibilityCheckEligible
+
+      /** Update CanPayUpfront */
+      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.VatVatPenalties.updateCanPayUpfrontYesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterCanPayUpfrontYes
+
+      /** Update UpfrontPaymentAmount */
+      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.VatVatPenalties.updateUpfrontPaymentAmountRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterUpfrontPaymentAmount
+
+      /** Update ExtremeDates */
+      journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.VatVatPenalties.updateExtremeDatesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterExtremeDates
+
+      /** Update AffordabilityResult */
+      journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.VatVatPenalties.updateInstalmentAmountsRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterInstalmentAmounts
+
+      /** Update MonthlyPaymentAmount */
+      journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.VatVatPenalties.updateMonthlyPaymentAmountRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterMonthlyPaymentAmount
+
+      /** Update DayOfMonth */
+      journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.VatVatPenalties.updateDayOfMonthRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterDayOfMonth
+
+      /** Update StartDates */
+      journeyConnector.updateStartDates(tdAll.journeyId, tdAll.VatVatPenalties.updateStartDatesResponse()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterStartDatesResponse
+
+      /** Update AffordableQuotes */
+      journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.VatVatPenalties.updateAffordableQuotesResponse()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterAffordableQuotesResponse
+
+      /** Update Chosen Instalment plan */
+      journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.VatVatPenalties.updateSelectedPaymentPlanRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterSelectedPaymentPlan
+
+      /** Update Checked Instalment plan */
+      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterCheckedPaymentPlan
+
+      /** Update Details about Bank Account */
+      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatVatPenalties.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+
+      /** Update Direct debit details */
+      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatVatPenalties.updateDirectDebitDetailsRequest).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterEnteredDirectDebitDetails()
+
+      /** Update Confirm Direct debit details */
+      journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterConfirmedDirectDebitDetails
+
+      /** Update Agreed terms and conditions */
+      journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+
+      /** Update Email Address */
+      journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterSelectedEmail
+
+      /** Update Email Verification Status */
+      journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Verified).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+
+      /** Update Arrangement (journey completed) */
+      journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatVatPenalties.updateArrangementRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 40)
     }

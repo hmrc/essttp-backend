@@ -160,6 +160,13 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
         url  = s"$baseUrl/essttp-backend/vat/gov-uk/journey/start",
         body = sjRequest
       )
+
+    def startJourneyVatPenalties(sjRequest: SjRequest.Vat.Simple)(implicit request: RequestHeader): Future[SjResponse] =
+      httpClient.POST[SjRequest.Vat.Simple, SjResponse](
+        url  = s"$baseUrl/essttp-backend/vat/vat-penalties/journey/start",
+        body = sjRequest
+      )
+
   }
 
   @Inject()

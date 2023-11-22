@@ -17,7 +17,7 @@
 package journey
 
 import action.Actions
-import com.google.inject.Inject
+import com.google.inject.{Inject, Singleton}
 import config.JourneyConfig
 import essttp.journey.model._
 import essttp.utils.RequestSupport
@@ -31,6 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
  * Start Journey (Sj) Controller
  */
+@Singleton
 class SjController @Inject() (
     actions:        Actions,
     journeyService: JourneyService,
@@ -39,10 +40,13 @@ class SjController @Inject() (
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext) extends BackendController(cc) {
 
-  def startJourneyEpayeFromBta(): Action[SjRequest.Epaye.Simple] = startJourneyEpaye[SjRequest.Epaye.Simple](Origins.Epaye.Bta)
-  def startJourneyEpayeFromEpayeService(): Action[SjRequest.Epaye.Simple] = startJourneyEpaye[SjRequest.Epaye.Simple](Origins.Epaye.EpayeService)
-  def startJourneyEpayeFromGovUk(): Action[SjRequest.Epaye.Empty] = startJourneyEpaye[SjRequest.Epaye.Empty](Origins.Epaye.GovUk)
-  def startJourneyEpayeFromDetachedUrl(): Action[SjRequest.Epaye.Empty] = startJourneyEpaye[SjRequest.Epaye.Empty](Origins.Epaye.DetachedUrl)
+  val startJourneyEpayeFromBta: Action[SjRequest.Epaye.Simple] = startJourneyEpaye[SjRequest.Epaye.Simple](Origins.Epaye.Bta)
+
+  val startJourneyEpayeFromEpayeService: Action[SjRequest.Epaye.Simple] = startJourneyEpaye[SjRequest.Epaye.Simple](Origins.Epaye.EpayeService)
+
+  val startJourneyEpayeFromGovUk: Action[SjRequest.Epaye.Empty] = startJourneyEpaye[SjRequest.Epaye.Empty](Origins.Epaye.GovUk)
+
+  val startJourneyEpayeFromDetachedUrl: Action[SjRequest.Epaye.Empty] = startJourneyEpaye[SjRequest.Epaye.Empty](Origins.Epaye.DetachedUrl)
 
   private def startJourneyEpaye[StartRequest <: SjRequest.Epaye: Reads](origin: Origins.Epaye): Action[StartRequest] =
     actions.authenticatedAction.async(parse.json[StartRequest]) { implicit request =>
@@ -50,10 +54,15 @@ class SjController @Inject() (
       doJourneyStart(originatedSjRequest)
     }
 
-  def startJourneyVatFromBta(): Action[SjRequest.Vat.Simple] = startJourneyVat[SjRequest.Vat.Simple](Origins.Vat.Bta)
-  def startJourneyVatFromVatService(): Action[SjRequest.Vat.Simple] = startJourneyVat[SjRequest.Vat.Simple](Origins.Vat.VatService)
-  def startJourneyVatFromGovUk(): Action[SjRequest.Vat.Empty] = startJourneyVat[SjRequest.Vat.Empty](Origins.Vat.GovUk)
-  def startJourneyVatFromDetachedUrl(): Action[SjRequest.Vat.Empty] = startJourneyVat[SjRequest.Vat.Empty](Origins.Vat.DetachedUrl)
+  val startJourneyVatFromBta: Action[SjRequest.Vat.Simple] = startJourneyVat[SjRequest.Vat.Simple](Origins.Vat.Bta)
+
+  val startJourneyVatFromVatService: Action[SjRequest.Vat.Simple] = startJourneyVat[SjRequest.Vat.Simple](Origins.Vat.VatService)
+
+  val startJourneyVatFromGovUk: Action[SjRequest.Vat.Empty] = startJourneyVat[SjRequest.Vat.Empty](Origins.Vat.GovUk)
+
+  val startJourneyVatFromDetachedUrl: Action[SjRequest.Vat.Empty] = startJourneyVat[SjRequest.Vat.Empty](Origins.Vat.DetachedUrl)
+
+  val startJourneyVatFroVatPenalties: Action[SjRequest.Vat.Simple] = startJourneyVat[SjRequest.Vat.Simple](Origins.Vat.VatPenalties)
 
   private def startJourneyVat[StartRequest <: SjRequest.Vat: Reads](origin: Origins.Vat): Action[StartRequest] =
     actions.authenticatedAction.async(parse.json[StartRequest]) { implicit request =>
@@ -87,10 +96,11 @@ class SjController @Inject() (
       case Origins.Epaye.DetachedUrl  => "Journey for Epaye from DetachedUrl"
     }
     case o: Origins.Vat => o match {
-      case Origins.Vat.Bta         => "Journey for Vat from BTA"
-      case Origins.Vat.VatService  => "Journey for Vat from VAT service"
-      case Origins.Vat.GovUk       => "Journey for Vat from GovUk"
-      case Origins.Vat.DetachedUrl => "Journey for Vat from DetachedUrl"
+      case Origins.Vat.Bta          => "Journey for Vat from BTA"
+      case Origins.Vat.VatService   => "Journey for Vat from VAT service"
+      case Origins.Vat.GovUk        => "Journey for Vat from GovUk"
+      case Origins.Vat.DetachedUrl  => "Journey for Vat from DetachedUrl"
+      case Origins.Vat.VatPenalties => "Journey for Vat from VAT Penalties"
     }
   }
 

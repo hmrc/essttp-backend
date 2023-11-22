@@ -131,7 +131,10 @@ trait ItSpec
     "microservice.services.essttp-backend.host" -> "localhost",
     "microservice.services.essttp-backend.port" -> ItSpec.testServerPort,
     "microservice.services.auth.port" -> WireMockSupport.port,
-    "microservice.services.date-calculator.port" -> WireMockSupport.port
+    "microservice.services.date-calculator.port" -> WireMockSupport.port,
+    "logger.root" -> "INFO",
+    "logger.application" -> "INFO",
+    "logger.connector" -> "INFO"
   ) ++ overrideConfig
 
   //in tests use `app`
