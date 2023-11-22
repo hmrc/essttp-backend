@@ -41,3 +41,4 @@ trait TdAll extends AnyRef
   with TdJourneyVatGovUk
   with TdJourneyVatDetachedUrl
   with TdJourneyVatVatService
+  with TdJourneyVatVatPenalties

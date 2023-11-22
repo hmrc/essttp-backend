@@ -34,12 +34,12 @@ class BarsVerifyStatusController @Inject() (
   (implicit exec: ExecutionContext)
   extends BackendController(cc) {
 
-  def status(): Action[BarsUpdateVerifyStatusParams] = actions.authenticatedAction.async(parse.json[BarsUpdateVerifyStatusParams]) { implicit request =>
+  val status: Action[BarsUpdateVerifyStatusParams] = actions.authenticatedAction.async(parse.json[BarsUpdateVerifyStatusParams]) { implicit request =>
     barsService.status(request.body.taxId)
       .map { resp => Ok(Json.toJson(resp)) }
   }
 
-  def update(): Action[BarsUpdateVerifyStatusParams] = actions.authenticatedAction.async(parse.json[BarsUpdateVerifyStatusParams]) { implicit request =>
+  val update: Action[BarsUpdateVerifyStatusParams] = actions.authenticatedAction.async(parse.json[BarsUpdateVerifyStatusParams]) { implicit request =>
     barsService.update(request.body.taxId)
       .map { resp => Ok(Json.toJson(resp)) }
   }

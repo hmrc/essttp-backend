@@ -3,9 +3,9 @@ import sbt.*
 
 object AppDependencies {
 
-  val bootstrapVersion = "7.23.0"
-  val hmrcMongoVersion = "1.4.0"
-  val chimneyVersion = "0.8.2"
+  val bootstrapVersion = "8.0.0"
+  val hmrcMongoVersion = "1.5.0"
+  val chimneyVersion = "0.8.3"
   val catsVersion = "2.10.0"
   val playJsonDerivedCodesVersion = "7.0.0"
   val enumeratumVersion = "1.7.0" // breaks with later version
@@ -39,12 +39,6 @@ object AppDependencies {
   }
 
   lazy val corJourneyDependencies: Seq[ModuleID] = Seq(
-    //WARN! - The version of `auth-client` has to be exact!
-    //make sure it's version is the same as version in bootstrap (`uk.gov.hmrc:bootstrap-backend-play-xx_x.xx:xxx`)
-    //run `essttp-backend/dependencyTree::toFile deps.txt -f` and look for that line:
-    // +-uk.gov.hmrc:auth-client_2.12:3.0.0-play-27 (evicted by: 5.1.0-play-27)
-    //the correct version in this time was `3.0.0`
-    "uk.gov.hmrc"           %% "auth-client"                     % "6.2.0-play-28",
     "uk.gov.hmrc"           %% "bootstrap-common-play-28"        % AppDependencies.bootstrapVersion % Provided,
     "org.julienrf"          %% "play-json-derived-codecs"        % AppDependencies.playJsonDerivedCodesVersion, //choose carefully
     "com.github.kxbmap"     %% "configs"                         % "0.6.1" exclude("org.apache.commons", "commons-text"),
@@ -56,7 +50,7 @@ object AppDependencies {
     "uk.gov.hmrc.mongo"     %% "hmrc-mongo-play-28"              % AppDependencies.hmrcMongoVersion,
     "uk.gov.hmrc"           %% "crypto-json-play-28"             % AppDependencies.cryptoVersion,
     "uk.gov.hmrc"           %% "json-encryption"                 % hmrcJsonEncryptionVersion,
-    "uk.gov.hmrc"           %% "payments-email-verification-cor" % "1.0.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
+    "uk.gov.hmrc"           %% "payments-email-verification-cor" % "1.1.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
   )
 
 }
