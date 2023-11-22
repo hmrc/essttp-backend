@@ -24,6 +24,19 @@ X-Session-ID: sialalalavatservice
 
 ###
 
+POST http://localhost:9216/essttp-backend/vat/vat-penalties/journey/start
+Accept: */*
+Cache-Control: no-cache
+Content-Type: Application/Json
+X-Session-ID: sialalaladetachedurl
+
+{
+  "returnUrl": "http://localhost:9066/return",
+  "backUrl":   "http://localhost:9066/back"
+}
+
+###
+
 POST http://localhost:9216/essttp-backend/vat/gov-uk/journey/start
 Accept: */*
 Cache-Control: no-cache
