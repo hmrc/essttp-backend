@@ -17,19 +17,16 @@
 package dates
 
 import com.google.inject.{Inject, Singleton}
-import config.AppConfig
 import essttp.rootmodel.dates.extremedates.{EarliestPaymentPlanStartDate, ExtremeDatesRequest, ExtremeDatesResponse, LatestPaymentPlanStartDate}
 import essttp.rootmodel.dates.{InitialPayment, InitialPaymentDate}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ExtremeDatesService @Inject() (datesService: DatesService, appConfig: AppConfig)(implicit ec: ExecutionContext) {
+class ExtremeDatesService @Inject() (datesService: DatesService)(implicit ec: ExecutionContext) {
 
   def calculateExtremeDates(extremeDatesRequest: ExtremeDatesRequest): Future[ExtremeDatesResponse] = {
-    val earliestDatePaymentCanBeTakenF =
-      if (appConfig.useDateCalculatorService) datesService.todayPlusWorkingDays(6)
-      else Future.successful(datesService.todayPlusCalendarDays(10))
+    val earliestDatePaymentCanBeTakenF = datesService.todayPlusWorkingDays(6)
 
     earliestDatePaymentCanBeTakenF.map{ earliestDatePaymentCanBeTaken =>
       val initialPaymentDate: Option[InitialPaymentDate] =

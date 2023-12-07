@@ -17,7 +17,6 @@
 package dates
 
 import com.google.inject.{Inject, Singleton}
-import config.AppConfig
 import essttp.rootmodel.dates.InitialPaymentDate
 import essttp.rootmodel.dates.startdates.{InstalmentStartDate, PreferredDayOfMonth, StartDatesRequest, StartDatesResponse}
 
@@ -25,7 +24,7 @@ import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class StartDatesService @Inject() (datesService: DatesService, appConfig: AppConfig)(implicit ec: ExecutionContext) {
+class StartDatesService @Inject() (datesService: DatesService)(implicit ec: ExecutionContext) {
 
   private def calculateInstalmentStartDate(preferredDayOfMonth: PreferredDayOfMonth, proposedStartDate: LocalDate): InstalmentStartDate = {
     // if the preferred day of month is before the proposed start date day of month it should be next month on that day
@@ -37,9 +36,7 @@ class StartDatesService @Inject() (datesService: DatesService, appConfig: AppCon
   }
 
   def calculateStartDates(startDatesRequest: StartDatesRequest): Future[StartDatesResponse] = {
-    val earliestDatePaymentCanBeTakenF =
-      if (appConfig.useDateCalculatorService) datesService.todayPlusWorkingDays(6)
-      else Future.successful(datesService.todayPlusCalendarDays(10))
+    val earliestDatePaymentCanBeTakenF = datesService.todayPlusWorkingDays(6)
 
     earliestDatePaymentCanBeTakenF.map { earliestDatePaymentCanBeTaken =>
       val initialPaymentDate: Option[InitialPaymentDate] =
