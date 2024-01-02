@@ -42,7 +42,7 @@ trait RichMatchers
   implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
   @SuppressWarnings(Array("org.wartremover.warts.ExplicitImplicitTypes", "org.wartremover.warts.PublicInference"))
-  implicit def toLoggedRequestOps(lr: LoggedRequest) = new {
+  implicit def toLoggedRequestOps(lr: LoggedRequest): Object { def getBodyAsJson: JsValue } = new {
     def getBodyAsJson: JsValue = Json.parse(lr.getBodyAsString)
   }
 

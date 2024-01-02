@@ -10,7 +10,7 @@ val majorVer = 1
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-val appScalaVersion = "2.13.10"
+val appScalaVersion = "2.13.12"
 
 lazy val playSettings : Seq[Setting[_]] = Seq.empty
 
