@@ -14,6 +14,7 @@ object WartRemoverSettings {
         Wart.ImplicitParameter,
         Wart.Nothing,
         Wart.Overloading,
+        Wart.SeqApply,
         Wart.Throw,
         Wart.ToString
       ),
