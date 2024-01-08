@@ -58,3 +58,14 @@ object Vrn {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[Vrn] = derived.oformat[Vrn]()
 }
+
+/**
+ * Self Assessment Unique Tax Reference (SaUtr)
+ * Tax Id for Sa.
+ */
+final case class SaUtr(value: String) extends TaxId
+
+object SaUtr {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  implicit val format: OFormat[SaUtr] = derived.oformat[SaUtr]()
+}

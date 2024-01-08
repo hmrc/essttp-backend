@@ -36,7 +36,7 @@ trait TdEpaye {
 
   val aor: Aor = Aor("123PA44545546")
 
-  val eligibleEligibilityCheckResult: EligibilityCheckResult = eligibility.EligibilityCheckResult(
+  val eligibleEligibilityCheckResultEpaye: EligibilityCheckResult = eligibility.EligibilityCheckResult(
     processingDateTime              = ProcessingDateTime(reusableDateAsString),
     identification                  = List(
       Identification(
@@ -95,11 +95,11 @@ trait TdEpaye {
     futureChargeLiabilitiesExcluded = false
   )
 
-  def ineligibleEligibilityCheckResult: EligibilityCheckResult = eligibleEligibilityCheckResult.copy(
+  def ineligibleEligibilityCheckResultEpaye: EligibilityCheckResult = eligibleEligibilityCheckResultEpaye.copy(
     eligibilityStatus = EligibilityStatus(EligibilityPass(false)),
     eligibilityRules  = hasRlsAddressOn
   )
 
-  val arrangementResponse: ArrangementResponse = ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(aor.value))
+  val arrangementResponseEpaye: ArrangementResponse = ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(aor.value))
 
 }

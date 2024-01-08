@@ -169,6 +169,39 @@ class JourneyConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: Exe
 
   }
 
+  object Sa {
+
+    def startJourneyBta(sjRequest: SjRequest.Sa.Simple)(implicit request: RequestHeader): Future[SjResponse] =
+      httpClient.POST[SjRequest.Sa.Simple, SjResponse](
+        url  = s"$baseUrl/essttp-backend/sa/bta/journey/start",
+        body = sjRequest
+      )
+
+    def startJourneyPta(sjRequest: SjRequest.Sa.Simple)(implicit request: RequestHeader): Future[SjResponse] =
+      httpClient.POST[SjRequest.Sa.Simple, SjResponse](
+        url  = s"$baseUrl/essttp-backend/sa/pta/journey/start",
+        body = sjRequest
+      )
+
+    def startJourneyMobile(sjRequest: SjRequest.Sa.Simple)(implicit request: RequestHeader): Future[SjResponse] =
+      httpClient.POST[SjRequest.Sa.Simple, SjResponse](
+        url  = s"$baseUrl/essttp-backend/sa/mobile/journey/start",
+        body = sjRequest
+      )
+
+    def startJourneyDetachedUrl(sjRequest: SjRequest.Sa.Empty)(implicit request: RequestHeader): Future[SjResponse] =
+      httpClient.POST[SjRequest, SjResponse](
+        url  = s"$baseUrl/essttp-backend/sa/detached-url/journey/start",
+        body = sjRequest
+      )
+
+    def startJourneyGovUk(sjRequest: SjRequest.Sa.Empty)(implicit request: RequestHeader): Future[SjResponse] =
+      httpClient.POST[SjRequest, SjResponse](
+        url  = s"$baseUrl/essttp-backend/sa/gov-uk/journey/start",
+        body = sjRequest
+      )
+  }
+
   @Inject()
   def this(httpClient: HttpClient, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) = this(
     httpClient,

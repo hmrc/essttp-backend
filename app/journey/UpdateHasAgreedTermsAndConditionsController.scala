@@ -64,6 +64,11 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
           .withFieldConst(_.stage, toStage(isEmailAddressRequired))
           .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired)
           .transform
+      case j: Journey.Sa.ConfirmedDirectDebitDetails =>
+        j.into[Journey.Sa.AgreedTermsAndConditions]
+          .withFieldConst(_.stage, toStage(isEmailAddressRequired))
+          .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
@@ -88,6 +93,12 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
             isEmailAddressRequired = isEmailAddressRequired,
             stage                  = toStage(isEmailAddressRequired)
           ))
+      case j: Journey.Sa.AgreedTermsAndConditions =>
+        upsertIfChanged(j, isEmailAddressRequired,
+                        j.copy(
+            isEmailAddressRequired = isEmailAddressRequired,
+            stage                  = toStage(isEmailAddressRequired)
+          ))
 
       case j: Journey.Epaye.SelectedEmailToBeVerified =>
         upsertIfChanged(j, isEmailAddressRequired,
@@ -97,6 +108,11 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
       case j: Journey.Vat.SelectedEmailToBeVerified =>
         upsertIfChanged(j, isEmailAddressRequired,
                         j.into[Journey.Vat.AgreedTermsAndConditions]
+            .withFieldConst(_.stage, toStage(isEmailAddressRequired))
+            .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
+      case j: Journey.Sa.SelectedEmailToBeVerified =>
+        upsertIfChanged(j, isEmailAddressRequired,
+                        j.into[Journey.Sa.AgreedTermsAndConditions]
             .withFieldConst(_.stage, toStage(isEmailAddressRequired))
             .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
 
@@ -109,6 +125,11 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
       case j: Journey.Vat.EmailVerificationComplete =>
         upsertIfChanged(j, isEmailAddressRequired,
                         j.into[Journey.Vat.AgreedTermsAndConditions]
+            .withFieldConst(_.stage, toStage(isEmailAddressRequired))
+            .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
+      case j: Journey.Sa.EmailVerificationComplete =>
+        upsertIfChanged(j, isEmailAddressRequired,
+                        j.into[Journey.Sa.AgreedTermsAndConditions]
             .withFieldConst(_.stage, toStage(isEmailAddressRequired))
             .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
     }

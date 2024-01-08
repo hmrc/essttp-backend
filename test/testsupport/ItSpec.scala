@@ -219,7 +219,7 @@ final case class TestCorrelationIdPrefix(value: String)
 
 class TestCorrelationIdGenerator(testCorrelationIdPrefix: TestCorrelationIdPrefix) extends CorrelationIdGenerator {
   private val correlationIdIterator: Iterator[CorrelationId] =
-    LazyList.from(0).map(i => CorrelationId(UUID.fromString(s"${testCorrelationIdPrefix.value.dropRight(1)}${i.toString}"))).iterator
+    LazyList.from(0).map(i => CorrelationId(UUID.fromString(s"${testCorrelationIdPrefix.value.dropRight(1)}${i.toString}".take(35)))).iterator
   private val nextCorrelationIdCached = new AtomicReference[CorrelationId](correlationIdIterator.next())
 
   def readNextCorrelationId(): CorrelationId = nextCorrelationIdCached.get()

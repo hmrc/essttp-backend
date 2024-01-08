@@ -67,7 +67,7 @@ trait TdJourneyEpayeGovUk {
       taxId         = empRef
     )
 
-    def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResult
+    def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResultEpaye
 
     def journeyAfterEligibilityCheckEligible: Journey.Epaye.EligibilityChecked = Journey.Epaye.EligibilityChecked(
       _id                    = dependencies.journeyId,
@@ -78,7 +78,7 @@ trait TdJourneyEpayeGovUk {
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterEligibilityCheck.Eligible,
       taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult
+      eligibilityCheckResult = eligibleEligibilityCheckResultEpaye
     )
 
     def journeyAfterEligibilityCheckNotEligible: Journey.Epaye.EligibilityChecked = Journey.Epaye.EligibilityChecked(
@@ -90,7 +90,7 @@ trait TdJourneyEpayeGovUk {
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterEligibilityCheck.Ineligible,
       taxId                  = empRef,
-      eligibilityCheckResult = ineligibleEligibilityCheckResult
+      eligibilityCheckResult = ineligibleEligibilityCheckResultEpaye
     )
 
     def updateCanPayUpfrontYesRequest(): CanPayUpfront = canPayUpfrontYes
@@ -106,7 +106,7 @@ trait TdJourneyEpayeGovUk {
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterCanPayUpfront.Yes,
       taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
       canPayUpfront          = canPayUpfrontYes
     )
 
@@ -119,7 +119,7 @@ trait TdJourneyEpayeGovUk {
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterCanPayUpfront.No,
       taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
       canPayUpfront          = canPayUpfrontNo
     )
 
@@ -134,7 +134,7 @@ trait TdJourneyEpayeGovUk {
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
       taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
       canPayUpfront          = canPayUpfrontYes,
       upfrontPaymentAmount   = dependencies.upfrontPaymentAmount
     )
@@ -150,7 +150,7 @@ trait TdJourneyEpayeGovUk {
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved,
       taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment
     )
@@ -166,7 +166,7 @@ trait TdJourneyEpayeGovUk {
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterAffordabilityResult.RetrievedAffordabilityResult,
       taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts      = dependencies.instalmentAmounts
@@ -183,7 +183,7 @@ trait TdJourneyEpayeGovUk {
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount,
       taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts      = dependencies.instalmentAmounts,
@@ -201,7 +201,7 @@ trait TdJourneyEpayeGovUk {
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth,
       taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts      = dependencies.instalmentAmounts,
@@ -220,7 +220,7 @@ trait TdJourneyEpayeGovUk {
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterStartDatesResponse.StartDatesResponseRetrieved,
       taxId                  = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResult,
+      eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts      = dependencies.instalmentAmounts,
@@ -240,7 +240,7 @@ trait TdJourneyEpayeGovUk {
       correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved,
       taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -261,7 +261,7 @@ trait TdJourneyEpayeGovUk {
       correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterSelectedPlan.SelectedPlan,
       taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -283,7 +283,7 @@ trait TdJourneyEpayeGovUk {
       correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterCheckedPlan.AcceptedPlan,
       taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -306,7 +306,7 @@ trait TdJourneyEpayeGovUk {
       correlationId            = dependencies.correlationId,
       stage                    = if (isAccountHolder) Stage.AfterEnteredDetailsAboutBankAccount.Business else Stage.AfterEnteredDetailsAboutBankAccount.IsNotAccountHolder,
       taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -329,7 +329,7 @@ trait TdJourneyEpayeGovUk {
       correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails,
       taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -353,7 +353,7 @@ trait TdJourneyEpayeGovUk {
       correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails,
       taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -382,7 +382,7 @@ trait TdJourneyEpayeGovUk {
         correlationId            = dependencies.correlationId,
         stage                    = stage,
         taxId                    = empRef,
-        eligibilityCheckResult   = eligibleEligibilityCheckResult,
+        eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
         upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
         extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
         instalmentAmounts        = dependencies.instalmentAmounts,
@@ -408,7 +408,7 @@ trait TdJourneyEpayeGovUk {
       stage                    = Stage.AfterSelectedAnEmailToBeVerified.EmailChosen,
       correlationId            = dependencies.correlationId,
       taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -435,7 +435,7 @@ trait TdJourneyEpayeGovUk {
       },
       correlationId            = dependencies.correlationId,
       taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -452,7 +452,7 @@ trait TdJourneyEpayeGovUk {
       emailVerificationAnswers = emailVerificationAnswers(Some(result))
     )
 
-    def updateArrangementRequest(): ArrangementResponse = dependencies.arrangementResponse
+    def updateArrangementRequest(): ArrangementResponse = dependencies.arrangementResponseEpaye
 
     def journeyAfterSubmittedArrangement(isEmailAddressRequired: Boolean): Journey.AfterArrangementSubmitted = Journey.Epaye.SubmittedArrangement(
       _id                      = dependencies.journeyId,
@@ -463,7 +463,7 @@ trait TdJourneyEpayeGovUk {
       correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterSubmittedArrangement.Submitted,
       taxId                    = empRef,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult,
+      eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -480,7 +480,7 @@ trait TdJourneyEpayeGovUk {
       } else {
         EmailVerificationAnswers.NoEmailJourney
       },
-      arrangementResponse      = dependencies.arrangementResponse
+      arrangementResponse      = dependencies.arrangementResponseEpaye
     )
 
   }

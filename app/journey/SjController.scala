@@ -19,6 +19,7 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import config.JourneyConfig
+import essttp.journey.model.Origins.Sa
 import essttp.journey.model._
 import essttp.utils.RequestSupport
 import play.api.libs.json.{Json, Reads}
@@ -70,6 +71,22 @@ class SjController @Inject() (
       doJourneyStart(originatedSjRequest)
     }
 
+  val startJourneySaFromBta: Action[SjRequest.Sa.Simple] = startJourneySa[SjRequest.Sa.Simple](Origins.Sa.Bta)
+
+  val startJourneySaFromPta: Action[SjRequest.Sa.Simple] = startJourneySa[SjRequest.Sa.Simple](Origins.Sa.Pta)
+
+  val startJourneySaFromMobile: Action[SjRequest.Sa.Simple] = startJourneySa[SjRequest.Sa.Simple](Origins.Sa.Mobile)
+
+  val startJourneySaFromGovUk: Action[SjRequest.Sa.Empty] = startJourneySa[SjRequest.Sa.Empty](Origins.Sa.GovUk)
+
+  val startJourneySaFromDetachedUrl: Action[SjRequest.Sa.Empty] = startJourneySa[SjRequest.Sa.Empty](Origins.Sa.DetachedUrl)
+
+  private def startJourneySa[StartRequest <: SjRequest.Sa: Reads](origin: Origins.Sa): Action[StartRequest] =
+    actions.authenticatedAction.async(parse.json[StartRequest]) { implicit request =>
+      val originatedSjRequest = OriginatedSjRequest.Sa(origin, request.body)
+      doJourneyStart(originatedSjRequest)
+    }
+
   private def doJourneyStart(
       originatedRequest: OriginatedSjRequest
   )(implicit request: Request[_]): Future[Result] = {
@@ -102,11 +119,19 @@ class SjController @Inject() (
       case Origins.Vat.DetachedUrl  => "Journey for Vat from DetachedUrl"
       case Origins.Vat.VatPenalties => "Journey for Vat from VAT Penalties"
     }
+    case o: Origins.Sa => o match {
+      case Sa.Bta         => "Journey for Sa from BTA"
+      case Sa.Pta         => "Journey for Sa from PTA"
+      case Sa.Mobile      => "Journey for Sa from Mobile"
+      case Sa.GovUk       => "Journey for Sa from GovUk"
+      case Sa.DetachedUrl => "Journey for Sa from DetachedUrl"
+    }
   }
 
   private def originToRelativeUrl(origin: Origin): String = origin match {
     case _: Origins.Epaye => "/epaye-payment-plan"
     case _: Origins.Vat   => "/vat-payment-plan"
+    case _: Origins.Sa    => "/sa-payment-plan"
   }
 
 }

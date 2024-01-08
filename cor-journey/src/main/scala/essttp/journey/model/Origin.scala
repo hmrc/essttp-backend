@@ -47,12 +47,15 @@ object Origin {
     def taxRegime: TaxRegime = o match {
       case _: Origins.Epaye => TaxRegime.Epaye
       case _: Origins.Vat   => TaxRegime.Vat
+      case _: Origins.Sa    => TaxRegime.Sa
+
     }
   }
 
 }
 
 object Origins extends Enum[Origin] {
+
   /**
    * Marking trait aggregating all Epaye [[Origin]]s
    */
@@ -96,7 +99,34 @@ object Origins extends Enum[Origin] {
     override def values: immutable.IndexedSeq[Vat] = findValues
   }
 
-  override def values: immutable.IndexedSeq[Origin] = Epaye.values ++ Vat.values
+  /**
+   * Marking trait aggregating all Sa [[Origin]]s
+   */
+  sealed trait Sa extends Origin {
+    self: Origin =>
+  }
+
+  object Sa extends Enum[Sa] {
+    implicit val format: Format[Sa] = EnumFormat(Sa)
+
+    case object Bta extends Origin with Sa with BetterName
+
+    case object Pta extends Origin with Sa with BetterName
+
+    case object Mobile extends Origin with Sa with BetterName
+
+    case object GovUk extends Origin with Sa with BetterName
+
+    /**
+     * This represents situation when user receives link to the application in whatsapp/email/etc and it's not clear
+     * where the journey actually started from.
+     */
+    case object DetachedUrl extends Origin with Sa with BetterName
+
+    override def values: immutable.IndexedSeq[Sa] = findValues
+  }
+
+  override def values: immutable.IndexedSeq[Origin] = Epaye.values ++ Vat.values ++ Sa.values
 }
 
 /**
