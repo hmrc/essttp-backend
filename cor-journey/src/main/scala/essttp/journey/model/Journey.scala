@@ -1795,4 +1795,525 @@ object Journey {
       with Journey.Stages.SubmittedArrangement
       with Journey.Vat
   }
+
+  /**
+   * Marking trait for extracting Sa [[Journey]]s
+   */
+  sealed trait Sa extends Journey {
+    override def taxRegime: TaxRegime.Sa.type = TaxRegime.Sa
+
+    override def sjRequest: SjRequest.Sa
+
+    override def origin: Origins.Sa
+
+    override val (backUrl, returnUrl) = sjRequest match {
+      case r: SjRequest.Sa.Simple => (Some(r.backUrl), Some(r.returnUrl))
+      case _                      => (None, None)
+    }
+  }
+
+  object Sa {
+    /**
+     * [[Journey]] after started
+     * Sa
+     */
+    final case class Started(
+        override val _id:           JourneyId,
+        override val origin:        Origins.Sa,
+        override val createdOn:     Instant,
+        override val sjRequest:     SjRequest.Sa,
+        override val sessionId:     SessionId,
+        override val correlationId: CorrelationId,
+        override val stage:         Stage.AfterStarted
+    )
+      extends Journey
+      with Journey.Stages.Started
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after computed TaxIds
+     * Sa
+     */
+    final case class ComputedTaxId(
+        override val _id:           JourneyId,
+        override val origin:        Origins.Sa,
+        override val createdOn:     Instant,
+        override val sjRequest:     SjRequest.Sa,
+        override val sessionId:     SessionId,
+        override val correlationId: CorrelationId,
+        override val stage:         Stage.AfterComputedTaxId,
+        override val taxId:         SaUtr
+    )
+      extends Journey
+      with Journey.Stages.ComputedTaxId
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after EligibilityCheck
+     * Sa
+     */
+    final case class EligibilityChecked(
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Sa,
+        override val createdOn:              Instant,
+        override val sjRequest:              SjRequest.Sa,
+        override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
+        override val stage:                  Stage.AfterEligibilityCheck,
+        override val taxId:                  SaUtr,
+        override val eligibilityCheckResult: EligibilityCheckResult
+    )
+      extends Journey
+      with Journey.Stages.EligibilityChecked
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after CanPayUpfront
+     * Sa
+     */
+    final case class AnsweredCanPayUpfront(
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Sa,
+        override val createdOn:              Instant,
+        override val sjRequest:              SjRequest.Sa,
+        override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
+        override val stage:                  Stage.AfterCanPayUpfront,
+        override val taxId:                  SaUtr,
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val canPayUpfront:          CanPayUpfront
+    )
+      extends Journey
+      with Journey.Stages.AnsweredCanPayUpfront
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after UpfrontPaymentAmount
+     * Sa
+     */
+    final case class EnteredUpfrontPaymentAmount(
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Sa,
+        override val createdOn:              Instant,
+        override val sjRequest:              SjRequest.Sa,
+        override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
+        override val stage:                  Stage.AfterUpfrontPaymentAmount,
+        override val taxId:                  SaUtr,
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val canPayUpfront:          CanPayUpfront,
+        override val upfrontPaymentAmount:   UpfrontPaymentAmount
+    )
+      extends Journey
+      with Journey.Stages.EnteredUpfrontPaymentAmount
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after Extreme dates request to esstp-dates
+     * Sa
+     */
+    final case class RetrievedExtremeDates(
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Sa,
+        override val createdOn:              Instant,
+        override val sjRequest:              SjRequest.Sa,
+        override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
+        override val stage:                  Stage.AfterExtremeDatesResponse,
+        override val taxId:                  SaUtr,
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val upfrontPaymentAnswers:  UpfrontPaymentAnswers,
+        override val extremeDatesResponse:   ExtremeDatesResponse
+    )
+      extends Journey
+      with Journey.Stages.RetrievedExtremeDates
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after Affordability request to tpp
+     * Sa
+     */
+    final case class RetrievedAffordabilityResult(
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Sa,
+        override val createdOn:              Instant,
+        override val sjRequest:              SjRequest.Sa,
+        override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
+        override val stage:                  Stage.AfterAffordabilityResult,
+        override val taxId:                  SaUtr,
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val upfrontPaymentAnswers:  UpfrontPaymentAnswers,
+        override val extremeDatesResponse:   ExtremeDatesResponse,
+        override val instalmentAmounts:      InstalmentAmounts
+    )
+      extends Journey
+      with Journey.Stages.RetrievedAffordabilityResult
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after MonthlyPaymentAmount
+     * Sa
+     */
+    final case class EnteredMonthlyPaymentAmount(
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Sa,
+        override val createdOn:              Instant,
+        override val sjRequest:              SjRequest.Sa,
+        override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
+        override val stage:                  Stage.AfterMonthlyPaymentAmount,
+        override val taxId:                  SaUtr,
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val upfrontPaymentAnswers:  UpfrontPaymentAnswers,
+        override val extremeDatesResponse:   ExtremeDatesResponse,
+        override val instalmentAmounts:      InstalmentAmounts,
+        override val monthlyPaymentAmount:   MonthlyPaymentAmount
+    )
+      extends Journey
+      with Journey.Stages.EnteredMonthlyPaymentAmount
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after Day of month
+     * Sa
+     */
+    final case class EnteredDayOfMonth(
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Sa,
+        override val createdOn:              Instant,
+        override val sjRequest:              SjRequest.Sa,
+        override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
+        override val stage:                  Stage.AfterEnteredDayOfMonth,
+        override val taxId:                  SaUtr,
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val upfrontPaymentAnswers:  UpfrontPaymentAnswers,
+        override val extremeDatesResponse:   ExtremeDatesResponse,
+        override val instalmentAmounts:      InstalmentAmounts,
+        override val monthlyPaymentAmount:   MonthlyPaymentAmount,
+        override val dayOfMonth:             DayOfMonth
+    )
+      extends Journey
+      with Journey.Stages.EnteredDayOfMonth
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after Start dates api call
+     * Sa
+     */
+    final case class RetrievedStartDates(
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Sa,
+        override val createdOn:              Instant,
+        override val sjRequest:              SjRequest.Sa,
+        override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
+        override val stage:                  Stage.AfterStartDatesResponse,
+        override val taxId:                  SaUtr,
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val upfrontPaymentAnswers:  UpfrontPaymentAnswers,
+        override val extremeDatesResponse:   ExtremeDatesResponse,
+        override val instalmentAmounts:      InstalmentAmounts,
+        override val monthlyPaymentAmount:   MonthlyPaymentAmount,
+        override val dayOfMonth:             DayOfMonth,
+        override val startDatesResponse:     StartDatesResponse
+    )
+      extends Journey
+      with Journey.Stages.RetrievedStartDates
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after Affordable quotes call to ttp
+     * Sa
+     */
+    final case class RetrievedAffordableQuotes(
+        override val _id:                      JourneyId,
+        override val origin:                   Origins.Sa,
+        override val createdOn:                Instant,
+        override val sjRequest:                SjRequest.Sa,
+        override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
+        override val stage:                    Stage.AfterAffordableQuotesResponse,
+        override val taxId:                    SaUtr,
+        override val eligibilityCheckResult:   EligibilityCheckResult,
+        override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
+        override val extremeDatesResponse:     ExtremeDatesResponse,
+        override val instalmentAmounts:        InstalmentAmounts,
+        override val monthlyPaymentAmount:     MonthlyPaymentAmount,
+        override val dayOfMonth:               DayOfMonth,
+        override val startDatesResponse:       StartDatesResponse,
+        override val affordableQuotesResponse: AffordableQuotesResponse
+    )
+      extends Journey
+      with Journey.Stages.RetrievedAffordableQuotes
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after Payment plan has been chosen
+     * Sa
+     */
+    final case class ChosenPaymentPlan(
+        override val _id:                      JourneyId,
+        override val origin:                   Origins.Sa,
+        override val createdOn:                Instant,
+        override val sjRequest:                SjRequest.Sa,
+        override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
+        override val stage:                    Stage.AfterSelectedPlan,
+        override val taxId:                    SaUtr,
+        override val eligibilityCheckResult:   EligibilityCheckResult,
+        override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
+        override val extremeDatesResponse:     ExtremeDatesResponse,
+        override val instalmentAmounts:        InstalmentAmounts,
+        override val monthlyPaymentAmount:     MonthlyPaymentAmount,
+        override val dayOfMonth:               DayOfMonth,
+        override val startDatesResponse:       StartDatesResponse,
+        override val affordableQuotesResponse: AffordableQuotesResponse,
+        override val selectedPaymentPlan:      PaymentPlan
+    )
+      extends Journey
+      with Journey.Stages.ChosenPaymentPlan
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after Payment plan has been checked
+     * Sa
+     */
+    final case class CheckedPaymentPlan(
+        override val _id:                      JourneyId,
+        override val origin:                   Origins.Sa,
+        override val createdOn:                Instant,
+        override val sjRequest:                SjRequest.Sa,
+        override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
+        override val stage:                    Stage.AfterCheckedPlan,
+        override val taxId:                    SaUtr,
+        override val eligibilityCheckResult:   EligibilityCheckResult,
+        override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
+        override val extremeDatesResponse:     ExtremeDatesResponse,
+        override val instalmentAmounts:        InstalmentAmounts,
+        override val monthlyPaymentAmount:     MonthlyPaymentAmount,
+        override val dayOfMonth:               DayOfMonth,
+        override val startDatesResponse:       StartDatesResponse,
+        override val affordableQuotesResponse: AffordableQuotesResponse,
+        override val selectedPaymentPlan:      PaymentPlan
+    )
+      extends Journey
+      with Journey.Stages.CheckedPaymentPlan
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after details about bank account
+     * Sa
+     */
+    final case class EnteredDetailsAboutBankAccount(
+        override val _id:                      JourneyId,
+        override val origin:                   Origins.Sa,
+        override val createdOn:                Instant,
+        override val sjRequest:                SjRequest.Sa,
+        override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
+        override val stage:                    Stage.AfterEnteredDetailsAboutBankAccount,
+        override val taxId:                    SaUtr,
+        override val eligibilityCheckResult:   EligibilityCheckResult,
+        override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
+        override val extremeDatesResponse:     ExtremeDatesResponse,
+        override val instalmentAmounts:        InstalmentAmounts,
+        override val monthlyPaymentAmount:     MonthlyPaymentAmount,
+        override val dayOfMonth:               DayOfMonth,
+        override val startDatesResponse:       StartDatesResponse,
+        override val affordableQuotesResponse: AffordableQuotesResponse,
+        override val selectedPaymentPlan:      PaymentPlan,
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount
+    )
+      extends Journey
+      with Journey.Stages.EnteredDetailsAboutBankAccount
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after bank details have been entered
+     * Sa
+     */
+    final case class EnteredDirectDebitDetails(
+        override val _id:                      JourneyId,
+        override val origin:                   Origins.Sa,
+        override val createdOn:                Instant,
+        override val sjRequest:                SjRequest.Sa,
+        override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
+        override val stage:                    Stage.AfterEnteredDirectDebitDetails,
+        override val taxId:                    SaUtr,
+        override val eligibilityCheckResult:   EligibilityCheckResult,
+        override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
+        override val extremeDatesResponse:     ExtremeDatesResponse,
+        override val instalmentAmounts:        InstalmentAmounts,
+        override val monthlyPaymentAmount:     MonthlyPaymentAmount,
+        override val dayOfMonth:               DayOfMonth,
+        override val startDatesResponse:       StartDatesResponse,
+        override val affordableQuotesResponse: AffordableQuotesResponse,
+        override val selectedPaymentPlan:      PaymentPlan,
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount,
+        override val directDebitDetails:       BankDetails
+    )
+      extends Journey
+      with Journey.Stages.EnteredDirectDebitDetails
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after bank details have been confirmed
+     * Sa
+     */
+    final case class ConfirmedDirectDebitDetails(
+        override val _id:                      JourneyId,
+        override val origin:                   Origins.Sa,
+        override val createdOn:                Instant,
+        override val sjRequest:                SjRequest.Sa,
+        override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
+        override val stage:                    Stage.AfterConfirmedDirectDebitDetails,
+        override val taxId:                    SaUtr,
+        override val eligibilityCheckResult:   EligibilityCheckResult,
+        override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
+        override val extremeDatesResponse:     ExtremeDatesResponse,
+        override val instalmentAmounts:        InstalmentAmounts,
+        override val monthlyPaymentAmount:     MonthlyPaymentAmount,
+        override val dayOfMonth:               DayOfMonth,
+        override val startDatesResponse:       StartDatesResponse,
+        override val affordableQuotesResponse: AffordableQuotesResponse,
+        override val selectedPaymentPlan:      PaymentPlan,
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount,
+        override val directDebitDetails:       BankDetails
+    )
+      extends Journey
+      with Journey.Stages.ConfirmedDirectDebitDetails
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after Agreeing terms and conditions
+     * Sa
+     */
+    final case class AgreedTermsAndConditions(
+        override val _id:                      JourneyId,
+        override val origin:                   Origins.Sa,
+        override val createdOn:                Instant,
+        override val sjRequest:                SjRequest.Sa,
+        override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
+        override val stage:                    Stage.AfterAgreedTermsAndConditions,
+        override val taxId:                    SaUtr,
+        override val eligibilityCheckResult:   EligibilityCheckResult,
+        override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
+        override val extremeDatesResponse:     ExtremeDatesResponse,
+        override val instalmentAmounts:        InstalmentAmounts,
+        override val monthlyPaymentAmount:     MonthlyPaymentAmount,
+        override val dayOfMonth:               DayOfMonth,
+        override val startDatesResponse:       StartDatesResponse,
+        override val affordableQuotesResponse: AffordableQuotesResponse,
+        override val selectedPaymentPlan:      PaymentPlan,
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount,
+        override val directDebitDetails:       BankDetails,
+        override val isEmailAddressRequired:   IsEmailAddressRequired
+    )
+      extends Journey
+      with Journey.Stages.AgreedTermsAndConditions
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after Selecting email address to be verified
+     * Sa
+     */
+    final case class SelectedEmailToBeVerified(
+        override val _id:                      JourneyId,
+        override val origin:                   Origins.Sa,
+        override val createdOn:                Instant,
+        override val sjRequest:                SjRequest.Sa,
+        override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
+        override val stage:                    Stage.AfterSelectedAnEmailToBeVerified,
+        override val taxId:                    SaUtr,
+        override val eligibilityCheckResult:   EligibilityCheckResult,
+        override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
+        override val extremeDatesResponse:     ExtremeDatesResponse,
+        override val instalmentAmounts:        InstalmentAmounts,
+        override val monthlyPaymentAmount:     MonthlyPaymentAmount,
+        override val dayOfMonth:               DayOfMonth,
+        override val startDatesResponse:       StartDatesResponse,
+        override val affordableQuotesResponse: AffordableQuotesResponse,
+        override val selectedPaymentPlan:      PaymentPlan,
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount,
+        override val directDebitDetails:       BankDetails,
+        override val isEmailAddressRequired:   IsEmailAddressRequired,
+        override val emailToBeVerified:        Email
+    )
+      extends Journey
+      with Journey.Stages.SelectedEmailToBeVerified
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after email verification status journey is complete
+     * Sa
+     */
+    final case class EmailVerificationComplete(
+        override val _id:                      JourneyId,
+        override val origin:                   Origins.Sa,
+        override val createdOn:                Instant,
+        override val sjRequest:                SjRequest.Sa,
+        override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
+        override val stage:                    Stage.AfterEmailVerificationPhase,
+        override val taxId:                    SaUtr,
+        override val eligibilityCheckResult:   EligibilityCheckResult,
+        override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
+        override val extremeDatesResponse:     ExtremeDatesResponse,
+        override val instalmentAmounts:        InstalmentAmounts,
+        override val monthlyPaymentAmount:     MonthlyPaymentAmount,
+        override val dayOfMonth:               DayOfMonth,
+        override val startDatesResponse:       StartDatesResponse,
+        override val affordableQuotesResponse: AffordableQuotesResponse,
+        override val selectedPaymentPlan:      PaymentPlan,
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount,
+        override val directDebitDetails:       BankDetails,
+        override val isEmailAddressRequired:   IsEmailAddressRequired,
+        override val emailToBeVerified:        Email,
+        override val emailVerificationResult:  EmailVerificationResult,
+        override val emailVerificationAnswers: EmailVerificationAnswers
+    )
+      extends Journey
+      with Journey.Stages.EmailVerificationComplete
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after Submission of their arrangement to the enact api
+     * Sa
+     */
+    final case class SubmittedArrangement(
+        override val _id:                      JourneyId,
+        override val origin:                   Origins.Sa,
+        override val createdOn:                Instant,
+        override val sjRequest:                SjRequest.Sa,
+        override val sessionId:                SessionId,
+        override val correlationId:            CorrelationId,
+        override val stage:                    Stage.AfterSubmittedArrangement,
+        override val taxId:                    SaUtr,
+        override val eligibilityCheckResult:   EligibilityCheckResult,
+        override val upfrontPaymentAnswers:    UpfrontPaymentAnswers,
+        override val extremeDatesResponse:     ExtremeDatesResponse,
+        override val instalmentAmounts:        InstalmentAmounts,
+        override val monthlyPaymentAmount:     MonthlyPaymentAmount,
+        override val dayOfMonth:               DayOfMonth,
+        override val startDatesResponse:       StartDatesResponse,
+        override val affordableQuotesResponse: AffordableQuotesResponse,
+        override val selectedPaymentPlan:      PaymentPlan,
+        override val detailsAboutBankAccount:  DetailsAboutBankAccount,
+        override val directDebitDetails:       BankDetails,
+        override val isEmailAddressRequired:   IsEmailAddressRequired,
+        override val arrangementResponse:      ArrangementResponse,
+        override val emailVerificationAnswers: EmailVerificationAnswers
+    )
+      extends Journey
+      with Journey.Stages.SubmittedArrangement
+      with Journey.Sa
+  }
+
 }

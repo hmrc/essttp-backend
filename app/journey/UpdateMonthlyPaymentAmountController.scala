@@ -20,7 +20,7 @@ import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.{Epaye, Stages, Vat}
+import essttp.journey.model.Journey.{Epaye, Sa, Stages, Vat}
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.MonthlyPaymentAmount
 import essttp.utils.Errors
@@ -64,6 +64,11 @@ class UpdateMonthlyPaymentAmountController @Inject() (
           .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
           .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
           .transform
+      case j: Sa.RetrievedAffordabilityResult =>
+        j.into[Sa.EnteredMonthlyPaymentAmount]
+          .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+          .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
@@ -82,6 +87,8 @@ class UpdateMonthlyPaymentAmountController @Inject() (
         upsertIfChanged(j.copy(monthlyPaymentAmount = monthlyPaymentAmount))
       case j: Vat.EnteredMonthlyPaymentAmount =>
         upsertIfChanged(j.copy(monthlyPaymentAmount = monthlyPaymentAmount))
+      case j: Sa.EnteredMonthlyPaymentAmount =>
+        upsertIfChanged(j.copy(monthlyPaymentAmount = monthlyPaymentAmount))
 
       case j: Epaye.EnteredDayOfMonth =>
         upsertIfChanged(
@@ -93,6 +100,13 @@ class UpdateMonthlyPaymentAmountController @Inject() (
       case j: Vat.EnteredDayOfMonth =>
         upsertIfChanged(
           j.into[Vat.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
+      case j: Sa.EnteredDayOfMonth =>
+        upsertIfChanged(
+          j.into[Sa.EnteredMonthlyPaymentAmount]
             .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
@@ -112,6 +126,13 @@ class UpdateMonthlyPaymentAmountController @Inject() (
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
         )
+      case j: Sa.RetrievedStartDates =>
+        upsertIfChanged(
+          j.into[Sa.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
 
       case j: Epaye.RetrievedAffordableQuotes =>
         upsertIfChanged(
@@ -123,6 +144,13 @@ class UpdateMonthlyPaymentAmountController @Inject() (
       case j: Vat.RetrievedAffordableQuotes =>
         upsertIfChanged(
           j.into[Vat.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
+      case j: Sa.RetrievedAffordableQuotes =>
+        upsertIfChanged(
+          j.into[Sa.EnteredMonthlyPaymentAmount]
             .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
@@ -142,6 +170,13 @@ class UpdateMonthlyPaymentAmountController @Inject() (
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
         )
+      case j: Sa.ChosenPaymentPlan =>
+        upsertIfChanged(
+          j.into[Sa.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
 
       case j: Epaye.CheckedPaymentPlan =>
         upsertIfChanged(
@@ -153,6 +188,13 @@ class UpdateMonthlyPaymentAmountController @Inject() (
       case j: Vat.CheckedPaymentPlan =>
         upsertIfChanged(
           j.into[Vat.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
+      case j: Sa.CheckedPaymentPlan =>
+        upsertIfChanged(
+          j.into[Sa.EnteredMonthlyPaymentAmount]
             .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
@@ -172,6 +214,13 @@ class UpdateMonthlyPaymentAmountController @Inject() (
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
         )
+      case j: Sa.EnteredDetailsAboutBankAccount =>
+        upsertIfChanged(
+          j.into[Sa.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
 
       case j: Epaye.EnteredDirectDebitDetails =>
         upsertIfChanged(
@@ -183,6 +232,13 @@ class UpdateMonthlyPaymentAmountController @Inject() (
       case j: Vat.EnteredDirectDebitDetails =>
         upsertIfChanged(
           j.into[Vat.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
+      case j: Sa.EnteredDirectDebitDetails =>
+        upsertIfChanged(
+          j.into[Sa.EnteredMonthlyPaymentAmount]
             .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
@@ -202,6 +258,13 @@ class UpdateMonthlyPaymentAmountController @Inject() (
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
         )
+      case j: Sa.ConfirmedDirectDebitDetails =>
+        upsertIfChanged(
+          j.into[Sa.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
 
       case j: Epaye.AgreedTermsAndConditions =>
         upsertIfChanged(
@@ -213,6 +276,13 @@ class UpdateMonthlyPaymentAmountController @Inject() (
       case j: Vat.AgreedTermsAndConditions =>
         upsertIfChanged(
           j.into[Vat.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
+      case j: Sa.AgreedTermsAndConditions =>
+        upsertIfChanged(
+          j.into[Sa.EnteredMonthlyPaymentAmount]
             .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
@@ -232,6 +302,13 @@ class UpdateMonthlyPaymentAmountController @Inject() (
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform
         )
+      case j: Sa.SelectedEmailToBeVerified =>
+        upsertIfChanged(
+          j.into[Sa.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
 
       case j: Epaye.EmailVerificationComplete =>
         upsertIfChanged(
@@ -243,6 +320,13 @@ class UpdateMonthlyPaymentAmountController @Inject() (
       case j: Vat.EmailVerificationComplete =>
         upsertIfChanged(
           j.into[Vat.EnteredMonthlyPaymentAmount]
+            .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+            .transform
+        )
+      case j: Sa.EmailVerificationComplete =>
+        upsertIfChanged(
+          j.into[Sa.EnteredMonthlyPaymentAmount]
             .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
             .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
             .transform

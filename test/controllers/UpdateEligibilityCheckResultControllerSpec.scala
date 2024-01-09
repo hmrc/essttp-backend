@@ -58,7 +58,7 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec {
       result1 shouldBe tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
 
-      val result2 = journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.ineligibleEligibilityCheckResult).futureValue
+      val result2 = journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.ineligibleEligibilityCheckResultEpaye).futureValue
       result2 shouldBe tdAll.EpayeBta.journeyAfterEligibilityCheckNotEligible
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEligibilityCheckNotEligible
 

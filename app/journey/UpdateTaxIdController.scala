@@ -20,7 +20,7 @@ import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model._
-import essttp.rootmodel.{EmpRef, TaxId, Vrn}
+import essttp.rootmodel.{EmpRef, SaUtr, TaxId, Vrn}
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl._
 import play.api.mvc._
@@ -48,12 +48,17 @@ class UpdateTaxIdController @Inject() (
       case j: Journey.Epaye.Started =>
         taxId match {
           case empRef: EmpRef => journeyService.upsert(asEpayeComputedTaxId(j, empRef))
-          case _: Vrn         => Errors.throwBadRequestExceptionF("Why is there a vrn, this is for EPAYE...")
+          case other          => Errors.throwBadRequestExceptionF(s"Why is there a ${other.getClass.getSimpleName}, this is for EPAYE...")
         }
       case j: Journey.Vat.Started =>
         taxId match {
-          case vrn: Vrn  => journeyService.upsert(asVatComputedTaxId(j, vrn))
-          case _: EmpRef => Errors.throwBadRequestExceptionF("Why is there an empref, this is for Vat...")
+          case vrn: Vrn => journeyService.upsert(asVatComputedTaxId(j, vrn))
+          case other    => Errors.throwBadRequestExceptionF(s"Why is there a ${other.getClass.getSimpleName}, this is for Vat...")
+        }
+      case j: Journey.Sa.Started =>
+        taxId match {
+          case saUtr: SaUtr => journeyService.upsert(asSaComputedTaxId(j, saUtr))
+          case other        => Errors.throwBadRequestExceptionF(s"Why is there a ${other.getClass.getSimpleName}, this is for Sa...")
         }
       case j: Journey.AfterComputedTaxId =>
         Errors.throwBadRequestExceptionF(s"UpdateTaxId is not possible in this stage, why is it happening? Debug me... [${j.stage.toString}]")
@@ -70,5 +75,10 @@ class UpdateTaxIdController @Inject() (
     journey.into[Journey.Vat.ComputedTaxId]
       .withFieldConst(_.stage, Stage.AfterComputedTaxId.ComputedTaxId)
       .withFieldConst(_.taxId, vrn)
+      .transform
+  private def asSaComputedTaxId(journey: Journey.Sa.Started, saUtr: SaUtr): Journey.Sa.ComputedTaxId =
+    journey.into[Journey.Sa.ComputedTaxId]
+      .withFieldConst(_.stage, Stage.AfterComputedTaxId.ComputedTaxId)
+      .withFieldConst(_.taxId, saUtr)
       .transform
 }

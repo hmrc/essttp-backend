@@ -66,6 +66,11 @@ class UpdateInstalmentPlanController @Inject() (
           .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
           .withFieldConst(_.selectedPaymentPlan, paymentPlan)
           .transform
+      case j: Journey.Sa.RetrievedAffordableQuotes =>
+        j.into[Journey.Sa.ChosenPaymentPlan]
+          .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+          .withFieldConst(_.selectedPaymentPlan, paymentPlan)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
@@ -84,6 +89,8 @@ class UpdateInstalmentPlanController @Inject() (
           j.copy(selectedPaymentPlan = paymentPlan)
         case j: Journey.Vat.ChosenPaymentPlan =>
           j.copy(selectedPaymentPlan = paymentPlan)
+        case j: Journey.Sa.ChosenPaymentPlan =>
+          j.copy(selectedPaymentPlan = paymentPlan)
 
         case j: Journey.Epaye.CheckedPaymentPlan =>
           j.into[Journey.Epaye.ChosenPaymentPlan]
@@ -92,6 +99,11 @@ class UpdateInstalmentPlanController @Inject() (
             .transform
         case j: Journey.Vat.CheckedPaymentPlan =>
           j.into[Journey.Vat.ChosenPaymentPlan]
+            .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+            .withFieldConst(_.selectedPaymentPlan, paymentPlan)
+            .transform
+        case j: Journey.Sa.CheckedPaymentPlan =>
+          j.into[Journey.Sa.ChosenPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
             .withFieldConst(_.selectedPaymentPlan, paymentPlan)
             .transform
@@ -106,6 +118,11 @@ class UpdateInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
             .withFieldConst(_.selectedPaymentPlan, paymentPlan)
             .transform
+        case j: Journey.Sa.EnteredDetailsAboutBankAccount =>
+          j.into[Journey.Sa.ChosenPaymentPlan]
+            .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+            .withFieldConst(_.selectedPaymentPlan, paymentPlan)
+            .transform
 
         case j: Journey.Epaye.EnteredDirectDebitDetails =>
           j.into[Journey.Epaye.ChosenPaymentPlan]
@@ -114,6 +131,11 @@ class UpdateInstalmentPlanController @Inject() (
             .transform
         case j: Journey.Vat.EnteredDirectDebitDetails =>
           j.into[Journey.Vat.ChosenPaymentPlan]
+            .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+            .withFieldConst(_.selectedPaymentPlan, paymentPlan)
+            .transform
+        case j: Journey.Sa.EnteredDirectDebitDetails =>
+          j.into[Journey.Sa.ChosenPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
             .withFieldConst(_.selectedPaymentPlan, paymentPlan)
             .transform
@@ -128,6 +150,11 @@ class UpdateInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
             .withFieldConst(_.selectedPaymentPlan, paymentPlan)
             .transform
+        case j: Journey.Sa.ConfirmedDirectDebitDetails =>
+          j.into[Journey.Sa.ChosenPaymentPlan]
+            .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+            .withFieldConst(_.selectedPaymentPlan, paymentPlan)
+            .transform
 
         case j: Journey.Epaye.AgreedTermsAndConditions =>
           j.into[Journey.Epaye.ChosenPaymentPlan]
@@ -136,6 +163,11 @@ class UpdateInstalmentPlanController @Inject() (
             .transform
         case j: Journey.Vat.AgreedTermsAndConditions =>
           j.into[Journey.Vat.ChosenPaymentPlan]
+            .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+            .withFieldConst(_.selectedPaymentPlan, paymentPlan)
+            .transform
+        case j: Journey.Sa.AgreedTermsAndConditions =>
+          j.into[Journey.Sa.ChosenPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
             .withFieldConst(_.selectedPaymentPlan, paymentPlan)
             .transform
@@ -150,6 +182,11 @@ class UpdateInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
             .withFieldConst(_.selectedPaymentPlan, paymentPlan)
             .transform
+        case j: Journey.Sa.SelectedEmailToBeVerified =>
+          j.into[Journey.Sa.ChosenPaymentPlan]
+            .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+            .withFieldConst(_.selectedPaymentPlan, paymentPlan)
+            .transform
 
         case j: Journey.Epaye.EmailVerificationComplete =>
           j.into[Journey.Epaye.ChosenPaymentPlan]
@@ -158,6 +195,11 @@ class UpdateInstalmentPlanController @Inject() (
             .transform
         case j: Journey.Vat.EmailVerificationComplete =>
           j.into[Journey.Vat.ChosenPaymentPlan]
+            .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+            .withFieldConst(_.selectedPaymentPlan, paymentPlan)
+            .transform
+        case j: Journey.Sa.EmailVerificationComplete =>
+          j.into[Journey.Sa.ChosenPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
             .withFieldConst(_.selectedPaymentPlan, paymentPlan)
             .transform

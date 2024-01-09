@@ -65,7 +65,7 @@ trait TdJourneyVatDetachedUrl {
       taxId         = vrn
     )
 
-    def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResult()
+    def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResultVat()
 
     def journeyAfterEligibilityCheckEligible: Journey.Vat.EligibilityChecked = Journey.Vat.EligibilityChecked(
       _id                    = dependencies.journeyId,
@@ -76,7 +76,7 @@ trait TdJourneyVatDetachedUrl {
       stage                  = Stage.AfterEligibilityCheck.Eligible,
       correlationId          = dependencies.correlationId,
       taxId                  = vrn,
-      eligibilityCheckResult = eligibleEligibilityCheckResult()
+      eligibilityCheckResult = eligibleEligibilityCheckResultVat()
     )
 
     def journeyAfterEligibilityCheckNotEligible: Journey.Vat.EligibilityChecked = Journey.Vat.EligibilityChecked(
@@ -88,7 +88,7 @@ trait TdJourneyVatDetachedUrl {
       stage                  = Stage.AfterEligibilityCheck.Ineligible,
       correlationId          = dependencies.correlationId,
       taxId                  = vrn,
-      eligibilityCheckResult = ineligibleEligibilityCheckResult(eligibleEligibilityCheckResult())
+      eligibilityCheckResult = ineligibleEligibilityCheckResult(eligibleEligibilityCheckResultVat())
     )
 
     def updateCanPayUpfrontYesRequest(): CanPayUpfront = canPayUpfrontYes
@@ -104,7 +104,7 @@ trait TdJourneyVatDetachedUrl {
       stage                  = Stage.AfterCanPayUpfront.Yes,
       correlationId          = dependencies.correlationId,
       taxId                  = vrn,
-      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      eligibilityCheckResult = eligibleEligibilityCheckResultVat(),
       canPayUpfront          = canPayUpfrontYes
     )
 
@@ -117,7 +117,7 @@ trait TdJourneyVatDetachedUrl {
       stage                  = Stage.AfterCanPayUpfront.No,
       correlationId          = dependencies.correlationId,
       taxId                  = vrn,
-      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      eligibilityCheckResult = eligibleEligibilityCheckResultVat(),
       canPayUpfront          = canPayUpfrontNo
     )
 
@@ -132,7 +132,7 @@ trait TdJourneyVatDetachedUrl {
       stage                  = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
       correlationId          = dependencies.correlationId,
       taxId                  = vrn,
-      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      eligibilityCheckResult = eligibleEligibilityCheckResultVat(),
       canPayUpfront          = canPayUpfrontYes,
       upfrontPaymentAmount   = dependencies.upfrontPaymentAmount
     )
@@ -148,7 +148,7 @@ trait TdJourneyVatDetachedUrl {
       stage                  = Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved,
       correlationId          = dependencies.correlationId,
       taxId                  = vrn,
-      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      eligibilityCheckResult = eligibleEligibilityCheckResultVat(),
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment
     )
@@ -164,7 +164,7 @@ trait TdJourneyVatDetachedUrl {
       stage                  = Stage.AfterAffordabilityResult.RetrievedAffordabilityResult,
       correlationId          = dependencies.correlationId,
       taxId                  = vrn,
-      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      eligibilityCheckResult = eligibleEligibilityCheckResultVat(),
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts      = dependencies.instalmentAmounts
@@ -181,7 +181,7 @@ trait TdJourneyVatDetachedUrl {
       stage                  = Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount,
       correlationId          = dependencies.correlationId,
       taxId                  = vrn,
-      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      eligibilityCheckResult = eligibleEligibilityCheckResultVat(),
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts      = dependencies.instalmentAmounts,
@@ -199,7 +199,7 @@ trait TdJourneyVatDetachedUrl {
       stage                  = Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth,
       correlationId          = dependencies.correlationId,
       taxId                  = vrn,
-      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      eligibilityCheckResult = eligibleEligibilityCheckResultVat(),
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts      = dependencies.instalmentAmounts,
@@ -218,7 +218,7 @@ trait TdJourneyVatDetachedUrl {
       stage                  = Stage.AfterStartDatesResponse.StartDatesResponseRetrieved,
       correlationId          = dependencies.correlationId,
       taxId                  = vrn,
-      eligibilityCheckResult = eligibleEligibilityCheckResult(),
+      eligibilityCheckResult = eligibleEligibilityCheckResultVat(),
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts      = dependencies.instalmentAmounts,
@@ -238,7 +238,7 @@ trait TdJourneyVatDetachedUrl {
       stage                    = Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved,
       correlationId            = dependencies.correlationId,
       taxId                    = vrn,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      eligibilityCheckResult   = eligibleEligibilityCheckResultVat(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -259,7 +259,7 @@ trait TdJourneyVatDetachedUrl {
       stage                    = Stage.AfterSelectedPlan.SelectedPlan,
       correlationId            = dependencies.correlationId,
       taxId                    = vrn,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      eligibilityCheckResult   = eligibleEligibilityCheckResultVat(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -281,7 +281,7 @@ trait TdJourneyVatDetachedUrl {
       stage                    = Stage.AfterCheckedPlan.AcceptedPlan,
       correlationId            = dependencies.correlationId,
       taxId                    = vrn,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      eligibilityCheckResult   = eligibleEligibilityCheckResultVat(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -304,7 +304,7 @@ trait TdJourneyVatDetachedUrl {
       correlationId            = dependencies.correlationId,
       stage                    = if (isAccountHolder) Stage.AfterEnteredDetailsAboutBankAccount.Business else Stage.AfterEnteredDetailsAboutBankAccount.IsNotAccountHolder,
       taxId                    = vrn,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      eligibilityCheckResult   = eligibleEligibilityCheckResultVat(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -327,7 +327,7 @@ trait TdJourneyVatDetachedUrl {
       stage                    = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails,
       correlationId            = dependencies.correlationId,
       taxId                    = vrn,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      eligibilityCheckResult   = eligibleEligibilityCheckResultVat(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -351,7 +351,7 @@ trait TdJourneyVatDetachedUrl {
       stage                    = Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails,
       correlationId            = dependencies.correlationId,
       taxId                    = vrn,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      eligibilityCheckResult   = eligibleEligibilityCheckResultVat(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -380,7 +380,7 @@ trait TdJourneyVatDetachedUrl {
         stage                    = stage,
         correlationId            = dependencies.correlationId,
         taxId                    = vrn,
-        eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+        eligibilityCheckResult   = eligibleEligibilityCheckResultVat(),
         upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
         extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
         instalmentAmounts        = dependencies.instalmentAmounts,
@@ -406,7 +406,7 @@ trait TdJourneyVatDetachedUrl {
       stage                    = Stage.AfterSelectedAnEmailToBeVerified.EmailChosen,
       correlationId            = dependencies.correlationId,
       taxId                    = vrn,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      eligibilityCheckResult   = eligibleEligibilityCheckResultVat(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -433,7 +433,7 @@ trait TdJourneyVatDetachedUrl {
       },
       correlationId            = dependencies.correlationId,
       taxId                    = vrn,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      eligibilityCheckResult   = eligibleEligibilityCheckResultVat(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,
@@ -461,7 +461,7 @@ trait TdJourneyVatDetachedUrl {
       stage                    = Stage.AfterSubmittedArrangement.Submitted,
       correlationId            = dependencies.correlationId,
       taxId                    = vrn,
-      eligibilityCheckResult   = eligibleEligibilityCheckResult(),
+      eligibilityCheckResult   = eligibleEligibilityCheckResultVat(),
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts        = dependencies.instalmentAmounts,

@@ -12,6 +12,13 @@ POST        /vat/gov-uk/journey/start                                       jour
 POST        /vat/detached-url/journey/start                                 journey.SjController.startJourneyVatFromDetachedUrl
 POST        /vat/vat-penalties/journey/start                                journey.SjController.startJourneyVatFroVatPenalties
 
+#SA
+POST        /sa/bta/journey/start                                          journey.SjController.startJourneySaFromBta
+POST        /sa/pta/journey/start                                          journey.SjController.startJourneySaFromPta
+POST        /sa/mobile/journey/start                                       journey.SjController.startJourneySaFromMobile
+POST        /sa/gov-uk/journey/start                                       journey.SjController.startJourneySaFromGovUk
+POST        /sa/detached-url/journey/start                                 journey.SjController.startJourneySaFromDetachedUrl
+
 POST        /bars/verify/status                                             bars.BarsVerifyStatusController.status
 POST        /bars/verify/update                                             bars.BarsVerifyStatusController.update
 

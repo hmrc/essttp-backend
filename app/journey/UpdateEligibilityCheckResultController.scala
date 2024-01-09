@@ -21,7 +21,7 @@ import cats.Eq
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.{Epaye, Stages, Vat}
+import essttp.journey.model.Journey.{Epaye, Sa, Stages, Vat}
 import essttp.journey.model._
 import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import essttp.utils.Errors
@@ -72,6 +72,12 @@ class UpdateEligibilityCheckResultController @Inject() (
           .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
           .transform
         journeyService.upsert(newJourney)
+      case j: Journey.Sa.ComputedTaxId =>
+        val newJourney = j.into[Journey.Sa.EligibilityChecked]
+          .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+          .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+          .transform
+        journeyService.upsert(newJourney)
     }
   }
 
@@ -91,6 +97,9 @@ class UpdateEligibilityCheckResultController @Inject() (
         case j: Vat.EligibilityChecked =>
           j.copy(eligibilityCheckResult = eligibilityCheckResult)
             .copy(stage = deriveEligibilityEnum(eligibilityCheckResult))
+        case j: Sa.EligibilityChecked =>
+          j.copy(eligibilityCheckResult = eligibilityCheckResult)
+            .copy(stage = deriveEligibilityEnum(eligibilityCheckResult))
 
         case j: Epaye.AnsweredCanPayUpfront =>
           j.into[Journey.Epaye.EligibilityChecked]
@@ -99,6 +108,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .transform
         case j: Vat.AnsweredCanPayUpfront =>
           j.into[Journey.Vat.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+        case j: Sa.AnsweredCanPayUpfront =>
+          j.into[Journey.Sa.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
@@ -113,6 +127,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
+        case j: Sa.EnteredUpfrontPaymentAmount =>
+          j.into[Journey.Sa.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
 
         case j: Epaye.RetrievedExtremeDates =>
           j.into[Journey.Epaye.EligibilityChecked]
@@ -121,6 +140,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .transform
         case j: Vat.RetrievedExtremeDates =>
           j.into[Journey.Vat.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+        case j: Sa.RetrievedExtremeDates =>
+          j.into[Journey.Sa.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
@@ -135,6 +159,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
+        case j: Sa.RetrievedAffordabilityResult =>
+          j.into[Journey.Sa.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
 
         case j: Epaye.EnteredMonthlyPaymentAmount =>
           j.into[Journey.Epaye.EligibilityChecked]
@@ -143,6 +172,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .transform
         case j: Vat.EnteredMonthlyPaymentAmount =>
           j.into[Journey.Vat.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+        case j: Sa.EnteredMonthlyPaymentAmount =>
+          j.into[Journey.Sa.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
@@ -157,6 +191,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
+        case j: Sa.EnteredDayOfMonth =>
+          j.into[Journey.Sa.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
 
         case j: Epaye.RetrievedStartDates =>
           j.into[Journey.Epaye.EligibilityChecked]
@@ -165,6 +204,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .transform
         case j: Vat.RetrievedStartDates =>
           j.into[Journey.Vat.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+        case j: Sa.RetrievedStartDates =>
+          j.into[Journey.Sa.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
@@ -179,6 +223,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
+        case j: Sa.RetrievedAffordableQuotes =>
+          j.into[Journey.Sa.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
 
         case j: Epaye.ChosenPaymentPlan =>
           j.into[Journey.Epaye.EligibilityChecked]
@@ -187,6 +236,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .transform
         case j: Vat.ChosenPaymentPlan =>
           j.into[Journey.Vat.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+        case j: Sa.ChosenPaymentPlan =>
+          j.into[Journey.Sa.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
@@ -201,6 +255,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
+        case j: Sa.CheckedPaymentPlan =>
+          j.into[Journey.Sa.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
 
         case j: Epaye.EnteredDetailsAboutBankAccount =>
           j.into[Journey.Epaye.EligibilityChecked]
@@ -209,6 +268,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .transform
         case j: Vat.EnteredDetailsAboutBankAccount =>
           j.into[Journey.Vat.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+        case j: Sa.EnteredDetailsAboutBankAccount =>
+          j.into[Journey.Sa.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
@@ -223,6 +287,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
+        case j: Sa.EnteredDirectDebitDetails =>
+          j.into[Journey.Sa.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
 
         case j: Epaye.ConfirmedDirectDebitDetails =>
           j.into[Journey.Epaye.EligibilityChecked]
@@ -231,6 +300,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .transform
         case j: Vat.ConfirmedDirectDebitDetails =>
           j.into[Journey.Vat.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+        case j: Sa.ConfirmedDirectDebitDetails =>
+          j.into[Journey.Sa.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
@@ -245,6 +319,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
+        case j: Sa.AgreedTermsAndConditions =>
+          j.into[Journey.Sa.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
 
         case j: Epaye.SelectedEmailToBeVerified =>
           j.into[Journey.Epaye.EligibilityChecked]
@@ -256,6 +335,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
+        case j: Sa.SelectedEmailToBeVerified =>
+          j.into[Journey.Sa.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
 
         case j: Epaye.EmailVerificationComplete =>
           j.into[Journey.Epaye.EligibilityChecked]
@@ -264,6 +348,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .transform
         case j: Vat.EmailVerificationComplete =>
           j.into[Journey.Vat.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+        case j: Sa.EmailVerificationComplete =>
+          j.into[Journey.Sa.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform

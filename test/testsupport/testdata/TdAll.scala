@@ -17,6 +17,7 @@
 package testsupport.testdata
 
 import testsupport.testdata.epaye._
+import testsupport.testdata.sa._
 import testsupport.testdata.vat._
 
 /**
@@ -42,3 +43,9 @@ trait TdAll extends AnyRef
   with TdJourneyVatDetachedUrl
   with TdJourneyVatVatService
   with TdJourneyVatVatPenalties
+  with TdSa
+  with TdJourneySaBta
+  with TdJourneySaPta
+  with TdJourneySaMobile
+  with TdJourneySaGovUk
+  with TdJourneySaDetachedUrl

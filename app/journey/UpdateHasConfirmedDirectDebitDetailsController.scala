@@ -61,6 +61,10 @@ class UpdateHasConfirmedDirectDebitDetailsController @Inject() (
         j.into[Journey.Vat.ConfirmedDirectDebitDetails]
           .withFieldConst(_.stage, Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails)
           .transform
+      case j: Journey.Sa.EnteredDirectDebitDetails =>
+        j.into[Journey.Sa.ConfirmedDirectDebitDetails]
+          .withFieldConst(_.stage, Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails)
+          .transform
     }
     journeyService.upsert(newJourney)
   }

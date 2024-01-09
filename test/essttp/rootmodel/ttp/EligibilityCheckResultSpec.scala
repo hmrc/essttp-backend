@@ -27,20 +27,20 @@ class EligibilityCheckResultSpec extends UnitSpec {
   "EligibilityCheckResult should have" - {
 
     "isEligible" in {
-      TdAll.eligibleEligibilityCheckResult.isEligible shouldBe true
-      TdAll.ineligibleEligibilityCheckResult.isEligible shouldBe false
+      TdAll.eligibleEligibilityCheckResultSa.isEligible shouldBe true
+      TdAll.ineligibleEligibilityCheckResultSa.isEligible shouldBe false
     }
 
     "email when" - {
 
       "there are no emails" in {
-        TdAll.eligibleEligibilityCheckResult.copy(customerDetails = None).email shouldBe None
-        TdAll.eligibleEligibilityCheckResult.copy(customerDetails = Some(List.empty)).email shouldBe None
+        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = None).email shouldBe None
+        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = Some(List.empty)).email shouldBe None
       }
 
       "there are emails" in {
         val expectedEmail = Email(SensitiveString("abc@email.com"))
-        TdAll.eligibleEligibilityCheckResult.copy(
+        TdAll.eligibleEligibilityCheckResultSa.copy(
           customerDetails = Some(List(
             CustomerDetail(None, None),
             CustomerDetail(Some(expectedEmail), None),
