@@ -40,14 +40,14 @@ object AppDependencies {
     "uk.gov.hmrc"           %% "bootstrap-common-play-30"        % bootstrapVersion % Provided,
     "org.julienrf"          %% "play-json-derived-codecs"        % playJsonDerivedCodesVersion, //choose carefully
     "com.github.kxbmap"     %% "configs"                         % "0.6.1" exclude("org.apache.commons", "commons-text"),
-    "com.github.pureconfig" %% "pureconfig"                      % "0.17.4",
+    "com.github.pureconfig" %% "pureconfig"                      % "0.17.5",
     "com.beachape"          %% "enumeratum-play"                 % enumeratumPlayVersion,
     "org.playframework"     %% "play"                            % play.core.PlayVersion.current % Provided,
     "io.scalaland"          %% "chimney"                         % chimneyVersion,
     "org.typelevel"         %% "cats-core"                       % catsVersion,
     "uk.gov.hmrc.mongo"     %% "hmrc-mongo-play-30"              % hmrcMongoVersion,
     "uk.gov.hmrc"           %% "crypto-json-play-30"             % cryptoVersion,
-    "uk.gov.hmrc"           %% "payments-email-verification-cor-play-30" % "2.0.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
+    "uk.gov.hmrc"           %% "payments-email-verification-cor-play-30" % "2.1.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
   )
 
 }
