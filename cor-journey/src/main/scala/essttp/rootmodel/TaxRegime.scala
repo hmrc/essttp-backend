@@ -16,6 +16,7 @@
 
 package essttp.rootmodel
 
+import cats.Eq
 import enumeratum._
 
 import scala.collection.immutable
@@ -23,6 +24,8 @@ import scala.collection.immutable
 sealed trait TaxRegime extends EnumEntry with Product with Serializable
 
 object TaxRegime extends Enum[TaxRegime] {
+
+  implicit val eqTaxRegime: Eq[TaxRegime] = Eq.fromUniversalEquals
 
   /**
    * Tax regime for Employers' Pay as you earn (Epaye)
