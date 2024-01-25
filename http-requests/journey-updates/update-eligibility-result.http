@@ -36,10 +36,10 @@ X-Session-ID: sialalalabta
     "taxPeriodFrom": "2022-04-27",
     "taxPeriodTo": "2022-04-27",
     "debtTotalAmount": 100,
+    "chargeReference": "test-chargeReference",
     "charges": [{
       "chargeType": "test-chargeId",
       "mainType": "test-mainType",
-      "chargeReference": "test-chargeReference",
       "mainTrans": "test-mainTrans",
       "subTrans": "test-subTrans",
       "outstandingAmount": 10,

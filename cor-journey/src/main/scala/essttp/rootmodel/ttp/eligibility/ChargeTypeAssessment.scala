@@ -22,6 +22,7 @@ final case class ChargeTypeAssessment(
     taxPeriodFrom:   TaxPeriodFrom,
     taxPeriodTo:     TaxPeriodTo,
     debtTotalAmount: DebtTotalAmount,
+    chargeReference: Option[ChargeReference],
     charges:         List[Charges]
 )
 
