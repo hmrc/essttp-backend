@@ -49,11 +49,12 @@ trait TdVat {
         taxPeriodFrom   = TaxPeriodFrom("2020-08-13"),
         taxPeriodTo     = TaxPeriodTo("2020-08-14"),
         debtTotalAmount = DebtTotalAmount(AmountInPence(300000)),
+        chargeReference = Some(ChargeReference("A00000000001")),
         charges         = List(
           Charges(
             chargeType                    = ChargeType("InYearRTICharge-Tax"),
             mainType                      = MainType("InYearRTICharge(FPS)"),
-            chargeReference               = ChargeReference("A00000000001"),
+            chargeReference               = None,
             mainTrans                     = MainTrans("mainTrans"),
             subTrans                      = SubTrans("subTrans"),
             outstandingAmount             = OutstandingAmount(AmountInPence(100000)),

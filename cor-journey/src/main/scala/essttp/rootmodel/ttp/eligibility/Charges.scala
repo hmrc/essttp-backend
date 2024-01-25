@@ -23,7 +23,7 @@ import play.api.libs.json.{Json, OFormat}
 final case class Charges(
     chargeType:                    ChargeType,
     mainType:                      MainType,
-    chargeReference:               ChargeReference,
+    chargeReference:               Option[ChargeReference],
     mainTrans:                     MainTrans,
     subTrans:                      SubTrans,
     outstandingAmount:             OutstandingAmount,
