@@ -22,6 +22,7 @@ final case class RegimeType(value: String) extends AnyVal
 
 object RegimeType {
   implicit val format: Format[RegimeType] = Json.valueFormat
-  val `PAYE`: RegimeType = RegimeType("PAYE")
-  val `VAT`: RegimeType = RegimeType("VATC")
+  val PAYE: RegimeType = RegimeType("PAYE")
+  val VAT: RegimeType = RegimeType("VATC")
+  val SA: RegimeType = RegimeType("SA")
 }
