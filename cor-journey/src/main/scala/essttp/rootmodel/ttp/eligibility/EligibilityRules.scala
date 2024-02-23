@@ -21,6 +21,7 @@ import play.api.libs.json.{Json, OFormat}
 final case class EligibilityRules(
     hasRlsOnAddress:                   Boolean,
     markedAsInsolvent:                 Boolean,
+    noDueDatesReached:                 Boolean,
     isLessThanMinDebtAllowance:        Boolean,
     isMoreThanMaxDebtAllowance:        Boolean,
     disallowedChargeLockTypes:         Boolean,
@@ -30,7 +31,6 @@ final case class EligibilityRules(
     missingFiledReturns:               Boolean,
     hasInvalidInterestSignals:         Option[Boolean],
     dmSpecialOfficeProcessingRequired: Option[Boolean],
-    noDueDatesReached:                 Boolean,
     cannotFindLockReason:              Option[Boolean],
     creditsNotAllowed:                 Option[Boolean],
     isMoreThanMaxPaymentReference:     Option[Boolean],
@@ -41,6 +41,7 @@ final case class EligibilityRules(
     List(
       hasRlsOnAddress,
       markedAsInsolvent,
+      noDueDatesReached,
       isLessThanMinDebtAllowance,
       isMoreThanMaxDebtAllowance,
       disallowedChargeLockTypes,
@@ -50,7 +51,6 @@ final case class EligibilityRules(
       missingFiledReturns,
       hasInvalidInterestSignals.getOrElse(false),
       dmSpecialOfficeProcessingRequired.getOrElse(false),
-      noDueDatesReached,
       cannotFindLockReason.getOrElse(false),
       creditsNotAllowed.getOrElse(false),
       isMoreThanMaxPaymentReference.getOrElse(false),
@@ -62,6 +62,7 @@ final case class EligibilityRules(
     List(
       hasRlsOnAddress,
       markedAsInsolvent,
+      noDueDatesReached,
       isLessThanMinDebtAllowance,
       isMoreThanMaxDebtAllowance,
       disallowedChargeLockTypes,
@@ -71,7 +72,6 @@ final case class EligibilityRules(
       missingFiledReturns,
       hasInvalidInterestSignals.getOrElse(false),
       dmSpecialOfficeProcessingRequired.getOrElse(false),
-      noDueDatesReached,
       cannotFindLockReason.getOrElse(false),
       creditsNotAllowed.getOrElse(false),
       isMoreThanMaxPaymentReference.getOrElse(false),
