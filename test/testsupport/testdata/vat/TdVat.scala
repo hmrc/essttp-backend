@@ -37,7 +37,10 @@ trait TdVat {
         idValue = IdValue(taxId.value)
       )
     ),
+    invalidSignals                  = None,
     customerPostcodes               = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate("2020-01-01"))),
+    customerDetails                 = None,
+    customerType                    = None,
     regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
     paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
     paymentPlanMinLength            = PaymentPlanMinLength(1),
@@ -80,7 +83,6 @@ trait TdVat {
         )
       )
     ),
-    customerDetails                 = None,
     regimeDigitalCorrespondence     = None,
     futureChargeLiabilitiesExcluded = false
   )

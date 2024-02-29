@@ -29,12 +29,15 @@ final case class EligibilityRules(
     ineligibleChargeTypes:             Boolean,
     missingFiledReturns:               Boolean,
     hasInvalidInterestSignals:         Option[Boolean],
+    hasInvalidInterestSignalsCESA:     Option[Boolean],
     dmSpecialOfficeProcessingRequired: Option[Boolean],
     noDueDatesReached:                 Boolean,
     cannotFindLockReason:              Option[Boolean],
     creditsNotAllowed:                 Option[Boolean],
     isMoreThanMaxPaymentReference:     Option[Boolean],
-    chargesBeforeMaxAccountingDate:    Option[Boolean]
+    chargesBeforeMaxAccountingDate:    Option[Boolean],
+    hasDisguisedRemuneration:          Option[Boolean],
+    hasCapacitor:                      Option[Boolean]
 ) {
 
   val moreThanOneReasonForIneligibility: Boolean = {
@@ -49,12 +52,15 @@ final case class EligibilityRules(
       ineligibleChargeTypes,
       missingFiledReturns,
       hasInvalidInterestSignals.getOrElse(false),
+      hasInvalidInterestSignalsCESA.getOrElse(false),
       dmSpecialOfficeProcessingRequired.getOrElse(false),
       noDueDatesReached,
       cannotFindLockReason.getOrElse(false),
       creditsNotAllowed.getOrElse(false),
       isMoreThanMaxPaymentReference.getOrElse(false),
-      chargesBeforeMaxAccountingDate.getOrElse(false)
+      chargesBeforeMaxAccountingDate.getOrElse(false),
+      hasDisguisedRemuneration.getOrElse(false),
+      hasCapacitor.getOrElse(false)
     ).map{ if (_) 1 else 0 }.sum > 1
   }
 
@@ -70,12 +76,15 @@ final case class EligibilityRules(
       ineligibleChargeTypes,
       missingFiledReturns,
       hasInvalidInterestSignals.getOrElse(false),
+      hasInvalidInterestSignalsCESA.getOrElse(false),
       dmSpecialOfficeProcessingRequired.getOrElse(false),
       noDueDatesReached,
       cannotFindLockReason.getOrElse(false),
       creditsNotAllowed.getOrElse(false),
       isMoreThanMaxPaymentReference.getOrElse(false),
-      chargesBeforeMaxAccountingDate.getOrElse(false)
+      chargesBeforeMaxAccountingDate.getOrElse(false),
+      hasDisguisedRemuneration.getOrElse(false),
+      hasCapacitor.getOrElse(false)
     ).forall(flag => !flag) //if all flags are false then isEligible is true
   }
 }

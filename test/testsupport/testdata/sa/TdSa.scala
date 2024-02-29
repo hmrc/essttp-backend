@@ -37,7 +37,16 @@ trait TdSa {
         idValue = IdValue(saUtr.value)
       )
     ),
+    invalidSignals                  = Some(List(
+      InvalidSignals(
+        signalType        = "xyz",
+        signalValue       = "123",
+        signalDescription = "Description"
+      )
+    )),
     customerPostcodes               = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate("2020-01-01"))),
+    customerDetails                 = None,
+    customerType                    = Some(CustomerTypes.MTDITSA),
     regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
     paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
     paymentPlanMinLength            = PaymentPlanMinLength(1),
@@ -80,7 +89,6 @@ trait TdSa {
         )
       )
     ),
-    customerDetails                 = None,
     regimeDigitalCorrespondence     = None,
     futureChargeLiabilitiesExcluded = false
   )
