@@ -35,13 +35,13 @@ class EligibilityRulesSpec extends UnitSpec {
         ineligibleChargeTypes             = false,
         missingFiledReturns               = false,
         hasInvalidInterestSignals         = Some(false),
-        hasInvalidInterestSignalsCESA      = Some(false),
         dmSpecialOfficeProcessingRequired = Some(false),
         noDueDatesReached                 = false,
         cannotFindLockReason              = Some(false),
         creditsNotAllowed                 = Some(false),
         isMoreThanMaxPaymentReference     = Some(false),
         chargesBeforeMaxAccountingDate    = Some(false),
+        hasInvalidInterestSignalsCESA     = Some(false),
         hasDisguisedRemuneration          = Some(false),
         hasCapacitor                      = Some(false)
       ).isEligible shouldBe true
@@ -59,13 +59,13 @@ class EligibilityRulesSpec extends UnitSpec {
         ineligibleChargeTypes             = false,
         missingFiledReturns               = false,
         hasInvalidInterestSignals         = None,
-        hasInvalidInterestSignalsCESA      = None,
         dmSpecialOfficeProcessingRequired = None,
         noDueDatesReached                 = false,
         cannotFindLockReason              = None,
         creditsNotAllowed                 = None,
         isMoreThanMaxPaymentReference     = None,
         chargesBeforeMaxAccountingDate    = None,
+        hasInvalidInterestSignalsCESA     = None,
         hasDisguisedRemuneration          = None,
         hasCapacitor                      = None
       ).isEligible shouldBe true

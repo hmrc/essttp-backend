@@ -28,9 +28,7 @@ import play.api.libs.json.{Json, OFormat}
 final case class EligibilityCheckResult(
     processingDateTime:              ProcessingDateTime,
     identification:                  List[Identification],
-    invalidSignals:                  Option[List[InvalidSignals]],
     customerPostcodes:               List[CustomerPostcode],
-    customerType:                    Option[CustomerType],
     regimePaymentFrequency:          PaymentPlanFrequency,
     paymentPlanFrequency:            PaymentPlanFrequency,
     paymentPlanMinLength:            PaymentPlanMinLength,
@@ -40,7 +38,9 @@ final case class EligibilityCheckResult(
     chargeTypeAssessment:            List[ChargeTypeAssessment],
     customerDetails:                 Option[List[CustomerDetail]],
     regimeDigitalCorrespondence:     Option[RegimeDigitalCorrespondence],
-    futureChargeLiabilitiesExcluded: Boolean
+    futureChargeLiabilitiesExcluded: Boolean,
+    invalidSignals:                  Option[List[InvalidSignals]],
+    customerType:                    Option[CustomerType]
 )
 
 object EligibilityCheckResult {

@@ -66,11 +66,11 @@ trait TdBase {
     hasInvalidInterestSignals         = None,
     dmSpecialOfficeProcessingRequired = None,
     noDueDatesReached                 = false,
-    hasInvalidInterestSignalsCESA     = None,
     cannotFindLockReason              = None,
     creditsNotAllowed                 = None,
     isMoreThanMaxPaymentReference     = None,
     chargesBeforeMaxAccountingDate    = None,
+    hasInvalidInterestSignalsCESA     = None,
     hasDisguisedRemuneration          = None,
     hasCapacitor                      = None
   )
