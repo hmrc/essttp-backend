@@ -48,7 +48,10 @@ trait TdEpaye {
         idValue = IdValue("123PA44545546")
       )
     ),
+    invalidSignals                  = None,
     customerPostcodes               = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate("2020-01-01"))),
+    customerDetails                 = None,
+    customerType                    = None,
     regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
     paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
     paymentPlanMinLength            = PaymentPlanMinLength(1),
@@ -91,7 +94,6 @@ trait TdEpaye {
         )
       )
     ),
-    customerDetails                 = None,
     regimeDigitalCorrespondence     = None,
     futureChargeLiabilitiesExcluded = false
   )

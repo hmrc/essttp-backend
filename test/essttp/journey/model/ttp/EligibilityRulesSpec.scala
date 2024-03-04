@@ -40,7 +40,10 @@ class EligibilityRulesSpec extends UnitSpec {
         cannotFindLockReason              = Some(false),
         creditsNotAllowed                 = Some(false),
         isMoreThanMaxPaymentReference     = Some(false),
-        chargesBeforeMaxAccountingDate    = Some(false)
+        chargesBeforeMaxAccountingDate    = Some(false),
+        hasInvalidInterestSignalsCESA     = Some(false),
+        hasDisguisedRemuneration          = Some(false),
+        hasCapacitor                      = Some(false)
       ).isEligible shouldBe true
     }
 
@@ -61,7 +64,10 @@ class EligibilityRulesSpec extends UnitSpec {
         cannotFindLockReason              = None,
         creditsNotAllowed                 = None,
         isMoreThanMaxPaymentReference     = None,
-        chargesBeforeMaxAccountingDate    = None
+        chargesBeforeMaxAccountingDate    = None,
+        hasInvalidInterestSignalsCESA     = None,
+        hasDisguisedRemuneration          = None,
+        hasCapacitor                      = None
       ).isEligible shouldBe true
     }
 

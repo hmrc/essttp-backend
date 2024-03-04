@@ -54,12 +54,25 @@ trait TdBase {
   val reusableDate: LocalDate = LocalDate.parse(reusableDateAsString)
 
   val eligibleEligibilityRules: EligibilityRules = EligibilityRules(
-    hasRlsOnAddress                   = false, markedAsInsolvent = false, isLessThanMinDebtAllowance = false,
-    isMoreThanMaxDebtAllowance        = false, disallowedChargeLockTypes = false, existingTTP = false,
-    chargesOverMaxDebtAge             = None, ineligibleChargeTypes = false, missingFiledReturns = false,
-    hasInvalidInterestSignals         = None, dmSpecialOfficeProcessingRequired = None, noDueDatesReached = false,
-    cannotFindLockReason              = None, creditsNotAllowed = None, isMoreThanMaxPaymentReference = None,
-    chargesBeforeMaxAccountingDate    = None
+    hasRlsOnAddress                   = false,
+    markedAsInsolvent                 = false,
+    isLessThanMinDebtAllowance        = false,
+    isMoreThanMaxDebtAllowance        = false,
+    disallowedChargeLockTypes         = false,
+    existingTTP                       = false,
+    chargesOverMaxDebtAge             = None,
+    ineligibleChargeTypes             = false,
+    missingFiledReturns               = false,
+    hasInvalidInterestSignals         = None,
+    dmSpecialOfficeProcessingRequired = None,
+    noDueDatesReached                 = false,
+    cannotFindLockReason              = None,
+    creditsNotAllowed                 = None,
+    isMoreThanMaxPaymentReference     = None,
+    chargesBeforeMaxAccountingDate    = None,
+    hasInvalidInterestSignalsCESA     = None,
+    hasDisguisedRemuneration          = None,
+    hasCapacitor                      = None
   )
 
   def ineligibleEligibilityCheckResult(eligibleEligibilityCheckResult: EligibilityCheckResult): EligibilityCheckResult =

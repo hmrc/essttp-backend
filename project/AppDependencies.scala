@@ -40,7 +40,7 @@ object AppDependencies {
     "uk.gov.hmrc"           %% "bootstrap-common-play-30"        % bootstrapVersion % Provided,
     "org.julienrf"          %% "play-json-derived-codecs"        % playJsonDerivedCodesVersion, //choose carefully
     "com.github.kxbmap"     %% "configs"                         % "0.6.1" exclude("org.apache.commons", "commons-text"),
-    "com.github.pureconfig" %% "pureconfig"                      % "0.17.5",
+    "com.github.pureconfig" %% "pureconfig"                      % "0.17.6",
     "com.beachape"          %% "enumeratum-play"                 % enumeratumPlayVersion,
     "org.playframework"     %% "play"                            % play.core.PlayVersion.current % Provided,
     "io.scalaland"          %% "chimney"                         % chimneyVersion,
