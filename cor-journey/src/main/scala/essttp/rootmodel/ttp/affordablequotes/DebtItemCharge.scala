@@ -26,7 +26,7 @@ final case class DebtItemCharge(
     subTrans:                SubTrans,
     isInterestBearingCharge: Option[IsInterestBearingCharge],
     useChargeReference:      Option[UseChargeReference],
-    debtItemChargeId:        Option[ChargeReference],
+    debtItemChargeId:        ChargeReference,
     interestStartDate:       Option[InterestStartDate],
     debtItemOriginalDueDate: DebtItemOriginalDueDate
 )

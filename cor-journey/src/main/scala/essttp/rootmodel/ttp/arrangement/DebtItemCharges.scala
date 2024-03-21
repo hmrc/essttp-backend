@@ -23,7 +23,7 @@ import play.api.libs.json.{Format, Json}
 
 final case class DebtItemCharges(
     outstandingDebtAmount:   OutstandingDebtAmount,
-    debtItemChargeId:        Option[ChargeReference],
+    debtItemChargeId:        ChargeReference,
     debtItemOriginalDueDate: DebtItemOriginalDueDate,
     accruedInterest:         AccruedInterest,
     isInterestBearingCharge: Option[IsInterestBearingCharge],
