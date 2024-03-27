@@ -83,7 +83,8 @@ trait TdSa {
             dueDateNotReached             = false,
             isInterestBearingCharge       = None,
             useChargeReference            = None,
-            chargeBeforeMaxAccountingDate = None
+            chargeBeforeMaxAccountingDate = None,
+            ddInProgress                  = None
           )
         )
       )

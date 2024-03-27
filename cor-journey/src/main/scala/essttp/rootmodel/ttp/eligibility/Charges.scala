@@ -35,7 +35,8 @@ final case class Charges(
     dueDateNotReached:             Boolean,
     isInterestBearingCharge:       Option[IsInterestBearingCharge],
     useChargeReference:            Option[UseChargeReference],
-    chargeBeforeMaxAccountingDate: Option[ChargeBeforeMaxAccountingDate]
+    chargeBeforeMaxAccountingDate: Option[ChargeBeforeMaxAccountingDate],
+    ddInProgress:                  Option[Boolean]
 )
 
 object Charges {

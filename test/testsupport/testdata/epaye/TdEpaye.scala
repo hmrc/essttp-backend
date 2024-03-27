@@ -20,7 +20,7 @@ import essttp.rootmodel.epaye.{Aor, TaxOfficeNumber, TaxOfficeReference}
 import essttp.rootmodel.ttp._
 import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.ttp.arrangement.{ArrangementResponse, CustomerReference}
-import essttp.rootmodel.ttp.eligibility.{AccruedInterest, ChargeOverMaxDebtAge, ChargeReference, ChargeType, ChargeTypeAssessment, Charges, CustomerPostcode, DebtTotalAmount, DisallowedChargeLockType, EligibilityCheckResult, EligibilityPass, EligibilityStatus, IdType, IdValue, Identification, IneligibleChargeType, InterestStartDate, Lock, LockReason, LockType, MainTrans, MainType, OutstandingAmount, Postcode, PostcodeDate, ProcessingDateTime, SubTrans, TaxPeriodFrom, TaxPeriodTo}
+import essttp.rootmodel.ttp.eligibility.{AccruedInterest, ChargeOverMaxDebtAge, ChargeReference, ChargeType, ChargeTypeAssessment, Charges, CustomerPostcode, DdInProgress, DebtTotalAmount, DisallowedChargeLockType, EligibilityCheckResult, EligibilityPass, EligibilityStatus, IdType, IdValue, Identification, IneligibleChargeType, InterestStartDate, Lock, LockReason, LockType, MainTrans, MainType, OutstandingAmount, Postcode, PostcodeDate, ProcessingDateTime, SubTrans, TaxPeriodFrom, TaxPeriodTo}
 import essttp.rootmodel.{AmountInPence, EmpRef}
 import testsupport.testdata.TdBase
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
@@ -88,7 +88,8 @@ trait TdEpaye {
             dueDateNotReached             = false,
             isInterestBearingCharge       = None,
             useChargeReference            = None,
-            chargeBeforeMaxAccountingDate = None
+            chargeBeforeMaxAccountingDate = None,
+            ddInProgress                  = Some(DdInProgress(false))
           )
         )
       )
