@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.ttp.eligibility
+package essttp.rootmodel.ttp
 
 import cats.kernel.Eq
 import play.api.libs.json.{Format, Json}

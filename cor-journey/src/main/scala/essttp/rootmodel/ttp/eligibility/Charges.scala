@@ -16,7 +16,7 @@
 
 package essttp.rootmodel.ttp.eligibility
 
-import essttp.rootmodel.ttp.{ChargeBeforeMaxAccountingDate, IsInterestBearingCharge, UseChargeReference}
+import essttp.rootmodel.ttp.{ChargeBeforeMaxAccountingDate, DdInProgress, IsInterestBearingCharge, UseChargeReference}
 import essttp.rootmodel.ttp.affordablequotes.DueDate
 import play.api.libs.json.{Json, OFormat}
 
@@ -36,7 +36,7 @@ final case class Charges(
     isInterestBearingCharge:       Option[IsInterestBearingCharge],
     useChargeReference:            Option[UseChargeReference],
     chargeBeforeMaxAccountingDate: Option[ChargeBeforeMaxAccountingDate],
-    ddInProgress:                  Option[Boolean]
+    ddInProgress:                  Option[DdInProgress]
 )
 
 object Charges {
