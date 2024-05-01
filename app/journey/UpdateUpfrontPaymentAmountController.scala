@@ -112,266 +112,266 @@ class UpdateUpfrontPaymentAmountController @Inject() (
               case j: Epaye.EnteredMonthlyPaymentAmount =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Vat.EnteredMonthlyPaymentAmount =>
                 j.into[Journey.Vat.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Sa.EnteredMonthlyPaymentAmount =>
                 j.into[Journey.Sa.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
 
               case j: Epaye.RetrievedExtremeDates =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Vat.RetrievedExtremeDates =>
                 j.into[Journey.Vat.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Sa.RetrievedExtremeDates =>
                 j.into[Journey.Sa.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
 
               case j: Epaye.RetrievedAffordabilityResult =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Vat.RetrievedAffordabilityResult =>
                 j.into[Journey.Vat.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Sa.RetrievedAffordabilityResult =>
                 j.into[Journey.Sa.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
 
               case j: Epaye.EnteredDayOfMonth =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Vat.EnteredDayOfMonth =>
                 j.into[Journey.Vat.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Sa.EnteredDayOfMonth =>
                 j.into[Journey.Sa.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
 
               case j: Epaye.RetrievedStartDates =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Vat.RetrievedStartDates =>
                 j.into[Journey.Vat.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Sa.RetrievedStartDates =>
                 j.into[Journey.Sa.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
 
               case j: Epaye.RetrievedAffordableQuotes =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Vat.RetrievedAffordableQuotes =>
                 j.into[Journey.Vat.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Sa.RetrievedAffordableQuotes =>
                 j.into[Journey.Sa.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
 
               case j: Epaye.ChosenPaymentPlan =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Vat.ChosenPaymentPlan =>
                 j.into[Journey.Vat.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Sa.ChosenPaymentPlan =>
                 j.into[Journey.Sa.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
 
               case j: Epaye.CheckedPaymentPlan =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Vat.CheckedPaymentPlan =>
                 j.into[Journey.Vat.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Sa.CheckedPaymentPlan =>
                 j.into[Journey.Sa.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
 
               case j: Epaye.EnteredDetailsAboutBankAccount =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Vat.EnteredDetailsAboutBankAccount =>
                 j.into[Journey.Vat.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Sa.EnteredDetailsAboutBankAccount =>
                 j.into[Journey.Sa.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
 
               case j: Epaye.EnteredDirectDebitDetails =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Vat.EnteredDirectDebitDetails =>
                 j.into[Journey.Vat.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Sa.EnteredDirectDebitDetails =>
                 j.into[Journey.Sa.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
 
               case j: Epaye.ConfirmedDirectDebitDetails =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Vat.ConfirmedDirectDebitDetails =>
                 j.into[Journey.Vat.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Sa.ConfirmedDirectDebitDetails =>
                 j.into[Journey.Sa.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
 
               case j: Epaye.AgreedTermsAndConditions =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Vat.AgreedTermsAndConditions =>
                 j.into[Journey.Vat.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Sa.AgreedTermsAndConditions =>
                 j.into[Journey.Sa.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
 
               case j: Epaye.SelectedEmailToBeVerified =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Vat.SelectedEmailToBeVerified =>
                 j.into[Journey.Vat.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Sa.SelectedEmailToBeVerified =>
                 j.into[Journey.Sa.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
 
               case j: Epaye.EmailVerificationComplete =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Vat.EmailVerificationComplete =>
                 j.into[Journey.Vat.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
               case j: Sa.EmailVerificationComplete =>
                 j.into[Journey.Sa.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
-                  .withFieldConst(_.canPayUpfront, CanPayUpfront(true))
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
 

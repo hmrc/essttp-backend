@@ -298,7 +298,7 @@ trait TdJourneyVatBta {
     def updateDetailsAboutBankAccountRequest(isAccountHolder: Boolean): DetailsAboutBankAccount =
       DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder)
 
-    def journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder: Boolean): Journey.AfterEnteredDetailsAboutBankAccount = Journey.Vat.EnteredDetailsAboutBankAccount(
+    def journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder: Boolean): Journey.Vat.EnteredDetailsAboutBankAccount = Journey.Vat.EnteredDetailsAboutBankAccount(
       _id                      = dependencies.journeyId,
       origin                   = Origins.Vat.Bta,
       createdOn                = dependencies.createdOn,
@@ -369,7 +369,7 @@ trait TdJourneyVatBta {
 
     def updateAgreedTermsAndConditionsRequest(isEmailAddressRequired: Boolean): IsEmailAddressRequired = IsEmailAddressRequired(isEmailAddressRequired)
 
-    def journeyAfterAgreedTermsAndConditions(isEmailAddressRequired: Boolean): Journey.AfterAgreedTermsAndConditions = {
+    def journeyAfterAgreedTermsAndConditions(isEmailAddressRequired: Boolean): Journey.Vat.AgreedTermsAndConditions = {
       val stage =
         if (isEmailAddressRequired) Stage.AfterAgreedTermsAndConditions.EmailAddressRequired
         else Stage.AfterAgreedTermsAndConditions.EmailAddressNotRequired
@@ -420,7 +420,7 @@ trait TdJourneyVatBta {
       selectedPaymentPlan      = dependencies.paymentPlan(1),
       detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
       directDebitDetails       = directDebitDetails,
-      isEmailAddressRequired   = IsEmailAddressRequired(true),
+      isEmailAddressRequired   = IsEmailAddressRequired(value = true),
       emailToBeVerified        = dependencies.email
     )
 
@@ -447,7 +447,7 @@ trait TdJourneyVatBta {
       selectedPaymentPlan      = dependencies.paymentPlan(1),
       detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
       directDebitDetails       = directDebitDetails,
-      isEmailAddressRequired   = IsEmailAddressRequired(true),
+      isEmailAddressRequired   = IsEmailAddressRequired(value = true),
       emailToBeVerified        = dependencies.email,
       emailVerificationResult  = result,
       emailVerificationAnswers = emailVerificationAnswers(Some(result))

@@ -16,14 +16,13 @@
 
 package controllers
 
-import essttp.journey.JourneyConnector
+import essttp.journey.model.Journey
 import essttp.rootmodel.DayOfMonth
+import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateDayOfMonthControllerSpec extends ItSpec {
-
-  def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
+class UpdateDayOfMonthControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-day-of-month" - {
     "should throw Bad Request when Journey is in a stage [BeforeRetrievedAffordabilityResult]" in new JourneyItTest {
@@ -35,36 +34,208 @@ class UpdateDayOfMonthControllerSpec extends ItSpec {
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }
-    "should not update the journey when Day of month hasn't changed" in new JourneyItTest {
-      stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterMonthlyPaymentAmount.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      val result1 = journeyConnector.updateDayOfMonth(tdAll.journeyId, TdAll.EpayeBta.updateDayOfMonthRequest()).futureValue
-      result1 shouldBe tdAll.EpayeBta.journeyAfterDayOfMonth
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterDayOfMonth
+    "should update the journey when an existing value didn't exist before for" - {
 
-      val result2 = journeyConnector.updateDayOfMonth(tdAll.journeyId, TdAll.EpayeBta.updateDayOfMonthRequest()).futureValue
-      result2 shouldBe tdAll.EpayeBta.journeyAfterDayOfMonth
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterDayOfMonth
+      "Epaye" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount,
+          TdAll.EpayeBta.updateDayOfMonthRequest()
+        )(
+            journeyConnector.updateDayOfMonth,
+            tdAll.EpayeBta.journeyAfterDayOfMonth
+          )(this)
+      }
 
-      verifyCommonActions(numberOfAuthCalls = 4)
+      "Vat" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.VatBta.journeyAfterMonthlyPaymentAmount,
+          TdAll.VatBta.updateDayOfMonthRequest()
+        )(
+            journeyConnector.updateDayOfMonth,
+            tdAll.VatBta.journeyAfterDayOfMonth
+          )(this)
+      }
+
+      "Sa" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SaBta.journeyAfterMonthlyPaymentAmount,
+          TdAll.SaBta.updateDayOfMonthRequest()
+        )(
+            journeyConnector.updateDayOfMonth,
+            tdAll.SaBta.journeyAfterDayOfMonth
+          )(this)
+      }
     }
-    "should update the journey when Day of month has changed" in new JourneyItTest {
-      stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterMonthlyPaymentAmount.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+    "should update the journey when a value already existed" - {
 
-      val result1 = journeyConnector.updateDayOfMonth(tdAll.journeyId, TdAll.EpayeBta.updateDayOfMonthRequest()).futureValue
-      result1 shouldBe tdAll.EpayeBta.journeyAfterDayOfMonth
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterDayOfMonth
+      val differentDayOfMonth = TdAll.dayOfMonth.copy(value = 2)
 
-      val result2 = journeyConnector.updateDayOfMonth(tdAll.journeyId, TdAll.EpayeBta.updateDayOfMonthRequest().copy(2)).futureValue
-      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterDayOfMonth.copy(dayOfMonth = DayOfMonth(2))
-      result2 shouldBe expectedUpdatedJourney2
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
+      "Epaye when the current stage is" - {
 
-      verifyCommonActions(numberOfAuthCalls = 4)
+          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => DayOfMonth)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentDayOfMonth,
+                journeyConnector.updateDayOfMonth(_, _)(context.request),
+                context.tdAll.EpayeBta.journeyAfterDayOfMonth.copy(dayOfMonth = differentDayOfMonth)
+              )(context)
+
+        "RetrievedStartDates" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterStartDatesResponse)(_.dayOfMonth)(this)
+        }
+
+        "RetrievedAffordableQuotes" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterAffordableQuotesResponse)(_.dayOfMonth)(this)
+        }
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedPaymentPlan)(_.dayOfMonth)(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlan)(_.dayOfMonth)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.dayOfMonth)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails())(_.dayOfMonth)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails)(_.dayOfMonth)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.dayOfMonth)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmail)(_.dayOfMonth)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.dayOfMonth)(this)
+        }
+
+      }
+
+      "Vat when the current stage is" - {
+
+          def testVatBta[J <: Journey](initialJourney: J)(existingValue: J => DayOfMonth)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentDayOfMonth,
+                journeyConnector.updateDayOfMonth(_, _)(context.request),
+                context.tdAll.VatBta.journeyAfterDayOfMonth.copy(dayOfMonth = differentDayOfMonth)
+              )(context)
+
+        "RetrievedStartDates" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterStartDatesResponse)(_.dayOfMonth)(this)
+        }
+
+        "RetrievedAffordableQuotes" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterAffordableQuotesResponse)(_.dayOfMonth)(this)
+        }
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterSelectedPaymentPlan)(_.dayOfMonth)(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterCheckedPaymentPlan)(_.dayOfMonth)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.dayOfMonth)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetails())(_.dayOfMonth)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetails)(_.dayOfMonth)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.dayOfMonth)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterSelectedEmail)(_.dayOfMonth)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.dayOfMonth)(this)
+        }
+
+      }
+
+      "Sa when the current stage is" - {
+
+          def testSaBta[J <: Journey](initialJourney: J)(existingValue: J => DayOfMonth)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentDayOfMonth,
+                journeyConnector.updateDayOfMonth(_, _)(context.request),
+                context.tdAll.SaBta.journeyAfterDayOfMonth.copy(dayOfMonth = differentDayOfMonth)
+              )(context)
+
+        "RetrievedStartDates" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterStartDatesResponse)(_.dayOfMonth)(this)
+        }
+
+        "RetrievedAffordableQuotes" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterAffordableQuotesResponse)(_.dayOfMonth)(this)
+        }
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterSelectedPaymentPlan)(_.dayOfMonth)(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterCheckedPaymentPlan)(_.dayOfMonth)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.dayOfMonth)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetails())(_.dayOfMonth)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterConfirmedDirectDebitDetails)(_.dayOfMonth)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.dayOfMonth)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterSelectedEmail)(_.dayOfMonth)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.dayOfMonth)(this)
+        }
+
+      }
+
     }
+
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 

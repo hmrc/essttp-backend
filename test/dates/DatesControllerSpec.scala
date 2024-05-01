@@ -36,7 +36,7 @@ class DatesControllerSpec extends ItSpec with TableDrivenPropertyChecks {
   "POST /start-dates" - {
 
     behave like unauthenticatedBehaviour(
-      connector.startDates(DatesTdAll.startDatesRequest(InitialPayment(true), PreferredDayOfMonth(28)))(_)
+      connector.startDates(DatesTdAll.startDatesRequest(InitialPayment(value = true), PreferredDayOfMonth(28)))(_)
     )
 
     val testDataTable = Table(
@@ -117,7 +117,7 @@ class DatesControllerSpec extends ItSpec with TableDrivenPropertyChecks {
   "POST /extreme-dates should" - {
 
     behave like unauthenticatedBehaviour(
-      connector.extremeDates(ExtremeDatesRequest(InitialPayment(false)))(_)
+      connector.extremeDates(ExtremeDatesRequest(InitialPayment(value = false)))(_)
     )
 
     "return earliestPlanStartDate(+6 working days), latestPlanStartDate(+40 calendar days), when initialPayment=false, " in {
@@ -126,7 +126,7 @@ class DatesControllerSpec extends ItSpec with TableDrivenPropertyChecks {
       DateCalculatorStub.stubAddWorkingDays(LocalDate.parse(TdDates.`1stJan2022`).plusDays(10))
 
       FrozenTime.setTime(TdDates.`1stJan2022`)
-      val request: ExtremeDatesRequest = ExtremeDatesRequest(InitialPayment(false))
+      val request: ExtremeDatesRequest = ExtremeDatesRequest(InitialPayment(value = false))
       val expectedResult: ExtremeDatesResponse = ExtremeDatesResponse(
         initialPaymentDate    = None,
         earliestPlanStartDate = EarliestPaymentPlanStartDate(LocalDate.parse(TdDates.`11thJan2022`)),
@@ -145,7 +145,7 @@ class DatesControllerSpec extends ItSpec with TableDrivenPropertyChecks {
       DateCalculatorStub.stubAddWorkingDays(LocalDate.parse(TdDates.`1stJan2022`).plusDays(10))
 
       FrozenTime.setTime(TdDates.`1stJan2022`)
-      val request: ExtremeDatesRequest = ExtremeDatesRequest(InitialPayment(true))
+      val request: ExtremeDatesRequest = ExtremeDatesRequest(InitialPayment(value = true))
       val expectedResult: ExtremeDatesResponse = ExtremeDatesResponse(
         initialPaymentDate    = Some(InitialPaymentDate(LocalDate.parse(TdDates.`11thJan2022`))),
         earliestPlanStartDate = EarliestPaymentPlanStartDate(LocalDate.parse("2022-01-31")),

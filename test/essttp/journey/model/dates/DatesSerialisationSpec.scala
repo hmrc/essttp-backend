@@ -27,12 +27,12 @@ class DatesSerialisationSpec extends UnitSpec {
 
   "InitialPayment should" - {
     "serialise from InitialPayment" in {
-      Json.toJson[InitialPayment](InitialPayment(true)) shouldBe Json.parse("true")
-      Json.toJson[InitialPayment](InitialPayment(false)) shouldBe Json.parse("false")
+      Json.toJson[InitialPayment](InitialPayment(value = true)) shouldBe Json.parse("true")
+      Json.toJson[InitialPayment](InitialPayment(value = false)) shouldBe Json.parse("false")
     }
     "de-serialise as InitialPayment" in {
-      Json.parse("true").as[InitialPayment] shouldBe InitialPayment(true)
-      Json.parse("false").as[InitialPayment] shouldBe InitialPayment(false)
+      Json.parse("true").as[InitialPayment] shouldBe InitialPayment(value = true)
+      Json.parse("false").as[InitialPayment] shouldBe InitialPayment(value = false)
     }
   }
 

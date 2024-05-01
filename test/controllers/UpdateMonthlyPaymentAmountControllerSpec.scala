@@ -16,14 +16,13 @@
 
 package controllers
 
-import essttp.journey.JourneyConnector
-import essttp.rootmodel.AmountInPence
+import essttp.journey.model.Journey
+import essttp.rootmodel.{AmountInPence, MonthlyPaymentAmount}
+import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec {
-
-  def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
+class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-monthly-payment-amount" - {
     "should throw Bad Request when Journey is in a stage [BeforeRetrievedAffordabilityResult]" in new JourneyItTest {
@@ -35,37 +34,236 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec {
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }
-    "should not update the journey when Monthly payment amount hasn't changed" in new JourneyItTest {
-      stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterInstalmentAmounts.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+    "should update the journey when an existing value didn't exist before for" - {
 
-      val result1 = journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, TdAll.EpayeBta.updateMonthlyPaymentAmountRequest()).futureValue
-      result1 shouldBe tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount
+      "Epaye" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.EpayeBta.journeyAfterInstalmentAmounts,
+          TdAll.EpayeBta.updateMonthlyPaymentAmountRequest()
+        )(
+            journeyConnector.updateMonthlyPaymentAmount,
+            tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount
+          )(this)
+      }
 
-      val result2 = journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, TdAll.EpayeBta.updateMonthlyPaymentAmountRequest()).futureValue
-      result2 shouldBe tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount
+      "Vat" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.VatBta.journeyAfterInstalmentAmounts,
+          TdAll.VatBta.updateMonthlyPaymentAmountRequest()
+        )(
+            journeyConnector.updateMonthlyPaymentAmount,
+            tdAll.VatBta.journeyAfterMonthlyPaymentAmount
+          )(this)
+      }
 
-      verifyCommonActions(numberOfAuthCalls = 4)
+      "Sa" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SaBta.journeyAfterInstalmentAmounts,
+          TdAll.SaBta.updateMonthlyPaymentAmountRequest()
+        )(
+            journeyConnector.updateMonthlyPaymentAmount,
+            tdAll.SaBta.journeyAfterMonthlyPaymentAmount
+          )(this)
+      }
     }
-    "should update the journey when Monthly payment amount has changed" in new JourneyItTest {
-      stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterInstalmentAmounts.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+    "should update the journey when a value already existed" - {
 
-      val result1 = journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, TdAll.EpayeBta.updateMonthlyPaymentAmountRequest()).futureValue
-      result1 shouldBe tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount
+      "Epaye when the current stage is" - {
 
-      val result2 = journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, TdAll.EpayeBta.updateMonthlyPaymentAmountRequest().copy(AmountInPence(999))).futureValue
-      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount.copy(monthlyPaymentAmount = this.tdAll.monthlyPaymentAmount.copy(AmountInPence(999)))
-      result2 shouldBe expectedUpdatedJourney2
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
+        val differentAmount = MonthlyPaymentAmount(AmountInPence(4583972))
 
-      verifyCommonActions(numberOfAuthCalls = 4)
+          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => MonthlyPaymentAmount)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentAmount,
+                journeyConnector.updateMonthlyPaymentAmount(_, _)(context.request),
+                context.tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount.copy(monthlyPaymentAmount = differentAmount)
+              )(context)
+
+        "EnteredMonthlyPaymentAmount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount)(_.monthlyPaymentAmount)(this)
+        }
+
+        "EnteredDayOfMonth" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterDayOfMonth)(_.monthlyPaymentAmount)(this)
+        }
+
+        "RetrievedStartDates" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterStartDatesResponse)(_.monthlyPaymentAmount)(this)
+        }
+
+        "RetrievedAffordableQuotes" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterAffordableQuotesResponse)(_.monthlyPaymentAmount)(this)
+        }
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedPaymentPlan)(_.monthlyPaymentAmount)(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlan)(_.monthlyPaymentAmount)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.monthlyPaymentAmount)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails())(_.monthlyPaymentAmount)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails)(_.monthlyPaymentAmount)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.monthlyPaymentAmount)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmail)(_.monthlyPaymentAmount)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.monthlyPaymentAmount)(this)
+        }
+
+      }
+
+      "Vat when the current stage is" - {
+
+        val differentAmount = MonthlyPaymentAmount(AmountInPence(4583972))
+
+          def testVatBta[J <: Journey](initialJourney: J)(existingValue: J => MonthlyPaymentAmount)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentAmount,
+                journeyConnector.updateMonthlyPaymentAmount(_, _)(context.request),
+                context.tdAll.VatBta.journeyAfterMonthlyPaymentAmount.copy(monthlyPaymentAmount = differentAmount)
+              )(context)
+
+        "EnteredMonthlyPaymentAmount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterMonthlyPaymentAmount)(_.monthlyPaymentAmount)(this)
+        }
+
+        "EnteredDayOfMonth" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterDayOfMonth)(_.monthlyPaymentAmount)(this)
+        }
+
+        "RetrievedStartDates" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterStartDatesResponse)(_.monthlyPaymentAmount)(this)
+        }
+
+        "RetrievedAffordableQuotes" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterAffordableQuotesResponse)(_.monthlyPaymentAmount)(this)
+        }
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterSelectedPaymentPlan)(_.monthlyPaymentAmount)(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterCheckedPaymentPlan)(_.monthlyPaymentAmount)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.monthlyPaymentAmount)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetails())(_.monthlyPaymentAmount)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetails)(_.monthlyPaymentAmount)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.monthlyPaymentAmount)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterSelectedEmail)(_.monthlyPaymentAmount)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.monthlyPaymentAmount)(this)
+        }
+
+      }
+
+      "Sa when the current stage is" - {
+
+        val differentAmount = MonthlyPaymentAmount(AmountInPence(4583972))
+
+          def testSaBta[J <: Journey](initialJourney: J)(existingValue: J => MonthlyPaymentAmount)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentAmount,
+                journeyConnector.updateMonthlyPaymentAmount(_, _)(context.request),
+                context.tdAll.SaBta.journeyAfterMonthlyPaymentAmount.copy(monthlyPaymentAmount = differentAmount)
+              )(context)
+
+        "EnteredMonthlyPaymentAmount" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterMonthlyPaymentAmount)(_.monthlyPaymentAmount)(this)
+        }
+
+        "EnteredDayOfMonth" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterDayOfMonth)(_.monthlyPaymentAmount)(this)
+        }
+
+        "RetrievedStartDates" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterStartDatesResponse)(_.monthlyPaymentAmount)(this)
+        }
+
+        "RetrievedAffordableQuotes" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterAffordableQuotesResponse)(_.monthlyPaymentAmount)(this)
+        }
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterSelectedPaymentPlan)(_.monthlyPaymentAmount)(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterCheckedPaymentPlan)(_.monthlyPaymentAmount)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.monthlyPaymentAmount)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetails())(_.monthlyPaymentAmount)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterConfirmedDirectDebitDetails)(_.monthlyPaymentAmount)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.monthlyPaymentAmount)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterSelectedEmail)(_.monthlyPaymentAmount)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.monthlyPaymentAmount)(this)
+        }
+
+      }
+
     }
+
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 
