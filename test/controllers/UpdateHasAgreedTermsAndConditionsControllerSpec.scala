@@ -17,13 +17,12 @@
 package controllers
 
 import essttp.rootmodel.IsEmailAddressRequired
-import essttp.journey.JourneyConnector
+import essttp.journey.model.Journey
+import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec {
-
-  def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
+class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-has-agreed-terms-and-conditions" - {
 
@@ -31,55 +30,83 @@ class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec {
       stubCommonActions()
 
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
-      val result: Throwable = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).failed.futureValue
+      val result: Throwable = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"UpdateAgreedTermsAndConditions is not possible in that state: [Started]"}""")
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }
 
-    "should return Unit when terms and conditions have already been confirmed and the value for isEmailAddressRequired has not changed" in new JourneyItTest {
-      stubCommonActions()
+    "should update the journey when an existing value didn't exist before for" - {
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+      "Epaye" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails,
+          IsEmailAddressRequired(value = true)
+        )(
+            journeyConnector.updateHasAgreedTermsAndConditions,
+            tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+          )(this)
+      }
 
-      val expectedUpdatedJourney = tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false)
+      "Vat" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.VatBta.journeyAfterConfirmedDirectDebitDetails,
+          IsEmailAddressRequired(value = true)
+        )(
+            journeyConnector.updateHasAgreedTermsAndConditions,
+            tdAll.VatBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+          )(this)
+      }
 
-      val result1 = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(false)).futureValue
-      result1 shouldBe expectedUpdatedJourney
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney
-
-      val result2 = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(false)).futureValue
-      result2 shouldBe expectedUpdatedJourney
-      // check value hasn't actually changed
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney
-
-      verifyCommonActions(numberOfAuthCalls = 4)
+      "Sa" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SaBta.journeyAfterConfirmedDirectDebitDetails,
+          IsEmailAddressRequired(value = true)
+        )(
+            journeyConnector.updateHasAgreedTermsAndConditions,
+            tdAll.SaBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+          )(this)
+      }
     }
 
-    "should return Unit when terms and conditions have already been confirmed and the value for isEmailAddressRequired has changed" in new JourneyItTest {
-      stubCommonActions()
+    "should update the journey when a value already existed" - {
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+      "Epaye when the current stage is" - {
 
-      val result1 = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(false)).futureValue
-      val expectedUpdatedJourney1 = tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false)
-      result1 shouldBe expectedUpdatedJourney1
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney1
+          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => IsEmailAddressRequired)(context: JourneyItTest): Unit = {
+            val differentValue = IsEmailAddressRequired(!existingValue(initialJourney).value)
 
-      val result2 = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).futureValue
-      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
-      result2 shouldBe expectedUpdatedJourney2
-      // check value has changed
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentValue,
+                journeyConnector.updateHasAgreedTermsAndConditions(_, _)(context.request),
+                context.tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = differentValue.value)
+              )(context)
+          }
 
-      verifyCommonActions(numberOfAuthCalls = 4)
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false))(_.isEmailAddressRequired)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmail)(_.isEmailAddressRequired)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.isEmailAddressRequired)(this)
+        }
+
+      }
+
     }
 
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      val result: Throwable = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(true)).failed.futureValue
+      val result: Throwable = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"Cannot update AgreedTermsAndConditions when journey is in completed state"}""")
 
       verifyCommonActions(numberOfAuthCalls = 1)

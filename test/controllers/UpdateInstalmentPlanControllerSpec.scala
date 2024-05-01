@@ -16,13 +16,13 @@
 
 package controllers
 
-import essttp.journey.JourneyConnector
+import essttp.journey.model.Journey
+import essttp.rootmodel.ttp.affordablequotes.PaymentPlan
+import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateInstalmentPlanControllerSpec extends ItSpec {
-
-  def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
+class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-selected-plan" - {
     "should throw Bad Request when Journey is in a stage [BeforeAffordableQuotesResponse]" in new JourneyItTest {
@@ -34,37 +34,184 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec {
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }
-    "should not update the journey when Selected Plan hasn't changed" in new JourneyItTest {
-      stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterAffordableQuotesResponse.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+    "should update the journey when an existing value didn't exist before for" - {
 
-      val result1 = journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.EpayeBta.updateSelectedPaymentPlanRequest()).futureValue
-      result1 shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
+      "Epaye" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.EpayeBta.journeyAfterAffordableQuotesResponse,
+          TdAll.EpayeBta.updateSelectedPaymentPlanRequest()
+        )(
+            journeyConnector.updateChosenPaymentPlan,
+            tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
+          )(this)
+      }
 
-      val result2 = journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.EpayeBta.updateSelectedPaymentPlanRequest()).futureValue
-      result2 shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
+      "Vat" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.VatBta.journeyAfterAffordableQuotesResponse,
+          TdAll.VatBta.updateSelectedPaymentPlanRequest()
+        )(
+            journeyConnector.updateChosenPaymentPlan,
+            tdAll.VatBta.journeyAfterSelectedPaymentPlan
+          )(this)
+      }
 
-      verifyCommonActions(numberOfAuthCalls = 4)
+      "Sa" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SaBta.journeyAfterAffordableQuotesResponse,
+          TdAll.SaBta.updateSelectedPaymentPlanRequest()
+        )(
+            journeyConnector.updateChosenPaymentPlan,
+            tdAll.SaBta.journeyAfterSelectedPaymentPlan
+          )(this)
+      }
     }
-    "should update the journey when Selected Plan has changed" in new JourneyItTest {
-      stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterAffordableQuotesResponse.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+    "should update the journey when a value already existed" - {
 
-      val result1 = journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.EpayeBta.updateSelectedPaymentPlanRequest()).futureValue
-      result1 shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
+      val differentPaymentPlan = TdAll.paymentPlan(3498)
 
-      val result2 = journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.paymentPlan(2)).futureValue
-      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = TdAll.paymentPlan(2))
-      result2 shouldBe expectedUpdatedJourney2
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
+      "Epaye when the current stage is" - {
 
-      verifyCommonActions(numberOfAuthCalls = 4)
+          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => PaymentPlan)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentPaymentPlan,
+                journeyConnector.updateChosenPaymentPlan(_, _)(context.request),
+                context.tdAll.EpayeBta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = differentPaymentPlan)
+              )(context)
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedPaymentPlan)(_.selectedPaymentPlan)(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlan)(_.selectedPaymentPlan)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.selectedPaymentPlan)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails())(_.selectedPaymentPlan)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails)(_.selectedPaymentPlan)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.selectedPaymentPlan)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmail)(_.selectedPaymentPlan)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.selectedPaymentPlan)(this)
+        }
+
+      }
+
+      "Vat when the current stage is" - {
+
+          def testVatBta[J <: Journey](initialJourney: J)(existingValue: J => PaymentPlan)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentPaymentPlan,
+                journeyConnector.updateChosenPaymentPlan(_, _)(context.request),
+                context.tdAll.VatBta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = differentPaymentPlan)
+              )(context)
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterSelectedPaymentPlan)(_.selectedPaymentPlan)(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterCheckedPaymentPlan)(_.selectedPaymentPlan)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.selectedPaymentPlan)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetails())(_.selectedPaymentPlan)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetails)(_.selectedPaymentPlan)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.selectedPaymentPlan)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterSelectedEmail)(_.selectedPaymentPlan)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.selectedPaymentPlan)(this)
+        }
+
+      }
+
+      "Sa when the current stage is" - {
+
+          def testSaBta[J <: Journey](initialJourney: J)(existingValue: J => PaymentPlan)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentPaymentPlan,
+                journeyConnector.updateChosenPaymentPlan(_, _)(context.request),
+                context.tdAll.SaBta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = differentPaymentPlan)
+              )(context)
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterSelectedPaymentPlan)(_.selectedPaymentPlan)(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterCheckedPaymentPlan)(_.selectedPaymentPlan)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.selectedPaymentPlan)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetails())(_.selectedPaymentPlan)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterConfirmedDirectDebitDetails)(_.selectedPaymentPlan)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.selectedPaymentPlan)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterSelectedEmail)(_.selectedPaymentPlan)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.selectedPaymentPlan)(this)
+        }
+
+      }
+
     }
+
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 

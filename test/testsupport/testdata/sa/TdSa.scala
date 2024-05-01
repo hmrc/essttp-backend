@@ -51,7 +51,7 @@ trait TdSa {
     paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
     paymentPlanMinLength            = PaymentPlanMinLength(1),
     paymentPlanMaxLength            = PaymentPlanMaxLength(6),
-    eligibilityStatus               = EligibilityStatus(EligibilityPass(true)),
+    eligibilityStatus               = EligibilityStatus(EligibilityPass(value = true)),
     eligibilityRules                = eligibleEligibilityRules,
     chargeTypeAssessment            = List(
       ChargeTypeAssessment(
@@ -69,14 +69,14 @@ trait TdSa {
             dueDate                       = DueDate(reusableDate),
             interestStartDate             = Some(InterestStartDate(reusableDate)),
             accruedInterest               = AccruedInterest(AmountInPence(1597)),
-            ineligibleChargeType          = IneligibleChargeType(false),
-            chargeOverMaxDebtAge          = Some(ChargeOverMaxDebtAge(false)),
+            ineligibleChargeType          = IneligibleChargeType(value = false),
+            chargeOverMaxDebtAge          = Some(ChargeOverMaxDebtAge(value = false)),
             locks                         = Some(
               List(
                 Lock(
                   lockType                 = LockType("Payment"),
                   lockReason               = LockReason("Risk/Fraud"),
-                  disallowedChargeLockType = DisallowedChargeLockType(false)
+                  disallowedChargeLockType = DisallowedChargeLockType(value = false)
                 )
               )
             ),
@@ -94,7 +94,7 @@ trait TdSa {
   )
 
   def ineligibleEligibilityCheckResultSa: EligibilityCheckResult = eligibleEligibilityCheckResultSa.copy(
-    eligibilityStatus = EligibilityStatus(EligibilityPass(false)),
+    eligibilityStatus = EligibilityStatus(EligibilityPass(value = false)),
     eligibilityRules  = hasRlsAddressOn
   )
 

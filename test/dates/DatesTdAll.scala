@@ -28,7 +28,7 @@ object DatesTdAll {
   def startDatesRequest(initialPayment: InitialPayment, preferredDayOfMonth: PreferredDayOfMonth): StartDatesRequest =
     StartDatesRequest(initialPayment, preferredDayOfMonth)
 
-  val initialPaymentTrue: InitialPayment = InitialPayment(true)
+  val initialPaymentTrue: InitialPayment = InitialPayment(value = true)
   val initialPaymentFalse: InitialPayment = initialPaymentTrue.copy(false)
   val preferredDayOfMonth: PreferredDayOfMonth = PreferredDayOfMonth(1)
   val initialPaymentDate: InitialPaymentDate = InitialPaymentDate(LocalDate.parse(TdDates.`1stJan2022`))

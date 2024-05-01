@@ -121,8 +121,8 @@ class UpdateCanPayUpfrontController @Inject() (
         }
       case Right(j: Journey.AfterUpfrontPaymentAnswers) =>
         val existingCanPayUpfront = j.upfrontPaymentAnswers match {
-          case UpfrontPaymentAnswers.NoUpfrontPayment          => CanPayUpfront(false)
-          case _: UpfrontPaymentAnswers.DeclaredUpfrontPayment => CanPayUpfront(true)
+          case UpfrontPaymentAnswers.NoUpfrontPayment          => CanPayUpfront(value = false)
+          case _: UpfrontPaymentAnswers.DeclaredUpfrontPayment => CanPayUpfront(value = true)
         }
           def upsertIfChanged(updatedJourney: => Journey): Future[Journey] =
             if (canPayUpfront.value === existingCanPayUpfront.value) {

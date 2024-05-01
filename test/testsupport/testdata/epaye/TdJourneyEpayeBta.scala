@@ -431,7 +431,7 @@ trait TdJourneyEpayeBta {
       selectedPaymentPlan      = dependencies.paymentPlan(1),
       detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
       directDebitDetails       = directDebitDetails,
-      isEmailAddressRequired   = IsEmailAddressRequired(true),
+      isEmailAddressRequired   = IsEmailAddressRequired(value = true),
       emailToBeVerified        = dependencies.email
     )
 
@@ -458,7 +458,7 @@ trait TdJourneyEpayeBta {
       selectedPaymentPlan      = dependencies.paymentPlan(1),
       detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
       directDebitDetails       = directDebitDetails,
-      isEmailAddressRequired   = IsEmailAddressRequired(true),
+      isEmailAddressRequired   = IsEmailAddressRequired(value = true),
       emailToBeVerified        = dependencies.email,
       emailVerificationResult  = result,
       emailVerificationAnswers = emailVerificationAnswers(Some(result))

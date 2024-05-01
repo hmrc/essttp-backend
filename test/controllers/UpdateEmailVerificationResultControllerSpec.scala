@@ -16,15 +16,13 @@
 
 package controllers
 
-import essttp.journey.JourneyConnector
+import essttp.journey.model.Journey
 import essttp.rootmodel.IsEmailAddressRequired
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateEmailVerificationResultControllerSpec extends ItSpec {
-
-  def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
+class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-email-verification-status" - {
 
@@ -38,26 +36,113 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec {
       verifyCommonActions(numberOfAuthCalls = 2)
     }
 
-    "should update the journey with the email verification status" in new JourneyItTest {
-      stubCommonActions()
+    "should update the journey when an existing value didn't exist before for" - {
 
-      insertJourneyForTest(
-        TdAll.EpayeBta.journeyAfterSelectedEmail
-          .copy(_id = tdAll.journeyId)
-          .copy(correlationId = tdAll.correlationId)
-      )
+      "Epaye" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.EpayeBta.journeyAfterSelectedEmail,
+          EmailVerificationResult.Verified
+        )(
+            journeyConnector.updateEmailVerificationResult,
+            tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+          )(this)
+      }
 
-      val result1 = journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Verified).futureValue
-      val expectedUpdatedJourney1 = tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
-      result1 shouldBe expectedUpdatedJourney1
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney1
+      "Vat" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.VatBta.journeyAfterSelectedEmail,
+          EmailVerificationResult.Verified
+        )(
+            journeyConnector.updateEmailVerificationResult,
+            tdAll.VatBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+          )(this)
+      }
 
-      val result2 = journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Locked).futureValue
-      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Locked)
-      result2 shouldBe expectedUpdatedJourney2
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
+      "Sa" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SaBta.journeyAfterSelectedEmail,
+          EmailVerificationResult.Verified
+        )(
+            journeyConnector.updateEmailVerificationResult,
+            tdAll.SaBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+          )(this)
+      }
+    }
 
-      verifyCommonActions(numberOfAuthCalls = 4)
+    "should update the journey when a value already existed" - {
+
+      "Epaye when the current stage is" - {
+
+          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => EmailVerificationResult)(context: JourneyItTest): Unit = {
+            val differentVerificationResult: EmailVerificationResult = existingValue(initialJourney) match {
+              case EmailVerificationResult.Verified => EmailVerificationResult.Locked
+              case EmailVerificationResult.Locked   => EmailVerificationResult.Verified
+            }
+
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentVerificationResult,
+                journeyConnector.updateEmailVerificationResult(_, _)(context.request),
+                context.tdAll.EpayeBta.journeyAfterEmailVerificationResult(differentVerificationResult)
+              )(context)
+          }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.emailVerificationResult)(this)
+        }
+
+      }
+
+      "Vat when the current stage is" - {
+
+          def testVatBta[J <: Journey](initialJourney: J)(existingValue: J => EmailVerificationResult)(context: JourneyItTest): Unit = {
+            val differentVerificationResult: EmailVerificationResult = existingValue(initialJourney) match {
+              case EmailVerificationResult.Verified => EmailVerificationResult.Locked
+              case EmailVerificationResult.Locked   => EmailVerificationResult.Verified
+            }
+
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentVerificationResult,
+                journeyConnector.updateEmailVerificationResult(_, _)(context.request),
+                context.tdAll.VatBta.journeyAfterEmailVerificationResult(differentVerificationResult)
+              )(context)
+          }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.emailVerificationResult)(this)
+        }
+
+      }
+
+      "Sa when the current stage is" - {
+
+          def testSaBta[J <: Journey](initialJourney: J)(existingValue: J => EmailVerificationResult)(context: JourneyItTest): Unit = {
+            val differentVerificationResult: EmailVerificationResult = existingValue(initialJourney) match {
+              case EmailVerificationResult.Verified => EmailVerificationResult.Locked
+              case EmailVerificationResult.Locked   => EmailVerificationResult.Verified
+            }
+
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentVerificationResult,
+                journeyConnector.updateEmailVerificationResult(_, _)(context.request),
+                context.tdAll.SaBta.journeyAfterEmailVerificationResult(differentVerificationResult)
+              )(context)
+          }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.emailVerificationResult)(this)
+        }
+
+      }
+
     }
 
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
@@ -66,7 +151,7 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec {
         TdAll.EpayeBta.journeyAfterSubmittedArrangement()
           .copy(_id = tdAll.journeyId)
           .copy(correlationId = tdAll.correlationId)
-          .copy(isEmailAddressRequired = IsEmailAddressRequired(true))
+          .copy(isEmailAddressRequired = IsEmailAddressRequired(value = true))
       )
       val result: Throwable = journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Locked).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"Cannot update EmailVerificationResult when journey is in completed state."}""")

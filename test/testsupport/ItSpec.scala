@@ -160,7 +160,7 @@ trait ItSpec
     }
     implicit val request: Request[_] = tdAll.request.withHeaders("Authorization" -> TdAll.authorization.value)
 
-    private def journeyRepo: JourneyRepo = app.injector.instanceOf[JourneyRepo]
+    lazy val journeyRepo: JourneyRepo = app.injector.instanceOf[JourneyRepo]
 
     def insertJourneyForTest(journey: Journey): Unit = journeyRepo.upsert(journey).futureValue
   }

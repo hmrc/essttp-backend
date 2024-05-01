@@ -16,15 +16,13 @@
 
 package controllers
 
-import essttp.journey.JourneyConnector
-import essttp.journey.model.Stage.AfterEnteredDetailsAboutBankAccount
-import essttp.rootmodel.bank.DetailsAboutBankAccount
+import essttp.journey.model.Journey
+import essttp.rootmodel.bank.{DetailsAboutBankAccount, TypesOfBankAccount}
+import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec {
-
-  def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
+class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-details-about-bank-account" - {
     "should throw Bad Request when Journey is in a stage [BeforeCheckedPaymentPlan]" in new JourneyItTest {
@@ -38,52 +36,160 @@ class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec {
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }
-    "should not update the journey when Type of bank account hasn't changed" in new JourneyItTest {
-      stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterCheckedPaymentPlan.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+    "should update the journey when an existing value didn't exist before for" - {
 
-      val requestBody = TdAll.EpayeBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
-      val expectedUpdatedJourney = tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+      "Epaye" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.EpayeBta.journeyAfterCheckedPaymentPlan,
+          TdAll.EpayeBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
+        )(
+            journeyConnector.updateDetailsAboutBankAccount,
+            tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+          )(this)
+      }
 
-      val result1 = journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, requestBody).futureValue
-      result1 shouldBe expectedUpdatedJourney
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney
+      "Vat" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.VatBta.journeyAfterCheckedPaymentPlan,
+          TdAll.VatBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
+        )(
+            journeyConnector.updateDetailsAboutBankAccount,
+            tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+          )(this)
+      }
 
-      val result2 = journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, requestBody).futureValue
-      result2 shouldBe expectedUpdatedJourney
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney
-
-      verifyCommonActions(numberOfAuthCalls = 4)
+      "Sa" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SaBta.journeyAfterCheckedPaymentPlan,
+          TdAll.SaBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
+        )(
+            journeyConnector.updateDetailsAboutBankAccount,
+            tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+          )(this)
+      }
     }
-    "should update the journey when Type of bank account has changed" in new JourneyItTest {
-      stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterCheckedPaymentPlan.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+    "should update the journey when a value already existed" - {
 
-      val request1 = DetailsAboutBankAccount(TdAll.businessBankAccount, isAccountHolder = true)
-      val expectedUpdatedJourney1 = tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
-      val result1 = journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, request1).futureValue
-      result1 shouldBe expectedUpdatedJourney1
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney1
+      val differentDetailsAboutBankAccount = DetailsAboutBankAccount(TypesOfBankAccount.Business, isAccountHolder = false)
 
-      val request2 = DetailsAboutBankAccount(TdAll.businessBankAccount, isAccountHolder = false)
-      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = false)
-      val result2 = journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, request2).futureValue
-      result2 shouldBe expectedUpdatedJourney2
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
+      "Epaye when the current stage is" - {
 
-      val request3 = DetailsAboutBankAccount(TdAll.personalBankAccount, isAccountHolder = true)
-      val expectedUpdatedJourney3 = tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true).copy(
-        stage                   = AfterEnteredDetailsAboutBankAccount.Personal,
-        detailsAboutBankAccount = request3
-      )
-      val result3 = journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, request3).futureValue
-      result3 shouldBe expectedUpdatedJourney3
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney3
+          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => DetailsAboutBankAccount)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentDetailsAboutBankAccount,
+                journeyConnector.updateDetailsAboutBankAccount(_, _)(context.request),
+                context.tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = false).copy(detailsAboutBankAccount = differentDetailsAboutBankAccount)
+              )(context)
 
-      verifyCommonActions(numberOfAuthCalls = 6)
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.detailsAboutBankAccount)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails())(_.detailsAboutBankAccount)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails)(_.detailsAboutBankAccount)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.detailsAboutBankAccount)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmail)(_.detailsAboutBankAccount)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.detailsAboutBankAccount)(this)
+        }
+
+      }
+
+      "Vat when the current stage is" - {
+
+          def testVatBta[J <: Journey](initialJourney: J)(existingValue: J => DetailsAboutBankAccount)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentDetailsAboutBankAccount,
+                journeyConnector.updateDetailsAboutBankAccount(_, _)(context.request),
+                context.tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = false).copy(detailsAboutBankAccount = differentDetailsAboutBankAccount)
+              )(context)
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.detailsAboutBankAccount)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetails())(_.detailsAboutBankAccount)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetails)(_.detailsAboutBankAccount)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.detailsAboutBankAccount)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterSelectedEmail)(_.detailsAboutBankAccount)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.detailsAboutBankAccount)(this)
+        }
+
+      }
+
+      "Sa when the current stage is" - {
+
+          def testSaBta[J <: Journey](initialJourney: J)(existingValue: J => DetailsAboutBankAccount)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentDetailsAboutBankAccount,
+                journeyConnector.updateDetailsAboutBankAccount(_, _)(context.request),
+                context.tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = false).copy(detailsAboutBankAccount = differentDetailsAboutBankAccount)
+              )(context)
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.detailsAboutBankAccount)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetails())(_.detailsAboutBankAccount)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterConfirmedDirectDebitDetails)(_.detailsAboutBankAccount)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.detailsAboutBankAccount)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterSelectedEmail)(_.detailsAboutBankAccount)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.detailsAboutBankAccount)(this)
+        }
+
+      }
+
     }
+
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 

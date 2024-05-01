@@ -16,13 +16,15 @@
 
 package controllers
 
-import essttp.journey.JourneyConnector
+import essttp.journey.model.{Journey, UpfrontPaymentAnswers}
+import essttp.rootmodel.CanPayUpfront
+import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateCanPayUpfrontControllerSpec extends ItSpec {
+class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
 
-  def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
+  import UpdateCanPayUpfrontControllerSpec.UpfrontPaymentAnswersOps
 
   "POST /journey/:journeyId/update-can-pay-upfront" - {
     "should throw Bad Request when Journey is in a stage [BeforeEligibilityChecked]" in new JourneyItTest {
@@ -34,38 +36,299 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec {
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }
-    "should not update the journey when can pay upfront choice hasn't changed" in new JourneyItTest {
-      stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterEligibilityCheckEligible.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      val result1 = journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
-      result1 shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
+    "should update the journey when an existing value didn't exist before for" - {
 
-      val result2 = journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
-      result2 shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
+      "Epaye" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.EpayeBta.journeyAfterEligibilityCheckEligible,
+          TdAll.EpayeBta.updateCanPayUpfrontYesRequest()
+        )(
+            journeyConnector.updateCanPayUpfront,
+            tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
+          )(this)
+      }
 
-      verifyCommonActions(numberOfAuthCalls = 4)
+      "Vat" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.VatBta.journeyAfterEligibilityCheckEligible,
+          TdAll.VatBta.updateCanPayUpfrontNoRequest()
+        )(
+            journeyConnector.updateCanPayUpfront,
+            tdAll.VatBta.journeyAfterCanPayUpfrontNo
+          )(this)
+      }
+
+      "Sa" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SaBta.journeyAfterEligibilityCheckEligible,
+          TdAll.SaBta.updateCanPayUpfrontYesRequest()
+        )(
+            journeyConnector.updateCanPayUpfront,
+            tdAll.SaBta.journeyAfterCanPayUpfrontYes
+          )(this)
+      }
     }
-    "should update the journey when Can Pay Upfront result has changed" in new JourneyItTest {
-      stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterEligibilityCheckEligible.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      val result1 = journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
-      result1 shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
+    "should update the journey when a value already existed" - {
 
-      val result2 = journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontNoRequest()).futureValue
-      result2 shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontNo
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontNo
+      "Epaye when the current stage is" - {
 
-      val result3 = journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
-      result3 shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
+          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => CanPayUpfront)(context: JourneyItTest): Unit = {
+            val differentValue = CanPayUpfront(!existingValue(initialJourney).value)
 
-      verifyCommonActions(numberOfAuthCalls = 6)
+            val expectedUpdatedJourney =
+              if (differentValue.value) context.tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
+              else context.tdAll.EpayeBta.journeyAfterCanPayUpfrontNo
+
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentValue,
+                journeyConnector.updateCanPayUpfront(_, _)(context.request),
+                expectedUpdatedJourney
+              )(context)
+          }
+
+        "AnsweredCanPayUpfront" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayUpfrontNo)(_.canPayUpfront)(this)
+        }
+
+        "EnteredUpfrontPaymentAmount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount)(_.canPayUpfront)(this)
+        }
+
+        "RetrievedExtremeDates" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterExtremeDates)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "RetrievedAffordabilityResult" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterInstalmentAmounts)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EnteredMonthlyPaymentAmount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EnteredDayOfMonth" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterDayOfMonth)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "RetrievedStartDates" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterStartDatesResponse)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "RetrievedAffordableQuotes" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterAffordableQuotesResponse)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedPaymentPlan)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlan)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails())(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmail)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+      }
+
+      "Vat when the current stage is" - {
+
+          def testVatBta[J <: Journey](initialJourney: J)(existingValue: J => CanPayUpfront)(context: JourneyItTest): Unit = {
+            val differentValue = CanPayUpfront(!existingValue(initialJourney).value)
+
+            val expectedUpdatedJourney =
+              if (differentValue.value) context.tdAll.VatBta.journeyAfterCanPayUpfrontYes
+              else context.tdAll.VatBta.journeyAfterCanPayUpfrontNo
+
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentValue,
+                journeyConnector.updateCanPayUpfront(_, _)(context.request),
+                expectedUpdatedJourney
+              )(context)
+          }
+
+        "AnsweredCanPayUpfront" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterCanPayUpfrontNo)(_.canPayUpfront)(this)
+        }
+
+        "EnteredUpfrontPaymentAmount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterUpfrontPaymentAmount)(_.canPayUpfront)(this)
+        }
+
+        "RetrievedExtremeDates" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterExtremeDates)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "RetrievedAffordabilityResult" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterInstalmentAmounts)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EnteredMonthlyPaymentAmount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterMonthlyPaymentAmount)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EnteredDayOfMonth" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterDayOfMonth)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "RetrievedStartDates" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterStartDatesResponse)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "RetrievedAffordableQuotes" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterAffordableQuotesResponse)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterSelectedPaymentPlan)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterCheckedPaymentPlan)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetails())(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetails)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterSelectedEmail)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+      }
+
+      "Sa when the current stage is" - {
+
+          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => CanPayUpfront)(context: JourneyItTest): Unit = {
+            val differentValue = CanPayUpfront(!existingValue(initialJourney).value)
+
+            val expectedUpdatedJourney =
+              if (differentValue.value) context.tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
+              else context.tdAll.EpayeBta.journeyAfterCanPayUpfrontNo
+
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentValue,
+                journeyConnector.updateCanPayUpfront(_, _)(context.request),
+                expectedUpdatedJourney
+              )(context)
+          }
+
+        "AnsweredCanPayUpfront" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayUpfrontNo)(_.canPayUpfront)(this)
+        }
+
+        "EnteredUpfrontPaymentAmount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount)(_.canPayUpfront)(this)
+        }
+
+        "RetrievedExtremeDates" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterExtremeDates)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "RetrievedAffordabilityResult" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterInstalmentAmounts)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EnteredMonthlyPaymentAmount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EnteredDayOfMonth" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterDayOfMonth)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "RetrievedStartDates" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterStartDatesResponse)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "RetrievedAffordableQuotes" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterAffordableQuotesResponse)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedPaymentPlan)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlan)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails())(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmail)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+      }
+
     }
+
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 
@@ -75,6 +338,17 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec {
 
       verifyCommonActions(numberOfAuthCalls = 1)
     }
+  }
+
+}
+
+object UpdateCanPayUpfrontControllerSpec {
+
+  implicit class UpfrontPaymentAnswersOps(val u: UpfrontPaymentAnswers) extends AnyVal {
+    def asCanPayUpfront: CanPayUpfront = CanPayUpfront(u match {
+      case UpfrontPaymentAnswers.NoUpfrontPayment          => false
+      case _: UpfrontPaymentAnswers.DeclaredUpfrontPayment => true
+    })
   }
 
 }

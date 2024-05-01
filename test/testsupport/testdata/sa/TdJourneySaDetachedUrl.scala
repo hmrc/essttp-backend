@@ -419,7 +419,7 @@ trait TdJourneySaDetachedUrl {
       selectedPaymentPlan      = dependencies.paymentPlan(1),
       detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
       directDebitDetails       = directDebitDetails,
-      isEmailAddressRequired   = IsEmailAddressRequired(true),
+      isEmailAddressRequired   = IsEmailAddressRequired(value = true),
       emailToBeVerified        = dependencies.email
     )
 
@@ -446,7 +446,7 @@ trait TdJourneySaDetachedUrl {
       selectedPaymentPlan      = dependencies.paymentPlan(1),
       detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
       directDebitDetails       = directDebitDetails,
-      isEmailAddressRequired   = IsEmailAddressRequired(true),
+      isEmailAddressRequired   = IsEmailAddressRequired(value = true),
       emailToBeVerified        = dependencies.email,
       emailVerificationResult  = result,
       emailVerificationAnswers = emailVerificationAnswers(Some(result))

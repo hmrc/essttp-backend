@@ -78,14 +78,14 @@ trait TdBase {
 
   def ineligibleEligibilityCheckResult(eligibleEligibilityCheckResult: EligibilityCheckResult): EligibilityCheckResult =
     eligibleEligibilityCheckResult.copy(
-      eligibilityStatus = EligibilityStatus(EligibilityPass(false)),
+      eligibilityStatus = EligibilityStatus(EligibilityPass(value = false)),
       eligibilityRules  = hasRlsAddressOn
     )
 
   val hasRlsAddressOn: EligibilityRules = eligibleEligibilityRules.copy(hasRlsOnAddress = true)
 
-  val canPayUpfrontYes: CanPayUpfront = CanPayUpfront(true)
-  val canPayUpfrontNo: CanPayUpfront = CanPayUpfront(false)
+  val canPayUpfrontYes: CanPayUpfront = CanPayUpfront(value = true)
+  val canPayUpfrontNo: CanPayUpfront = CanPayUpfront(value = false)
 
   def upfrontPaymentAmount: UpfrontPaymentAmount = UpfrontPaymentAmount(amountInPence)
 
