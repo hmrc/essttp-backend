@@ -21,5 +21,8 @@ import play.api.libs.json.{Format, Json}
 final case class MainTrans(value: String) extends AnyVal
 
 object MainTrans {
+
+  final case class UnknownMainTransException(mTrans: MainTrans) extends Throwable
+
   implicit val format: Format[MainTrans] = Json.valueFormat
 }
