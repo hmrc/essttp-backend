@@ -10,7 +10,7 @@ object AppDependencies {
   val playJsonDerivedCodesVersion = "10.1.0"
   val enumeratumVersion = "1.7.0" // breaks with later version
   val enumeratumPlayVersion = "1.8.0"
-  val cryptoVersion = "7.6.0"
+  val cryptoVersion = "8.0.0"
 
   /**
    * Note we pull in various libraries from corJourneyDependencies such as:

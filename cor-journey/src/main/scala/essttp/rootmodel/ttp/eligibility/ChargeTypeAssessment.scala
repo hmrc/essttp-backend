@@ -27,6 +27,9 @@ final case class ChargeTypeAssessment(
 )
 
 object ChargeTypeAssessment {
+
+  final case class ChargesWithDifferentMTransException(charges: List[Charges]) extends Exception
+
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[ChargeTypeAssessment] = Json.format[ChargeTypeAssessment]
 }
