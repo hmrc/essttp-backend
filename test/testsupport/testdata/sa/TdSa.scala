@@ -90,7 +90,8 @@ trait TdSa {
       )
     ),
     regimeDigitalCorrespondence     = None,
-    futureChargeLiabilitiesExcluded = false
+    futureChargeLiabilitiesExcluded = false,
+    chargeTypesExcluded             = None
   )
 
   def ineligibleEligibilityCheckResultSa: EligibilityCheckResult = eligibleEligibilityCheckResultSa.copy(

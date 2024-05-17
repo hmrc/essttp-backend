@@ -38,6 +38,7 @@ final case class EligibilityCheckResult(
     chargeTypeAssessment:            List[ChargeTypeAssessment],
     customerDetails:                 Option[List[CustomerDetail]],
     regimeDigitalCorrespondence:     Option[RegimeDigitalCorrespondence],
+    chargeTypesExcluded:             Option[Boolean],
     futureChargeLiabilitiesExcluded: Boolean,
     invalidSignals:                  Option[List[InvalidSignals]],
     customerType:                    Option[CustomerType]
