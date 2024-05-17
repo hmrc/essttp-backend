@@ -95,7 +95,8 @@ trait TdEpaye {
       )
     ),
     regimeDigitalCorrespondence     = None,
-    futureChargeLiabilitiesExcluded = false
+    futureChargeLiabilitiesExcluded = false,
+    chargeTypesExcluded             = None
   )
 
   def ineligibleEligibilityCheckResultEpaye: EligibilityCheckResult = eligibleEligibilityCheckResultEpaye.copy(

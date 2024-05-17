@@ -84,7 +84,8 @@ trait TdVat {
       )
     ),
     regimeDigitalCorrespondence     = None,
-    futureChargeLiabilitiesExcluded = false
+    futureChargeLiabilitiesExcluded = false,
+    chargeTypesExcluded             = None
   )
 
   val arrangementResponseVat: ArrangementResponse = ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(vrn.value))
