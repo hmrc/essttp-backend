@@ -38,7 +38,8 @@ final case class EligibilityRules(
     hasInvalidInterestSignalsCESA:         Option[Boolean],
     hasDisguisedRemuneration:              Option[Boolean],
     hasCapacitor:                          Option[Boolean],
-    dmSpecialOfficeProcessingRequiredCDCS: Option[Boolean]
+    dmSpecialOfficeProcessingRequiredCDCS: Option[Boolean],
+    isAnMtdCustomer:                       Option[Boolean]
 ) {
 
   val moreThanOneReasonForIneligibility: Boolean = {
@@ -62,7 +63,8 @@ final case class EligibilityRules(
       hasInvalidInterestSignalsCESA.getOrElse(false),
       hasDisguisedRemuneration.getOrElse(false),
       hasCapacitor.getOrElse(false),
-      dmSpecialOfficeProcessingRequiredCDCS.getOrElse(false)
+      dmSpecialOfficeProcessingRequiredCDCS.getOrElse(false),
+      isAnMtdCustomer.getOrElse(false)
     ).map{ if (_) 1 else 0 }.sum > 1
   }
 
@@ -87,7 +89,8 @@ final case class EligibilityRules(
       hasInvalidInterestSignalsCESA.getOrElse(false),
       hasDisguisedRemuneration.getOrElse(false),
       hasCapacitor.getOrElse(false),
-      dmSpecialOfficeProcessingRequiredCDCS.getOrElse(false)
+      dmSpecialOfficeProcessingRequiredCDCS.getOrElse(false),
+      isAnMtdCustomer.getOrElse(false)
     ).forall(flag => !flag) //if all flags are false then isEligible is true
   }
 }

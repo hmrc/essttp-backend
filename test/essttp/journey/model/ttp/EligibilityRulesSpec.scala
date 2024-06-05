@@ -44,7 +44,8 @@ class EligibilityRulesSpec extends UnitSpec {
         hasInvalidInterestSignalsCESA         = Some(false),
         hasDisguisedRemuneration              = Some(false),
         hasCapacitor                          = Some(false),
-        dmSpecialOfficeProcessingRequiredCDCS = Some(false)
+        dmSpecialOfficeProcessingRequiredCDCS = Some(false),
+        isAnMtdCustomer                       = Some(false)
       ).isEligible shouldBe true
     }
 
@@ -69,7 +70,8 @@ class EligibilityRulesSpec extends UnitSpec {
         hasInvalidInterestSignalsCESA         = None,
         hasDisguisedRemuneration              = None,
         hasCapacitor                          = None,
-        dmSpecialOfficeProcessingRequiredCDCS = None
+        dmSpecialOfficeProcessingRequiredCDCS = None,
+        isAnMtdCustomer                       = None
       ).isEligible shouldBe true
     }
 
