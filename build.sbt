@@ -56,7 +56,7 @@ lazy val commonSettings = Seq(
   .++(SbtUpdatesSettings.sbtUpdatesSettings)
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin)
+  .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(commonSettings *)
   .settings(playSettings *)
   .settings(PlayKeys.playDefaultPort := 9216)
