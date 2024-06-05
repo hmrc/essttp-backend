@@ -23,11 +23,14 @@ This project makes use of sbt modules - which act as libraries for our models an
 ### Dictionary
 Acronyms used in a codebase. To speed up writing and reading. 
 
-| Phrase | Description|
-|--------| ------- |
-| Sj     | Start Journey |
-| Bta    | Business Tax Account - client app|
-| Epaye  | Employers' Pay as you earn - tax type|
+| Phrase | Description                           |
+|--------|---------------------------------------|
+| Sj     | Start Journey                         |
+| Bta    | Business Tax Account - client app     |
+| Pta    | Personal Tax Account - client app     |
+| Epaye  | Employers' Pay as you earn - tax type |
+| Vat    | Value-added tax - tax type            |
+| Sa     | Self Assessment - tax type            |
 
 ---
 

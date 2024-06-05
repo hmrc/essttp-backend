@@ -35,12 +35,6 @@ lazy val scalaCompilerOptions = Seq(
   "-Wconf:src=routes/.*:s"
 )
 
-def oneForkedJvmPerTest(tests: Seq[TestDefinition]): Seq[Group] = {
-  tests.map { test =>
-    new Group(test.name, Seq(test), SubProcess(ForkOptions().withRunJVMOptions(Vector(s"-Dtest.name=${test.name}"))))
-  }
-}
-
 lazy val projectResolvers: Seq[MavenRepository] = Seq(
   Resolver.sonatypeOssRepos("releases"),
   Seq(Resolver.jcenterRepo)
@@ -62,7 +56,7 @@ lazy val commonSettings = Seq(
   .++(SbtUpdatesSettings.sbtUpdatesSettings)
 
 lazy val microservice = Project(appName, file("."))
-  .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin, SbtAutoBuildPlugin, SbtGitVersioning)
+  .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(commonSettings *)
   .settings(playSettings *)
   .settings(PlayKeys.playDefaultPort := 9216)
@@ -92,7 +86,6 @@ lazy val microservice = Project(appName, file("."))
  * Collection Of Routines - the common journey
  */
 lazy val corJourney = Project(appName + "-cor-journey", file("cor-journey"))
-  .enablePlugins(SbtAutoBuildPlugin, SbtGitVersioning)
   .settings(commonSettings *)
   .settings(
     scalaVersion := appScalaVersion,

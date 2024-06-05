@@ -73,7 +73,8 @@ trait TdBase {
     hasInvalidInterestSignalsCESA         = None,
     hasDisguisedRemuneration              = None,
     hasCapacitor                          = None,
-    dmSpecialOfficeProcessingRequiredCDCS = None
+    dmSpecialOfficeProcessingRequiredCDCS = None,
+    isAnMtdCustomer                       = None
   )
 
   def ineligibleEligibilityCheckResult(eligibleEligibilityCheckResult: EligibilityCheckResult): EligibilityCheckResult =
