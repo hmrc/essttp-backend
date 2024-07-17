@@ -26,6 +26,10 @@ import testsupport.testdata.TdAll
 
 class JourneyControllerSpec extends ItSpec {
 
+  override val overrideConfig: Map[String, Any] = Map(
+    "affordability.tax-regimes" -> Seq.empty[String]
+  )
+
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
   private val epayeTestNameJourneyStages: String =
@@ -1390,6 +1394,109 @@ class JourneyControllerSpec extends ItSpec {
       verifyCommonActions(numberOfAuthCalls = 40)
     }
 
+  }
+
+}
+
+class JourneyControllerAffordabilityRequiredSpec extends ItSpec {
+
+  override val overrideConfig: Map[String, Any] = Map(
+    "affordability.tax-regimes" -> Seq("sa")
+  )
+
+  def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
+
+  "The journey must be able to be updated when affordability is enabled for a tax regime" in {
+
+    stubCommonActions()
+    val tdAll = new TdAll {
+      override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
+      override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
+    }
+    implicit val request: Request[_] = tdAll.request
+    val response: SjResponse = journeyConnector.Sa.startJourneyBta(tdAll.SaBta.sjRequest).futureValue
+
+    /** Start journey */
+    response shouldBe tdAll.SaBta.sjResponse
+    journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterStarted.copy(affordabilityRequired = Some(true))
+
+    /** Update tax id */
+    journeyConnector.updateTaxId(tdAll.journeyId, tdAll.SaBta.updateTaxIdRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterDetermineTaxIds.copy(affordabilityRequired = Some(true))
+
+    /** Update eligibility result * */
+    journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.SaBta.updateEligibilityCheckRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEligibilityCheckEligible.copy(affordabilityRequired = Some(true))
+
+    /** Update CanPayUpfront */
+    journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.SaBta.updateCanPayUpfrontYesRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterCanPayUpfrontYes.copy(affordabilityRequired = Some(true))
+
+    /** Update UpfrontPaymentAmount */
+    journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.SaBta.updateUpfrontPaymentAmountRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterUpfrontPaymentAmount.copy(affordabilityRequired = Some(true))
+
+    /** Update ExtremeDates */
+    journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.SaBta.updateExtremeDatesRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterExtremeDates.copy(affordabilityRequired = Some(true))
+
+    /** Update AffordabilityResult */
+    journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.SaBta.updateInstalmentAmountsRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterInstalmentAmounts.copy(affordabilityRequired = Some(true))
+
+    /** Update MonthlyPaymentAmount */
+    journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.SaBta.updateMonthlyPaymentAmountRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterMonthlyPaymentAmount.copy(affordabilityRequired = Some(true))
+
+    /** Update DayOfMonth */
+    journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.SaBta.updateDayOfMonthRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterDayOfMonth.copy(affordabilityRequired = Some(true))
+
+    /** Update StartDates */
+    journeyConnector.updateStartDates(tdAll.journeyId, tdAll.SaBta.updateStartDatesResponse()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterStartDatesResponse.copy(affordabilityRequired = Some(true))
+
+    /** Update AffordableQuotes */
+    journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.SaBta.updateAffordableQuotesResponse()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterAffordableQuotesResponse.copy(affordabilityRequired = Some(true))
+
+    /** Update Chosen Instalment plan */
+    journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.SaBta.updateSelectedPaymentPlanRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSelectedPaymentPlan.copy(affordabilityRequired = Some(true))
+
+    /** Update Checked Instalment plan */
+    journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterCheckedPaymentPlan.copy(affordabilityRequired = Some(true))
+
+    /** Update Details about Bank Account */
+    journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SaBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true).copy(affordabilityRequired = Some(true))
+
+    /** Update Direct debit details */
+    journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SaBta.updateDirectDebitDetailsRequest).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDirectDebitDetails().copy(affordabilityRequired = Some(true))
+
+    /** Update Confirm Direct debit details */
+    journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterConfirmedDirectDebitDetails.copy(affordabilityRequired = Some(true))
+
+    /** Update Agreed terms and conditions */
+    journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true).copy(affordabilityRequired = Some(true))
+
+    /** Update Email Address */
+    journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSelectedEmail.copy(affordabilityRequired = Some(true))
+
+    /** Update Email Verification Status */
+    journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Verified).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified).copy(affordabilityRequired = Some(true))
+
+    /** Update Arrangement (journey completed) */
+    journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaBta.updateArrangementRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true).copy(affordabilityRequired = Some(true))
+
+    verifyCommonActions(numberOfAuthCalls = 40)
   }
 
 }

@@ -19,13 +19,14 @@ package dates
 import com.google.inject.{Inject, Singleton}
 import essttp.rootmodel.dates.extremedates.{EarliestPaymentPlanStartDate, ExtremeDatesRequest, ExtremeDatesResponse, LatestPaymentPlanStartDate}
 import essttp.rootmodel.dates.{InitialPayment, InitialPaymentDate}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ExtremeDatesService @Inject() (datesService: DatesService)(implicit ec: ExecutionContext) {
 
-  def calculateExtremeDates(extremeDatesRequest: ExtremeDatesRequest): Future[ExtremeDatesResponse] = {
+  def calculateExtremeDates(extremeDatesRequest: ExtremeDatesRequest)(implicit hc: HeaderCarrier): Future[ExtremeDatesResponse] = {
     val earliestDatePaymentCanBeTakenF = datesService.todayPlusWorkingDays(6)
 
     earliestDatePaymentCanBeTakenF.map{ earliestDatePaymentCanBeTaken =>

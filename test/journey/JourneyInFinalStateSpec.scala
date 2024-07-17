@@ -25,7 +25,8 @@ import play.api.libs.json.{JsNull, Writes}
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HttpClient, HttpResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HttpResponse, StringContextOps}
 
 import scala.collection.immutable
 
@@ -36,15 +37,18 @@ class JourneyInFinalStateSpec extends ItSpec {
   "should not be able to update journey once it is completed" in new JourneyItTest {
     stubCommonActions()
 
-    val httpClient: HttpClient = app.injector.instanceOf[HttpClient]
+    val httpClient: HttpClientV2 = app.injector.instanceOf[HttpClientV2]
     implicit val cryptoFormat: OperationalCryptoFormat = app.injector.instanceOf[OperationalCryptoFormat]
 
-    def makeUpdate[A](url: String, payload: A)(implicit writes: Writes[A]): HttpResponse =
-      httpClient.POST[A, HttpResponse](
-        url     = s"$baseUrl/essttp-backend/journey/${tdAll.journeyId.value}$url",
-        body    = payload,
-        headers = Seq("Authorization" -> TdAll.authorization.value)
-      ).futureValue
+    def makeUpdate[A](url: String, payload: A)(implicit writes: Writes[A]): HttpResponse = {
+      val postTo = s"$baseUrl/essttp-backend/journey/${tdAll.journeyId.value}$url"
+      httpClient
+        .post(url"$postTo")
+        .withBody(writes.writes(payload))
+        .setHeader("Authorization" -> TdAll.authorization.value)
+        .execute[HttpResponse]
+        .futureValue
+    }
 
     def extractAndAssert(testScenario: TestScenario): Assertion = {
       testScenario.httpResponse.status shouldBe testScenario.expectedStatusCode withClue s"Response body wasn't ${testScenario.expectedMessage}"

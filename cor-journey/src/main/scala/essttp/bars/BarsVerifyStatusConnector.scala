@@ -19,25 +19,33 @@ package essttp.bars
 import essttp.bars.model.{BarsUpdateVerifyStatusParams, BarsVerifyStatusResponse}
 import essttp.rootmodel.TaxId
 import essttp.utils.RequestSupport._
+import play.api.libs.json.Json
 import play.api.mvc.RequestHeader
-import uk.gov.hmrc.http.HttpClient
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.StringContextOps
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BarsVerifyStatusConnector(httpClient: HttpClient, baseUrl: String)(implicit ec: ExecutionContext) {
+class BarsVerifyStatusConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: ExecutionContext) {
 
   def status(taxId: TaxId)(implicit request: RequestHeader): Future[BarsVerifyStatusResponse] =
-    httpClient.POST[BarsUpdateVerifyStatusParams, BarsVerifyStatusResponse](s"$baseUrl/essttp-backend/bars/verify/status", BarsUpdateVerifyStatusParams(taxId))
+    httpClient
+      .post(url"$baseUrl/essttp-backend/bars/verify/status")
+      .withBody(Json.toJson(BarsUpdateVerifyStatusParams(taxId)))
+      .execute[BarsVerifyStatusResponse]
 
   def update(taxId: TaxId)(implicit request: RequestHeader): Future[BarsVerifyStatusResponse] =
-    httpClient.POST[BarsUpdateVerifyStatusParams, BarsVerifyStatusResponse](s"$baseUrl/essttp-backend/bars/verify/update", BarsUpdateVerifyStatusParams(taxId))
+    httpClient
+      .post(url"$baseUrl/essttp-backend/bars/verify/update")
+      .withBody(Json.toJson(BarsUpdateVerifyStatusParams(taxId)))
+      .execute[BarsVerifyStatusResponse]
 
   @Inject()
-  def this(httpClient: HttpClient, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext) = this(
+  def this(httpClient: HttpClientV2, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext) = this(
     httpClient,
     servicesConfig.baseUrl("essttp-backend")
   )

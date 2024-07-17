@@ -48,26 +48,28 @@ trait TdJourneySaMobile {
     def postPath: String = "/sa/mobile/journey/start"
 
     def journeyAfterStarted: Journey.Sa.Started = Journey.Sa.Started(
-      _id           = dependencies.journeyId,
-      origin        = Origins.Sa.Mobile,
-      createdOn     = dependencies.createdOn,
-      sjRequest     = sjRequest,
-      sessionId     = dependencies.sessionId,
-      stage         = Stage.AfterStarted.Started,
-      correlationId = dependencies.correlationId
+      _id                   = dependencies.journeyId,
+      origin                = Origins.Sa.Mobile,
+      createdOn             = dependencies.createdOn,
+      sjRequest             = sjRequest,
+      sessionId             = dependencies.sessionId,
+      stage                 = Stage.AfterStarted.Started,
+      affordabilityRequired = Some(false),
+      correlationId         = dependencies.correlationId
     )
 
     def updateTaxIdRequest(): TaxId = saUtr
 
     def journeyAfterDetermineTaxIds: Journey.Sa.ComputedTaxId = Journey.Sa.ComputedTaxId(
-      _id           = dependencies.journeyId,
-      origin        = Origins.Sa.Mobile,
-      createdOn     = dependencies.createdOn,
-      sjRequest     = sjRequest,
-      sessionId     = dependencies.sessionId,
-      stage         = Stage.AfterComputedTaxId.ComputedTaxId,
-      correlationId = dependencies.correlationId,
-      taxId         = saUtr
+      _id                   = dependencies.journeyId,
+      origin                = Origins.Sa.Mobile,
+      createdOn             = dependencies.createdOn,
+      sjRequest             = sjRequest,
+      sessionId             = dependencies.sessionId,
+      stage                 = Stage.AfterComputedTaxId.ComputedTaxId,
+      affordabilityRequired = Some(false),
+      correlationId         = dependencies.correlationId,
+      taxId                 = saUtr
     )
 
     def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResultSa
@@ -79,6 +81,7 @@ trait TdJourneySaMobile {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterEligibilityCheck.Eligible,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa
@@ -91,6 +94,7 @@ trait TdJourneySaMobile {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterEligibilityCheck.Ineligible,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = saUtr,
       eligibilityCheckResult = ineligibleEligibilityCheckResultSa
@@ -107,6 +111,7 @@ trait TdJourneySaMobile {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterCanPayUpfront.Yes,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa,
@@ -120,6 +125,7 @@ trait TdJourneySaMobile {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterCanPayUpfront.No,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa,
@@ -135,6 +141,7 @@ trait TdJourneySaMobile {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa,
@@ -151,6 +158,7 @@ trait TdJourneySaMobile {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa,
@@ -167,6 +175,7 @@ trait TdJourneySaMobile {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterAffordabilityResult.RetrievedAffordabilityResult,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa,
@@ -184,6 +193,7 @@ trait TdJourneySaMobile {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa,
@@ -202,6 +212,7 @@ trait TdJourneySaMobile {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa,
@@ -221,6 +232,7 @@ trait TdJourneySaMobile {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterStartDatesResponse.StartDatesResponseRetrieved,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa,
@@ -241,6 +253,7 @@ trait TdJourneySaMobile {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved,
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
@@ -262,6 +275,7 @@ trait TdJourneySaMobile {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterSelectedPlan.SelectedPlan,
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
@@ -284,6 +298,7 @@ trait TdJourneySaMobile {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterCheckedPlan.AcceptedPlan,
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
@@ -307,6 +322,7 @@ trait TdJourneySaMobile {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = if (isAccountHolder) Stage.AfterEnteredDetailsAboutBankAccount.Business else Stage.AfterEnteredDetailsAboutBankAccount.IsNotAccountHolder,
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
@@ -330,6 +346,7 @@ trait TdJourneySaMobile {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails,
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
@@ -354,6 +371,7 @@ trait TdJourneySaMobile {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails,
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
@@ -383,6 +401,7 @@ trait TdJourneySaMobile {
         sjRequest                = sjRequest,
         sessionId                = dependencies.sessionId,
         stage                    = stage,
+        affordabilityRequired    = Some(false),
         correlationId            = dependencies.correlationId,
         taxId                    = saUtr,
         eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
@@ -409,6 +428,7 @@ trait TdJourneySaMobile {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterSelectedAnEmailToBeVerified.EmailChosen,
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
@@ -436,6 +456,7 @@ trait TdJourneySaMobile {
         case EmailVerificationResult.Verified => Stage.AfterEmailVerificationPhase.VerificationSuccess
         case EmailVerificationResult.Locked   => Stage.AfterEmailVerificationPhase.Locked
       },
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
@@ -464,6 +485,7 @@ trait TdJourneySaMobile {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterSubmittedArrangement.Submitted,
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,

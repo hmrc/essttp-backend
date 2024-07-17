@@ -45,26 +45,28 @@ trait TdJourneyEpayeDetachedUrl {
     def postPath: String = "/epaye/detached-url/journey/start"
 
     def journeyAfterStarted: Journey.Epaye.Started = Journey.Epaye.Started(
-      _id           = dependencies.journeyId,
-      origin        = Origins.Epaye.DetachedUrl,
-      createdOn     = dependencies.createdOn,
-      sjRequest     = sjRequest,
-      sessionId     = dependencies.sessionId,
-      stage         = Stage.AfterStarted.Started,
-      correlationId = dependencies.correlationId
+      _id                   = dependencies.journeyId,
+      origin                = Origins.Epaye.DetachedUrl,
+      createdOn             = dependencies.createdOn,
+      sjRequest             = sjRequest,
+      sessionId             = dependencies.sessionId,
+      stage                 = Stage.AfterStarted.Started,
+      affordabilityRequired = Some(false),
+      correlationId         = dependencies.correlationId
     )
 
     def updateTaxIdRequest(): TaxId = empRef
 
     def journeyAfterDetermineTaxIds: Journey.Epaye.ComputedTaxId = Journey.Epaye.ComputedTaxId(
-      _id           = dependencies.journeyId,
-      origin        = Origins.Epaye.DetachedUrl,
-      createdOn     = dependencies.createdOn,
-      sjRequest     = sjRequest,
-      sessionId     = dependencies.sessionId,
-      stage         = Stage.AfterComputedTaxId.ComputedTaxId,
-      correlationId = dependencies.correlationId,
-      taxId         = empRef
+      _id                   = dependencies.journeyId,
+      origin                = Origins.Epaye.DetachedUrl,
+      createdOn             = dependencies.createdOn,
+      sjRequest             = sjRequest,
+      sessionId             = dependencies.sessionId,
+      stage                 = Stage.AfterComputedTaxId.ComputedTaxId,
+      affordabilityRequired = Some(false),
+      correlationId         = dependencies.correlationId,
+      taxId                 = empRef
     )
 
     def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResultEpaye
@@ -76,6 +78,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterEligibilityCheck.Eligible,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResultEpaye
@@ -88,6 +91,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterEligibilityCheck.Ineligible,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = ineligibleEligibilityCheckResultEpaye
@@ -104,6 +108,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterCanPayUpfront.Yes,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -117,6 +122,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterCanPayUpfront.No,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -132,6 +138,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -148,6 +155,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -164,6 +172,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterAffordabilityResult.RetrievedAffordabilityResult,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -181,6 +190,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -199,6 +209,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -218,6 +229,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterStartDatesResponse.StartDatesResponseRetrieved,
+      affordabilityRequired  = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -238,6 +250,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved,
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
@@ -259,6 +272,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterSelectedPlan.SelectedPlan,
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
@@ -281,6 +295,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterCheckedPlan.AcceptedPlan,
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
@@ -304,6 +319,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = if (isAccountHolder) Stage.AfterEnteredDetailsAboutBankAccount.Business else Stage.AfterEnteredDetailsAboutBankAccount.IsNotAccountHolder,
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
@@ -327,6 +343,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails,
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
@@ -351,6 +368,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails,
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
@@ -380,6 +398,7 @@ trait TdJourneyEpayeDetachedUrl {
         sjRequest                = sjRequest,
         sessionId                = dependencies.sessionId,
         stage                    = stage,
+        affordabilityRequired    = Some(false),
         correlationId            = dependencies.correlationId,
         taxId                    = empRef,
         eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
@@ -406,6 +425,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterSelectedAnEmailToBeVerified.EmailChosen,
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
@@ -433,6 +453,7 @@ trait TdJourneyEpayeDetachedUrl {
         case EmailVerificationResult.Verified => Stage.AfterEmailVerificationPhase.VerificationSuccess
         case EmailVerificationResult.Locked   => Stage.AfterEmailVerificationPhase.Locked
       },
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,
@@ -461,6 +482,7 @@ trait TdJourneyEpayeDetachedUrl {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterSubmittedArrangement.Submitted,
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = empRef,
       eligibilityCheckResult   = eligibleEligibilityCheckResultEpaye,

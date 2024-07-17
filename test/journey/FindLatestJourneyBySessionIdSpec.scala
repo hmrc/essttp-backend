@@ -22,8 +22,9 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, SessionId, SessionKeys}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, SessionId, SessionKeys, StringContextOps}
 import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.client.HttpClientV2
 
 import java.time.Clock
 import java.util.UUID
@@ -40,11 +41,12 @@ class FindLatestJourneyBySessionIdSpec extends ItSpec {
   "return a 500 when no sessionId provided" in {
     stubCommonActions()
 
-    val httpClient = app.injector.instanceOf[HttpClient]
-    val response = httpClient.GET[HttpResponse](
-      url     = s"$baseUrl/essttp-backend/journey/find-latest-by-session-id",
-      headers = Seq("Authorization" -> TdAll.authorization.value)
-    ).futureValue
+    val httpClient = app.injector.instanceOf[HttpClientV2]
+    val response = httpClient
+      .get(url"$baseUrl/essttp-backend/journey/find-latest-by-session-id")
+      .setHeader("Authorization" -> TdAll.authorization.value)
+      .execute[HttpResponse]
+      .futureValue
     response.status shouldBe 500
     response.body shouldBe """{"statusCode":500,"message":"Missing required 'SessionId'"}"""
 

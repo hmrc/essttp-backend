@@ -17,7 +17,8 @@
 package services
 
 import essttp.journey.model.{Journey, OriginatedSjRequest, Stage}
-import essttp.rootmodel.SessionId
+import essttp.rootmodel.{SessionId, TaxRegime}
+import play.api.Configuration
 
 import java.time.{Clock, Instant}
 import javax.inject.{Inject, Singleton}
@@ -26,8 +27,12 @@ import javax.inject.{Inject, Singleton}
 class JourneyFactory @Inject() (
     journeyIdGenerator:     JourneyIdGenerator,
     correlationIdGenerator: CorrelationIdGenerator,
-    clock:                  Clock
+    clock:                  Clock,
+    config:                 Configuration
 ) {
+
+  private val affordabilityRequiredFor: Seq[TaxRegime] =
+    config.get[Seq[String]]("affordability.tax-regimes").map(TaxRegime.withNameInsensitive)
 
   def makeJourney(
       originatedSjRequest: OriginatedSjRequest,
@@ -36,35 +41,38 @@ class JourneyFactory @Inject() (
 
     case OriginatedSjRequest.Epaye(origin, sjRequest) =>
       Journey.Epaye.Started(
-        _id           = journeyIdGenerator.nextJourneyId(),
-        origin        = origin,
-        sjRequest     = sjRequest,
-        createdOn     = Instant.now(clock),
-        sessionId     = sessionId,
-        stage         = Stage.AfterStarted.Started,
-        correlationId = correlationIdGenerator.nextCorrelationId()
+        _id                   = journeyIdGenerator.nextJourneyId(),
+        origin                = origin,
+        sjRequest             = sjRequest,
+        createdOn             = Instant.now(clock),
+        sessionId             = sessionId,
+        stage                 = Stage.AfterStarted.Started,
+        correlationId         = correlationIdGenerator.nextCorrelationId(),
+        affordabilityRequired = Some(affordabilityRequiredFor.contains(TaxRegime.Epaye))
       )
 
     case OriginatedSjRequest.Vat(origin, sjRequest) =>
       Journey.Vat.Started(
-        _id           = journeyIdGenerator.nextJourneyId(),
-        origin        = origin,
-        sjRequest     = sjRequest,
-        createdOn     = Instant.now(clock),
-        sessionId     = sessionId,
-        stage         = Stage.AfterStarted.Started,
-        correlationId = correlationIdGenerator.nextCorrelationId()
+        _id                   = journeyIdGenerator.nextJourneyId(),
+        origin                = origin,
+        sjRequest             = sjRequest,
+        createdOn             = Instant.now(clock),
+        sessionId             = sessionId,
+        stage                 = Stage.AfterStarted.Started,
+        correlationId         = correlationIdGenerator.nextCorrelationId(),
+        affordabilityRequired = Some(affordabilityRequiredFor.contains(TaxRegime.Vat))
       )
 
     case OriginatedSjRequest.Sa(origin, sjRequest) =>
       Journey.Sa.Started(
-        _id           = journeyIdGenerator.nextJourneyId(),
-        origin        = origin,
-        sjRequest     = sjRequest,
-        createdOn     = Instant.now(clock),
-        sessionId     = sessionId,
-        stage         = Stage.AfterStarted.Started,
-        correlationId = correlationIdGenerator.nextCorrelationId()
+        _id                   = journeyIdGenerator.nextJourneyId(),
+        origin                = origin,
+        sjRequest             = sjRequest,
+        createdOn             = Instant.now(clock),
+        sessionId             = sessionId,
+        stage                 = Stage.AfterStarted.Started,
+        correlationId         = correlationIdGenerator.nextCorrelationId(),
+        affordabilityRequired = Some(affordabilityRequiredFor.contains(TaxRegime.Sa))
       )
   }
 }

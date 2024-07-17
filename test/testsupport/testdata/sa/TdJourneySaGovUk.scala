@@ -45,26 +45,28 @@ trait TdJourneySaGovUk {
     def postPath: String = "/sa/gov-uk/journey/start"
 
     def journeyAfterStarted: Journey.Sa.Started = Journey.Sa.Started(
-      _id           = dependencies.journeyId,
-      origin        = Origins.Sa.GovUk,
-      createdOn     = dependencies.createdOn,
-      sjRequest     = sjRequest,
-      sessionId     = dependencies.sessionId,
-      correlationId = dependencies.correlationId,
-      stage         = Stage.AfterStarted.Started
+      _id                   = dependencies.journeyId,
+      origin                = Origins.Sa.GovUk,
+      createdOn             = dependencies.createdOn,
+      sjRequest             = sjRequest,
+      sessionId             = dependencies.sessionId,
+      correlationId         = dependencies.correlationId,
+      stage                 = Stage.AfterStarted.Started,
+      affordabilityRequired = Some(false)
     )
 
     def updateTaxIdRequest(): TaxId = saUtr
 
     def journeyAfterDetermineTaxIds: Journey.Sa.ComputedTaxId = Journey.Sa.ComputedTaxId(
-      _id           = dependencies.journeyId,
-      origin        = Origins.Sa.GovUk,
-      createdOn     = dependencies.createdOn,
-      sjRequest     = sjRequest,
-      sessionId     = dependencies.sessionId,
-      correlationId = dependencies.correlationId,
-      stage         = Stage.AfterComputedTaxId.ComputedTaxId,
-      taxId         = saUtr
+      _id                   = dependencies.journeyId,
+      origin                = Origins.Sa.GovUk,
+      createdOn             = dependencies.createdOn,
+      sjRequest             = sjRequest,
+      sessionId             = dependencies.sessionId,
+      correlationId         = dependencies.correlationId,
+      stage                 = Stage.AfterComputedTaxId.ComputedTaxId,
+      affordabilityRequired = Some(false),
+      taxId                 = saUtr
     )
 
     def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResultSa
@@ -77,6 +79,7 @@ trait TdJourneySaGovUk {
       sessionId              = dependencies.sessionId,
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterEligibilityCheck.Eligible,
+      affordabilityRequired  = Some(false),
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa
     )
@@ -89,6 +92,7 @@ trait TdJourneySaGovUk {
       sessionId              = dependencies.sessionId,
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterEligibilityCheck.Ineligible,
+      affordabilityRequired  = Some(false),
       taxId                  = saUtr,
       eligibilityCheckResult = ineligibleEligibilityCheckResultSa
     )
@@ -105,6 +109,7 @@ trait TdJourneySaGovUk {
       sessionId              = dependencies.sessionId,
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterCanPayUpfront.Yes,
+      affordabilityRequired  = Some(false),
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa,
       canPayUpfront          = canPayUpfrontYes
@@ -118,6 +123,7 @@ trait TdJourneySaGovUk {
       sessionId              = dependencies.sessionId,
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterCanPayUpfront.No,
+      affordabilityRequired  = Some(false),
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa,
       canPayUpfront          = canPayUpfrontNo
@@ -133,6 +139,7 @@ trait TdJourneySaGovUk {
       sessionId              = dependencies.sessionId,
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
+      affordabilityRequired  = Some(false),
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa,
       canPayUpfront          = canPayUpfrontYes,
@@ -149,6 +156,7 @@ trait TdJourneySaGovUk {
       sessionId              = dependencies.sessionId,
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved,
+      affordabilityRequired  = Some(false),
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
@@ -165,6 +173,7 @@ trait TdJourneySaGovUk {
       sessionId              = dependencies.sessionId,
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterAffordabilityResult.RetrievedAffordabilityResult,
+      affordabilityRequired  = Some(false),
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
@@ -182,6 +191,7 @@ trait TdJourneySaGovUk {
       sessionId              = dependencies.sessionId,
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount,
+      affordabilityRequired  = Some(false),
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
@@ -200,6 +210,7 @@ trait TdJourneySaGovUk {
       sessionId              = dependencies.sessionId,
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth,
+      affordabilityRequired  = Some(false),
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
@@ -219,6 +230,7 @@ trait TdJourneySaGovUk {
       sessionId              = dependencies.sessionId,
       correlationId          = dependencies.correlationId,
       stage                  = Stage.AfterStartDatesResponse.StartDatesResponseRetrieved,
+      affordabilityRequired  = Some(false),
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa,
       upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
@@ -239,6 +251,7 @@ trait TdJourneySaGovUk {
       sessionId                = dependencies.sessionId,
       correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved,
+      affordabilityRequired    = Some(false),
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
@@ -260,6 +273,7 @@ trait TdJourneySaGovUk {
       sessionId                = dependencies.sessionId,
       correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterSelectedPlan.SelectedPlan,
+      affordabilityRequired    = Some(false),
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
@@ -282,6 +296,7 @@ trait TdJourneySaGovUk {
       sessionId                = dependencies.sessionId,
       correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterCheckedPlan.AcceptedPlan,
+      affordabilityRequired    = Some(false),
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
@@ -305,6 +320,7 @@ trait TdJourneySaGovUk {
       sessionId                = dependencies.sessionId,
       correlationId            = dependencies.correlationId,
       stage                    = if (isAccountHolder) Stage.AfterEnteredDetailsAboutBankAccount.Business else Stage.AfterEnteredDetailsAboutBankAccount.IsNotAccountHolder,
+      affordabilityRequired    = Some(false),
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
@@ -328,6 +344,7 @@ trait TdJourneySaGovUk {
       sessionId                = dependencies.sessionId,
       correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails,
+      affordabilityRequired    = Some(false),
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
@@ -352,6 +369,7 @@ trait TdJourneySaGovUk {
       sessionId                = dependencies.sessionId,
       correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails,
+      affordabilityRequired    = Some(false),
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
@@ -381,6 +399,7 @@ trait TdJourneySaGovUk {
         sessionId                = dependencies.sessionId,
         correlationId            = dependencies.correlationId,
         stage                    = stage,
+        affordabilityRequired    = Some(false),
         taxId                    = saUtr,
         eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
         upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
@@ -406,6 +425,7 @@ trait TdJourneySaGovUk {
       sjRequest                = sjRequest,
       sessionId                = dependencies.sessionId,
       stage                    = Stage.AfterSelectedAnEmailToBeVerified.EmailChosen,
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
@@ -433,6 +453,7 @@ trait TdJourneySaGovUk {
         case EmailVerificationResult.Verified => Stage.AfterEmailVerificationPhase.VerificationSuccess
         case EmailVerificationResult.Locked   => Stage.AfterEmailVerificationPhase.Locked
       },
+      affordabilityRequired    = Some(false),
       correlationId            = dependencies.correlationId,
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
@@ -462,6 +483,7 @@ trait TdJourneySaGovUk {
       sessionId                = dependencies.sessionId,
       correlationId            = dependencies.correlationId,
       stage                    = Stage.AfterSubmittedArrangement.Submitted,
+      affordabilityRequired    = Some(false),
       taxId                    = saUtr,
       eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
       upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,

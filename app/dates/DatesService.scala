@@ -20,6 +20,7 @@ import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import dates.models.{AddWorkingDaysRequest, AddWorkingDaysResponse, Region}
 import play.api.libs.json.{JsError, JsSuccess}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.{Clock, LocalDate}
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,7 +32,7 @@ class DatesService @Inject() (clock: Clock, dateCalculatorConnector: DateCalcula
 
   def todayPlusCalendarDays(numberOfDays: Int): LocalDate = today().plusDays(numberOfDays)
 
-  def todayPlusWorkingDays(numberOfDaysToAdd: Int): Future[LocalDate] = {
+  def todayPlusWorkingDays(numberOfDaysToAdd: Int)(implicit hc: HeaderCarrier): Future[LocalDate] = {
     dateCalculatorConnector
       .addWorkingDays(AddWorkingDaysRequest(today(), numberOfDaysToAdd, Set(Region.EnglandAndWales)))
       .map { response =>

@@ -18,24 +18,32 @@ package dates
 
 import essttp.rootmodel.dates.extremedates.{ExtremeDatesRequest, ExtremeDatesResponse}
 import essttp.rootmodel.dates.startdates.{StartDatesRequest, StartDatesResponse}
+import play.api.libs.json.Json
 import testsupport.ItSpec
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpReadsInstances, HttpResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpReadsInstances, HttpResponse, StringContextOps}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TestDatesConnector @Inject() (httpClient: HttpClient)(implicit executionContext: ExecutionContext) {
+class TestDatesConnector @Inject() (httpClient: HttpClientV2)(implicit executionContext: ExecutionContext) {
 
   private val essttpBackendBaseUrl = s"http://localhost:${ItSpec.testServerPort.toString}/essttp-backend"
 
   implicit val readResponse: HttpReads[HttpResponse] = HttpReadsInstances.throwOnFailure(HttpReadsInstances.readEitherOf(HttpReadsInstances.readRaw))
 
   def startDates(startDatesRequest: StartDatesRequest)(implicit hc: HeaderCarrier): Future[StartDatesResponse] =
-    httpClient.POST[StartDatesRequest, StartDatesResponse](s"$essttpBackendBaseUrl/start-dates", startDatesRequest)
+    httpClient
+      .post(url"$essttpBackendBaseUrl/start-dates")
+      .withBody(Json.toJson(startDatesRequest))
+      .execute[StartDatesResponse]
 
   def extremeDates(extremeDatesRequest: ExtremeDatesRequest)(implicit hc: HeaderCarrier): Future[ExtremeDatesResponse] =
-    httpClient.POST[ExtremeDatesRequest, ExtremeDatesResponse](s"$essttpBackendBaseUrl/extreme-dates", extremeDatesRequest)
+    httpClient
+      .post(url"$essttpBackendBaseUrl/extreme-dates")
+      .withBody(Json.toJson(extremeDatesRequest))
+      .execute[ExtremeDatesResponse]
 
 }
