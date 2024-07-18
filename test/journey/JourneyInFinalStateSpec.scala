@@ -21,10 +21,10 @@ import essttp.journey.JourneyConnector
 import essttp.rootmodel.AmountInPence
 import journey.JourneyInFinalStateSpec.TestScenario
 import org.scalatest.Assertion
-import play.api.libs.json.{JsNull, Writes}
+import play.api.libs.json.{JsNull, Json, Writes}
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HttpResponse, StringContextOps}
 
