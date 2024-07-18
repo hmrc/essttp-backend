@@ -91,6 +91,10 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
           testEpayeBta(tdAll.EpayeBta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)
         }
 
+        "ObtainedWhyCannotPayInFullAnswers" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterWhyCannotPayInFullNotRequired)(_.eligibilityCheckResult)(this)
+        }
+
         "AnsweredCanPayUpfront" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayUpfrontNo)(_.eligibilityCheckResult)(this)
         }
@@ -176,6 +180,10 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
           testVatBta(tdAll.VatBta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)
         }
 
+        "ObtainedWhyCannotPayInFullAnswers" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterWhyCannotPayInFullNotRequired)(_.eligibilityCheckResult)(this)
+        }
+
         "AnsweredCanPayUpfront" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterCanPayUpfrontNo)(_.eligibilityCheckResult)(this)
         }
@@ -259,6 +267,10 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
 
         "EligibilityChecked" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)
+        }
+
+        "ObtainedWhyCannotPayInFullAnswers" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterWhyCannotPayInFullNotRequired)(_.eligibilityCheckResult)(this)
         }
 
         "AnsweredCanPayUpfront" in new JourneyItTest {

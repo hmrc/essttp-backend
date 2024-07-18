@@ -17,7 +17,7 @@
 package essttp.journey
 
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, SjRequest, SjResponse}
+import essttp.journey.model.{Journey, JourneyId, SjRequest, SjResponse, WhyCannotPayInFullAnswers}
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
@@ -63,6 +63,12 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: E
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-eligibility-result")
       .withBody(Json.toJson(eligibilityCheckResult))
+      .execute[Journey]
+
+  def updateWhyCannotPayInFullAnswers(journeyId: JourneyId, answers: WhyCannotPayInFullAnswers)(implicit request: RequestHeader): Future[Journey] =
+    httpClient
+      .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-why-cannot-pay-in-full")
+      .withBody(Json.toJson(answers))
       .execute[Journey]
 
   def updateCanPayUpfront(journeyId: JourneyId, canPayUpfront: CanPayUpfront)(implicit request: RequestHeader): Future[Journey] =

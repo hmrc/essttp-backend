@@ -43,30 +43,30 @@ class UpdateCanPayUpfrontController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       newJourney <- journey match {
-        case _: Journey.BeforeEligibilityChecked   => Errors.throwBadRequestExceptionF("UpdateCanPayUpfront is not possible in that state.")
-        case j: Journey.Stages.EligibilityChecked  => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterAnsweredCanPayUpfront => updateJourneyWithExistingValue(Left(j), request.body)
-        case j: Journey.AfterUpfrontPaymentAnswers => updateJourneyWithExistingValue(Right(j), request.body)
+        case _: Journey.BeforeWhyCannotPayInFullAnswers          => Errors.throwBadRequestExceptionF("UpdateCanPayUpfront is not possible in that state.")
+        case j: Journey.Stages.ObtainedWhyCannotPayInFullAnswers => updateJourneyWithNewValue(j, request.body)
+        case j: Journey.AfterAnsweredCanPayUpfront               => updateJourneyWithExistingValue(Left(j), request.body)
+        case j: Journey.AfterUpfrontPaymentAnswers               => updateJourneyWithExistingValue(Right(j), request.body)
       }
     } yield Ok(newJourney.json)
   }
 
   private def updateJourneyWithNewValue(
-      journey:       Stages.EligibilityChecked,
+      journey:       Stages.ObtainedWhyCannotPayInFullAnswers,
       canPayUpfront: CanPayUpfront
   )(implicit request: Request[_]): Future[Journey] = {
     val updatedJourney: Stages.AnsweredCanPayUpfront = journey match {
-      case j: Journey.Epaye.EligibilityChecked =>
+      case j: Journey.Epaye.ObtainedWhyCannotPayInFullAnswers =>
         j.into[Journey.Epaye.AnsweredCanPayUpfront]
           .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
           .withFieldConst(_.canPayUpfront, canPayUpfront)
           .transform
-      case j: Journey.Vat.EligibilityChecked =>
+      case j: Journey.Vat.ObtainedWhyCannotPayInFullAnswers =>
         j.into[Journey.Vat.AnsweredCanPayUpfront]
           .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
           .withFieldConst(_.canPayUpfront, canPayUpfront)
           .transform
-      case j: Journey.Sa.EligibilityChecked =>
+      case j: Journey.Sa.ObtainedWhyCannotPayInFullAnswers =>
         j.into[Journey.Sa.AnsweredCanPayUpfront]
           .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
           .withFieldConst(_.canPayUpfront, canPayUpfront)

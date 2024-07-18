@@ -27,12 +27,8 @@ import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentP
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import paymentsEmailVerification.models.EmailVerificationResult
-import play.api.libs.json.{JsNull, JsObject}
-import testsupport.JsonSyntax._
-import testsupport.ResourceReader.read
+import play.api.libs.json.JsNull
 import testsupport.testdata.{TdBase, TdJourneyStructure}
-
-import scala.language.reflectiveCalls
 
 trait TdJourneySaPta {
   dependencies: TdBase with TdSa =>
@@ -52,28 +48,28 @@ trait TdJourneySaPta {
     def postPath: String = "/sa/pta/journey/start"
 
     def journeyAfterStarted: Journey.Sa.Started = Journey.Sa.Started(
-      _id                   = dependencies.journeyId,
-      origin                = Origins.Sa.Pta,
-      createdOn             = dependencies.createdOn,
-      sjRequest             = sjRequest,
-      sessionId             = dependencies.sessionId,
-      stage                 = Stage.AfterStarted.Started,
-      affordabilityRequired = Some(false),
-      correlationId         = dependencies.correlationId,
+      _id                  = dependencies.journeyId,
+      origin               = Origins.Sa.Pta,
+      createdOn            = dependencies.createdOn,
+      sjRequest            = sjRequest,
+      sessionId            = dependencies.sessionId,
+      stage                = Stage.AfterStarted.Started,
+      affordabilityEnabled = Some(false),
+      correlationId        = dependencies.correlationId,
     )
 
     def updateTaxIdRequest(): TaxId = saUtr
 
     def journeyAfterDetermineTaxIds: Journey.Sa.ComputedTaxId = Journey.Sa.ComputedTaxId(
-      _id                   = dependencies.journeyId,
-      origin                = Origins.Sa.Pta,
-      createdOn             = dependencies.createdOn,
-      sjRequest             = sjRequest,
-      sessionId             = dependencies.sessionId,
-      stage                 = Stage.AfterComputedTaxId.ComputedTaxId,
-      affordabilityRequired = Some(false),
-      correlationId         = dependencies.correlationId,
-      taxId                 = saUtr
+      _id                  = dependencies.journeyId,
+      origin               = Origins.Sa.Pta,
+      createdOn            = dependencies.createdOn,
+      sjRequest            = sjRequest,
+      sessionId            = dependencies.sessionId,
+      stage                = Stage.AfterComputedTaxId.ComputedTaxId,
+      affordabilityEnabled = Some(false),
+      correlationId        = dependencies.correlationId,
+      taxId                = saUtr
     )
 
     def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResultSa
@@ -85,13 +81,11 @@ trait TdJourneySaPta {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterEligibilityCheck.Eligible,
-      affordabilityRequired  = Some(false),
+      affordabilityEnabled   = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = saUtr,
       eligibilityCheckResult = eligibleEligibilityCheckResultSa
     )
-
-    def journeyAfterEligibilityCheckEligibleJson: JsObject = read("/testdata/sa/pta/JourneyAfterEligibilityCheck.json").asJson
 
     def journeyAfterEligibilityCheckNotEligible: Journey.Sa.EligibilityChecked = Journey.Sa.EligibilityChecked(
       _id                    = dependencies.journeyId,
@@ -100,10 +94,24 @@ trait TdJourneySaPta {
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
       stage                  = Stage.AfterEligibilityCheck.Ineligible,
-      affordabilityRequired  = Some(false),
+      affordabilityEnabled   = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = saUtr,
       eligibilityCheckResult = ineligibleEligibilityCheckResultSa
+    )
+
+    def journeyAfterWhyCannotPayInFullNotRequired: Journey.Sa.ObtainedWhyCannotPayInFullAnswers = Journey.Sa.ObtainedWhyCannotPayInFullAnswers(
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterWhyCannotPayInFullAnswers.AnswerNotRequired,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired
     )
 
     def updateCanPayUpfrontYesRequest(): CanPayUpfront = canPayUpfrontYes
@@ -111,31 +119,33 @@ trait TdJourneySaPta {
     def updateCanPayUpfrontNoRequest(): CanPayUpfront = canPayUpfrontNo
 
     def journeyAfterCanPayUpfrontYes: Journey.Sa.AnsweredCanPayUpfront = Journey.Sa.AnsweredCanPayUpfront(
-      _id                    = dependencies.journeyId,
-      origin                 = Origins.Sa.Pta,
-      createdOn              = dependencies.createdOn,
-      sjRequest              = sjRequest,
-      sessionId              = dependencies.sessionId,
-      stage                  = Stage.AfterCanPayUpfront.Yes,
-      affordabilityRequired  = Some(false),
-      correlationId          = dependencies.correlationId,
-      taxId                  = saUtr,
-      eligibilityCheckResult = eligibleEligibilityCheckResultSa,
-      canPayUpfront          = canPayUpfrontYes
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterCanPayUpfront.Yes,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      canPayUpfront             = canPayUpfrontYes
     )
 
     def journeyAfterCanPayUpfrontNo: Journey.Sa.AnsweredCanPayUpfront = Journey.Sa.AnsweredCanPayUpfront(
-      _id                    = dependencies.journeyId,
-      origin                 = Origins.Sa.Pta,
-      createdOn              = dependencies.createdOn,
-      sjRequest              = sjRequest,
-      sessionId              = dependencies.sessionId,
-      stage                  = Stage.AfterCanPayUpfront.No,
-      affordabilityRequired  = Some(false),
-      correlationId          = dependencies.correlationId,
-      taxId                  = saUtr,
-      eligibilityCheckResult = eligibleEligibilityCheckResultSa,
-      canPayUpfront          = canPayUpfrontNo
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterCanPayUpfront.No,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      canPayUpfront             = canPayUpfrontNo
     )
 
     def updateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.upfrontPaymentAmount
@@ -144,256 +154,268 @@ trait TdJourneySaPta {
     def anotherUpdateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.anotherUpfrontPaymentAmount
 
     def journeyAfterUpfrontPaymentAmount: Journey.Sa.EnteredUpfrontPaymentAmount = Journey.Sa.EnteredUpfrontPaymentAmount(
-      _id                    = dependencies.journeyId,
-      origin                 = Origins.Sa.Pta,
-      createdOn              = dependencies.createdOn,
-      sjRequest              = sjRequest,
-      sessionId              = dependencies.sessionId,
-      stage                  = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
-      affordabilityRequired  = Some(false),
-      correlationId          = dependencies.correlationId,
-      taxId                  = saUtr,
-      eligibilityCheckResult = eligibleEligibilityCheckResultSa,
-      canPayUpfront          = canPayUpfrontYes,
-      upfrontPaymentAmount   = dependencies.upfrontPaymentAmount
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      canPayUpfront             = canPayUpfrontYes,
+      upfrontPaymentAmount      = dependencies.upfrontPaymentAmount
     )
 
     def updateExtremeDatesRequest(): ExtremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment
 
     def journeyAfterExtremeDates: Journey.Sa.RetrievedExtremeDates = Journey.Sa.RetrievedExtremeDates(
-      _id                    = dependencies.journeyId,
-      origin                 = Origins.Sa.Pta,
-      createdOn              = dependencies.createdOn,
-      sjRequest              = sjRequest,
-      sessionId              = dependencies.sessionId,
-      stage                  = Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved,
-      affordabilityRequired  = Some(false),
-      correlationId          = dependencies.correlationId,
-      taxId                  = saUtr,
-      eligibilityCheckResult = eligibleEligibilityCheckResultSa,
-      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment
     )
 
     def updateInstalmentAmountsRequest(): InstalmentAmounts = dependencies.instalmentAmounts
 
     def journeyAfterInstalmentAmounts: Journey.Sa.RetrievedAffordabilityResult = Journey.Sa.RetrievedAffordabilityResult(
-      _id                    = dependencies.journeyId,
-      origin                 = Origins.Sa.Pta,
-      createdOn              = dependencies.createdOn,
-      sjRequest              = sjRequest,
-      sessionId              = dependencies.sessionId,
-      stage                  = Stage.AfterAffordabilityResult.RetrievedAffordabilityResult,
-      affordabilityRequired  = Some(false),
-      correlationId          = dependencies.correlationId,
-      taxId                  = saUtr,
-      eligibilityCheckResult = eligibleEligibilityCheckResultSa,
-      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts      = dependencies.instalmentAmounts
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterAffordabilityResult.RetrievedAffordabilityResult,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts         = dependencies.instalmentAmounts
     )
 
     def updateMonthlyPaymentAmountRequest(): MonthlyPaymentAmount = dependencies.monthlyPaymentAmount
 
     def journeyAfterMonthlyPaymentAmount: Journey.Sa.EnteredMonthlyPaymentAmount = Journey.Sa.EnteredMonthlyPaymentAmount(
-      _id                    = dependencies.journeyId,
-      origin                 = Origins.Sa.Pta,
-      createdOn              = dependencies.createdOn,
-      sjRequest              = sjRequest,
-      sessionId              = dependencies.sessionId,
-      stage                  = Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount,
-      affordabilityRequired  = Some(false),
-      correlationId          = dependencies.correlationId,
-      taxId                  = saUtr,
-      eligibilityCheckResult = eligibleEligibilityCheckResultSa,
-      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts      = dependencies.instalmentAmounts,
-      monthlyPaymentAmount   = dependencies.monthlyPaymentAmount
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts         = dependencies.instalmentAmounts,
+      monthlyPaymentAmount      = dependencies.monthlyPaymentAmount
     )
 
     def updateDayOfMonthRequest(): DayOfMonth = dependencies.dayOfMonth
 
     def journeyAfterDayOfMonth: Journey.Sa.EnteredDayOfMonth = Journey.Sa.EnteredDayOfMonth(
-      _id                    = dependencies.journeyId,
-      origin                 = Origins.Sa.Pta,
-      createdOn              = dependencies.createdOn,
-      sjRequest              = sjRequest,
-      sessionId              = dependencies.sessionId,
-      stage                  = Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth,
-      affordabilityRequired  = Some(false),
-      correlationId          = dependencies.correlationId,
-      taxId                  = saUtr,
-      eligibilityCheckResult = eligibleEligibilityCheckResultSa,
-      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts      = dependencies.instalmentAmounts,
-      monthlyPaymentAmount   = dependencies.monthlyPaymentAmount,
-      dayOfMonth             = dependencies.dayOfMonth
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts         = dependencies.instalmentAmounts,
+      monthlyPaymentAmount      = dependencies.monthlyPaymentAmount,
+      dayOfMonth                = dependencies.dayOfMonth
     )
 
     def updateStartDatesResponse(): StartDatesResponse = dependencies.startDatesResponseWithInitialPayment
 
     def journeyAfterStartDatesResponse: Journey.Sa.RetrievedStartDates = Journey.Sa.RetrievedStartDates(
-      _id                    = dependencies.journeyId,
-      origin                 = Origins.Sa.Pta,
-      createdOn              = dependencies.createdOn,
-      sjRequest              = sjRequest,
-      sessionId              = dependencies.sessionId,
-      stage                  = Stage.AfterStartDatesResponse.StartDatesResponseRetrieved,
-      affordabilityRequired  = Some(false),
-      correlationId          = dependencies.correlationId,
-      taxId                  = saUtr,
-      eligibilityCheckResult = eligibleEligibilityCheckResultSa,
-      upfrontPaymentAnswers  = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse   = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts      = dependencies.instalmentAmounts,
-      monthlyPaymentAmount   = dependencies.monthlyPaymentAmount,
-      dayOfMonth             = dependencies.dayOfMonth,
-      startDatesResponse     = dependencies.startDatesResponseWithInitialPayment
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterStartDatesResponse.StartDatesResponseRetrieved,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts         = dependencies.instalmentAmounts,
+      monthlyPaymentAmount      = dependencies.monthlyPaymentAmount,
+      dayOfMonth                = dependencies.dayOfMonth,
+      startDatesResponse        = dependencies.startDatesResponseWithInitialPayment
     )
 
     def updateAffordableQuotesResponse(): AffordableQuotesResponse = dependencies.affordableQuotesResponse
 
     def journeyAfterAffordableQuotesResponse: Journey.Sa.RetrievedAffordableQuotes = Journey.Sa.RetrievedAffordableQuotes(
-      _id                      = dependencies.journeyId,
-      origin                   = Origins.Sa.Pta,
-      createdOn                = dependencies.createdOn,
-      sjRequest                = sjRequest,
-      sessionId                = dependencies.sessionId,
-      stage                    = Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved,
-      affordabilityRequired    = Some(false),
-      correlationId            = dependencies.correlationId,
-      taxId                    = saUtr,
-      eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
-      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts        = dependencies.instalmentAmounts,
-      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
-      dayOfMonth               = dependencies.dayOfMonth,
-      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse = dependencies.affordableQuotesResponse
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts         = dependencies.instalmentAmounts,
+      monthlyPaymentAmount      = dependencies.monthlyPaymentAmount,
+      dayOfMonth                = dependencies.dayOfMonth,
+      startDatesResponse        = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse  = dependencies.affordableQuotesResponse
     )
 
     def updateSelectedPaymentPlanRequest(): PaymentPlan = dependencies.paymentPlan(1)
 
     def journeyAfterSelectedPaymentPlan: Journey.Sa.ChosenPaymentPlan = Journey.Sa.ChosenPaymentPlan(
-      _id                      = dependencies.journeyId,
-      origin                   = Origins.Sa.Pta,
-      createdOn                = dependencies.createdOn,
-      sjRequest                = sjRequest,
-      sessionId                = dependencies.sessionId,
-      stage                    = Stage.AfterSelectedPlan.SelectedPlan,
-      affordabilityRequired    = Some(false),
-      correlationId            = dependencies.correlationId,
-      taxId                    = saUtr,
-      eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
-      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts        = dependencies.instalmentAmounts,
-      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
-      dayOfMonth               = dependencies.dayOfMonth,
-      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan      = dependencies.paymentPlan(1)
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterSelectedPlan.SelectedPlan,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts         = dependencies.instalmentAmounts,
+      monthlyPaymentAmount      = dependencies.monthlyPaymentAmount,
+      dayOfMonth                = dependencies.dayOfMonth,
+      startDatesResponse        = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse  = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan       = dependencies.paymentPlan(1)
     )
 
     def updateCheckedPaymentPlanRequest(): JsNull.type = JsNull
 
     def journeyAfterCheckedPaymentPlan: Journey.Sa.CheckedPaymentPlan = Journey.Sa.CheckedPaymentPlan(
-      _id                      = dependencies.journeyId,
-      origin                   = Origins.Sa.Pta,
-      createdOn                = dependencies.createdOn,
-      sjRequest                = sjRequest,
-      sessionId                = dependencies.sessionId,
-      stage                    = Stage.AfterCheckedPlan.AcceptedPlan,
-      affordabilityRequired    = Some(false),
-      correlationId            = dependencies.correlationId,
-      taxId                    = saUtr,
-      eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
-      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts        = dependencies.instalmentAmounts,
-      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
-      dayOfMonth               = dependencies.dayOfMonth,
-      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan      = dependencies.paymentPlan(1)
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterCheckedPlan.AcceptedPlan,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts         = dependencies.instalmentAmounts,
+      monthlyPaymentAmount      = dependencies.monthlyPaymentAmount,
+      dayOfMonth                = dependencies.dayOfMonth,
+      startDatesResponse        = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse  = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan       = dependencies.paymentPlan(1)
     )
 
     def updateDetailsAboutBankAccountRequest(isAccountHolder: Boolean): DetailsAboutBankAccount =
       DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder)
 
     def journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder: Boolean): Journey.Sa.EnteredDetailsAboutBankAccount = Journey.Sa.EnteredDetailsAboutBankAccount(
-      _id                      = dependencies.journeyId,
-      origin                   = Origins.Sa.Pta,
-      createdOn                = dependencies.createdOn,
-      sjRequest                = sjRequest,
-      sessionId                = dependencies.sessionId,
-      stage                    = if (isAccountHolder) Stage.AfterEnteredDetailsAboutBankAccount.Business else Stage.AfterEnteredDetailsAboutBankAccount.IsNotAccountHolder,
-      affordabilityRequired    = Some(false),
-      correlationId            = dependencies.correlationId,
-      taxId                    = saUtr,
-      eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
-      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts        = dependencies.instalmentAmounts,
-      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
-      dayOfMonth               = dependencies.dayOfMonth,
-      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan      = dependencies.paymentPlan(1),
-      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder)
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = if (isAccountHolder) Stage.AfterEnteredDetailsAboutBankAccount.Business else Stage.AfterEnteredDetailsAboutBankAccount.IsNotAccountHolder,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts         = dependencies.instalmentAmounts,
+      monthlyPaymentAmount      = dependencies.monthlyPaymentAmount,
+      dayOfMonth                = dependencies.dayOfMonth,
+      startDatesResponse        = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse  = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan       = dependencies.paymentPlan(1),
+      detailsAboutBankAccount   = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder)
     )
 
     val updateDirectDebitDetailsRequest: BankDetails = dependencies.directDebitDetails
 
     def journeyAfterEnteredDirectDebitDetails(): Journey.Sa.EnteredDirectDebitDetails = Journey.Sa.EnteredDirectDebitDetails(
-      _id                      = dependencies.journeyId,
-      origin                   = Origins.Sa.Pta,
-      createdOn                = dependencies.createdOn,
-      sjRequest                = sjRequest,
-      sessionId                = dependencies.sessionId,
-      stage                    = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails,
-      affordabilityRequired    = Some(false),
-      correlationId            = dependencies.correlationId,
-      taxId                    = saUtr,
-      eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
-      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts        = dependencies.instalmentAmounts,
-      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
-      dayOfMonth               = dependencies.dayOfMonth,
-      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan      = dependencies.paymentPlan(1),
-      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
-      directDebitDetails       = directDebitDetails
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts         = dependencies.instalmentAmounts,
+      monthlyPaymentAmount      = dependencies.monthlyPaymentAmount,
+      dayOfMonth                = dependencies.dayOfMonth,
+      startDatesResponse        = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse  = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan       = dependencies.paymentPlan(1),
+      detailsAboutBankAccount   = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+      directDebitDetails        = directDebitDetails
     )
 
     def updateConfirmedDirectDebitDetailsRequest(): JsNull.type = JsNull
 
     def journeyAfterConfirmedDirectDebitDetails: Journey.Sa.ConfirmedDirectDebitDetails = Journey.Sa.ConfirmedDirectDebitDetails(
-      _id                      = dependencies.journeyId,
-      origin                   = Origins.Sa.Pta,
-      createdOn                = dependencies.createdOn,
-      sjRequest                = sjRequest,
-      sessionId                = dependencies.sessionId,
-      stage                    = Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails,
-      affordabilityRequired    = Some(false),
-      correlationId            = dependencies.correlationId,
-      taxId                    = saUtr,
-      eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
-      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts        = dependencies.instalmentAmounts,
-      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
-      dayOfMonth               = dependencies.dayOfMonth,
-      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan      = dependencies.paymentPlan(1),
-      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
-      directDebitDetails       = directDebitDetails
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts         = dependencies.instalmentAmounts,
+      monthlyPaymentAmount      = dependencies.monthlyPaymentAmount,
+      dayOfMonth                = dependencies.dayOfMonth,
+      startDatesResponse        = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse  = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan       = dependencies.paymentPlan(1),
+      detailsAboutBankAccount   = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+      directDebitDetails        = directDebitDetails
     )
 
     def updateAgreedTermsAndConditionsRequest(isEmailAddressRequired: Boolean): IsEmailAddressRequired = IsEmailAddressRequired(isEmailAddressRequired)
@@ -404,117 +426,121 @@ trait TdJourneySaPta {
         else Stage.AfterAgreedTermsAndConditions.EmailAddressNotRequired
 
       Journey.Sa.AgreedTermsAndConditions(
-        _id                      = dependencies.journeyId,
-        origin                   = Origins.Sa.Pta,
-        createdOn                = dependencies.createdOn,
-        sjRequest                = sjRequest,
-        sessionId                = dependencies.sessionId,
-        stage                    = stage,
-        affordabilityRequired    = Some(false),
-        correlationId            = dependencies.correlationId,
-        taxId                    = saUtr,
-        eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
-        upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
-        extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
-        instalmentAmounts        = dependencies.instalmentAmounts,
-        monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
-        dayOfMonth               = dependencies.dayOfMonth,
-        startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
-        affordableQuotesResponse = dependencies.affordableQuotesResponse,
-        selectedPaymentPlan      = dependencies.paymentPlan(1),
-        detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
-        directDebitDetails       = directDebitDetails,
-        isEmailAddressRequired   = IsEmailAddressRequired(isEmailAddressRequired)
+        _id                       = dependencies.journeyId,
+        origin                    = Origins.Sa.Pta,
+        createdOn                 = dependencies.createdOn,
+        sjRequest                 = sjRequest,
+        sessionId                 = dependencies.sessionId,
+        stage                     = stage,
+        affordabilityEnabled      = Some(false),
+        correlationId             = dependencies.correlationId,
+        taxId                     = saUtr,
+        eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts         = dependencies.instalmentAmounts,
+        monthlyPaymentAmount      = dependencies.monthlyPaymentAmount,
+        dayOfMonth                = dependencies.dayOfMonth,
+        startDatesResponse        = dependencies.startDatesResponseWithInitialPayment,
+        affordableQuotesResponse  = dependencies.affordableQuotesResponse,
+        selectedPaymentPlan       = dependencies.paymentPlan(1),
+        detailsAboutBankAccount   = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+        directDebitDetails        = directDebitDetails,
+        isEmailAddressRequired    = IsEmailAddressRequired(isEmailAddressRequired)
       )
     }
 
     def updateSelectedEmailRequest(): Email = dependencies.email
 
     def journeyAfterSelectedEmail: Journey.Sa.SelectedEmailToBeVerified = Journey.Sa.SelectedEmailToBeVerified(
-      _id                      = dependencies.journeyId,
-      origin                   = Origins.Sa.Pta,
-      createdOn                = dependencies.createdOn,
-      sjRequest                = sjRequest,
-      sessionId                = dependencies.sessionId,
-      stage                    = Stage.AfterSelectedAnEmailToBeVerified.EmailChosen,
-      affordabilityRequired    = Some(false),
-      correlationId            = dependencies.correlationId,
-      taxId                    = saUtr,
-      eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
-      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts        = dependencies.instalmentAmounts,
-      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
-      dayOfMonth               = dependencies.dayOfMonth,
-      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan      = dependencies.paymentPlan(1),
-      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
-      directDebitDetails       = directDebitDetails,
-      isEmailAddressRequired   = IsEmailAddressRequired(value = true),
-      emailToBeVerified        = dependencies.email
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterSelectedAnEmailToBeVerified.EmailChosen,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts         = dependencies.instalmentAmounts,
+      monthlyPaymentAmount      = dependencies.monthlyPaymentAmount,
+      dayOfMonth                = dependencies.dayOfMonth,
+      startDatesResponse        = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse  = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan       = dependencies.paymentPlan(1),
+      detailsAboutBankAccount   = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+      directDebitDetails        = directDebitDetails,
+      isEmailAddressRequired    = IsEmailAddressRequired(value = true),
+      emailToBeVerified         = dependencies.email
     )
 
     def journeyAfterEmailVerificationResult(result: EmailVerificationResult): Journey.Sa.EmailVerificationComplete = Journey.Sa.EmailVerificationComplete(
-      _id                      = dependencies.journeyId,
-      origin                   = Origins.Sa.Pta,
-      createdOn                = dependencies.createdOn,
-      sjRequest                = sjRequest,
-      sessionId                = dependencies.sessionId,
-      stage                    = result match {
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = result match {
         case EmailVerificationResult.Verified => Stage.AfterEmailVerificationPhase.VerificationSuccess
         case EmailVerificationResult.Locked   => Stage.AfterEmailVerificationPhase.Locked
       },
-      affordabilityRequired    = Some(false),
-      correlationId            = dependencies.correlationId,
-      taxId                    = saUtr,
-      eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
-      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts        = dependencies.instalmentAmounts,
-      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
-      dayOfMonth               = dependencies.dayOfMonth,
-      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan      = dependencies.paymentPlan(1),
-      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
-      directDebitDetails       = directDebitDetails,
-      isEmailAddressRequired   = IsEmailAddressRequired(value = true),
-      emailToBeVerified        = dependencies.email,
-      emailVerificationResult  = result,
-      emailVerificationAnswers = emailVerificationAnswers(Some(result))
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts         = dependencies.instalmentAmounts,
+      monthlyPaymentAmount      = dependencies.monthlyPaymentAmount,
+      dayOfMonth                = dependencies.dayOfMonth,
+      startDatesResponse        = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse  = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan       = dependencies.paymentPlan(1),
+      detailsAboutBankAccount   = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+      directDebitDetails        = directDebitDetails,
+      isEmailAddressRequired    = IsEmailAddressRequired(value = true),
+      emailToBeVerified         = dependencies.email,
+      emailVerificationResult   = result,
+      emailVerificationAnswers  = emailVerificationAnswers(Some(result))
     )
 
     def updateArrangementRequest(): ArrangementResponse = dependencies.arrangementResponseSa
 
     def journeyAfterSubmittedArrangement(isEmailAddressRequired: Boolean): Journey.Sa.SubmittedArrangement = Journey.Sa.SubmittedArrangement(
-      _id                      = dependencies.journeyId,
-      origin                   = Origins.Sa.Pta,
-      createdOn                = dependencies.createdOn,
-      sjRequest                = sjRequest,
-      sessionId                = dependencies.sessionId,
-      stage                    = Stage.AfterSubmittedArrangement.Submitted,
-      affordabilityRequired    = Some(false),
-      correlationId            = dependencies.correlationId,
-      taxId                    = saUtr,
-      eligibilityCheckResult   = eligibleEligibilityCheckResultSa,
-      upfrontPaymentAnswers    = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse     = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts        = dependencies.instalmentAmounts,
-      monthlyPaymentAmount     = dependencies.monthlyPaymentAmount,
-      dayOfMonth               = dependencies.dayOfMonth,
-      startDatesResponse       = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan      = dependencies.paymentPlan(1),
-      detailsAboutBankAccount  = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
-      directDebitDetails       = directDebitDetails,
-      isEmailAddressRequired   = IsEmailAddressRequired(isEmailAddressRequired),
-      emailVerificationAnswers = if (isEmailAddressRequired) {
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sa.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterSubmittedArrangement.Submitted,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = saUtr,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSa,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts         = dependencies.instalmentAmounts,
+      monthlyPaymentAmount      = dependencies.monthlyPaymentAmount,
+      dayOfMonth                = dependencies.dayOfMonth,
+      startDatesResponse        = dependencies.startDatesResponseWithInitialPayment,
+      affordableQuotesResponse  = dependencies.affordableQuotesResponse,
+      selectedPaymentPlan       = dependencies.paymentPlan(1),
+      detailsAboutBankAccount   = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
+      directDebitDetails        = directDebitDetails,
+      isEmailAddressRequired    = IsEmailAddressRequired(isEmailAddressRequired),
+      emailVerificationAnswers  = if (isEmailAddressRequired) {
         EmailVerificationAnswers.EmailVerified(dependencies.email, EmailVerificationResult.Verified)
       } else {
         EmailVerificationAnswers.NoEmailJourney
       },
-      arrangementResponse      = dependencies.arrangementResponseSa
+      arrangementResponse       = dependencies.arrangementResponseSa
     )
 
   }

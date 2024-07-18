@@ -64,6 +64,11 @@ class JourneyInFinalStateSpec extends ItSpec {
         expectedMessage    = """{"statusCode":400,"message":"Cannot update EligibilityCheckResult when journey is in completed state"}"""
       ),
       TestScenario(
+        httpResponse       = makeUpdate("/update-why-cannot-pay-in-full", tdAll.whyCannotPayInFullNotRequired),
+        expectedStatusCode = 400,
+        expectedMessage    = """{"statusCode":400,"message":"Cannot update WhyCannotPayInFullAnswers when journey is in completed state"}"""
+      ),
+      TestScenario(
         httpResponse       = makeUpdate("/update-can-pay-upfront", tdAll.EpayeBta.updateCanPayUpfrontYesRequest()),
         expectedStatusCode = 400,
         expectedMessage    = """{"statusCode":400,"message":"Cannot update AnsweredCanPayUpFront when journey is in completed state"}"""

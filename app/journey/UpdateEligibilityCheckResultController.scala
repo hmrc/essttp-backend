@@ -101,6 +101,22 @@ class UpdateEligibilityCheckResultController @Inject() (
           j.copy(eligibilityCheckResult = eligibilityCheckResult)
             .copy(stage = deriveEligibilityEnum(eligibilityCheckResult))
 
+        case j: Epaye.ObtainedWhyCannotPayInFullAnswers =>
+          j.into[Journey.Epaye.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+        case j: Vat.ObtainedWhyCannotPayInFullAnswers =>
+          j.into[Journey.Vat.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+        case j: Sa.ObtainedWhyCannotPayInFullAnswers =>
+          j.into[Journey.Sa.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+
         case j: Epaye.AnsweredCanPayUpfront =>
           j.into[Journey.Epaye.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))

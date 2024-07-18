@@ -16,7 +16,7 @@
 
 package testsupport.testdata
 
-import essttp.journey.model.{CorrelationId, EmailVerificationAnswers, JourneyId, UpfrontPaymentAnswers}
+import essttp.journey.model.{CorrelationId, EmailVerificationAnswers, JourneyId, UpfrontPaymentAnswers, WhyCannotPayInFullAnswers}
 import essttp.rootmodel._
 import essttp.rootmodel.bank._
 import essttp.rootmodel.dates.InitialPaymentDate
@@ -84,6 +84,10 @@ trait TdBase {
     )
 
   val hasRlsAddressOn: EligibilityRules = eligibleEligibilityRules.copy(hasRlsOnAddress = true)
+
+  val whyCannotPayInFullNotRequired: WhyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired
+
+  val whyCannotPayInFullRequired: WhyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.WhyCannotPayInFull(Set(CannotPayReason.Bankrupt))
 
   val canPayUpfrontYes: CanPayUpfront = CanPayUpfront(value = true)
   val canPayUpfrontNo: CanPayUpfront = CanPayUpfront(value = false)
