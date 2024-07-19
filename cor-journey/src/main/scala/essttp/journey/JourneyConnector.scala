@@ -189,13 +189,13 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: E
     def startJourneyDetachedUrl(sjRequest: SjRequest.Epaye.Empty)(implicit request: RequestHeader): Future[SjResponse] =
       httpClient
         .post(url"$baseUrl/essttp-backend/epaye/detached-url/journey/start")
-        .withBody(Json.toJson(sjRequest))
+        .withBody(Json.toJson(sjRequest: SjRequest))
         .execute[SjResponse]
 
     def startJourneyGovUk(sjRequest: SjRequest.Epaye.Empty)(implicit request: RequestHeader): Future[SjResponse] =
       httpClient
         .post(url"$baseUrl/essttp-backend/epaye/gov-uk/journey/start")
-        .withBody(Json.toJson(sjRequest))
+        .withBody(Json.toJson(sjRequest: SjRequest))
         .execute[SjResponse]
   }
 
@@ -216,13 +216,13 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: E
     def startJourneyDetachedUrl(sjRequest: SjRequest.Vat.Empty)(implicit request: RequestHeader): Future[SjResponse] =
       httpClient
         .post(url"$baseUrl/essttp-backend/vat/detached-url/journey/start")
-        .withBody(Json.toJson(sjRequest))
+        .withBody(Json.toJson(sjRequest: SjRequest))
         .execute[SjResponse]
 
     def startJourneyGovUk(sjRequest: SjRequest.Vat.Empty)(implicit request: RequestHeader): Future[SjResponse] =
       httpClient
         .post(url"$baseUrl/essttp-backend/vat/gov-uk/journey/start")
-        .withBody(Json.toJson(sjRequest))
+        .withBody(Json.toJson(sjRequest: SjRequest))
         .execute[SjResponse]
 
     def startJourneyVatPenalties(sjRequest: SjRequest.Vat.Simple)(implicit request: RequestHeader): Future[SjResponse] =
@@ -256,13 +256,13 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: E
     def startJourneyDetachedUrl(sjRequest: SjRequest.Sa.Empty)(implicit request: RequestHeader): Future[SjResponse] =
       httpClient
         .post(url"$baseUrl/essttp-backend/sa/detached-url/journey/start")
-        .withBody(Json.toJson(sjRequest))
+        .withBody(Json.toJson(sjRequest: SjRequest))
         .execute[SjResponse]
 
     def startJourneyGovUk(sjRequest: SjRequest.Sa.Empty)(implicit request: RequestHeader): Future[SjResponse] =
       httpClient
         .post(url"$baseUrl/essttp-backend/sa/gov-uk/journey/start")
-        .withBody(Json.toJson(sjRequest))
+        .withBody(Json.toJson(sjRequest: SjRequest))
         .execute[SjResponse]
   }
 
