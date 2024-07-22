@@ -27,21 +27,24 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
   import UpdateCanPayUpfrontControllerSpec.UpfrontPaymentAnswersOps
 
   "POST /journey/:journeyId/update-can-pay-upfront" - {
-    "should throw Bad Request when Journey is in a stage [BeforeEligibilityChecked]" in new JourneyItTest {
+    "should throw Bad Request when Journey is in a stage [BeforeObtainedWhyCannotPayInFull]" in new JourneyItTest {
       stubCommonActions()
 
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
+      journeyConnector.updateTaxId(tdAll.journeyId, tdAll.EpayeBta.updateTaxIdRequest()).futureValue
+      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).futureValue
+
       val result: Throwable = journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"UpdateCanPayUpfront is not possible in that state."}""")
 
-      verifyCommonActions(numberOfAuthCalls = 2)
+      verifyCommonActions(numberOfAuthCalls = 4)
     }
 
     "should update the journey when an existing value didn't exist before for" - {
 
       "Epaye" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.EpayeBta.journeyAfterEligibilityCheckEligible,
+          tdAll.EpayeBta.journeyAfterWhyCannotPayInFullNotRequired,
           TdAll.EpayeBta.updateCanPayUpfrontYesRequest()
         )(
             journeyConnector.updateCanPayUpfront,
@@ -51,7 +54,7 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
 
       "Vat" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.VatBta.journeyAfterEligibilityCheckEligible,
+          tdAll.VatBta.journeyAfterWhyCannotPayInFullNotRequired,
           TdAll.VatBta.updateCanPayUpfrontNoRequest()
         )(
             journeyConnector.updateCanPayUpfront,
@@ -61,7 +64,7 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
 
       "Sa" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SaBta.journeyAfterEligibilityCheckEligible,
+          tdAll.SaBta.journeyAfterWhyCannotPayInFullNotRequired,
           TdAll.SaBta.updateCanPayUpfrontYesRequest()
         )(
             journeyConnector.updateCanPayUpfront,

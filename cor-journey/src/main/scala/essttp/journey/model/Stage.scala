@@ -75,6 +75,21 @@ object Stage {
     case object Ineligible extends AfterEligibilityCheck
   }
 
+  sealed trait AfterWhyCannotPayInFullAnswers extends Stage with EnumEntry
+
+  /**
+   * [[Journey]] has been orchestrated with reasons why user cannot pay in ful (if needed)
+   */
+  object AfterWhyCannotPayInFullAnswers extends Enum[AfterWhyCannotPayInFullAnswers] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
+    implicit val format: OFormat[AfterWhyCannotPayInFullAnswers] = derived.oformat[AfterWhyCannotPayInFullAnswers]()
+    val values: immutable.IndexedSeq[AfterWhyCannotPayInFullAnswers] = findValues
+
+    case object AnswerRequired extends AfterWhyCannotPayInFullAnswers
+
+    case object AnswerNotRequired extends AfterWhyCannotPayInFullAnswers
+  }
+
   sealed trait AfterCanPayUpfront extends Stage with EnumEntry
 
   /**

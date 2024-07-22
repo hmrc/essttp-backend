@@ -26,12 +26,17 @@ import testsupport.testdata.TdAll
 
 class JourneyControllerSpec extends ItSpec {
 
+  override val overrideConfig: Map[String, Any] = Map(
+    "affordability.tax-regimes" -> Seq.empty[String]
+  )
+
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
   private val epayeTestNameJourneyStages: String =
     "[StartJourney]" +
       "[UpdateTaxId]" +
       "[UpdateEligibilityCheck]" +
+      "[UpdateWhyCannotPayInFull]" +
       "[UpdateCanPayUpfront]" +
       "[UpdateUpfrontPaymentAmount]" +
       "[UpdateExtremeDates]" +
@@ -72,6 +77,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update eligibility result */
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
+
+      /** Update why cannot pay in full */
+      journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront */
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
@@ -141,7 +150,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeBta.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 40)
+      verifyCommonActions(numberOfAuthCalls = 42)
     }
 
     s"[GovUk][Happy path with upfront payment]$epayeTestNameJourneyStages" in {
@@ -166,6 +175,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update eligibility result */
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeGovUk.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterEligibilityCheckEligible
+
+      /** Update why cannot pay in full */
+      journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront */
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeGovUk.updateCanPayUpfrontYesRequest()).futureValue
@@ -235,7 +248,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeGovUk.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 40)
+      verifyCommonActions(numberOfAuthCalls = 42)
     }
 
     s"[DetachedUrl][Happy path with upfront payment]$epayeTestNameJourneyStages" in {
@@ -260,6 +273,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update eligibility result * */
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterEligibilityCheckEligible
+
+      /** Update why cannot pay in full */
+      journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront * */
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateCanPayUpfrontYesRequest()).futureValue
@@ -329,7 +346,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 40)
+      verifyCommonActions(numberOfAuthCalls = 42)
     }
 
     s"[EpayeService][Happy path with upfront payment]$epayeTestNameJourneyStages" in {
@@ -354,6 +371,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update eligibility result * */
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeEpayeService.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterEligibilityCheckEligible
+
+      /** Update why cannot pay in full */
+      journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront * */
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeEpayeService.updateCanPayUpfrontYesRequest()).futureValue
@@ -423,7 +444,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeEpayeService.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 40)
+      verifyCommonActions(numberOfAuthCalls = 42)
     }
   }
 
@@ -468,6 +489,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update eligibility result * */
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.VatBta.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterEligibilityCheckEligible
+
+      /** Update why cannot pay in full */
+      journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront */
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.VatBta.updateCanPayUpfrontYesRequest()).futureValue
@@ -537,7 +562,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatBta.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 40)
+      verifyCommonActions(numberOfAuthCalls = 42)
     }
 
     s"[GovUk]$vatTestNameJourneyStages" in {
@@ -560,6 +585,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update eligibility result * */
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.VatGovUk.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterEligibilityCheckEligible
+
+      /** Update why cannot pay in full */
+      journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront */
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.VatGovUk.updateCanPayUpfrontYesRequest()).futureValue
@@ -629,7 +658,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatGovUk.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 40)
+      verifyCommonActions(numberOfAuthCalls = 42)
     }
 
     s"[DetachedUrl]$vatTestNameJourneyStages" in {
@@ -652,6 +681,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update eligibility result * */
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.VatDetachedUrl.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterEligibilityCheckEligible
+
+      /** Update why cannot pay in full */
+      journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront */
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.VatDetachedUrl.updateCanPayUpfrontYesRequest()).futureValue
@@ -721,7 +754,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatDetachedUrl.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 40)
+      verifyCommonActions(numberOfAuthCalls = 42)
     }
 
     s"[VatService]$vatTestNameJourneyStages" in {
@@ -744,6 +777,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update eligibility result * */
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.VatVatService.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterEligibilityCheckEligible
+
+      /** Update why cannot pay in full */
+      journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront */
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.VatVatService.updateCanPayUpfrontYesRequest()).futureValue
@@ -813,7 +850,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatVatService.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 40)
+      verifyCommonActions(numberOfAuthCalls = 42)
     }
 
     s"[VatPenalties]$vatTestNameJourneyStages" in {
@@ -836,6 +873,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update eligibility result * */
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.VatVatPenalties.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterEligibilityCheckEligible
+
+      /** Update why cannot pay in full */
+      journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront */
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.VatVatPenalties.updateCanPayUpfrontYesRequest()).futureValue
@@ -905,7 +946,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatVatPenalties.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 40)
+      verifyCommonActions(numberOfAuthCalls = 42)
     }
   }
 
@@ -950,6 +991,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update eligibility result * */
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.SaBta.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEligibilityCheckEligible
+
+      /** Update why cannot pay in full */
+      journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront */
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.SaBta.updateCanPayUpfrontYesRequest()).futureValue
@@ -1019,7 +1064,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaBta.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 40)
+      verifyCommonActions(numberOfAuthCalls = 42)
     }
 
     s"[Pta]$saTestNameJourneyStages" in {
@@ -1042,6 +1087,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update eligibility result * */
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.SaPta.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterEligibilityCheckEligible
+
+      /** Update why cannot pay in full */
+      journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront */
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.SaPta.updateCanPayUpfrontYesRequest()).futureValue
@@ -1111,7 +1160,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaPta.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 40)
+      verifyCommonActions(numberOfAuthCalls = 42)
     }
 
     s"[Mobile]$saTestNameJourneyStages" in {
@@ -1134,6 +1183,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update eligibility result * */
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.SaMobile.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterEligibilityCheckEligible
+
+      /** Update why cannot pay in full */
+      journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront */
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.SaMobile.updateCanPayUpfrontYesRequest()).futureValue
@@ -1203,7 +1256,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaMobile.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 40)
+      verifyCommonActions(numberOfAuthCalls = 42)
     }
 
     s"[GovUk]$saTestNameJourneyStages" in {
@@ -1226,6 +1279,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update eligibility result * */
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.SaGovUk.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterEligibilityCheckEligible
+
+      /** Update why cannot pay in full */
+      journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront */
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.SaGovUk.updateCanPayUpfrontYesRequest()).futureValue
@@ -1295,7 +1352,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaGovUk.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 40)
+      verifyCommonActions(numberOfAuthCalls = 42)
     }
 
     s"[DetachedUrl]$saTestNameJourneyStages" in {
@@ -1318,6 +1375,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update eligibility result * */
       journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.SaDetachedUrl.updateEligibilityCheckRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterEligibilityCheckEligible
+
+      /** Update why cannot pay in full */
+      journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront */
       journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.SaDetachedUrl.updateCanPayUpfrontYesRequest()).futureValue
@@ -1387,9 +1448,116 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaDetachedUrl.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 40)
+      verifyCommonActions(numberOfAuthCalls = 42)
     }
 
+  }
+
+}
+
+class JourneyControllerAffordabilityEnabledSpec extends ItSpec {
+
+  override val overrideConfig: Map[String, Any] = Map(
+    "affordability.tax-regimes" -> Seq("sa")
+  )
+
+  def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
+
+  "The journey must be able to be updated when affordability is enabled for a tax regime" in {
+
+    stubCommonActions()
+    val tdAll = new TdAll {
+      override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
+      override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
+    }
+    implicit val request: Request[_] = tdAll.request
+    val response: SjResponse = journeyConnector.Sa.startJourneyBta(tdAll.SaBta.sjRequest).futureValue
+
+    /** Start journey */
+    response shouldBe tdAll.SaBta.sjResponse
+    journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterStarted.copy(affordabilityEnabled = Some(true))
+
+    /** Update tax id */
+    journeyConnector.updateTaxId(tdAll.journeyId, tdAll.SaBta.updateTaxIdRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterDetermineTaxIds.copy(affordabilityEnabled = Some(true))
+
+    /** Update eligibility result * */
+    journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.SaBta.updateEligibilityCheckRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEligibilityCheckEligible.copy(affordabilityEnabled = Some(true))
+
+    /** Update why cannot pay in full */
+    journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullRequired).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterWhyCannotPayInFullRequired.copy(affordabilityEnabled = Some(true))
+
+    /** Update CanPayUpfront */
+    journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.SaBta.updateCanPayUpfrontYesRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterCanPayUpfrontYes.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    /** Update UpfrontPaymentAmount */
+    journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.SaBta.updateUpfrontPaymentAmountRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterUpfrontPaymentAmount.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    /** Update ExtremeDates */
+    journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.SaBta.updateExtremeDatesRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterExtremeDates.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    /** Update AffordabilityResult */
+    journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.SaBta.updateInstalmentAmountsRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterInstalmentAmounts.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    /** Update MonthlyPaymentAmount */
+    journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.SaBta.updateMonthlyPaymentAmountRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterMonthlyPaymentAmount.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    /** Update DayOfMonth */
+    journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.SaBta.updateDayOfMonthRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterDayOfMonth.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    /** Update StartDates */
+    journeyConnector.updateStartDates(tdAll.journeyId, tdAll.SaBta.updateStartDatesResponse()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterStartDatesResponse.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    /** Update AffordableQuotes */
+    journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.SaBta.updateAffordableQuotesResponse()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterAffordableQuotesResponse.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    /** Update Chosen Instalment plan */
+    journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.SaBta.updateSelectedPaymentPlanRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSelectedPaymentPlan.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    /** Update Checked Instalment plan */
+    journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterCheckedPaymentPlan.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    /** Update Details about Bank Account */
+    journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SaBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true).copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    /** Update Direct debit details */
+    journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SaBta.updateDirectDebitDetailsRequest).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDirectDebitDetails().copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    /** Update Confirm Direct debit details */
+    journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterConfirmedDirectDebitDetails.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    /** Update Agreed terms and conditions */
+    journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true).copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    /** Update Email Address */
+    journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSelectedEmail.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    /** Update Email Verification Status */
+    journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Verified).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified).copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    /** Update Arrangement (journey completed) */
+    journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaBta.updateArrangementRequest()).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true).copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    verifyCommonActions(numberOfAuthCalls = 42)
   }
 
 }

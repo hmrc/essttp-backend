@@ -26,9 +26,10 @@ import testsupport.testdata.TdAll
 class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
-  def putJourneyIntoEligibilityCheckedState(tdAll: TdAll)(implicit request: Request[_]): Unit = {
+  def putJourneyIntoObtainedWhyCannotPayInFullState(tdAll: TdAll)(implicit request: Request[_]): Unit = {
     journeyConnector.updateTaxId(tdAll.journeyId, tdAll.EpayeBta.updateTaxIdRequest()).futureValue
     journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).futureValue
+    journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
     ()
   }
 
@@ -43,7 +44,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
     implicit val request: Request[_] = tdAll.request
     val response: SjResponse = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
     response shouldBe tdAll.EpayeBta.sjResponse
-    putJourneyIntoEligibilityCheckedState(tdAll)
+    putJourneyIntoObtainedWhyCannotPayInFullState(tdAll)
 
     /** Update CanPayUpfront as YES */
     journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
@@ -57,7 +58,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
     journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
 
-    verifyCommonActions(numberOfAuthCalls = 9)
+    verifyCommonActions(numberOfAuthCalls = 10)
   }
 
   "[Epaye.Bta][CanPayUpfront.Yes, Update UpfrontPaymentAmount with value, then change to CanPayFrontNo]" in {
@@ -71,7 +72,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
     implicit val request: Request[_] = tdAll.request
     val response: SjResponse = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
     response shouldBe tdAll.EpayeBta.sjResponse
-    putJourneyIntoEligibilityCheckedState(tdAll)
+    putJourneyIntoObtainedWhyCannotPayInFullState(tdAll)
 
     /** Update CanPayUpfront as YES */
     journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
@@ -85,7 +86,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
     journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontNoRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontNo
 
-    verifyCommonActions(numberOfAuthCalls = 9)
+    verifyCommonActions(numberOfAuthCalls = 10)
   }
 
   "[Epaye.Bta][Update UpfrontPaymentAmount with new value]" in {
@@ -99,7 +100,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
     implicit val request: Request[_] = tdAll.request
     val response: SjResponse = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
     response shouldBe tdAll.EpayeBta.sjResponse
-    putJourneyIntoEligibilityCheckedState(tdAll)
+    putJourneyIntoObtainedWhyCannotPayInFullState(tdAll)
 
     journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
@@ -112,6 +113,6 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
     journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.anotherUpdateUpfrontPaymentAmountRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = UpfrontPaymentAmount(AmountInPence(1001)))
 
-    verifyCommonActions(numberOfAuthCalls = 9)
+    verifyCommonActions(numberOfAuthCalls = 10)
   }
 }

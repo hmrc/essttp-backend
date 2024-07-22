@@ -19,6 +19,7 @@ package dates
 import com.google.inject.{Inject, Singleton}
 import essttp.rootmodel.dates.InitialPaymentDate
 import essttp.rootmodel.dates.startdates.{InstalmentStartDate, PreferredDayOfMonth, StartDatesRequest, StartDatesResponse}
+import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,7 +36,7 @@ class StartDatesService @Inject() (datesService: DatesService)(implicit ec: Exec
     }
   }
 
-  def calculateStartDates(startDatesRequest: StartDatesRequest): Future[StartDatesResponse] = {
+  def calculateStartDates(startDatesRequest: StartDatesRequest)(implicit hc: HeaderCarrier): Future[StartDatesResponse] = {
     val earliestDatePaymentCanBeTakenF = datesService.todayPlusWorkingDays(6)
 
     earliestDatePaymentCanBeTakenF.map { earliestDatePaymentCanBeTaken =>
