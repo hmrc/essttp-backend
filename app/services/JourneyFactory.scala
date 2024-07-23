@@ -32,7 +32,7 @@ class JourneyFactory @Inject() (
 ) {
 
   private val affordabilityEnabledFor: Seq[TaxRegime] =
-    config.get[Seq[String]]("affordability.tax-regimes").map(TaxRegime.withNameInsensitive)
+    config.get[Seq[String]]("affordability.tax-regimes").filter(_.nonEmpty).map(TaxRegime.withNameInsensitive)
 
   def makeJourney(
       originatedSjRequest: OriginatedSjRequest,
