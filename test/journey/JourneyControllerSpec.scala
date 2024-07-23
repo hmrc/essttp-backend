@@ -27,7 +27,8 @@ import testsupport.testdata.TdAll
 class JourneyControllerSpec extends ItSpec {
 
   override val overrideConfig: Map[String, Any] = Map(
-    "affordability.tax-regimes" -> Seq.empty[String]
+    // test emptytax regime strings get ignored and don't blow up
+    "affordability.tax-regimes" -> Seq("")
   )
 
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
