@@ -84,14 +84,16 @@ trait TdSa {
             isInterestBearingCharge       = None,
             useChargeReference            = None,
             chargeBeforeMaxAccountingDate = None,
-            ddInProgress                  = None
+            ddInProgress                  = None,
+            chargeSource                  = None
           )
         )
       )
     ),
     regimeDigitalCorrespondence     = None,
     futureChargeLiabilitiesExcluded = false,
-    chargeTypesExcluded             = None
+    chargeTypesExcluded             = None,
+    transitionToCDCS                = None
   )
 
   def ineligibleEligibilityCheckResultSa: EligibilityCheckResult = eligibleEligibilityCheckResultSa.copy(

@@ -36,7 +36,8 @@ final case class Charges(
     isInterestBearingCharge:       Option[IsInterestBearingCharge],
     useChargeReference:            Option[UseChargeReference],
     chargeBeforeMaxAccountingDate: Option[ChargeBeforeMaxAccountingDate],
-    ddInProgress:                  Option[DdInProgress]
+    ddInProgress:                  Option[DdInProgress],
+    chargeSource:                  Option[ChargeSource]
 )
 
 object Charges {

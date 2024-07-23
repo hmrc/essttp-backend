@@ -17,7 +17,8 @@
 package essttp.journey
 
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, SjRequest, SjResponse, WhyCannotPayInFullAnswers}
+import essttp.journey.model._
+import essttp.rootmodel._
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
@@ -25,18 +26,17 @@ import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
-import essttp.rootmodel.{CanPayUpfront, DayOfMonth, Email, IsEmailAddressRequired, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
+import essttp.utils.RequestSupport._
+import paymentsEmailVerification.models.EmailVerificationResult
+import play.api.libs.json.{JsNull, Json}
 import play.api.mvc.RequestHeader
+import uk.gov.hmrc.http.HttpReads.Implicits.{readUnit => _, _}
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import essttp.utils.RequestSupport._
-import paymentsEmailVerification.models.EmailVerificationResult
-import uk.gov.hmrc.http.HttpReads.Implicits.{readUnit => _, _}
-import play.api.libs.json.{JsNull, Json}
-import uk.gov.hmrc.http.client.HttpClientV2
 
 @Singleton
 class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) {

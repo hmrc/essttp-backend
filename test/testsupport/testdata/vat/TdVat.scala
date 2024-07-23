@@ -78,14 +78,16 @@ trait TdVat {
             isInterestBearingCharge       = None,
             useChargeReference            = None,
             chargeBeforeMaxAccountingDate = None,
-            ddInProgress                  = Some(DdInProgress(value = false))
+            ddInProgress                  = Some(DdInProgress(value = false)),
+            chargeSource                  = None
           )
         )
       )
     ),
     regimeDigitalCorrespondence     = None,
     futureChargeLiabilitiesExcluded = false,
-    chargeTypesExcluded             = None
+    chargeTypesExcluded             = None,
+    transitionToCDCS                = None
   )
 
   val arrangementResponseVat: ArrangementResponse = ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(vrn.value))

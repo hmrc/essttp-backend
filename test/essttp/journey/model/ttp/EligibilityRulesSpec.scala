@@ -45,7 +45,8 @@ class EligibilityRulesSpec extends UnitSpec {
         hasDisguisedRemuneration              = Some(false),
         hasCapacitor                          = Some(false),
         dmSpecialOfficeProcessingRequiredCDCS = Some(false),
-        isAnMtdCustomer                       = Some(false)
+        isAnMtdCustomer                       = Some(false),
+        dmSpecialOfficeProcessingRequiredCESA = Some(false)
       ).isEligible shouldBe true
     }
 
@@ -71,7 +72,8 @@ class EligibilityRulesSpec extends UnitSpec {
         hasDisguisedRemuneration              = None,
         hasCapacitor                          = None,
         dmSpecialOfficeProcessingRequiredCDCS = None,
-        isAnMtdCustomer                       = None
+        isAnMtdCustomer                       = None,
+        dmSpecialOfficeProcessingRequiredCESA = None
       ).isEligible shouldBe true
     }
 
