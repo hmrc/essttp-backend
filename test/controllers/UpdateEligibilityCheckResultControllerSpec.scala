@@ -111,6 +111,10 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
           testEpayeBta(tdAll.EpayeBta.journeyAfterInstalmentAmounts)(_.eligibilityCheckResult)(this)
         }
 
+        "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonths)(_.eligibilityCheckResult)(this)
+        }
+
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount)(_.eligibilityCheckResult)(this)
         }
@@ -200,6 +204,10 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
           testVatBta(tdAll.VatBta.journeyAfterInstalmentAmounts)(_.eligibilityCheckResult)(this)
         }
 
+        "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterCanPayWithinSixMonths)(_.eligibilityCheckResult)(this)
+        }
+
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterMonthlyPaymentAmount)(_.eligibilityCheckResult)(this)
         }
@@ -287,6 +295,10 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
 
         "RetrievedAffordabilityResult" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterInstalmentAmounts)(_.eligibilityCheckResult)(this)
+        }
+
+        "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterCanPayWithinSixMonths)(_.eligibilityCheckResult)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {

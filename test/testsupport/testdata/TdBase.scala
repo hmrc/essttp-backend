@@ -16,7 +16,7 @@
 
 package testsupport.testdata
 
-import essttp.journey.model.{CorrelationId, EmailVerificationAnswers, JourneyId, UpfrontPaymentAnswers, WhyCannotPayInFullAnswers}
+import essttp.journey.model.{CanPayWithinSixMonthsAnswers, CorrelationId, EmailVerificationAnswers, JourneyId, UpfrontPaymentAnswers, WhyCannotPayInFullAnswers}
 import essttp.rootmodel._
 import essttp.rootmodel.bank._
 import essttp.rootmodel.dates.InitialPaymentDate
@@ -112,6 +112,10 @@ trait TdBase {
   def extremeDatesWithUpfrontPayment: ExtremeDatesResponse = ExtremeDatesResponse(Some(initialPaymentDate), earliestPlanStartDate, latestPlanStartDate)
 
   def extremeDatesWithoutUpfrontPayment: ExtremeDatesResponse = extremeDatesWithUpfrontPayment.copy(initialPaymentDate = None)
+
+  val canPayWithinSixMonthsNotRequired = CanPayWithinSixMonthsAnswers.AnswerNotRequired
+
+  val canPayWithinSixMonthsNo = CanPayWithinSixMonthsAnswers.CanPayWithinSixMonths(value = false)
 
   def monthlyPaymentAmount: MonthlyPaymentAmount = MonthlyPaymentAmount(AmountInPence(20000))
 

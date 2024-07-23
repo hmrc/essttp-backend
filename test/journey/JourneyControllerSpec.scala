@@ -17,7 +17,7 @@
 package journey
 
 import essttp.journey.JourneyConnector
-import essttp.journey.model.{CorrelationId, JourneyId, SjResponse}
+import essttp.journey.model.{CorrelationId, JourneyId, SjResponse, Stage}
 import essttp.rootmodel.IsEmailAddressRequired
 import paymentsEmailVerification.models.EmailVerificationResult
 import play.api.mvc.Request
@@ -27,7 +27,7 @@ import testsupport.testdata.TdAll
 class JourneyControllerSpec extends ItSpec {
 
   override val overrideConfig: Map[String, Any] = Map(
-    // test emptytax regime strings get ignored and don't blow up
+    // test empty tax regime strings get ignored and don't blow up
     "affordability.tax-regimes" -> Seq("")
   )
 
@@ -46,6 +46,7 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateDayOfMonth]" +
       "[UpdateStartDatesResponse]" +
       "[UpdateAffordableQuotes]" +
+      "[UpdateCanPayWithinSixMonths]" +
       "[UpdateSelectedPaymentPlan]" +
       "[UpdateHasCheckedPaymentPlan]" +
       "[UpdateEnteredDetailsAboutBankAccount]" +
@@ -99,6 +100,10 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.EpayeBta.updateInstalmentAmountsRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterInstalmentAmounts
 
+      /** Update CanPayWithinSixMonths */
+      journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayWithinSixMonths
+
       /** Update MonthlyPaymentAmount */
       journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateMonthlyPaymentAmountRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount
@@ -151,7 +156,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeBta.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 42)
+      verifyCommonActions(numberOfAuthCalls = 44)
     }
 
     s"[GovUk][Happy path with upfront payment]$epayeTestNameJourneyStages" in {
@@ -196,6 +201,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update AffordabilityResult */
       journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.EpayeGovUk.updateInstalmentAmountsRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterInstalmentAmounts
+
+      /** Update CanPayWithinSixMonths */
+      journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterCanPayWithinSixMonths
 
       /** Update MonthlyPaymentAmount */
       journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.EpayeGovUk.updateMonthlyPaymentAmountRequest()).futureValue
@@ -249,7 +258,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeGovUk.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 42)
+      verifyCommonActions(numberOfAuthCalls = 44)
     }
 
     s"[DetachedUrl][Happy path with upfront payment]$epayeTestNameJourneyStages" in {
@@ -294,6 +303,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update AffordabilityResult */
       journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateInstalmentAmountsRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterInstalmentAmounts
+
+      /** Update CanPayWithinSixMonths */
+      journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterCanPayWithinSixMonths
 
       /** Update MonthlyPaymentAmount */
       journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateMonthlyPaymentAmountRequest()).futureValue
@@ -347,7 +360,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 42)
+      verifyCommonActions(numberOfAuthCalls = 44)
     }
 
     s"[EpayeService][Happy path with upfront payment]$epayeTestNameJourneyStages" in {
@@ -392,6 +405,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update AffordabilityResult */
       journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.EpayeEpayeService.updateInstalmentAmountsRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterInstalmentAmounts
+
+      /** Update CanPayWithinSixMonths */
+      journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterCanPayWithinSixMonths
 
       /** Update MonthlyPaymentAmount */
       journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.EpayeEpayeService.updateMonthlyPaymentAmountRequest()).futureValue
@@ -445,7 +462,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeEpayeService.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 42)
+      verifyCommonActions(numberOfAuthCalls = 44)
     }
   }
 
@@ -511,6 +528,10 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.VatBta.updateInstalmentAmountsRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterInstalmentAmounts
 
+      /** Update CanPayWithinSixMonths */
+      journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterCanPayWithinSixMonths
+
       /** Update MonthlyPaymentAmount */
       journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.VatBta.updateMonthlyPaymentAmountRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterMonthlyPaymentAmount
@@ -563,7 +584,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatBta.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 42)
+      verifyCommonActions(numberOfAuthCalls = 44)
     }
 
     s"[GovUk]$vatTestNameJourneyStages" in {
@@ -606,6 +627,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update AffordabilityResult */
       journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.VatGovUk.updateInstalmentAmountsRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterInstalmentAmounts
+
+      /** Update CanPayWithinSixMonths */
+      journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterCanPayWithinSixMonths
 
       /** Update MonthlyPaymentAmount */
       journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.VatGovUk.updateMonthlyPaymentAmountRequest()).futureValue
@@ -659,7 +684,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatGovUk.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 42)
+      verifyCommonActions(numberOfAuthCalls = 44)
     }
 
     s"[DetachedUrl]$vatTestNameJourneyStages" in {
@@ -702,6 +727,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update AffordabilityResult */
       journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.VatDetachedUrl.updateInstalmentAmountsRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterInstalmentAmounts
+
+      /** Update CanPayWithinSixMonths */
+      journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterCanPayWithinSixMonths
 
       /** Update MonthlyPaymentAmount */
       journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.VatDetachedUrl.updateMonthlyPaymentAmountRequest()).futureValue
@@ -755,7 +784,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatDetachedUrl.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 42)
+      verifyCommonActions(numberOfAuthCalls = 44)
     }
 
     s"[VatService]$vatTestNameJourneyStages" in {
@@ -798,6 +827,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update AffordabilityResult */
       journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.VatVatService.updateInstalmentAmountsRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterInstalmentAmounts
+
+      /** Update CanPayWithinSixMonths */
+      journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterCanPayWithinSixMonths
 
       /** Update MonthlyPaymentAmount */
       journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.VatVatService.updateMonthlyPaymentAmountRequest()).futureValue
@@ -851,7 +884,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatVatService.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 42)
+      verifyCommonActions(numberOfAuthCalls = 44)
     }
 
     s"[VatPenalties]$vatTestNameJourneyStages" in {
@@ -894,6 +927,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update AffordabilityResult */
       journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.VatVatPenalties.updateInstalmentAmountsRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterInstalmentAmounts
+
+      /** Update CanPayWithinSixMonths */
+      journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterCanPayWithinSixMonths
 
       /** Update MonthlyPaymentAmount */
       journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.VatVatPenalties.updateMonthlyPaymentAmountRequest()).futureValue
@@ -947,7 +984,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatVatPenalties.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 42)
+      verifyCommonActions(numberOfAuthCalls = 44)
     }
   }
 
@@ -1013,6 +1050,10 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.SaBta.updateInstalmentAmountsRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterInstalmentAmounts
 
+      /** Update CanPayWithinSixMonths */
+      journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterCanPayWithinSixMonths
+
       /** Update MonthlyPaymentAmount */
       journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.SaBta.updateMonthlyPaymentAmountRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterMonthlyPaymentAmount
@@ -1065,7 +1106,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaBta.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 42)
+      verifyCommonActions(numberOfAuthCalls = 44)
     }
 
     s"[Pta]$saTestNameJourneyStages" in {
@@ -1108,6 +1149,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update AffordabilityResult */
       journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.SaPta.updateInstalmentAmountsRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterInstalmentAmounts
+
+      /** Update CanPayWithinSixMonths */
+      journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterCanPayWithinSixMonths
 
       /** Update MonthlyPaymentAmount */
       journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.SaPta.updateMonthlyPaymentAmountRequest()).futureValue
@@ -1161,7 +1206,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaPta.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 42)
+      verifyCommonActions(numberOfAuthCalls = 44)
     }
 
     s"[Mobile]$saTestNameJourneyStages" in {
@@ -1204,6 +1249,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update AffordabilityResult */
       journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.SaMobile.updateInstalmentAmountsRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterInstalmentAmounts
+
+      /** Update CanPayWithinSixMonths */
+      journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterCanPayWithinSixMonths
 
       /** Update MonthlyPaymentAmount */
       journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.SaMobile.updateMonthlyPaymentAmountRequest()).futureValue
@@ -1257,7 +1306,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaMobile.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 42)
+      verifyCommonActions(numberOfAuthCalls = 44)
     }
 
     s"[GovUk]$saTestNameJourneyStages" in {
@@ -1300,6 +1349,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update AffordabilityResult */
       journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.SaGovUk.updateInstalmentAmountsRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterInstalmentAmounts
+
+      /** Update CanPayWithinSixMonths */
+      journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterCanPayWithinSixMonths
 
       /** Update MonthlyPaymentAmount */
       journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.SaGovUk.updateMonthlyPaymentAmountRequest()).futureValue
@@ -1353,7 +1406,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaGovUk.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 42)
+      verifyCommonActions(numberOfAuthCalls = 44)
     }
 
     s"[DetachedUrl]$saTestNameJourneyStages" in {
@@ -1396,6 +1449,10 @@ class JourneyControllerSpec extends ItSpec {
       /** Update AffordabilityResult */
       journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.SaDetachedUrl.updateInstalmentAmountsRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterInstalmentAmounts
+
+      /** Update CanPayWithinSixMonths */
+      journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterCanPayWithinSixMonths
 
       /** Update MonthlyPaymentAmount */
       journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.SaDetachedUrl.updateMonthlyPaymentAmountRequest()).futureValue
@@ -1449,7 +1506,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaDetachedUrl.updateArrangementRequest()).futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 42)
+      verifyCommonActions(numberOfAuthCalls = 44)
     }
 
   }
@@ -1476,89 +1533,120 @@ class JourneyControllerAffordabilityEnabledSpec extends ItSpec {
 
     /** Start journey */
     response shouldBe tdAll.SaBta.sjResponse
-    journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterStarted.copy(affordabilityEnabled = Some(true))
+    journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterStarted
+      .copy(affordabilityEnabled = Some(true))
 
     /** Update tax id */
     journeyConnector.updateTaxId(tdAll.journeyId, tdAll.SaBta.updateTaxIdRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterDetermineTaxIds.copy(affordabilityEnabled = Some(true))
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterDetermineTaxIds
+      .copy(affordabilityEnabled = Some(true))
 
     /** Update eligibility result * */
     journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.SaBta.updateEligibilityCheckRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEligibilityCheckEligible.copy(affordabilityEnabled = Some(true))
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEligibilityCheckEligible
+      .copy(affordabilityEnabled = Some(true))
 
     /** Update why cannot pay in full */
     journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullRequired).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterWhyCannotPayInFullRequired.copy(affordabilityEnabled = Some(true))
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterWhyCannotPayInFullRequired
+      .copy(affordabilityEnabled = Some(true))
 
     /** Update CanPayUpfront */
     journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.SaBta.updateCanPayUpfrontYesRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterCanPayUpfrontYes.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterCanPayUpfrontYes
+      .copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
 
     /** Update UpfrontPaymentAmount */
     journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.SaBta.updateUpfrontPaymentAmountRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterUpfrontPaymentAmount.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterUpfrontPaymentAmount
+      .copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
 
     /** Update ExtremeDates */
     journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.SaBta.updateExtremeDatesRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterExtremeDates.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterExtremeDates
+      .copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
 
     /** Update AffordabilityResult */
     journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.SaBta.updateInstalmentAmountsRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterInstalmentAmounts.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterInstalmentAmounts
+      .copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+
+    /** Update CanPayWithinSixMonths */
+    journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNo).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterCanPayWithinSixMonths
+      .copy(
+        affordabilityEnabled         = Some(true),
+        whyCannotPayInFullAnswers    = tdAll.whyCannotPayInFullRequired,
+        canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo,
+        stage                        = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired
+      )
 
     /** Update MonthlyPaymentAmount */
     journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.SaBta.updateMonthlyPaymentAmountRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterMonthlyPaymentAmount.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterMonthlyPaymentAmount
+      .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update DayOfMonth */
     journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.SaBta.updateDayOfMonthRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterDayOfMonth.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterDayOfMonth
+      .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update StartDates */
     journeyConnector.updateStartDates(tdAll.journeyId, tdAll.SaBta.updateStartDatesResponse()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterStartDatesResponse.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterStartDatesResponse
+      .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update AffordableQuotes */
     journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.SaBta.updateAffordableQuotesResponse()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterAffordableQuotesResponse.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterAffordableQuotesResponse
+      .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Chosen Instalment plan */
     journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.SaBta.updateSelectedPaymentPlanRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSelectedPaymentPlan.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSelectedPaymentPlan
+      .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Checked Instalment plan */
     journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterCheckedPaymentPlan.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterCheckedPaymentPlan
+      .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Details about Bank Account */
     journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SaBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true).copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+      .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Direct debit details */
     journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SaBta.updateDirectDebitDetailsRequest).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDirectDebitDetails().copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDirectDebitDetails()
+      .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Confirm Direct debit details */
     journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterConfirmedDirectDebitDetails.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterConfirmedDirectDebitDetails
+      .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Agreed terms and conditions */
     journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true).copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+      .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Email Address */
     journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSelectedEmail.copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSelectedEmail
+      .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Email Verification Status */
     journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Verified).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified).copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+      .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Arrangement (journey completed) */
     journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaBta.updateArrangementRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true).copy(affordabilityEnabled      = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+      .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
-    verifyCommonActions(numberOfAuthCalls = 42)
+    verifyCommonActions(numberOfAuthCalls = 44)
   }
 
 }

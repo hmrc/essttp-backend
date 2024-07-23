@@ -132,6 +132,13 @@ class UpdateWhyCannotPayInFullController @Inject() (
         case j: Sa.RetrievedAffordabilityResult =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
+        case j: Epaye.ObtainedCanPayWithinSixMonthsAnswers =>
+          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
+        case j: Vat.ObtainedCanPayWithinSixMonthsAnswers =>
+          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
+        case j: Sa.ObtainedCanPayWithinSixMonthsAnswers =>
+          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
+
         case j: Epaye.EnteredMonthlyPaymentAmount =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Vat.EnteredMonthlyPaymentAmount =>
