@@ -18,7 +18,7 @@ package essttp.rootmodel.ttp.eligibility
 
 import play.api.libs.json.{Format, Json}
 
-final case class TransitionToCDCS(value: Boolean)
+final case class TransitionToCDCS(value: Boolean) extends AnyVal
 
 object TransitionToCDCS {
   implicit val format: Format[TransitionToCDCS] = Json.valueFormat[TransitionToCDCS]

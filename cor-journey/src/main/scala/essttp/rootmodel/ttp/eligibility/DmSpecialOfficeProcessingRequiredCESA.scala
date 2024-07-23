@@ -18,8 +18,8 @@ package essttp.rootmodel.ttp.eligibility
 
 import play.api.libs.json.{Format, Json}
 
-final case class dmSpecialOfficeProcessingRequiredCESA(value: Boolean) extends AnyVal
+final case class DmSpecialOfficeProcessingRequiredCESA(value: Boolean) extends AnyVal
 
-object dmSpecialOfficeProcessingRequiredCESA {
-  implicit val format: Format[dmSpecialOfficeProcessingRequiredCESA] = Json.valueFormat
+object DmSpecialOfficeProcessingRequiredCESA {
+  implicit val format: Format[DmSpecialOfficeProcessingRequiredCESA] = Json.valueFormat
 }

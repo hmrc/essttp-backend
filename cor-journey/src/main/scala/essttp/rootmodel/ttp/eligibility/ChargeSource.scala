@@ -18,7 +18,7 @@ package essttp.rootmodel.ttp.eligibility
 
 import play.api.libs.json.{Format, Json}
 
-final case class ChargeSource(value: String)
+final case class ChargeSource(value: String) extends AnyVal
 
 object ChargeSource {
   implicit val format: Format[ChargeSource] = Json.valueFormat[ChargeSource]
