@@ -89,14 +89,16 @@ trait TdEpaye {
             isInterestBearingCharge       = None,
             useChargeReference            = None,
             chargeBeforeMaxAccountingDate = None,
-            ddInProgress                  = Some(DdInProgress(value = false))
+            ddInProgress                  = Some(DdInProgress(value = false)),
+            chargeSource                  = None
           )
         )
       )
     ),
     regimeDigitalCorrespondence     = None,
     futureChargeLiabilitiesExcluded = false,
-    chargeTypesExcluded             = None
+    chargeTypesExcluded             = None,
+    transitionToCDCS                = None
   )
 
   def ineligibleEligibilityCheckResultEpaye: EligibilityCheckResult = eligibleEligibilityCheckResultEpaye.copy(

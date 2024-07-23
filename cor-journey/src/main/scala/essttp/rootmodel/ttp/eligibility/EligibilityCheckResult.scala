@@ -41,7 +41,8 @@ final case class EligibilityCheckResult(
     chargeTypesExcluded:             Option[Boolean],
     futureChargeLiabilitiesExcluded: Boolean,
     invalidSignals:                  Option[List[InvalidSignals]],
-    customerType:                    Option[CustomerType]
+    customerType:                    Option[CustomerType],
+    transitionToCDCS:                Option[TransitionToCDCS]
 )
 
 object EligibilityCheckResult {
