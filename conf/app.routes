@@ -35,6 +35,7 @@ POST        /journey/:journeyId/update-upfront-payment-amount               jour
 POST        /journey/:journeyId/update-extreme-dates                        journey.UpdateDatesController.updateExtremeDates(journeyId: JourneyId)
 
 POST        /journey/:journeyId/update-affordability-result                 journey.UpdateAffordabilityResultController.updateAffordabilityResult(journeyId: JourneyId)
+POST        /journey/:journeyId/update-can-pay-within-six-months            journey.UpdateCanPayWithinSixMonthsController.updateCanPayWithinSixMonthsAnswers(journeyId: JourneyId)
 POST        /journey/:journeyId/update-monthly-payment-amount               journey.UpdateMonthlyPaymentAmountController.updateMonthlyPaymentAmount(journeyId: JourneyId)
 POST        /journey/:journeyId/update-day-of-month                         journey.UpdateDayOfMonthController.updateDayOfMonth(journeyId: JourneyId)
 

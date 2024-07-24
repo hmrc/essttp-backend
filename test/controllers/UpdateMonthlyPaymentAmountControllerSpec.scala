@@ -25,7 +25,7 @@ import testsupport.testdata.TdAll
 class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-monthly-payment-amount" - {
-    "should throw Bad Request when Journey is in a stage [BeforeRetrievedAffordabilityResult]" in new JourneyItTest {
+    "should throw Bad Request when Journey is in a stage [BeforeObtainedCanPayWithinSixMonths]" in new JourneyItTest {
       stubCommonActions()
 
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
@@ -39,7 +39,7 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
 
       "Epaye" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.EpayeBta.journeyAfterInstalmentAmounts,
+          tdAll.EpayeBta.journeyAfterCanPayWithinSixMonths,
           TdAll.EpayeBta.updateMonthlyPaymentAmountRequest()
         )(
             journeyConnector.updateMonthlyPaymentAmount,
@@ -49,7 +49,7 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
 
       "Vat" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.VatBta.journeyAfterInstalmentAmounts,
+          tdAll.VatBta.journeyAfterCanPayWithinSixMonths,
           TdAll.VatBta.updateMonthlyPaymentAmountRequest()
         )(
             journeyConnector.updateMonthlyPaymentAmount,
@@ -59,7 +59,7 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
 
       "Sa" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SaBta.journeyAfterInstalmentAmounts,
+          tdAll.SaBta.journeyAfterCanPayWithinSixMonths,
           TdAll.SaBta.updateMonthlyPaymentAmountRequest()
         )(
             journeyConnector.updateMonthlyPaymentAmount,

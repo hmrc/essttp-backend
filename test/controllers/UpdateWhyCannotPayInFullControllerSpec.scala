@@ -129,6 +129,13 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
           )(this)
         }
 
+        "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonths)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount)(
             _.whyCannotPayInFullAnswers,
@@ -271,6 +278,13 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
           )(this)
         }
 
+        "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterCanPayWithinSixMonths)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterMonthlyPaymentAmount)(
             _.whyCannotPayInFullAnswers,
@@ -408,6 +422,13 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
 
         "RetrievedAffordabilityResult" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterInstalmentAmounts)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterCanPayWithinSixMonths)(
             _.whyCannotPayInFullAnswers,
             _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
           )(this)

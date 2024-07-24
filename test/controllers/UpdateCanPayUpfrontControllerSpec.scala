@@ -110,6 +110,10 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
           testEpayeBta(tdAll.EpayeBta.journeyAfterInstalmentAmounts)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
+        "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonths)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
@@ -195,6 +199,10 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
           testVatBta(tdAll.VatBta.journeyAfterInstalmentAmounts)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
+        "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterCanPayWithinSixMonths)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterMonthlyPaymentAmount)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
@@ -247,12 +255,12 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
 
       "Sa when the current stage is" - {
 
-          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => CanPayUpfront)(context: JourneyItTest): Unit = {
+          def testSaBta[J <: Journey](initialJourney: J)(existingValue: J => CanPayUpfront)(context: JourneyItTest): Unit = {
             val differentValue = CanPayUpfront(!existingValue(initialJourney).value)
 
             val expectedUpdatedJourney =
-              if (differentValue.value) context.tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
-              else context.tdAll.EpayeBta.journeyAfterCanPayUpfrontNo
+              if (differentValue.value) context.tdAll.SaBta.journeyAfterCanPayUpfrontYes
+              else context.tdAll.SaBta.journeyAfterCanPayUpfrontNo
 
             testUpdateWithExistingValue(initialJourney)(
               _.journeyId,
@@ -265,67 +273,71 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
           }
 
         "AnsweredCanPayUpfront" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayUpfrontNo)(_.canPayUpfront)(this)
+          testSaBta(tdAll.SaBta.journeyAfterCanPayUpfrontNo)(_.canPayUpfront)(this)
         }
 
         "EnteredUpfrontPaymentAmount" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount)(_.canPayUpfront)(this)
+          testSaBta(tdAll.SaBta.journeyAfterUpfrontPaymentAmount)(_.canPayUpfront)(this)
         }
 
         "RetrievedExtremeDates" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterExtremeDates)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testSaBta(tdAll.SaBta.journeyAfterExtremeDates)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "RetrievedAffordabilityResult" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterInstalmentAmounts)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testSaBta(tdAll.SaBta.journeyAfterInstalmentAmounts)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterCanPayWithinSixMonths)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testSaBta(tdAll.SaBta.journeyAfterMonthlyPaymentAmount)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "EnteredDayOfMonth" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterDayOfMonth)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testSaBta(tdAll.SaBta.journeyAfterDayOfMonth)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "RetrievedStartDates" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterStartDatesResponse)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testSaBta(tdAll.SaBta.journeyAfterStartDatesResponse)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "RetrievedAffordableQuotes" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterAffordableQuotesResponse)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testSaBta(tdAll.SaBta.journeyAfterAffordableQuotesResponse)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "ChosenPaymentPlan" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedPaymentPlan)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testSaBta(tdAll.SaBta.journeyAfterSelectedPaymentPlan)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlan)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testSaBta(tdAll.SaBta.journeyAfterCheckedPaymentPlan)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails())(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetails())(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testSaBta(tdAll.SaBta.journeyAfterConfirmedDirectDebitDetails)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmail)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testSaBta(tdAll.SaBta.journeyAfterSelectedEmail)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
       }

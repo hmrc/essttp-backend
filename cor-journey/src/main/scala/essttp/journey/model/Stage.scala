@@ -157,6 +157,18 @@ object Stage {
     case object RetrievedAffordabilityResult extends AfterAffordabilityResult
   }
 
+  sealed trait AfterCanPayWithinSixMonthsAnswers extends Stage with EnumEntry
+
+  object AfterCanPayWithinSixMonthsAnswers extends Enum[AfterCanPayWithinSixMonthsAnswers] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
+    implicit val format: OFormat[AfterCanPayWithinSixMonthsAnswers] = derived.oformat[AfterCanPayWithinSixMonthsAnswers]()
+    val values: immutable.IndexedSeq[AfterCanPayWithinSixMonthsAnswers] = findValues
+
+    case object AnswerRequired extends AfterCanPayWithinSixMonthsAnswers
+
+    case object AnswerNotRequired extends AfterCanPayWithinSixMonthsAnswers
+  }
+
   sealed trait AfterMonthlyPaymentAmount extends Stage with EnumEntry
 
   object AfterMonthlyPaymentAmount extends Enum[AfterMonthlyPaymentAmount] {

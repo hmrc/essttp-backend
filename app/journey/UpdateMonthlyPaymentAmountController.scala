@@ -42,29 +42,29 @@ class UpdateMonthlyPaymentAmountController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       newJourney <- journey match {
-        case j: Journey.BeforeRetrievedAffordabilityResult  => Errors.throwBadRequestExceptionF(s"UpdateMonthlyPaymentAmount update is not possible in that state: [${j.stage.toString}]")
-        case j: Journey.Stages.RetrievedAffordabilityResult => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterEnteredMonthlyPaymentAmount    => updateJourneyWithExistingValue(j, request.body)
+        case j: Journey.BeforeCanPayWithinSixMonthsAnswers          => Errors.throwBadRequestExceptionF(s"UpdateMonthlyPaymentAmount update is not possible in that state: [${j.stage.toString}]")
+        case j: Journey.Stages.ObtainedCanPayWithinSixMonthsAnswers => updateJourneyWithNewValue(j, request.body)
+        case j: Journey.AfterEnteredMonthlyPaymentAmount            => updateJourneyWithExistingValue(j, request.body)
       }
     } yield Ok(newJourney.json)
   }
 
   private def updateJourneyWithNewValue(
-      journey:              Stages.RetrievedAffordabilityResult,
+      journey:              Stages.ObtainedCanPayWithinSixMonthsAnswers,
       monthlyPaymentAmount: MonthlyPaymentAmount
   )(implicit request: Request[_]): Future[Journey] = {
     val newJourney: Journey.AfterEnteredMonthlyPaymentAmount = journey match {
-      case j: Epaye.RetrievedAffordabilityResult =>
+      case j: Epaye.ObtainedCanPayWithinSixMonthsAnswers =>
         j.into[Epaye.EnteredMonthlyPaymentAmount]
           .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
           .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
           .transform
-      case j: Vat.RetrievedAffordabilityResult =>
+      case j: Vat.ObtainedCanPayWithinSixMonthsAnswers =>
         j.into[Vat.EnteredMonthlyPaymentAmount]
           .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
           .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
           .transform
-      case j: Sa.RetrievedAffordabilityResult =>
+      case j: Sa.ObtainedCanPayWithinSixMonthsAnswers =>
         j.into[Sa.EnteredMonthlyPaymentAmount]
           .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
           .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)

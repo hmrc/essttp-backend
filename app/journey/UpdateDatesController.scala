@@ -125,6 +125,22 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
 
+        case j: Journey.Epaye.ObtainedCanPayWithinSixMonthsAnswers =>
+          j.into[Journey.Epaye.RetrievedExtremeDates]
+            .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+            .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+            .transform
+        case j: Journey.Vat.ObtainedCanPayWithinSixMonthsAnswers =>
+          j.into[Journey.Vat.RetrievedExtremeDates]
+            .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+            .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+            .transform
+        case j: Journey.Sa.ObtainedCanPayWithinSixMonthsAnswers =>
+          j.into[Journey.Sa.RetrievedExtremeDates]
+            .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+            .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+            .transform
+
         case j: Journey.Epaye.EnteredMonthlyPaymentAmount =>
           j.into[Journey.Epaye.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
