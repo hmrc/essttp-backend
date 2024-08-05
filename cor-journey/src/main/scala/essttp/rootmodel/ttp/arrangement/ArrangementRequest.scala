@@ -17,7 +17,7 @@
 package essttp.rootmodel.ttp.arrangement
 
 import essttp.crypto.CryptoFormat
-import essttp.rootmodel.ttp.PaymentPlanFrequency
+import essttp.rootmodel.ttp.{PaymentPlanFrequency, RegimeType}
 import essttp.rootmodel.ttp.affordablequotes.ChannelIdentifier
 import essttp.rootmodel.ttp.eligibility.{CustomerDetail, Identification, RegimeDigitalCorrespondence}
 import play.api.libs.json.{Json, OFormat}
