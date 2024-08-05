@@ -16,21 +16,39 @@
 
 package essttp.rootmodel
 
-import essttp.rootmodel.ttp.arrangement.RegimeType
+import essttp.rootmodel.ttp.RegimeType
 import play.api.libs.json.{JsString, Json}
 import testsupport.UnitSpec
 
 class RegimeTypeSpec extends UnitSpec {
 
-  "RegimeType should survive round trip de/serialisation" in {
-    Seq(
-      "PAYE" -> RegimeType("PAYE"),
-      "VAT" -> RegimeType("VAT")
-    ).foreach { rt =>
-        val jsValue = Json.toJson(rt._2)
-        jsValue shouldBe JsString(rt._1) withClue s"serialize ${rt.toString()}"
-        jsValue.as[RegimeType] shouldBe rt._2 withClue s"deserialize ${rt.toString()}"
+  "RegimeType should" - {
+    "survive round trip de/serialisation" in {
+      RegimeType.values.foreach{ regimeType =>
+        val expectedJsonString = regimeType match {
+          case RegimeType.EPAYE => "PAYE"
+          case RegimeType.VAT   => "VATC"
+          case RegimeType.SA    => "SA"
+        }
+
+        val jsValue = Json.toJson(regimeType)
+
+        jsValue shouldBe JsString(expectedJsonString) withClue s"serialize ${regimeType.toString}"
+        jsValue.as[RegimeType] shouldBe regimeType withClue s"deserialize ${regimeType.toString}"
       }
+    }
+
+    "have a method which converts from TaxRegime" in {
+      TaxRegime.values.foreach{ taxRegime =>
+        val expectedTaxRegime = taxRegime match {
+          case TaxRegime.Epaye => RegimeType.EPAYE
+          case TaxRegime.Vat   => RegimeType.VAT
+          case TaxRegime.Sa    => RegimeType.SA
+        }
+
+        RegimeType.fromTaxRegime(taxRegime) shouldBe expectedTaxRegime
+      }
+    }
   }
 
 }
