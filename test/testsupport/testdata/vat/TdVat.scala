@@ -40,6 +40,7 @@ trait TdVat {
     invalidSignals                  = None,
     customerPostcodes               = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate("2020-01-01"))),
     customerDetails                 = None,
+    addresses                       = None,
     customerType                    = None,
     regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
     paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,

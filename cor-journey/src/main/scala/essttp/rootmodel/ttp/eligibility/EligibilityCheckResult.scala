@@ -37,6 +37,7 @@ final case class EligibilityCheckResult(
     eligibilityRules:                EligibilityRules,
     chargeTypeAssessment:            List[ChargeTypeAssessment],
     customerDetails:                 Option[List[CustomerDetail]],
+    addresses:                       Option[List[Address]],
     regimeDigitalCorrespondence:     Option[RegimeDigitalCorrespondence],
     chargeTypesExcluded:             Option[Boolean],
     futureChargeLiabilitiesExcluded: Boolean,
@@ -51,7 +52,7 @@ object EligibilityCheckResult {
 
     def isEligible: Boolean = e.eligibilityStatus.eligibilityPass.value
 
-    def email: Option[Email] = e.customerDetails.flatMap(_.collectFirst{ case CustomerDetail(Some(email), _) => email })
+    def email: Option[Email] = e.customerDetails.flatMap(_.collectFirst{ case CustomerDetail(Some(email), _, _, _, _, _, _, _) => email })
 
   }
 
