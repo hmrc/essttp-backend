@@ -17,22 +17,22 @@
 package essttp.rootmodel.ttp.eligibility
 
 import essttp.crypto.CryptoFormat
-import essttp.rootmodel.Email
 import play.api.libs.json.{Format, Json}
 
-final case class CustomerDetail(
-    emailAddress:   Option[Email],
-    emailSource:    Option[EmailSource],
-    title:          Option[Title],
-    firstName:      Option[FirstName],
-    lastName:       Option[LastName],
-    dateOfBirth:    Option[DateOfBirth],
-    dateOfDeath:    Option[DateOfDeath],
-    districtNumber: Option[DistrictNumber]
+final case class Address(
+    addressType:     Option[AddressType],
+    addressLine1:    Option[AddressLine],
+    addressLine2:    Option[AddressLine],
+    addressLine3:    Option[AddressLine],
+    addressLine4:    Option[AddressLine],
+    rls:             Option[IsReturnedLetterService],
+    contactDetails:  Option[List[ContactDetail]],
+    postcode:        Option[Postcode],
+    country:         Option[Country],
+    postCodeHistory: Option[List[PostCodeHistory]]
 )
 
-object CustomerDetail {
+object Address {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): Format[CustomerDetail] = Json.format[CustomerDetail]
-
+  implicit def format(implicit cryptoFormat: CryptoFormat): Format[Address] = Json.format[Address]
 }
