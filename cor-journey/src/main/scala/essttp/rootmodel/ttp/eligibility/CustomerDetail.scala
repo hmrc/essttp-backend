@@ -20,6 +20,7 @@ import essttp.crypto.CryptoFormat
 import essttp.rootmodel.Email
 import play.api.libs.json.{Format, Json}
 
+//TODO OPS-12584 - Clean this up when TTP has implemented the changes to the Eligibility API. emailAddress and emailSource to be removed
 final case class CustomerDetail(
     emailAddress:   Option[Email],
     emailSource:    Option[EmailSource],
