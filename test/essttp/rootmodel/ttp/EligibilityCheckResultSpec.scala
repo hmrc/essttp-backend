@@ -17,7 +17,7 @@
 package essttp.rootmodel.ttp
 
 import essttp.rootmodel.Email
-import essttp.rootmodel.ttp.eligibility.CustomerDetail
+import essttp.rootmodel.ttp.eligibility.{Address, ContactDetail, CustomerDetail}
 import testsupport.UnitSpec
 import testsupport.testdata.TdAll
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
@@ -34,19 +34,30 @@ class EligibilityCheckResultSpec extends UnitSpec {
     "email when" - {
 
       "there are no emails" in {
-        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = None).email shouldBe None
-        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = Some(List.empty)).email shouldBe None
+        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = None, addresses = None).email shouldBe None
+        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = Some(List.empty), addresses = None).email shouldBe None
+        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = None, addresses = Some(List(Address(None, None, None, None, None, None, Some(List.empty), None, None, None)))).email shouldBe None
+        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = None, addresses = Some(List(Address(None, None, None, None, None, None, Some(List(ContactDetail(None, None, None, None, None))), None, None, None)))).email shouldBe None
       }
 
-      "there are emails" in {
+      "there are emails in customerDetails" in {
         val expectedEmail = Email(SensitiveString("abc@email.com"))
         TdAll.eligibleEligibilityCheckResultSa.copy(
           customerDetails = Some(List(
             CustomerDetail(None, None, None, None, None, None, None, None),
             CustomerDetail(Some(expectedEmail), None, None, None, None, None, None, None),
             CustomerDetail(Some(Email(SensitiveString("xyz@email.com"))), None, None, None, None, None, None, None)
-          ))
+          )), addresses = None
         ).email shouldBe Some(expectedEmail)
+      }
+
+      "there are no emails in customerDetails, but there are emails in addresses" in {
+        val expectedEmail = Email(SensitiveString("abc@email.com"))
+        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = None, addresses = Some(List(
+          Address(None, None, None, None, None, None, Some(List(ContactDetail(None, None, None, None, None))), None, None, None),
+          Address(None, None, None, None, None, None, Some(List(ContactDetail(None, None, None, Some(Email(SensitiveString("abc@email.com"))), None))), None, None, None),
+          Address(None, None, None, None, None, None, Some(List(ContactDetail(None, None, None, Some(Email(SensitiveString("xyz@email.com"))), None))), None, None, None)
+        ))).email shouldBe Some(expectedEmail)
       }
     }
 
