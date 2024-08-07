@@ -52,7 +52,23 @@ object EligibilityCheckResult {
 
     def isEligible: Boolean = e.eligibilityStatus.eligibilityPass.value
 
-    def email: Option[Email] = e.customerDetails.flatMap(_.collectFirst{ case CustomerDetail(Some(email), _, _, _, _, _, _, _) => email })
+    //TODO OPS-12584 - Clean this up when TTP has implemented the changes to the Eligibility API. The email address will be coming from the addresses field only
+    def email: Option[Email] = {
+      // Check for email in customerDetails
+      val emailFromCustomerDetails = e.customerDetails.flatMap(_.collectFirst{ case CustomerDetail(Some(email), _, _, _, _, _, _, _) => email })
+
+      // If not found in customerDetails, check in addresses' contactDetails
+      val emailFromAddresses = emailFromCustomerDetails.orElse {
+        e.addresses.flatMap { addresses =>
+          addresses
+            .flatMap(_.contactDetails.getOrElse(List.empty))
+            .collectFirst {
+              case ContactDetail(_, _, _, Some(emailAddress), _) => emailAddress
+            }
+        }
+      }
+      emailFromAddresses
+    }
 
   }
 

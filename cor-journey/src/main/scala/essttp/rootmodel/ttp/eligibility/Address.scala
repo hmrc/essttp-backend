@@ -19,6 +19,7 @@ package essttp.rootmodel.ttp.eligibility
 import essttp.crypto.CryptoFormat
 import play.api.libs.json.{Format, Json}
 
+//TODO OPS-12584 - Clean this up when TTP has implemented the changes to the Eligibility API. addressType will be required
 final case class Address(
     addressType:     Option[AddressType],
     addressLine1:    Option[AddressLine],
