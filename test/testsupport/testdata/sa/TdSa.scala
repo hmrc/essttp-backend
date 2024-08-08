@@ -24,6 +24,8 @@ import essttp.rootmodel.{AmountInPence, SaUtr}
 import testsupport.testdata.TdBase
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
+import java.time.LocalDate
+
 trait TdSa {
   dependencies: TdBase =>
 
@@ -44,7 +46,7 @@ trait TdSa {
         signalDescription = "Description"
       )
     )),
-    customerPostcodes               = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate("2020-01-01"))),
+    customerPostcodes               = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate(LocalDate.of(2020, 1, 1)))),
     customerDetails                 = None,
     addresses                       = None,
     customerType                    = Some(CustomerTypes.MTDITSA),
