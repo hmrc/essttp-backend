@@ -18,7 +18,9 @@ package essttp.rootmodel.ttp.eligibility
 
 import play.api.libs.json.{Format, Json}
 
-final case class PostcodeDate(value: String) extends AnyVal
+import java.time.LocalDate
+
+final case class PostcodeDate(value: LocalDate) extends AnyVal
 
 object PostcodeDate {
   implicit val format: Format[PostcodeDate] = Json.valueFormat[PostcodeDate]
