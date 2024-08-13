@@ -201,7 +201,7 @@ trait TdJourneyVatBta {
       instalmentAmounts         = dependencies.instalmentAmounts
     )
 
-    def journeyAfterCanPayWithinSixMonths: Journey.Vat.ObtainedCanPayWithinSixMonthsAnswers = Journey.Vat.ObtainedCanPayWithinSixMonthsAnswers(
+    def journeyAfterCanPayWithinSixMonthsNotRequired: Journey.Vat.ObtainedCanPayWithinSixMonthsAnswers = Journey.Vat.ObtainedCanPayWithinSixMonthsAnswers(
       _id                          = dependencies.journeyId,
       origin                       = Origins.Vat.Bta,
       createdOn                    = dependencies.createdOn,
@@ -217,6 +217,24 @@ trait TdJourneyVatBta {
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired
+    )
+
+    def journeyAfterCanPayWithinSixMonthsNo: Journey.Vat.ObtainedCanPayWithinSixMonthsAnswers = Journey.Vat.ObtainedCanPayWithinSixMonthsAnswers(
+      _id                          = dependencies.journeyId,
+      origin                       = Origins.Vat.Bta,
+      createdOn                    = dependencies.createdOn,
+      sjRequest                    = sjRequest,
+      sessionId                    = dependencies.sessionId,
+      stage                        = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerNotRequired,
+      affordabilityEnabled         = Some(true),
+      correlationId                = dependencies.correlationId,
+      taxId                        = vrn,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultVat(),
+      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts            = dependencies.instalmentAmounts,
+      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNo
     )
 
     def updateMonthlyPaymentAmountRequest(): MonthlyPaymentAmount = dependencies.monthlyPaymentAmount

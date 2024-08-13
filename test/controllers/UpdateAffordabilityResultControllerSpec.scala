@@ -90,7 +90,7 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
         }
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonths)(_.instalmentAmounts)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired)(_.instalmentAmounts)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -160,7 +160,7 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
         }
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterCanPayWithinSixMonths)(_.instalmentAmounts)(this)
+          testVatBta(tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired)(_.instalmentAmounts)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {

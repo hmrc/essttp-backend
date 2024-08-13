@@ -58,3 +58,6 @@ POST        /journey/:journeyId/update-arrangement                          jour
 # dates
 POST        /start-dates                                                    dates.DatesController.startDates
 POST        /extreme-dates                                                  dates.DatesController.extremeDates
+
+# pega
+POST        /pega-case/:journeyId                                           controllers.PegaController.startCase(journeyId: JourneyId)

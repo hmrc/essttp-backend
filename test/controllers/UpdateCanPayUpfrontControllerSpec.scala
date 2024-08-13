@@ -111,7 +111,7 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
         }
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonths)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -200,7 +200,7 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
         }
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterCanPayWithinSixMonths)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testVatBta(tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {

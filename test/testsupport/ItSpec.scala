@@ -26,7 +26,7 @@ import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
-import play.api.mvc.Request
+import play.api.mvc.{AnyContent, Request}
 import play.api.test.{DefaultTestServerFactory, FakeRequest, RunningServer}
 import play.api.{Application, Mode}
 import play.core.server.ServerConfig
@@ -132,6 +132,7 @@ trait ItSpec
     "microservice.services.essttp-backend.port" -> ItSpec.testServerPort,
     "microservice.services.auth.port" -> WireMockSupport.port,
     "microservice.services.date-calculator.port" -> WireMockSupport.port,
+    "microservice.services.pega.port" -> WireMockSupport.port,
     "logger.root" -> "INFO",
     "logger.application" -> "INFO",
     "logger.connector" -> "INFO"
@@ -158,7 +159,7 @@ trait ItSpec
       override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
-    implicit val request: Request[_] = tdAll.request.withHeaders("Authorization" -> TdAll.authorization.value)
+    implicit val request: Request[AnyContent] = tdAll.request.withHeaders("Authorization" -> TdAll.authorization.value)
 
     lazy val journeyRepo: JourneyRepo = app.injector.instanceOf[JourneyRepo]
 

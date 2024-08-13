@@ -102,7 +102,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update CanPayWithinSixMonths */
       journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayWithinSixMonths
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired
 
       /** Update MonthlyPaymentAmount */
       journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateMonthlyPaymentAmountRequest()).futureValue
@@ -530,7 +530,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update CanPayWithinSixMonths */
       journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterCanPayWithinSixMonths
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired
 
       /** Update MonthlyPaymentAmount */
       journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.VatBta.updateMonthlyPaymentAmountRequest()).futureValue

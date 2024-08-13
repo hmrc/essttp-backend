@@ -39,7 +39,7 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
 
       "Epaye" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.EpayeBta.journeyAfterCanPayWithinSixMonths,
+          tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired,
           TdAll.EpayeBta.updateMonthlyPaymentAmountRequest()
         )(
             journeyConnector.updateMonthlyPaymentAmount,
@@ -49,7 +49,7 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
 
       "Vat" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.VatBta.journeyAfterCanPayWithinSixMonths,
+          tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired,
           TdAll.VatBta.updateMonthlyPaymentAmountRequest()
         )(
             journeyConnector.updateMonthlyPaymentAmount,
