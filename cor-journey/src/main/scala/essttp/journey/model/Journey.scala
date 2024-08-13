@@ -21,6 +21,7 @@ import essttp.rootmodel._
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
+import essttp.rootmodel.pega.StartCaseResponse
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
@@ -146,6 +147,12 @@ object Journey {
     def canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers
   }
 
+  sealed trait BeforeStartedPegaCase extends Journey with Stages.JourneyStage
+
+  sealed trait AfterStartedPegaCase extends Journey {
+    def startCaseResponse: StartCaseResponse
+  }
+
   sealed trait BeforeEnteredMonthlyPaymentAmount extends Journey with Stages.JourneyStage
 
   sealed trait AfterEnteredMonthlyPaymentAmount extends Journey {
@@ -253,6 +260,7 @@ object Journey {
       with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
       with BeforeCanPayWithinSixMonthsAnswers
+      with BeforeStartedPegaCase
       with BeforeEnteredMonthlyPaymentAmount
       with BeforeEnteredDayOfMonth
       with BeforeStartDatesResponse
@@ -283,6 +291,7 @@ object Journey {
       with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
       with BeforeCanPayWithinSixMonthsAnswers
+      with BeforeStartedPegaCase
       with BeforeEnteredMonthlyPaymentAmount
       with BeforeEnteredDayOfMonth
       with BeforeStartDatesResponse
@@ -313,6 +322,7 @@ object Journey {
       with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
       with BeforeCanPayWithinSixMonthsAnswers
+      with BeforeStartedPegaCase
       with BeforeEnteredMonthlyPaymentAmount
       with BeforeEnteredDayOfMonth
       with BeforeStartDatesResponse
@@ -343,6 +353,7 @@ object Journey {
       with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
       with BeforeCanPayWithinSixMonthsAnswers
+      with BeforeStartedPegaCase
       with BeforeEnteredMonthlyPaymentAmount
       with BeforeEnteredDayOfMonth
       with BeforeStartDatesResponse
@@ -373,6 +384,7 @@ object Journey {
       with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
       with BeforeCanPayWithinSixMonthsAnswers
+      with BeforeStartedPegaCase
       with BeforeEnteredMonthlyPaymentAmount
       with BeforeEnteredDayOfMonth
       with BeforeStartDatesResponse
@@ -403,6 +415,7 @@ object Journey {
       with BeforeExtremeDatesResponse
       with BeforeRetrievedAffordabilityResult
       with BeforeCanPayWithinSixMonthsAnswers
+      with BeforeStartedPegaCase
       with BeforeEnteredMonthlyPaymentAmount
       with BeforeEnteredDayOfMonth
       with BeforeStartDatesResponse
@@ -460,6 +473,7 @@ object Journey {
       with AfterRetrievedAffordabilityResult
       with BeforeCanPayWithinSixMonthsAnswers
       with BeforeEnteredMonthlyPaymentAmount
+      with BeforeStartedPegaCase
       with BeforeEnteredDayOfMonth
       with BeforeStartDatesResponse
       with BeforeAffordableQuotesResponse
@@ -488,6 +502,7 @@ object Journey {
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
       with BeforeEnteredMonthlyPaymentAmount
+      with BeforeStartedPegaCase
       with BeforeEnteredDayOfMonth
       with BeforeStartDatesResponse
       with BeforeAffordableQuotesResponse
@@ -503,6 +518,35 @@ object Journey {
       with BeforeArrangementSubmitted {
       Errors.sanityCheck(Stage.AfterCanPayWithinSixMonthsAnswers.values.contains(stage), sanityMessage)
       def stage: Stage.AfterCanPayWithinSixMonthsAnswers
+    }
+
+    sealed trait StartedPegaCase
+      extends Journey
+      with JourneyStage
+      with AfterComputedTaxId
+      with AfterEligibilityChecked
+      with AfterWhyCannotPayInFullAnswers
+      with AfterUpfrontPaymentAnswers
+      with AfterExtremeDatesResponse
+      with AfterRetrievedAffordabilityResult
+      with AfterCanPayWithinSixMonthsAnswers
+      with AfterStartedPegaCase
+      with BeforeEnteredMonthlyPaymentAmount
+      with BeforeEnteredDayOfMonth
+      with BeforeStartDatesResponse
+      with BeforeAffordableQuotesResponse
+      with BeforeSelectedPaymentPlan
+      with BeforeCheckedPaymentPlan
+      with BeforeEnteredDetailsAboutBankAccount
+      with BeforeEnteredDirectDebitDetails
+      with BeforeConfirmedDirectDebitDetails
+      with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailAddressVerificationResult
+      with BeforeEmailVerificationPhase
+      with BeforeArrangementSubmitted {
+      Errors.sanityCheck(Stage.AfterStartedPegaCase.values.contains(stage), sanityMessage)
+      def stage: Stage.AfterStartedPegaCase
     }
 
     sealed trait EnteredMonthlyPaymentAmount
@@ -1078,6 +1122,32 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.ObtainedCanPayWithinSixMonthsAnswers
+      with Journey.Epaye
+
+    /**
+     * [[Journey]] after started a PEGA case
+     * Epaye
+     */
+    final case class StartedPegaCase(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Epaye,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Epaye,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterStartedPegaCase,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        EmpRef,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val startCaseResponse:            StartCaseResponse
+    )
+      extends Journey
+      with Journey.Stages.StartedPegaCase
       with Journey.Epaye
 
     /**
@@ -1696,6 +1766,32 @@ object Journey {
       with Journey.Vat
 
     /**
+     * [[Journey]] after started a PEGA case
+     * Vat
+     */
+    final case class StartedPegaCase(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Vat,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Vat,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterStartedPegaCase,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        Vrn,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val startCaseResponse:            StartCaseResponse
+    )
+      extends Journey
+      with Journey.Stages.StartedPegaCase
+      with Journey.Vat
+
+    /**
      * [[Journey]] after MonthlyPaymentAmount
      * Vat
      */
@@ -2309,6 +2405,32 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.ObtainedCanPayWithinSixMonthsAnswers
+      with Journey.Sa
+
+    /**
+     * [[Journey]] after started a PEGA case
+     * Sa
+     */
+    final case class StartedPegaCase(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Sa,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Sa,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterStartedPegaCase,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        SaUtr,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val startCaseResponse:            StartCaseResponse
+    )
+      extends Journey
+      with Journey.Stages.StartedPegaCase
       with Journey.Sa
 
     /**

@@ -19,6 +19,7 @@ lazy val scalaCompilerOptions = Seq(
   "-Xlint:-missing-interpolator,_",
   "-Xlint:adapted-args",
   "-Xlint:-byname-implicit",
+  "-Ypatmat-exhaust-depth:40",
   "-Ywarn-unused:implicits",
   "-Ywarn-unused:imports",
   "-Ywarn-unused:locals",

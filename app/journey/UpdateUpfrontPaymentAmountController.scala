@@ -185,6 +185,25 @@ class UpdateUpfrontPaymentAmountController @Inject() (
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
 
+              case j: Epaye.StartedPegaCase =>
+                j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
+                  .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
+                  .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
+                  .transform
+              case j: Vat.StartedPegaCase =>
+                j.into[Journey.Vat.EnteredUpfrontPaymentAmount]
+                  .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
+                  .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
+                  .transform
+              case j: Sa.StartedPegaCase =>
+                j.into[Journey.Sa.EnteredUpfrontPaymentAmount]
+                  .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
+                  .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
+                  .transform
+
               case j: Epaye.EnteredDayOfMonth =>
                 j.into[Journey.Epaye.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.stage, Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount)

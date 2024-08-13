@@ -25,14 +25,26 @@ import testsupport.testdata.TdAll
 class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-monthly-payment-amount" - {
-    "should throw Bad Request when Journey is in a stage [BeforeObtainedCanPayWithinSixMonths]" in new JourneyItTest {
-      stubCommonActions()
+    "should throw Bad Request when Journey is in a stage" - {
+      "[BeforeObtainedCanPayWithinSixMonths]" in new JourneyItTest {
+        stubCommonActions()
 
-      journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
-      val result: Throwable = journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, TdAll.EpayeBta.updateMonthlyPaymentAmountRequest()).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"UpdateMonthlyPaymentAmount update is not possible in that state: [Started]"}""")
+        journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
+        val result: Throwable = journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, TdAll.EpayeBta.updateMonthlyPaymentAmountRequest()).failed.futureValue
+        result.getMessage should include("""{"statusCode":400,"message":"UpdateMonthlyPaymentAmount update is not possible in that state: [Started]"}""")
 
-      verifyCommonActions(numberOfAuthCalls = 2)
+        verifyCommonActions(numberOfAuthCalls = 2)
+      }
+
+      "[StartedPegaJourney]" in new JourneyItTest {
+        insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
+        stubCommonActions()
+
+        val result: Throwable = journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, TdAll.EpayeBta.updateMonthlyPaymentAmountRequest()).failed.futureValue
+        result.getMessage should include("""{"statusCode":400,"message":"Not expecting monthly payment amount to be updated after PEGA case started"}""")
+
+        verifyCommonActions(numberOfAuthCalls = 1)
+      }
     }
 
     "should update the journey when an existing value didn't exist before for" - {

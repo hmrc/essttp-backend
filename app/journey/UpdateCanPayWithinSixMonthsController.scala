@@ -87,6 +87,22 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
         case j: Sa.ObtainedCanPayWithinSixMonthsAnswers =>
           j.copy(canPayWithinSixMonthsAnswers = answers, stage = determineStage(answers))
 
+        case j: Epaye.StartedPegaCase =>
+          j.into[Epaye.ObtainedCanPayWithinSixMonthsAnswers]
+            .withFieldConst(_.stage, determineStage(answers))
+            .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
+            .transform
+        case j: Vat.StartedPegaCase =>
+          j.into[Vat.ObtainedCanPayWithinSixMonthsAnswers]
+            .withFieldConst(_.stage, determineStage(answers))
+            .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
+            .transform
+        case j: Sa.StartedPegaCase =>
+          j.into[Sa.ObtainedCanPayWithinSixMonthsAnswers]
+            .withFieldConst(_.stage, determineStage(answers))
+            .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
+            .transform
+
         case j: Epaye.EnteredMonthlyPaymentAmount =>
           j.into[Epaye.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))

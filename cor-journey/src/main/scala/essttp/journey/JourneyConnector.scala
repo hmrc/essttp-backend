@@ -21,6 +21,7 @@ import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey, JourneyId, S
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
+import essttp.rootmodel.pega.StartCaseResponse
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
@@ -99,6 +100,12 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: E
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-can-pay-within-six-months")
       .withBody(Json.toJson(answers))
+      .execute[Journey]
+
+  def updatePegaStartCaseResponse(journeyId: JourneyId, response: StartCaseResponse)(implicit request: RequestHeader): Future[Journey] =
+    httpClient
+      .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-pega-start-case-response")
+      .withBody(Json.toJson(response))
       .execute[Journey]
 
   def updateMonthlyPaymentAmount(journeyId: JourneyId, monthlyPaymentAmount: MonthlyPaymentAmount)(implicit request: RequestHeader): Future[Journey] =

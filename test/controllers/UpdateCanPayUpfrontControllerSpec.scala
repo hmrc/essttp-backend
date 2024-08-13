@@ -114,6 +114,10 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
           testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
+        "StartedPegaJourney" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
@@ -203,6 +207,10 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
           testVatBta(tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
+        "StartedPegaJourney" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterMonthlyPaymentAmount)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
@@ -290,6 +298,10 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterCanPayWithinSixMonths)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "StartedPegaJourney" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {

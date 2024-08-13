@@ -169,6 +169,17 @@ object Stage {
     case object AnswerNotRequired extends AfterCanPayWithinSixMonthsAnswers
   }
 
+  sealed trait AfterStartedPegaCase extends Stage with EnumEntry
+
+  object AfterStartedPegaCase extends Enum[AfterStartedPegaCase] {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
+    implicit val format: OFormat[AfterStartedPegaCase] = derived.oformat[AfterStartedPegaCase]()
+    val values: immutable.IndexedSeq[AfterStartedPegaCase] = findValues
+
+    case object StartedPegaCase extends AfterStartedPegaCase
+
+  }
+
   sealed trait AfterMonthlyPaymentAmount extends Stage with EnumEntry
 
   object AfterMonthlyPaymentAmount extends Enum[AfterMonthlyPaymentAmount] {

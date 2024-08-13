@@ -101,6 +101,10 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
           testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
+        "StartedPegaCase" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterStartedPegaCase)(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount)(_.canPayWithinSixMonthsAnswers)(this)
         }
@@ -167,6 +171,10 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
           testVatBta(tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
+        "StartedPegaCase" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterStartedPegaCase)(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterMonthlyPaymentAmount)(_.canPayWithinSixMonthsAnswers)(this)
         }
@@ -231,6 +239,10 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterCanPayWithinSixMonths)(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+        "StartedPegaCase" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterStartedPegaCase)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {

@@ -237,6 +237,25 @@ trait TdJourneyVatBta {
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNo
     )
 
+    def journeyAfterStartedPegaCase: Journey.Vat.StartedPegaCase = Journey.Vat.StartedPegaCase(
+      _id                          = dependencies.journeyId,
+      origin                       = Origins.Vat.Bta,
+      createdOn                    = dependencies.createdOn,
+      sjRequest                    = sjRequest,
+      sessionId                    = dependencies.sessionId,
+      stage                        = Stage.AfterStartedPegaCase.StartedPegaCase,
+      affordabilityEnabled         = Some(false),
+      correlationId                = dependencies.correlationId,
+      taxId                        = vrn,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultVat(),
+      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts            = dependencies.instalmentAmounts,
+      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+      startCaseResponse            = dependencies.startCaseResponse
+    )
+
     def updateMonthlyPaymentAmountRequest(): MonthlyPaymentAmount = dependencies.monthlyPaymentAmount
 
     def journeyAfterMonthlyPaymentAmount: Journey.Vat.EnteredMonthlyPaymentAmount = Journey.Vat.EnteredMonthlyPaymentAmount(
