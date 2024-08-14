@@ -19,7 +19,7 @@ package services
 import connectors.PegaConnector
 import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey, JourneyId, UpfrontPaymentAnswers, WhyCannotPayInFullAnswers}
 import essttp.rootmodel.{AmountInPence, EmpRef, SaUtr, TaxRegime, Vrn}
-import essttp.rootmodel.pega.{PegaAssigmentId, PegaCaseId, StartCaseResponse}
+import essttp.rootmodel.pega.{GetCaseResponse, PegaAssigmentId, PegaCaseId, StartCaseResponse}
 import essttp.rootmodel.ttp.PaymentPlanFrequencies
 import essttp.rootmodel.ttp.affordablequotes.{AccruedDebtInterest, ChannelIdentifiers, DebtItemCharge, DebtItemOriginalDueDate, OutstandingDebtAmount}
 import essttp.rootmodel.ttp.eligibility.{ChargeTypeAssessment, Charges, EligibilityCheckResult}
@@ -41,6 +41,22 @@ class PegaService @Inject() (pegaConnector: PegaConnector, journeyService: Journ
       token <- pegaConnector.getToken()
       response <- pegaConnector.startCase(request, token)
     } yield toStartCaseResponse(response)
+  }
+
+  def getCase(journeyId: JourneyId)(implicit r: Request[_]): Future[GetCaseResponse] = {
+    for {
+      journey <- journeyService.get(journeyId)
+      caseId = getCaseId(journey)
+      token <- pegaConnector.getToken()
+      response <- pegaConnector.getCase(caseId, token)
+    } yield GetCaseResponse(response.paymentPlan)
+  }
+
+  private def getCaseId(journey: Journey): PegaCaseId = journey match {
+    case j: Journey.AfterStartedPegaCase =>
+      j.startCaseResponse.caseId
+    case other =>
+      sys.error(s"Could not find PEGA case id in journey in state ${other.name}")
   }
 
   private def toPegaStartCaseRequest(journey: Journey): PegaStartCaseRequest = {
