@@ -22,9 +22,11 @@ import essttp.rootmodel.bank._
 import essttp.rootmodel.dates.InitialPaymentDate
 import essttp.rootmodel.dates.extremedates.{EarliestPaymentPlanStartDate, ExtremeDatesResponse, LatestPaymentPlanStartDate}
 import essttp.rootmodel.dates.startdates.{InstalmentStartDate, StartDatesResponse}
+import essttp.rootmodel.pega.{PegaAssigmentId, PegaCaseId, StartCaseResponse}
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes._
 import essttp.rootmodel.ttp.eligibility.{ChargeReference, EligibilityCheckResult, EligibilityPass, EligibilityRules, EligibilityStatus}
+import models.pega.{PegaOauthToken, PegaStartCaseResponse}
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.TdSupport.FakeRequestOps
 import play.api.mvc.AnyContentAsEmpty
@@ -215,5 +217,25 @@ trait TdBase {
   def trueClientPort: String = "client-port-123"
 
   def deviceId: String = "device-id-123"
+
+  val pegaCaseId = PegaCaseId("case-id")
+
+  val pegaAssignmentId = PegaAssigmentId("assignment-id")
+
+  val pegaOauthToken = PegaOauthToken("access", "type", 123456L)
+
+  val pegaStartCaseResponse = PegaStartCaseResponse(
+    pegaCaseId.value,
+    PegaStartCaseResponse.Data(
+      PegaStartCaseResponse.CaseInfo(
+        List(
+          PegaStartCaseResponse.Assignment(pegaAssignmentId.value),
+          PegaStartCaseResponse.Assignment(s"unused-${pegaAssignmentId.value}")
+        )
+      )
+    )
+  )
+
+  val startCaseResponse = StartCaseResponse(pegaCaseId, pegaAssignmentId)
 
 }

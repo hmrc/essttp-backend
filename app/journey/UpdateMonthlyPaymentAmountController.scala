@@ -45,6 +45,7 @@ class UpdateMonthlyPaymentAmountController @Inject() (
         case j: Journey.BeforeCanPayWithinSixMonthsAnswers          => Errors.throwBadRequestExceptionF(s"UpdateMonthlyPaymentAmount update is not possible in that state: [${j.stage.toString}]")
         case j: Journey.Stages.ObtainedCanPayWithinSixMonthsAnswers => updateJourneyWithNewValue(j, request.body)
         case j: Journey.AfterEnteredMonthlyPaymentAmount            => updateJourneyWithExistingValue(j, request.body)
+        case _: Journey.AfterStartedPegaCase                        => Errors.throwBadRequestExceptionF("Not expecting monthly payment amount to be updated after PEGA case started")
       }
     } yield Ok(newJourney.json)
   }

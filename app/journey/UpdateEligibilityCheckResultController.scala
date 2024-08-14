@@ -197,6 +197,22 @@ class UpdateEligibilityCheckResultController @Inject() (
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
 
+        case j: Epaye.StartedPegaCase =>
+          j.into[Journey.Epaye.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+        case j: Vat.StartedPegaCase =>
+          j.into[Journey.Vat.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+        case j: Sa.StartedPegaCase =>
+          j.into[Journey.Sa.EligibilityChecked]
+            .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+
         case j: Epaye.EnteredMonthlyPaymentAmount =>
           j.into[Journey.Epaye.EligibilityChecked]
             .withFieldConst(_.stage, deriveEligibilityEnum(eligibilityCheckResult))

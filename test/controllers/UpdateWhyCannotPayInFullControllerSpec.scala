@@ -130,7 +130,14 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
         }
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonths)(
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "StartedPegaCase" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterStartedPegaCase)(
             _.whyCannotPayInFullAnswers,
             _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
           )(this)
@@ -279,7 +286,14 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
         }
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterCanPayWithinSixMonths)(
+          testVatBta(tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "StartedPegaCase" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterStartedPegaCase)(
             _.whyCannotPayInFullAnswers,
             _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
           )(this)
@@ -429,6 +443,13 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterCanPayWithinSixMonths)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "StartedPegaCase" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterStartedPegaCase)(
             _.whyCannotPayInFullAnswers,
             _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
           )(this)

@@ -52,7 +52,7 @@ graph TD;
     ObtainedCanPayWithinSixMonthsAnswers --> ObtainedCanPayWithinSixMonthsAnswers.No;
     ObtainedCanPayWithinSixMonthsAnswers --> ObtainedCanPayWithinSixMonthsAnswers.NotRequired;
     ObtainedCanPayWithinSixMonthsAnswers.Yes --> EnteredMonthlyPaymentAmount;
-    ObtainedCanPayWithinSixMonthsAnswers.No --> PEGAPlaceholder;
+    ObtainedCanPayWithinSixMonthsAnswers.No --> StartedPEGACase;
     ObtainedCanPayWithinSixMonthsAnswers.NotRequired --> EnteredMonthlyPaymentAmount;
     EnteredMonthlyPaymentAmount --> EnteredDayOfMonth;
     EnteredDayOfMonth --> RetrievedStartDates;

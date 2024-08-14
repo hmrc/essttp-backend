@@ -112,7 +112,11 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         }
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonths)(_.eligibilityCheckResult)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired)(_.eligibilityCheckResult)(this)
+        }
+
+        "StartedPegaCase" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterStartedPegaCase)(_.eligibilityCheckResult)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -205,7 +209,11 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         }
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterCanPayWithinSixMonths)(_.eligibilityCheckResult)(this)
+          testVatBta(tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired)(_.eligibilityCheckResult)(this)
+        }
+
+        "StartedPegaCase" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterStartedPegaCase)(_.eligibilityCheckResult)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -299,6 +307,10 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterCanPayWithinSixMonths)(_.eligibilityCheckResult)(this)
+        }
+
+        "StartedPegaCase" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterStartedPegaCase)(_.eligibilityCheckResult)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {

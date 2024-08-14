@@ -100,6 +100,20 @@ trait TdJourneyEpayeBta {
       eligibilityCheckResult = ineligibleEligibilityCheckResultEpaye
     )
 
+    def journeyAfterWhyCannotPayInFullRequired: Journey.Epaye.ObtainedWhyCannotPayInFullAnswers = Journey.Epaye.ObtainedWhyCannotPayInFullAnswers(
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Epaye.Bta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterWhyCannotPayInFullAnswers.AnswerNotRequired,
+      affordabilityEnabled      = Some(true),
+      correlationId             = dependencies.correlationId,
+      taxId                     = empRef,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultEpaye,
+      whyCannotPayInFullAnswers = whyCannotPayInFullRequired
+    )
+
     def journeyAfterWhyCannotPayInFullNotRequired: Journey.Epaye.ObtainedWhyCannotPayInFullAnswers = Journey.Epaye.ObtainedWhyCannotPayInFullAnswers(
       _id                       = dependencies.journeyId,
       origin                    = Origins.Epaye.Bta,
@@ -206,7 +220,7 @@ trait TdJourneyEpayeBta {
       instalmentAmounts         = dependencies.instalmentAmounts
     )
 
-    def journeyAfterCanPayWithinSixMonths: Journey.Epaye.ObtainedCanPayWithinSixMonthsAnswers = Journey.Epaye.ObtainedCanPayWithinSixMonthsAnswers(
+    def journeyAfterCanPayWithinSixMonthsNotRequired: Journey.Epaye.ObtainedCanPayWithinSixMonthsAnswers = Journey.Epaye.ObtainedCanPayWithinSixMonthsAnswers(
       _id                          = dependencies.journeyId,
       origin                       = Origins.Epaye.Bta,
       createdOn                    = dependencies.createdOn,
@@ -222,6 +236,43 @@ trait TdJourneyEpayeBta {
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired
+    )
+
+    def journeyAfterCanPayWithinSixMonthsNo: Journey.Epaye.ObtainedCanPayWithinSixMonthsAnswers = Journey.Epaye.ObtainedCanPayWithinSixMonthsAnswers(
+      _id                          = dependencies.journeyId,
+      origin                       = Origins.Epaye.Bta,
+      createdOn                    = dependencies.createdOn,
+      sjRequest                    = sjRequest,
+      sessionId                    = dependencies.sessionId,
+      stage                        = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerNotRequired,
+      affordabilityEnabled         = Some(false),
+      correlationId                = dependencies.correlationId,
+      taxId                        = empRef,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultEpaye,
+      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts            = dependencies.instalmentAmounts,
+      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNo
+    )
+
+    def journeyAfterStartedPegaCase: Journey.Epaye.StartedPegaCase = Journey.Epaye.StartedPegaCase(
+      _id                          = dependencies.journeyId,
+      origin                       = Origins.Epaye.Bta,
+      createdOn                    = dependencies.createdOn,
+      sjRequest                    = sjRequest,
+      sessionId                    = dependencies.sessionId,
+      stage                        = Stage.AfterStartedPegaCase.StartedPegaCase,
+      affordabilityEnabled         = Some(false),
+      correlationId                = dependencies.correlationId,
+      taxId                        = empRef,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultEpaye,
+      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts            = dependencies.instalmentAmounts,
+      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+      startCaseResponse            = dependencies.startCaseResponse
     )
 
     def updateMonthlyPaymentAmountRequest(): MonthlyPaymentAmount = dependencies.monthlyPaymentAmount

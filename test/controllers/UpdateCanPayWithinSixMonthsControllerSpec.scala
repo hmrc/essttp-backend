@@ -58,7 +58,7 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
           TdAll.canPayWithinSixMonthsNotRequired
         )(
             journeyConnector.updateCanPayWithinSixMonthsAnswers,
-            tdAll.EpayeBta.journeyAfterCanPayWithinSixMonths
+            tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired
           )(this)
       }
 
@@ -68,7 +68,7 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
           TdAll.canPayWithinSixMonthsNotRequired
         )(
             journeyConnector.updateCanPayWithinSixMonthsAnswers,
-            tdAll.VatBta.journeyAfterCanPayWithinSixMonths
+            tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired
           )(this)
       }
 
@@ -94,11 +94,15 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             )(
                 TdAll.canPayWithinSixMonthsNo,
                 journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
-                context.tdAll.EpayeBta.journeyAfterCanPayWithinSixMonths.copy(canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo, stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired)
+                context.tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired.copy(canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo, stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired)
               )(context)
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonths)(_.canPayWithinSixMonthsAnswers)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired)(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+        "StartedPegaCase" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterStartedPegaCase)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -160,11 +164,15 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             )(
                 TdAll.canPayWithinSixMonthsNo,
                 journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
-                context.tdAll.VatBta.journeyAfterCanPayWithinSixMonths.copy(canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo, stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired)
+                context.tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired.copy(canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo, stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired)
               )(context)
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterCanPayWithinSixMonths)(_.canPayWithinSixMonthsAnswers)(this)
+          testVatBta(tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired)(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+        "StartedPegaCase" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterStartedPegaCase)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -231,6 +239,10 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterCanPayWithinSixMonths)(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+        "StartedPegaCase" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterStartedPegaCase)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
