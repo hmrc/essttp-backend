@@ -21,7 +21,7 @@ import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.Journey.{Epaye, Sa, Stages, Vat}
-import essttp.journey.model.{Journey, JourneyId, Stage}
+import essttp.journey.model.{Journey, JourneyId, PaymentPlanAnswers, Stage}
 import essttp.rootmodel.pega.StartCaseResponse
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformationOps
@@ -44,8 +44,9 @@ class UpdatePegaStartCaseResponseController @Inject() (
       newJourney <- journey match {
         case j: Journey.BeforeCanPayWithinSixMonthsAnswers          => Errors.throwBadRequestExceptionF(s"UpdatePegaStartCaseResponse update is not possible in that state: [${j.stage.toString}]")
         case j: Journey.Stages.ObtainedCanPayWithinSixMonthsAnswers => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterStartedPegaCase                        => updateJourneyWithExistingValue(j, request.body)
+        case j: Journey.AfterStartedPegaCase                        => updateJourneyWithExistingValue(Left(j), request.body)
         case _: Journey.AfterEnteredMonthlyPaymentAmount            => Errors.throwBadRequestExceptionF("update PEGA start case response not expected after entered monthly payment amount")
+        case j: Journey.AfterCheckedPaymentPlan                     => updateJourneyWithExistingValue(Right(j), request.body)
       }
     } yield Ok(newJourney.json)
   }
@@ -75,24 +76,165 @@ class UpdatePegaStartCaseResponseController @Inject() (
   }
 
   private def updateJourneyWithExistingValue(
-      journey:           Journey.AfterStartedPegaCase,
+      journey:           Either[Journey.AfterStartedPegaCase, Journey.AfterCheckedPaymentPlan],
       startCaseResponse: StartCaseResponse
-  )(implicit request: Request[_]): Future[Journey] = {
+  )(implicit request: Request[_]): Future[Journey] =
+    journey match {
+      case Left(afterStartedPegaCase) =>
+        updateJourneyWithExistingValue(
+          afterStartedPegaCase.startCaseResponse,
+          afterStartedPegaCase,
+          startCaseResponse,
+          afterStartedPegaCase match {
+            case j: Epaye.StartedPegaCase =>
+              j.copy(startCaseResponse = startCaseResponse)
+            case j: Vat.StartedPegaCase =>
+              j.copy(startCaseResponse = startCaseResponse)
+            case j: Sa.StartedPegaCase =>
+              j.copy(startCaseResponse = startCaseResponse)
+          }
+        )
 
-    if (journey.startCaseResponse === startCaseResponse)
-      Future.successful(journey)
-    else {
-      val updatedJourney: Journey = journey match {
-        case j: Epaye.StartedPegaCase =>
-          j.copy(startCaseResponse = startCaseResponse)
-        case j: Vat.StartedPegaCase =>
-          j.copy(startCaseResponse = startCaseResponse)
-        case j: Sa.StartedPegaCase =>
-          j.copy(startCaseResponse = startCaseResponse)
-      }
+      case Right(afterCheckedPaymentPlan) =>
+        afterCheckedPaymentPlan.paymentPlanAnswers match {
+          case _: PaymentPlanAnswers.PaymentPlanNoAffordability =>
+            sys.error("Cannot update PEGA StartCaseEResponse on affordability journey")
 
-      journeyService.upsert(updatedJourney)
+          case p: PaymentPlanAnswers.PaymentPlanAfterAffordability =>
+            updateJourneyWithExistingValue(
+              p.startCaseResponse,
+              afterCheckedPaymentPlan,
+              startCaseResponse,
+              afterCheckedPaymentPlan match {
+                case j: Epaye.CheckedPaymentPlan =>
+                  j.into[Epaye.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Vat.CheckedPaymentPlan =>
+                  j.into[Vat.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Sa.CheckedPaymentPlan =>
+                  j.into[Sa.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+
+                case j: Epaye.EnteredDetailsAboutBankAccount =>
+                  j.into[Epaye.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Vat.EnteredDetailsAboutBankAccount =>
+                  j.into[Vat.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Sa.EnteredDetailsAboutBankAccount =>
+                  j.into[Sa.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Epaye.EnteredDirectDebitDetails =>
+                  j.into[Epaye.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Vat.EnteredDirectDebitDetails =>
+                  j.into[Vat.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Sa.EnteredDirectDebitDetails =>
+                  j.into[Sa.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+
+                case j: Epaye.ConfirmedDirectDebitDetails =>
+                  j.into[Epaye.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Vat.ConfirmedDirectDebitDetails =>
+                  j.into[Vat.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Sa.ConfirmedDirectDebitDetails =>
+                  j.into[Sa.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+
+                case j: Epaye.AgreedTermsAndConditions =>
+                  j.into[Epaye.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Vat.AgreedTermsAndConditions =>
+                  j.into[Vat.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Sa.AgreedTermsAndConditions =>
+                  j.into[Sa.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+
+                case j: Epaye.SelectedEmailToBeVerified =>
+                  j.into[Epaye.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Vat.SelectedEmailToBeVerified =>
+                  j.into[Vat.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Sa.SelectedEmailToBeVerified =>
+                  j.into[Sa.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+
+                case j: Epaye.EmailVerificationComplete =>
+                  j.into[Epaye.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Vat.EmailVerificationComplete =>
+                  j.into[Vat.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Sa.EmailVerificationComplete =>
+                  j.into[Sa.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+
+                case _: Stages.SubmittedArrangement =>
+                  Errors.throwBadRequestException("Cannot update PEGA StartCaseResponse when journey is in completed state")
+              }
+            )
+        }
     }
-  }
+
+  private def updateJourneyWithExistingValue(
+      existingValue:   StartCaseResponse,
+      existingJourney: Journey,
+      newValue:        StartCaseResponse,
+      newJourney:      Journey
+  )(implicit request: Request[_]): Future[Journey] =
+    if (existingValue === newValue) {
+      JourneyLogger.info("Nothing to update, PEGA StartCaseResponse is the same as the existing one in journey.")
+      Future.successful(existingJourney)
+    } else {
+      journeyService.upsert(newJourney)
+    }
 
 }

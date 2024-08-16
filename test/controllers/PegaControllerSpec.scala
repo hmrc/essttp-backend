@@ -354,10 +354,16 @@ class PegaControllerSpec extends ItSpec {
           testException(this)("Expected journey to be found")
         }
 
-        "no case id can be found in the journey" in new JourneyItTest {
+        "a PEGA case has not been started yet" in new JourneyItTest {
           insertJourneyForTest(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo)
 
           testException(this)("Could not find PEGA case id in journey in state essttp.journey.model.Journey.Epaye.ObtainedCanPayWithinSixMonthsAnswers")
+        }
+
+        "the user has checked their payment plan but they are on a non-affordability joureny" in new JourneyItTest {
+          insertJourneyForTest(tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability)
+
+          testException(this)("Trying to find case ID on non-affordability journey")
         }
 
         "there is an error getting an oauth token" in new JourneyItTest {

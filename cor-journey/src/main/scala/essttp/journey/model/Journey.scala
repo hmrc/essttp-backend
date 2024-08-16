@@ -185,7 +185,9 @@ object Journey {
 
   sealed trait BeforeCheckedPaymentPlan extends Journey with Stages.JourneyStage
 
-  sealed trait AfterCheckedPaymentPlan extends Journey
+  sealed trait AfterCheckedPaymentPlan extends Journey {
+    def paymentPlanAnswers: PaymentPlanAnswers
+  }
 
   sealed trait BeforeEnteredDetailsAboutBankAccount extends Journey with Stages.JourneyStage
 
@@ -531,11 +533,6 @@ object Journey {
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
       with AfterStartedPegaCase
-      with BeforeEnteredMonthlyPaymentAmount
-      with BeforeEnteredDayOfMonth
-      with BeforeStartDatesResponse
-      with BeforeAffordableQuotesResponse
-      with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
       with BeforeEnteredDetailsAboutBankAccount
       with BeforeEnteredDirectDebitDetails
@@ -699,11 +696,6 @@ object Journey {
       with AfterExtremeDatesResponse
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
-      with AfterEnteredMonthlyPaymentAmount
-      with AfterEnteredDayOfMonth
-      with AfterStartDatesResponse
-      with AfterAffordableQuotesResponse
-      with AfterSelectedPaymentPlan
       with AfterCheckedPaymentPlan
       with BeforeEnteredDetailsAboutBankAccount
       with BeforeEnteredDirectDebitDetails
@@ -727,11 +719,6 @@ object Journey {
       with AfterExtremeDatesResponse
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
-      with AfterEnteredMonthlyPaymentAmount
-      with AfterEnteredDayOfMonth
-      with AfterStartDatesResponse
-      with AfterAffordableQuotesResponse
-      with AfterSelectedPaymentPlan
       with AfterCheckedPaymentPlan
       with AfterEnteredDetailsAboutBankAccount
       with BeforeEnteredDirectDebitDetails
@@ -755,11 +742,6 @@ object Journey {
       with AfterExtremeDatesResponse
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
-      with AfterEnteredMonthlyPaymentAmount
-      with AfterEnteredDayOfMonth
-      with AfterStartDatesResponse
-      with AfterAffordableQuotesResponse
-      with AfterSelectedPaymentPlan
       with AfterCheckedPaymentPlan
       with AfterEnteredDetailsAboutBankAccount
       with AfterEnteredDirectDebitDetails
@@ -783,11 +765,6 @@ object Journey {
       with AfterExtremeDatesResponse
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
-      with AfterEnteredMonthlyPaymentAmount
-      with AfterEnteredDayOfMonth
-      with AfterStartDatesResponse
-      with AfterAffordableQuotesResponse
-      with AfterSelectedPaymentPlan
       with AfterCheckedPaymentPlan
       with AfterEnteredDetailsAboutBankAccount
       with AfterEnteredDirectDebitDetails
@@ -811,11 +788,6 @@ object Journey {
       with AfterExtremeDatesResponse
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
-      with AfterEnteredMonthlyPaymentAmount
-      with AfterEnteredDayOfMonth
-      with AfterStartDatesResponse
-      with AfterAffordableQuotesResponse
-      with AfterSelectedPaymentPlan
       with AfterCheckedPaymentPlan
       with AfterEnteredDetailsAboutBankAccount
       with AfterEnteredDirectDebitDetails
@@ -839,11 +811,6 @@ object Journey {
       with AfterExtremeDatesResponse
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
-      with AfterEnteredMonthlyPaymentAmount
-      with AfterEnteredDayOfMonth
-      with AfterStartDatesResponse
-      with AfterAffordableQuotesResponse
-      with AfterSelectedPaymentPlan
       with AfterCheckedPaymentPlan
       with AfterEnteredDetailsAboutBankAccount
       with AfterEnteredDirectDebitDetails
@@ -867,11 +834,6 @@ object Journey {
       with AfterExtremeDatesResponse
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
-      with AfterEnteredMonthlyPaymentAmount
-      with AfterEnteredDayOfMonth
-      with AfterStartDatesResponse
-      with AfterAffordableQuotesResponse
-      with AfterSelectedPaymentPlan
       with AfterCheckedPaymentPlan
       with AfterEnteredDetailsAboutBankAccount
       with AfterEnteredDirectDebitDetails
@@ -895,11 +857,6 @@ object Journey {
       with AfterExtremeDatesResponse
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
-      with AfterEnteredMonthlyPaymentAmount
-      with AfterEnteredDayOfMonth
-      with AfterStartDatesResponse
-      with AfterAffordableQuotesResponse
-      with AfterSelectedPaymentPlan
       with AfterCheckedPaymentPlan
       with AfterEnteredDetailsAboutBankAccount
       with AfterEnteredDirectDebitDetails
@@ -1310,11 +1267,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan
+        override val paymentPlanAnswers:           PaymentPlanAnswers
     )
       extends Journey
       with Journey.Stages.CheckedPaymentPlan
@@ -1340,11 +1293,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount
     )
       extends Journey
@@ -1371,11 +1320,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails
     )
@@ -1403,11 +1348,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails
     )
@@ -1435,11 +1376,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired
@@ -1468,11 +1405,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
@@ -1502,11 +1435,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
@@ -1538,11 +1467,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
@@ -1951,11 +1876,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan
+        override val paymentPlanAnswers:           PaymentPlanAnswers
     )
       extends Journey
       with Journey.Stages.CheckedPaymentPlan
@@ -1981,11 +1902,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount
     )
       extends Journey
@@ -2012,11 +1929,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails
     )
@@ -2044,11 +1957,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails
     )
@@ -2076,11 +1985,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired
@@ -2109,11 +2014,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
@@ -2143,11 +2044,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
@@ -2179,11 +2076,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
@@ -2593,11 +2486,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan
+        override val paymentPlanAnswers:           PaymentPlanAnswers
     )
       extends Journey
       with Journey.Stages.CheckedPaymentPlan
@@ -2623,11 +2512,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount
     )
       extends Journey
@@ -2654,11 +2539,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails
     )
@@ -2686,11 +2567,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails
     )
@@ -2718,11 +2595,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired
@@ -2751,11 +2624,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
@@ -2785,11 +2654,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
@@ -2821,11 +2686,7 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val detailsAboutBankAccount:      DetailsAboutBankAccount,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,

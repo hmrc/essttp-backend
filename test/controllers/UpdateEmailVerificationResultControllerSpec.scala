@@ -40,31 +40,31 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
 
       "Epaye" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.EpayeBta.journeyAfterSelectedEmail,
+          tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability,
           EmailVerificationResult.Verified
         )(
             journeyConnector.updateEmailVerificationResult,
-            tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+            tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
           )(this)
       }
 
       "Vat" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.VatBta.journeyAfterSelectedEmail,
+          tdAll.VatBta.journeyAfterSelectedEmailNoAffordability,
           EmailVerificationResult.Verified
         )(
             journeyConnector.updateEmailVerificationResult,
-            tdAll.VatBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+            tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
           )(this)
       }
 
       "Sa" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SaBta.journeyAfterSelectedEmail,
+          tdAll.SaBta.journeyAfterSelectedEmailNoAffordability,
           EmailVerificationResult.Verified
         )(
             journeyConnector.updateEmailVerificationResult,
-            tdAll.SaBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+            tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
           )(this)
       }
     }
@@ -85,12 +85,12 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
             )(
                 differentVerificationResult,
                 journeyConnector.updateEmailVerificationResult(_, _)(context.request),
-                context.tdAll.EpayeBta.journeyAfterEmailVerificationResult(differentVerificationResult)
+                context.tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(differentVerificationResult)
               )(context)
           }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.emailVerificationResult)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.emailVerificationResult)(this)
         }
 
       }
@@ -109,12 +109,12 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
             )(
                 differentVerificationResult,
                 journeyConnector.updateEmailVerificationResult(_, _)(context.request),
-                context.tdAll.VatBta.journeyAfterEmailVerificationResult(differentVerificationResult)
+                context.tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(differentVerificationResult)
               )(context)
           }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.emailVerificationResult)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.emailVerificationResult)(this)
         }
 
       }
@@ -133,12 +133,12 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
             )(
                 differentVerificationResult,
                 journeyConnector.updateEmailVerificationResult(_, _)(context.request),
-                context.tdAll.SaBta.journeyAfterEmailVerificationResult(differentVerificationResult)
+                context.tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(differentVerificationResult)
               )(context)
           }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.emailVerificationResult)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.emailVerificationResult)(this)
         }
 
       }
@@ -148,7 +148,7 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
       insertJourneyForTest(
-        TdAll.EpayeBta.journeyAfterSubmittedArrangement()
+        TdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability()
           .copy(_id = tdAll.journeyId)
           .copy(correlationId = tdAll.correlationId)
           .copy(isEmailAddressRequired = IsEmailAddressRequired(value = true))

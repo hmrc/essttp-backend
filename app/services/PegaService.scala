@@ -17,7 +17,7 @@
 package services
 
 import connectors.PegaConnector
-import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey, JourneyId, UpfrontPaymentAnswers, WhyCannotPayInFullAnswers}
+import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey, JourneyId, PaymentPlanAnswers, UpfrontPaymentAnswers, WhyCannotPayInFullAnswers}
 import essttp.rootmodel.{AmountInPence, EmpRef, SaUtr, TaxRegime, Vrn}
 import essttp.rootmodel.pega.{GetCaseResponse, PegaAssigmentId, PegaCaseId, StartCaseResponse}
 import essttp.rootmodel.ttp.PaymentPlanFrequencies
@@ -55,6 +55,13 @@ class PegaService @Inject() (pegaConnector: PegaConnector, journeyService: Journ
   private def getCaseId(journey: Journey): PegaCaseId = journey match {
     case j: Journey.AfterStartedPegaCase =>
       j.startCaseResponse.caseId
+
+    case j: Journey.AfterCheckedPaymentPlan =>
+      j.paymentPlanAnswers match {
+        case p: PaymentPlanAnswers.PaymentPlanAfterAffordability => p.startCaseResponse.caseId
+        case _: PaymentPlanAnswers.PaymentPlanNoAffordability    => sys.error("Trying to find case ID on non-affordability journey")
+      }
+
     case other =>
       sys.error(s"Could not find PEGA case id in journey in state ${other.name}")
   }

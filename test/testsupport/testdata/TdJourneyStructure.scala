@@ -91,26 +91,26 @@ trait TdJourneyStructure {
 
   def updateCheckedPaymentPlanRequest(): JsNull.type
 
-  def journeyAfterCheckedPaymentPlan: Journey.AfterCheckedPaymentPlan
+  def journeyAfterCheckedPaymentPlanNonAffordability: Journey.AfterCheckedPaymentPlan
 
   def updateDetailsAboutBankAccountRequest(isAccountHolder: Boolean): DetailsAboutBankAccount
 
-  def journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder: Boolean): Journey.AfterEnteredDetailsAboutBankAccount
+  def journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder: Boolean): Journey.AfterEnteredDetailsAboutBankAccount
 
   def updateDirectDebitDetailsRequest(): BankDetails
 
-  def journeyAfterEnteredDirectDebitDetails(): Journey.AfterEnteredDirectDebitDetails
+  def journeyAfterEnteredDirectDebitDetailsNoAffordability(): Journey.AfterEnteredDirectDebitDetails
 
   def updateConfirmedDirectDebitDetailsRequest(): JsNull.type
 
-  def journeyAfterConfirmedDirectDebitDetails: Journey.AfterConfirmedDirectDebitDetails
+  def journeyAfterConfirmedDirectDebitDetailsNoAffordability: Journey.AfterConfirmedDirectDebitDetails
 
   def updateAgreedTermsAndConditionsRequest(isEmailAddressRequired: Boolean): IsEmailAddressRequired
 
-  def journeyAfterAgreedTermsAndConditions(isEmailAddressRequired: Boolean): Journey.AfterAgreedTermsAndConditions
+  def journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired: Boolean): Journey.AfterAgreedTermsAndConditions
 
   def updateArrangementRequest(): ArrangementResponse
 
-  def journeyAfterSubmittedArrangement(isEmailAddressRequired: Boolean = false): Journey.AfterArrangementSubmitted
+  def journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired: Boolean = false): Journey.AfterArrangementSubmitted
 
 }

@@ -40,7 +40,7 @@ class UpdateSubmittedArrangementControllerSpec extends ItSpec {
     "should throw a Bad Request when the journey is already in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
       val result: Throwable = journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeBta.updateArrangementRequest()).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"Cannot update SubmittedArrangement when journey is in completed state"}""")
@@ -51,7 +51,7 @@ class UpdateSubmittedArrangementControllerSpec extends ItSpec {
     "should throw Bad Request when the journey is in a stage [AgreedTermsAndConditions] and an email address is required" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true).copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true).copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
       val result: Throwable = journeyConnector.updateArrangement(tdAll.journeyId, TdAll.EpayeBta.updateArrangementRequest()).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"UpdateArrangement is not possible if the user still requires and email address, state: [EmailAddressRequired]"}""")
@@ -62,10 +62,10 @@ class UpdateSubmittedArrangementControllerSpec extends ItSpec {
     "should update the journey if the journey is in a stage [AgreedTermsAndConditions] and an email address is not required" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = false).copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = false).copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
       val result = journeyConnector.updateArrangement(tdAll.journeyId, TdAll.EpayeBta.updateArrangementRequest()).futureValue
-      val expectedUpdatedJourney = TdAll.EpayeBta.journeyAfterSubmittedArrangement().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId)
+      val expectedUpdatedJourney = TdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId)
       result shouldBe expectedUpdatedJourney
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney
 

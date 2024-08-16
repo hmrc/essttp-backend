@@ -16,7 +16,7 @@
 
 package testsupport.testdata
 
-import essttp.journey.model.{CanPayWithinSixMonthsAnswers, CorrelationId, EmailVerificationAnswers, JourneyId, UpfrontPaymentAnswers, WhyCannotPayInFullAnswers}
+import essttp.journey.model.{CanPayWithinSixMonthsAnswers, CorrelationId, EmailVerificationAnswers, JourneyId, PaymentPlanAnswers, UpfrontPaymentAnswers, WhyCannotPayInFullAnswers}
 import essttp.rootmodel._
 import essttp.rootmodel.bank._
 import essttp.rootmodel.dates.InitialPaymentDate
@@ -150,6 +150,19 @@ trait TdBase {
       amountDue                 = amountDue,
       debtItemOriginalDueDate   = DebtItemOriginalDueDate(LocalDate.parse("2022-01-01"))
     ))
+  )
+
+  def paymentPlanAnswersNoAffordability = PaymentPlanAnswers.PaymentPlanNoAffordability(
+    monthlyPaymentAmount,
+    dayOfMonth,
+    startDatesResponseWithInitialPayment,
+    affordableQuotesResponse,
+    paymentPlan(1)
+  )
+
+  def paymentPlanAnswersWithAffordability = PaymentPlanAnswers.PaymentPlanAfterAffordability(
+    startCaseResponse,
+    paymentPlan(1)
   )
 
   def affordableQuotesResponse: AffordableQuotesResponse = AffordableQuotesResponse(List(paymentPlan(1)))
