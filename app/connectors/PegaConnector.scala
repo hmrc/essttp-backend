@@ -18,7 +18,8 @@ package connectors
 
 import cats.syntax.either._
 import com.google.inject.{Inject, Singleton}
-import models.pega.{PegaOauthToken, PegaStartCaseRequest, PegaStartCaseResponse}
+import essttp.rootmodel.pega.PegaCaseId
+import models.pega.{PegaGetCaseResponse, PegaOauthToken, PegaStartCaseRequest, PegaStartCaseResponse}
 import play.api.Logging
 import play.api.http.{HeaderNames, MimeTypes}
 import play.api.libs.json.Json
@@ -35,6 +36,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class PegaConnector @Inject() (httpClient: HttpClientV2, config: ServicesConfig)(implicit ec: ExecutionContext) extends Logging {
 
   private val startCaseUrl: URL = url"${config.baseUrl("pega")}/prweb/api/payments/v1/aa/createorupdatecase"
+
+  private val getCaseUrl: URL = url"${config.baseUrl("pega")}/prweb/api/payments/v1/aa/getcase"
 
   private val oauthUrl: URL = url"${config.baseUrl("pega")}/prweb/PRRestService/oauth2/v1/token"
 
@@ -67,6 +70,14 @@ class PegaConnector @Inject() (httpClient: HttpClientV2, config: ServicesConfig)
       .withBody(Json.toJson(startCaseRequest))
       .setHeader(HeaderNames.AUTHORIZATION -> s"Bearer ${pegaToken.accessToken}")
       .execute[Either[UpstreamErrorResponse, PegaStartCaseResponse]]
+      .map(_.leftMap(throw _).merge)
+
+  def getCase(caseId: PegaCaseId, pegaToken: PegaOauthToken)(implicit hc: HeaderCarrier): Future[PegaGetCaseResponse] =
+    httpClient
+      .get(url"$getCaseUrl/${caseId.value}")
+      .withProxy
+      .setHeader(HeaderNames.AUTHORIZATION -> s"Bearer ${pegaToken.accessToken}")
+      .execute[Either[UpstreamErrorResponse, PegaGetCaseResponse]]
       .map(_.leftMap(throw _).merge)
 
 }

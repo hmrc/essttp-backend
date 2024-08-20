@@ -64,3 +64,4 @@ POST        /extreme-dates                                                  date
 
 # pega
 POST        /pega-case/:journeyId                                           controllers.PegaController.startCase(journeyId: JourneyId)
+GET         /pega-case/:journeyId                                           controllers.PegaController.getCase(journeyId: JourneyId)

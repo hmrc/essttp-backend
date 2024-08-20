@@ -125,36 +125,36 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
-      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCheckedPaymentPlan
+      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.EpayeBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeBta.updateDirectDebitDetailsRequest).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails()
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedEmail
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability
 
       /** Update Email Verification Status */
       journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Verified).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
 
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeBta.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }
@@ -227,24 +227,24 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
-      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterCheckedPaymentPlan
+      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.EpayeGovUk.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeGovUk.updateDirectDebitDetailsRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterEnteredDirectDebitDetails()
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterConfirmedDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
@@ -256,7 +256,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeGovUk.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }
@@ -329,24 +329,24 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
-      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterCheckedPaymentPlan
+      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateDirectDebitDetailsRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterEnteredDirectDebitDetails()
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterConfirmedDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
@@ -358,7 +358,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }
@@ -431,24 +431,24 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
-      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterCheckedPaymentPlan
+      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.EpayeEpayeService.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeEpayeService.updateDirectDebitDetailsRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterEnteredDirectDebitDetails()
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterConfirmedDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
@@ -460,7 +460,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.EpayeEpayeService.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }
@@ -553,36 +553,36 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
-      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterCheckedPaymentPlan
+      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatBta.updateDirectDebitDetailsRequest).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterEnteredDirectDebitDetails()
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterConfirmedDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterSelectedEmail
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterSelectedEmailNoAffordability
 
       /** Update Email Verification Status */
       journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Verified).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
 
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatBta.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }
@@ -653,24 +653,24 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
-      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterCheckedPaymentPlan
+      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatGovUk.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatGovUk.updateDirectDebitDetailsRequest).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterEnteredDirectDebitDetails()
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterConfirmedDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
@@ -682,7 +682,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatGovUk.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }
@@ -753,24 +753,24 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
-      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterCheckedPaymentPlan
+      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatDetachedUrl.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatDetachedUrl.updateDirectDebitDetailsRequest).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterEnteredDirectDebitDetails()
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterConfirmedDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
@@ -782,7 +782,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatDetachedUrl.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }
@@ -853,24 +853,24 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
-      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterCheckedPaymentPlan
+      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatVatService.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatVatService.updateDirectDebitDetailsRequest).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterEnteredDirectDebitDetails()
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterConfirmedDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
@@ -882,7 +882,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatVatService.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }
@@ -953,24 +953,24 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
-      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterCheckedPaymentPlan
+      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatVatPenalties.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatVatPenalties.updateDirectDebitDetailsRequest).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterEnteredDirectDebitDetails()
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterConfirmedDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
@@ -982,7 +982,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.VatVatPenalties.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }
@@ -1075,36 +1075,36 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
-      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterCheckedPaymentPlan
+      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SaBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SaBta.updateDirectDebitDetailsRequest).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDirectDebitDetails()
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterConfirmedDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSelectedEmail
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSelectedEmailNoAffordability
 
       /** Update Email Verification Status */
       journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Verified).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
 
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaBta.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }
@@ -1175,24 +1175,24 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
-      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterCheckedPaymentPlan
+      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SaPta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SaPta.updateDirectDebitDetailsRequest).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterEnteredDirectDebitDetails()
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterConfirmedDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
@@ -1204,7 +1204,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaPta.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }
@@ -1275,24 +1275,24 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
-      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterCheckedPaymentPlan
+      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SaMobile.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SaMobile.updateDirectDebitDetailsRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterEnteredDirectDebitDetails()
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterConfirmedDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
@@ -1304,7 +1304,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaMobile.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }
@@ -1375,24 +1375,24 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
-      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterCheckedPaymentPlan
+      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SaGovUk.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SaGovUk.updateDirectDebitDetailsRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterEnteredDirectDebitDetails()
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterConfirmedDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
@@ -1404,7 +1404,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaGovUk.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }
@@ -1475,24 +1475,24 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
-      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterCheckedPaymentPlan
+      journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
       journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SaDetachedUrl.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SaDetachedUrl.updateDirectDebitDetailsRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterEnteredDirectDebitDetails()
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterConfirmedDirectDebitDetails
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
@@ -1504,7 +1504,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Arrangement (journey completed) */
       journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaDetachedUrl.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }
@@ -1581,72 +1581,52 @@ class JourneyControllerAffordabilityEnabledSpec extends ItSpec {
         stage                        = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired
       )
 
-    /** Update MonthlyPaymentAmount */
-    journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.SaBta.updateMonthlyPaymentAmountRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterMonthlyPaymentAmount
-      .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
-
-    /** Update DayOfMonth */
-    journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.SaBta.updateDayOfMonthRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterDayOfMonth
-      .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
-
-    /** Update StartDates */
-    journeyConnector.updateStartDates(tdAll.journeyId, tdAll.SaBta.updateStartDatesResponse()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterStartDatesResponse
-      .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
-
-    /** Update AffordableQuotes */
-    journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.SaBta.updateAffordableQuotesResponse()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterAffordableQuotesResponse
-      .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
-
-    /** Update Chosen Instalment plan */
-    journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.SaBta.updateSelectedPaymentPlanRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSelectedPaymentPlan
+    /** Update StartCaseResponse */
+    journeyConnector.updatePegaStartCaseResponse(tdAll.journeyId, tdAll.startCaseResponse).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterStartedPegaCase
       .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Checked Instalment plan */
-    journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterCheckedPaymentPlan
+    journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersWithAffordability).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterCheckedPaymentPlanWithAffordability
       .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Details about Bank Account */
     journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SaBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountWithAffordability(isAccountHolder = true)
       .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Direct debit details */
     journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SaBta.updateDirectDebitDetailsRequest).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDirectDebitDetails()
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsWithAffordability()
       .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Confirm Direct debit details */
     journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterConfirmedDirectDebitDetails
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterConfirmedDirectDebitDetailsWithAffordability
       .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Agreed terms and conditions */
     journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterAgreedTermsAndConditionsWithAffordability(isEmailAddressRequired = true)
       .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Email Address */
     journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSelectedEmail
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSelectedEmailWithAffordability
       .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Email Verification Status */
     journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Verified).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEmailVerificationResultWithAffordability(EmailVerificationResult.Verified)
       .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Arrangement (journey completed) */
     journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SaBta.updateArrangementRequest()).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSubmittedArrangement(isEmailAddressRequired = true)
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterSubmittedArrangementWithAffordability(isEmailAddressRequired = true)
       .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
-    verifyCommonActions(numberOfAuthCalls = 44)
+    verifyCommonActions(numberOfAuthCalls = 36)
   }
 
 }

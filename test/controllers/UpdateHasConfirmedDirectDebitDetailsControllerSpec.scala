@@ -38,21 +38,21 @@ class UpdateHasConfirmedDirectDebitDetailsControllerSpec extends ItSpec {
     "should return an unchanged journey when Direct debit details have already been confirmed" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
       val result1: Journey = journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      result1 shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails
+      result1 shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       val result2: Journey = journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      result2 shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails
+      result2 shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       verifyCommonActions(numberOfAuthCalls = 3)
     }
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
       val result: Throwable = journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).failed.futureValue
       result.getMessage should include("""{"statusCode":400,"message":"Cannot update ConfirmedDirectDebitDetails when journey is in completed state"}""")
 

@@ -20,7 +20,7 @@ import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, Stage}
+import essttp.journey.model.{Journey, JourneyId, PaymentPlanAnswers, Stage}
 import essttp.rootmodel.ttp.affordablequotes.AffordableQuotesResponse
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformationOps
@@ -41,12 +41,15 @@ class UpdateAffordableQuotesController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       newJourney <- journey match {
-        case j: Journey.BeforeStartDatesResponse   => Errors.throwBadRequestExceptionF(s"UpdateAffordableQuotes is not possible in that state: [${j.stage.toString}]")
-        case j: Journey.Stages.RetrievedStartDates => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterAffordableQuotesResponse => j match {
-          case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(j, request.body)
-          case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update AffordableQuotes when journey is in completed state")
-        }
+        case j: Journey.BeforeStartDatesResponse      => Errors.throwBadRequestExceptionF(s"UpdateAffordableQuotes is not possible in that state: [${j.stage.toString}]")
+        case j: Journey.Stages.RetrievedStartDates    => updateJourneyWithNewValue(j, request.body)
+        case j: Journey.AfterAffordableQuotesResponse => updateJourneyWithExistingValue(Left(j), request.body)
+        case j: Journey.AfterCheckedPaymentPlan =>
+          j match {
+            case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(Right(j), request.body)
+            case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update AffordableQuotes when journey is in completed state")
+          }
+        case _: Journey.AfterStartedPegaCase => Errors.throwBadRequestExceptionF("Not expecting to update AffordableQuotes after starting PEGA case")
       }
     } yield Ok(newJourney.json)
   }
@@ -76,152 +79,246 @@ class UpdateAffordableQuotesController @Inject() (
   }
 
   private def updateJourneyWithExistingValue(
-      journey:                  Journey.AfterAffordableQuotesResponse,
+      journey:                  Either[Journey.AfterAffordableQuotesResponse, Journey.AfterCheckedPaymentPlan],
       affordableQuotesResponse: AffordableQuotesResponse
-  )(implicit request: Request[_]): Future[Journey] = {
-    if (journey.affordableQuotesResponse === affordableQuotesResponse) {
-      JourneyLogger.info("Nothing to update, AffordableQuotesResponse is the same as the existing one in journey.")
-      Future.successful(journey)
-    } else {
-      val newJourney: Journey.AfterAffordableQuotesResponse = journey match {
+  )(implicit request: Request[_]): Future[Journey] = journey match {
+    case Left(afterAffordableQuotesResponse) =>
+      updateJourneyWithExistingValue(
+        afterAffordableQuotesResponse.affordableQuotesResponse,
+        afterAffordableQuotesResponse,
+        affordableQuotesResponse,
+        afterAffordableQuotesResponse match {
+          case j: Journey.Epaye.RetrievedAffordableQuotes =>
+            j.copy(affordableQuotesResponse = affordableQuotesResponse)
+          case j: Journey.Vat.RetrievedAffordableQuotes =>
+            j.copy(affordableQuotesResponse = affordableQuotesResponse)
+          case j: Journey.Sa.RetrievedAffordableQuotes =>
+            j.copy(affordableQuotesResponse = affordableQuotesResponse)
 
-        case j: Journey.Epaye.RetrievedAffordableQuotes => j.copy(affordableQuotesResponse = affordableQuotesResponse)
-        case j: Journey.Vat.RetrievedAffordableQuotes   => j.copy(affordableQuotesResponse = affordableQuotesResponse)
-        case j: Journey.Sa.RetrievedAffordableQuotes    => j.copy(affordableQuotesResponse = affordableQuotesResponse)
+          case j: Journey.Epaye.ChosenPaymentPlan =>
+            j.into[Journey.Epaye.RetrievedAffordableQuotes]
+              .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+              .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+              .transform
+          case j: Journey.Vat.ChosenPaymentPlan =>
+            j.into[Journey.Vat.RetrievedAffordableQuotes]
+              .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+              .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+              .transform
+          case j: Journey.Sa.ChosenPaymentPlan =>
+            j.into[Journey.Sa.RetrievedAffordableQuotes]
+              .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+              .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+              .transform
 
-        case j: Journey.Epaye.ChosenPaymentPlan =>
-          j.into[Journey.Epaye.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
-        case j: Journey.Vat.ChosenPaymentPlan =>
-          j.into[Journey.Vat.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
-        case j: Journey.Sa.ChosenPaymentPlan =>
-          j.into[Journey.Sa.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
+        }
+      )
 
-        case j: Journey.Epaye.CheckedPaymentPlan =>
-          j.into[Journey.Epaye.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
-        case j: Journey.Vat.CheckedPaymentPlan =>
-          j.into[Journey.Vat.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
-        case j: Journey.Sa.CheckedPaymentPlan =>
-          j.into[Journey.Sa.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
+    case Right(afterCheckedPaymentPlan) =>
+      afterCheckedPaymentPlan.paymentPlanAnswers match {
+        case _: PaymentPlanAnswers.PaymentPlanAfterAffordability =>
+          Errors.throwBadRequestExceptionF("Cannot update AffordableQuotesResponse on affordability journey")
 
-        case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
-          j.into[Journey.Epaye.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
-        case j: Journey.Vat.EnteredDetailsAboutBankAccount =>
-          j.into[Journey.Vat.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
-        case j: Journey.Sa.EnteredDetailsAboutBankAccount =>
-          j.into[Journey.Sa.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
+        case p: PaymentPlanAnswers.PaymentPlanNoAffordability =>
+          updateJourneyWithExistingValue(
+            p.affordableQuotesResponse,
+            afterCheckedPaymentPlan,
+            affordableQuotesResponse,
+            afterCheckedPaymentPlan match {
+              case j: Journey.Epaye.CheckedPaymentPlan =>
+                j.into[Journey.Epaye.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+              case j: Journey.Vat.CheckedPaymentPlan =>
+                j.into[Journey.Vat.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+              case j: Journey.Sa.CheckedPaymentPlan =>
+                j.into[Journey.Sa.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
 
-        case j: Journey.Epaye.EnteredDirectDebitDetails =>
-          j.into[Journey.Epaye.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
-        case j: Journey.Vat.EnteredDirectDebitDetails =>
-          j.into[Journey.Vat.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
-        case j: Journey.Sa.EnteredDirectDebitDetails =>
-          j.into[Journey.Sa.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
+              case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
+                j.into[Journey.Epaye.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+              case j: Journey.Vat.EnteredDetailsAboutBankAccount =>
+                j.into[Journey.Vat.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+              case j: Journey.Sa.EnteredDetailsAboutBankAccount =>
+                j.into[Journey.Sa.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
 
-        case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
-          j.into[Journey.Epaye.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
-        case j: Journey.Vat.ConfirmedDirectDebitDetails =>
-          j.into[Journey.Vat.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
-        case j: Journey.Sa.ConfirmedDirectDebitDetails =>
-          j.into[Journey.Sa.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
+              case j: Journey.Epaye.EnteredDirectDebitDetails =>
+                j.into[Journey.Epaye.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+              case j: Journey.Vat.EnteredDirectDebitDetails =>
+                j.into[Journey.Vat.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+              case j: Journey.Sa.EnteredDirectDebitDetails =>
+                j.into[Journey.Sa.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
 
-        case j: Journey.Epaye.AgreedTermsAndConditions =>
-          j.into[Journey.Epaye.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
-        case j: Journey.Vat.AgreedTermsAndConditions =>
-          j.into[Journey.Vat.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
-        case j: Journey.Sa.AgreedTermsAndConditions =>
-          j.into[Journey.Sa.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
+              case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
+                j.into[Journey.Epaye.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+              case j: Journey.Vat.ConfirmedDirectDebitDetails =>
+                j.into[Journey.Vat.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+              case j: Journey.Sa.ConfirmedDirectDebitDetails =>
+                j.into[Journey.Sa.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
 
-        case j: Journey.Epaye.SelectedEmailToBeVerified =>
-          j.into[Journey.Epaye.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
-        case j: Journey.Vat.SelectedEmailToBeVerified =>
-          j.into[Journey.Vat.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
-        case j: Journey.Sa.SelectedEmailToBeVerified =>
-          j.into[Journey.Sa.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
+              case j: Journey.Epaye.AgreedTermsAndConditions =>
+                j.into[Journey.Epaye.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+              case j: Journey.Vat.AgreedTermsAndConditions =>
+                j.into[Journey.Vat.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+              case j: Journey.Sa.AgreedTermsAndConditions =>
+                j.into[Journey.Sa.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
 
-        case j: Journey.Epaye.EmailVerificationComplete =>
-          j.into[Journey.Epaye.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
-        case j: Journey.Vat.EmailVerificationComplete =>
-          j.into[Journey.Vat.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
-        case j: Journey.Sa.EmailVerificationComplete =>
-          j.into[Journey.Sa.RetrievedAffordableQuotes]
-            .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
-            .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-            .transform
+              case j: Journey.Epaye.SelectedEmailToBeVerified =>
+                j.into[Journey.Epaye.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+              case j: Journey.Vat.SelectedEmailToBeVerified =>
+                j.into[Journey.Vat.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+              case j: Journey.Sa.SelectedEmailToBeVerified =>
+                j.into[Journey.Sa.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
 
-        case _: Journey.Stages.SubmittedArrangement =>
-          Errors.throwBadRequestException("Cannot update AffordableQuotes when journey is in completed state")
+              case j: Journey.Epaye.EmailVerificationComplete =>
+                j.into[Journey.Epaye.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+              case j: Journey.Vat.EmailVerificationComplete =>
+                j.into[Journey.Vat.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+              case j: Journey.Sa.EmailVerificationComplete =>
+                j.into[Journey.Sa.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+
+              case _: Journey.Stages.SubmittedArrangement =>
+                Errors.throwBadRequestException("Cannot update AffordableQuotes when journey is in completed state")
+            }
+          )
+
       }
+  }
 
+  private def updateJourneyWithExistingValue(
+      existingValue:   AffordableQuotesResponse,
+      existingJourney: Journey,
+      newValue:        AffordableQuotesResponse,
+      newJourney:      Journey
+  )(implicit request: Request[_]): Future[Journey] =
+    if (existingValue === newValue) {
+      JourneyLogger.info("Nothing to update, AffordableQuotesResponse is the same as the existing one in journey.")
+      Future.successful(existingJourney)
+    } else {
       journeyService.upsert(newJourney)
     }
-  }
+
 }

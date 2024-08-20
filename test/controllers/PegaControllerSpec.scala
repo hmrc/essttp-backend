@@ -17,8 +17,8 @@
 package controllers
 
 import essttp.journey.model.{Journey, UpfrontPaymentAnswers}
-import essttp.rootmodel.pega.StartCaseResponse
-import models.pega.PegaStartCaseResponse
+import essttp.rootmodel.pega.{GetCaseResponse, StartCaseResponse}
+import models.pega.{PegaGetCaseResponse, PegaStartCaseResponse}
 import org.apache.pekko.stream.Materializer
 import play.api.http.Status.CREATED
 import play.api.test.Helpers._
@@ -329,6 +329,77 @@ class PegaControllerSpec extends ItSpec {
               |}""".stripMargin
           )
         }
+
+      }
+
+    }
+
+    "handling requests to get a case must" - {
+
+      "return an error when" - {
+
+          def testException(context: JourneyItTest)(
+              expectedErrorMessage: String
+          ) = {
+            stubCommonActions()
+
+            val exception = intercept[Exception]{
+              controller.getCase(context.tdAll.journeyId)(context.request).futureValue
+            }
+
+            exception.getMessage should include(expectedErrorMessage)
+          }
+
+        "no journey can be found for the given journey id" in new JourneyItTest {
+          testException(this)("Expected journey to be found")
+        }
+
+        "a PEGA case has not been started yet" in new JourneyItTest {
+          insertJourneyForTest(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo)
+
+          testException(this)("Could not find PEGA case id in journey in state essttp.journey.model.Journey.Epaye.ObtainedCanPayWithinSixMonthsAnswers")
+        }
+
+        "the user has checked their payment plan but they are on a non-affordability joureny" in new JourneyItTest {
+          insertJourneyForTest(tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability)
+
+          testException(this)("Trying to find case ID on non-affordability journey")
+        }
+
+        "there is an error getting an oauth token" in new JourneyItTest {
+          insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
+          PegaStub.stubOauthToken(Left(503))
+
+          testException(this)("returned 503")
+        }
+
+        "there is an error calling the get case API" in new JourneyItTest {
+          insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
+          PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
+          PegaStub.stubGetCase(tdAll.pegaCaseId, Left(502))
+
+          testException(this)("returned 502")
+        }
+
+      }
+
+      "return the payment plan when one is returned by PEGA" in new JourneyItTest {
+        val paymentPlan = tdAll.paymentPlan(2)
+
+        insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
+        stubCommonActions()
+        PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
+        PegaStub.stubGetCase(tdAll.pegaCaseId, Right(PegaGetCaseResponse(paymentPlan)))
+
+        val result = controller.getCase(tdAll.journeyId)(request)
+        status(result) shouldBe OK
+        contentAsJson(result).as[GetCaseResponse] shouldBe GetCaseResponse(paymentPlan)
+
+        PegaStub.verifyOauthCalled("user", "pass")
+        PegaStub.verifyGetCaseCalled(
+          tdAll.pegaOauthToken,
+          tdAll.pegaCaseId
+        )
 
       }
 

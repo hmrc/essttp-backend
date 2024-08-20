@@ -18,6 +18,7 @@ package journey
 
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.JourneyConnector
+import essttp.journey.model.PaymentPlanAnswers
 import essttp.rootmodel.AmountInPence
 import journey.JourneyInFinalStateSpec.TestScenario
 import org.scalatest.Assertion
@@ -55,7 +56,7 @@ class JourneyInFinalStateSpec extends ItSpec {
       testScenario.httpResponse.body shouldBe testScenario.expectedMessage withClue s"Response body wasn't ${testScenario.expectedMessage}"
     }
 
-    insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+    insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
     val scenarios: immutable.Seq[TestScenario] = List(
       TestScenario(
@@ -114,7 +115,7 @@ class JourneyInFinalStateSpec extends ItSpec {
         expectedMessage    = """{"statusCode":400,"message":"Cannot update ChosenPlan when journey is in completed state"}"""
       ),
       TestScenario(
-        httpResponse       = makeUpdate("/update-has-checked-plan", JsNull),
+        httpResponse       = makeUpdate("/update-has-checked-plan", tdAll.paymentPlanAnswersNoAffordability: PaymentPlanAnswers),
         expectedStatusCode = 400,
         expectedMessage    = """{"statusCode":400,"message":"Cannot update HasCheckedPaymentPlan when journey is in completed state"}"""
       ),

@@ -41,31 +41,31 @@ class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec with UpdateJour
 
       "Epaye" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.EpayeBta.journeyAfterCheckedPaymentPlan,
+          tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability,
           TdAll.EpayeBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
         )(
             journeyConnector.updateDetailsAboutBankAccount,
-            tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+            tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
           )(this)
       }
 
       "Vat" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.VatBta.journeyAfterCheckedPaymentPlan,
+          tdAll.VatBta.journeyAfterCheckedPaymentPlanNonAffordability,
           TdAll.VatBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
         )(
             journeyConnector.updateDetailsAboutBankAccount,
-            tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+            tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
           )(this)
       }
 
       "Sa" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SaBta.journeyAfterCheckedPaymentPlan,
+          tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability,
           TdAll.SaBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
         )(
             journeyConnector.updateDetailsAboutBankAccount,
-            tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true)
+            tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
           )(this)
       }
     }
@@ -83,31 +83,31 @@ class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec with UpdateJour
             )(
                 differentDetailsAboutBankAccount,
                 journeyConnector.updateDetailsAboutBankAccount(_, _)(context.request),
-                context.tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = false).copy(detailsAboutBankAccount = differentDetailsAboutBankAccount)
+                context.tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = false).copy(detailsAboutBankAccount = differentDetailsAboutBankAccount)
               )(context)
 
         "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.detailsAboutBankAccount)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.detailsAboutBankAccount)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetails())(_.detailsAboutBankAccount)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.detailsAboutBankAccount)(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetails)(_.detailsAboutBankAccount)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.detailsAboutBankAccount)(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.detailsAboutBankAccount)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.detailsAboutBankAccount)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmail)(_.detailsAboutBankAccount)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability)(_.detailsAboutBankAccount)(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.detailsAboutBankAccount)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.detailsAboutBankAccount)(this)
         }
 
       }
@@ -121,31 +121,31 @@ class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec with UpdateJour
             )(
                 differentDetailsAboutBankAccount,
                 journeyConnector.updateDetailsAboutBankAccount(_, _)(context.request),
-                context.tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = false).copy(detailsAboutBankAccount = differentDetailsAboutBankAccount)
+                context.tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = false).copy(detailsAboutBankAccount = differentDetailsAboutBankAccount)
               )(context)
 
         "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.detailsAboutBankAccount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.detailsAboutBankAccount)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetails())(_.detailsAboutBankAccount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.detailsAboutBankAccount)(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetails)(_.detailsAboutBankAccount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.detailsAboutBankAccount)(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.detailsAboutBankAccount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.detailsAboutBankAccount)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterSelectedEmail)(_.detailsAboutBankAccount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterSelectedEmailNoAffordability)(_.detailsAboutBankAccount)(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.detailsAboutBankAccount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.detailsAboutBankAccount)(this)
         }
 
       }
@@ -159,31 +159,31 @@ class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec with UpdateJour
             )(
                 differentDetailsAboutBankAccount,
                 journeyConnector.updateDetailsAboutBankAccount(_, _)(context.request),
-                context.tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = false).copy(detailsAboutBankAccount = differentDetailsAboutBankAccount)
+                context.tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = false).copy(detailsAboutBankAccount = differentDetailsAboutBankAccount)
               )(context)
 
         "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder = true))(_.detailsAboutBankAccount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.detailsAboutBankAccount)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetails())(_.detailsAboutBankAccount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.detailsAboutBankAccount)(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterConfirmedDirectDebitDetails)(_.detailsAboutBankAccount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.detailsAboutBankAccount)(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditions(isEmailAddressRequired = true))(_.detailsAboutBankAccount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.detailsAboutBankAccount)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterSelectedEmail)(_.detailsAboutBankAccount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterSelectedEmailNoAffordability)(_.detailsAboutBankAccount)(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.detailsAboutBankAccount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.detailsAboutBankAccount)(this)
         }
 
       }
@@ -193,7 +193,7 @@ class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec with UpdateJour
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangement().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
       val requestBody = TdAll.EpayeBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
       val result: Throwable = journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, requestBody).failed.futureValue

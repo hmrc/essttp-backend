@@ -16,9 +16,11 @@
 
 package testsupport.stubs
 
-import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, equalTo, equalToJson, exactly, post, postRequestedFor, stubFor, urlPathEqualTo, verify}
+import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import models.pega.{PegaOauthToken, PegaStartCaseResponse}
+import essttp.rootmodel.pega.PegaCaseId
+import models.pega.{PegaGetCaseResponse, PegaOauthToken, PegaStartCaseResponse}
+import play.api.libs.json.Json
 
 import java.util.Base64
 
@@ -29,6 +31,8 @@ object PegaStub {
   private val oauthUrlPath = "/prweb/PRRestService/oauth2/v1/token"
 
   private val startCaseUrlPath = "/prweb/api/payments/v1/aa/createorupdatecase"
+
+  private def getCaseUrlPath(caseId: PegaCaseId) = s"/prweb/api/payments/v1/aa/getcase/${caseId.value}"
 
   def stubOauthToken(result: Either[HttpStatus, PegaOauthToken]): StubMapping =
     stubFor(
@@ -75,6 +79,19 @@ object PegaStub {
         )
     )
 
+  def stubGetCase(caseId: PegaCaseId, result: Either[HttpStatus, PegaGetCaseResponse]): StubMapping =
+    stubFor(
+      get(urlPathEqualTo(getCaseUrlPath(caseId)))
+        .willReturn(
+          result.fold(
+            aResponse().withStatus(_),
+            response => {
+              aResponse().withStatus(200).withBody(Json.toJson(response).toString)
+            }
+          )
+        )
+    )
+
   def verifyOauthCalled(username: String, password: String): Unit = {
     val expectedEncodedCreds =
       new String(Base64.getEncoder.encode(s"$username:$password".getBytes("UTF-8")), "UTF-8")
@@ -93,6 +110,13 @@ object PegaStub {
       exactly(1),
       postRequestedFor(urlPathEqualTo(startCaseUrlPath))
         .withRequestBody(equalToJson(expectedRequestJson))
+        .withHeader("Authorization", equalTo(s"Bearer ${pegaOauthToken.accessToken}"))
+    )
+
+  def verifyGetCaseCalled(pegaOauthToken: PegaOauthToken, caseId: PegaCaseId): Unit =
+    verify(
+      exactly(1),
+      getRequestedFor(urlPathEqualTo(getCaseUrlPath(caseId)))
         .withHeader("Authorization", equalTo(s"Bearer ${pegaOauthToken.accessToken}"))
     )
 

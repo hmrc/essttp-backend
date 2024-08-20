@@ -335,7 +335,7 @@ trait TdJourneyEpayeDetachedUrl {
 
     def updateCheckedPaymentPlanRequest(): JsNull.type = JsNull
 
-    def journeyAfterCheckedPaymentPlan: Journey.AfterCheckedPaymentPlan = Journey.Epaye.CheckedPaymentPlan(
+    def journeyAfterCheckedPaymentPlanNonAffordability: Journey.AfterCheckedPaymentPlan = Journey.Epaye.CheckedPaymentPlan(
       _id                          = dependencies.journeyId,
       origin                       = Origins.Epaye.DetachedUrl,
       createdOn                    = dependencies.createdOn,
@@ -351,17 +351,13 @@ trait TdJourneyEpayeDetachedUrl {
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      monthlyPaymentAmount         = dependencies.monthlyPaymentAmount,
-      dayOfMonth                   = dependencies.dayOfMonth,
-      startDatesResponse           = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse     = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan          = dependencies.paymentPlan(1)
+      paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability
     )
 
     def updateDetailsAboutBankAccountRequest(isAccountHolder: Boolean): DetailsAboutBankAccount =
       DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder)
 
-    def journeyAfterEnteredDetailsAboutBankAccount(isAccountHolder: Boolean): Journey.AfterEnteredDetailsAboutBankAccount = Journey.Epaye.EnteredDetailsAboutBankAccount(
+    def journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder: Boolean): Journey.AfterEnteredDetailsAboutBankAccount = Journey.Epaye.EnteredDetailsAboutBankAccount(
       _id                          = dependencies.journeyId,
       origin                       = Origins.Epaye.DetachedUrl,
       createdOn                    = dependencies.createdOn,
@@ -377,17 +373,13 @@ trait TdJourneyEpayeDetachedUrl {
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      monthlyPaymentAmount         = dependencies.monthlyPaymentAmount,
-      dayOfMonth                   = dependencies.dayOfMonth,
-      startDatesResponse           = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse     = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan          = dependencies.paymentPlan(1),
+      paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
       detailsAboutBankAccount      = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder)
     )
 
     def updateDirectDebitDetailsRequest(): BankDetails = dependencies.directDebitDetails
 
-    def journeyAfterEnteredDirectDebitDetails(): Journey.AfterEnteredDirectDebitDetails = Journey.Epaye.EnteredDirectDebitDetails(
+    def journeyAfterEnteredDirectDebitDetailsNoAffordability(): Journey.AfterEnteredDirectDebitDetails = Journey.Epaye.EnteredDirectDebitDetails(
       _id                          = dependencies.journeyId,
       origin                       = Origins.Epaye.DetachedUrl,
       createdOn                    = dependencies.createdOn,
@@ -403,18 +395,14 @@ trait TdJourneyEpayeDetachedUrl {
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      monthlyPaymentAmount         = dependencies.monthlyPaymentAmount,
-      dayOfMonth                   = dependencies.dayOfMonth,
-      startDatesResponse           = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse     = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan          = dependencies.paymentPlan(1),
+      paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
       detailsAboutBankAccount      = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
       directDebitDetails           = directDebitDetails
     )
 
     def updateConfirmedDirectDebitDetailsRequest(): JsNull.type = JsNull
 
-    def journeyAfterConfirmedDirectDebitDetails: Journey.AfterConfirmedDirectDebitDetails = Journey.Epaye.ConfirmedDirectDebitDetails(
+    def journeyAfterConfirmedDirectDebitDetailsNoAffordability: Journey.AfterConfirmedDirectDebitDetails = Journey.Epaye.ConfirmedDirectDebitDetails(
       _id                          = dependencies.journeyId,
       origin                       = Origins.Epaye.DetachedUrl,
       createdOn                    = dependencies.createdOn,
@@ -430,18 +418,14 @@ trait TdJourneyEpayeDetachedUrl {
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      monthlyPaymentAmount         = dependencies.monthlyPaymentAmount,
-      dayOfMonth                   = dependencies.dayOfMonth,
-      startDatesResponse           = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse     = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan          = dependencies.paymentPlan(1),
+      paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
       detailsAboutBankAccount      = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
       directDebitDetails           = directDebitDetails
     )
 
     def updateAgreedTermsAndConditionsRequest(isEmailAddressRequired: Boolean): IsEmailAddressRequired = IsEmailAddressRequired(isEmailAddressRequired)
 
-    def journeyAfterAgreedTermsAndConditions(isEmailAddressRequired: Boolean): Journey.AfterAgreedTermsAndConditions = {
+    def journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired: Boolean): Journey.AfterAgreedTermsAndConditions = {
       val stage =
         if (isEmailAddressRequired) Stage.AfterAgreedTermsAndConditions.EmailAddressRequired
         else Stage.AfterAgreedTermsAndConditions.EmailAddressNotRequired
@@ -462,11 +446,7 @@ trait TdJourneyEpayeDetachedUrl {
         extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
         instalmentAmounts            = dependencies.instalmentAmounts,
         canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-        monthlyPaymentAmount         = dependencies.monthlyPaymentAmount,
-        dayOfMonth                   = dependencies.dayOfMonth,
-        startDatesResponse           = dependencies.startDatesResponseWithInitialPayment,
-        affordableQuotesResponse     = dependencies.affordableQuotesResponse,
-        selectedPaymentPlan          = dependencies.paymentPlan(1),
+        paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
         detailsAboutBankAccount      = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
         directDebitDetails           = directDebitDetails,
         isEmailAddressRequired       = IsEmailAddressRequired(isEmailAddressRequired)
@@ -491,11 +471,7 @@ trait TdJourneyEpayeDetachedUrl {
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      monthlyPaymentAmount         = dependencies.monthlyPaymentAmount,
-      dayOfMonth                   = dependencies.dayOfMonth,
-      startDatesResponse           = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse     = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan          = dependencies.paymentPlan(1),
+      paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
       detailsAboutBankAccount      = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
       directDebitDetails           = directDebitDetails,
       isEmailAddressRequired       = IsEmailAddressRequired(value = true),
@@ -521,11 +497,7 @@ trait TdJourneyEpayeDetachedUrl {
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      monthlyPaymentAmount         = dependencies.monthlyPaymentAmount,
-      dayOfMonth                   = dependencies.dayOfMonth,
-      startDatesResponse           = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse     = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan          = dependencies.paymentPlan(1),
+      paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
       detailsAboutBankAccount      = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
       directDebitDetails           = directDebitDetails,
       isEmailAddressRequired       = IsEmailAddressRequired(value = true),
@@ -536,7 +508,7 @@ trait TdJourneyEpayeDetachedUrl {
 
     def updateArrangementRequest(): ArrangementResponse = dependencies.arrangementResponseEpaye
 
-    def journeyAfterSubmittedArrangement(isEmailAddressRequired: Boolean): Journey.AfterArrangementSubmitted = Journey.Epaye.SubmittedArrangement(
+    def journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired: Boolean): Journey.AfterArrangementSubmitted = Journey.Epaye.SubmittedArrangement(
       _id                          = dependencies.journeyId,
       origin                       = Origins.Epaye.DetachedUrl,
       createdOn                    = dependencies.createdOn,
@@ -552,11 +524,7 @@ trait TdJourneyEpayeDetachedUrl {
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      monthlyPaymentAmount         = dependencies.monthlyPaymentAmount,
-      dayOfMonth                   = dependencies.dayOfMonth,
-      startDatesResponse           = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse     = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan          = dependencies.paymentPlan(1),
+      paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
       detailsAboutBankAccount      = DetailsAboutBankAccount(dependencies.businessBankAccount, isAccountHolder = true),
       directDebitDetails           = directDebitDetails,
       isEmailAddressRequired       = IsEmailAddressRequired(isEmailAddressRequired),

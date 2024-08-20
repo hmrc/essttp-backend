@@ -37,4 +37,8 @@ class PegaController @Inject() (
     pegaService.startCase(journeyId).map(response => Created(Json.toJson(response)))
   }
 
+  def getCase(journeyId: JourneyId): Action[AnyContent] = actions.authenticatedAction.async { implicit request =>
+    pegaService.getCase(journeyId).map(response => Ok(Json.toJson(response)))
+  }
+
 }

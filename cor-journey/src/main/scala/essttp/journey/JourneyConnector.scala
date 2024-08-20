@@ -17,7 +17,7 @@
 package essttp.journey
 
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey, JourneyId, SjRequest, SjResponse, WhyCannotPayInFullAnswers}
+import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey, JourneyId, PaymentPlanAnswers, SjRequest, SjResponse, WhyCannotPayInFullAnswers}
 import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
@@ -137,10 +137,10 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: E
       .withBody(Json.toJson(paymentPlan))
       .execute[Journey]
 
-  def updateHasCheckedPaymentPlan(journeyId: JourneyId)(implicit request: RequestHeader): Future[Journey] =
+  def updateHasCheckedPaymentPlan(journeyId: JourneyId, paymentPlanAnswers: PaymentPlanAnswers)(implicit request: RequestHeader): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-has-checked-plan")
-      .withBody(Json.toJson(JsNull))
+      .withBody(Json.toJson(paymentPlanAnswers))
       .execute[Journey]
 
   def updateDetailsAboutBankAccount(journeyId: JourneyId, detailsAboutBankAccount: DetailsAboutBankAccount)(implicit request: RequestHeader): Future[Journey] =
