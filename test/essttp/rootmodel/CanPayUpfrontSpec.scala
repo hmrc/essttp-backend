@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
-package action.model
+package essttp.rootmodel
 
-import play.api.mvc.{Request, WrappedRequest}
-import uk.gov.hmrc.auth.core.Enrolments
+import testsupport.UnitSpec
 
-final case class AuthenticatedRequest[A](val request: Request[A], enrolments: Enrolments) extends WrappedRequest[A](request)
+class CanPayUpfrontSpec extends UnitSpec {
+
+  "CanPayUpfront must" - {
+
+    "have a userCanPayUpFront value" in {
+      CanPayUpfront(value = true).userCanPayUpfront shouldBe true
+      CanPayUpfront(value = false).userCanPayUpfront shouldBe false
+    }
+
+  }
+
+}

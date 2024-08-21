@@ -70,6 +70,9 @@ object JourneyRepo {
     IndexModel(
       keys         = Indexes.ascending("lastUpdated"),
       indexOptions = IndexOptions().expireAfter(cacheTtl.toSeconds, TimeUnit.SECONDS).name("lastUpdatedIdx")
+    ),
+    IndexModel(
+      keys = Indexes.ascending("sessionId")
     )
   )
 

@@ -37,5 +37,6 @@ class AppConfig @Inject() (
   val barsVerifyMaxAttempts: Int = config.getInt("bars.verify.maxAttempts")
 
   val journeyRepoTtl: FiniteDuration = configFiniteDuration("journey.repoTtl")
+  val journeyByTaxIdRepoTtl: FiniteDuration = configFiniteDuration("journey-by-tax-id.repoTtl")
 
 }

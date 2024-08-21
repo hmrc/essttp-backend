@@ -16,27 +16,37 @@
 
 package controllers
 
+import essttp.crypto.CryptoFormat
 import essttp.journey.model.{Journey, UpfrontPaymentAnswers}
+import essttp.rootmodel.{EmpRef, SaUtr, SessionId, TaxRegime, Vrn}
 import essttp.rootmodel.pega.{GetCaseResponse, StartCaseResponse}
 import models.pega.{PegaGetCaseResponse, PegaStartCaseResponse}
 import org.apache.pekko.stream.Materializer
 import play.api.http.Status.CREATED
 import play.api.test.Helpers._
-import repository.JourneyRepo
+import repository.JourneyByTaxIdRepo.JourneyWithTaxId
+import repository.{JourneyByTaxIdRepo, JourneyRepo}
 import testsupport.ItSpec
 import testsupport.stubs.PegaStub
+import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments}
+import uk.gov.hmrc.http.UpstreamErrorResponse
+
+import java.time.{Clock, Instant}
 
 class PegaControllerSpec extends ItSpec {
 
-  lazy val journeyRepo = app.injector.instanceOf[JourneyRepo]
+  lazy val journeyByTaxIdRepo = app.injector.instanceOf[JourneyByTaxIdRepo]
 
   lazy val controller = app.injector.instanceOf[PegaController]
 
   implicit lazy val mat: Materializer = app.injector.instanceOf[Materializer]
 
+  implicit lazy val cryptoFormat: CryptoFormat = CryptoFormat.OperationalCryptoFormat(testCrypto)
+
   override def beforeEach(): Unit = {
     super.beforeEach()
-    journeyRepo.collection.drop().toFuture().futureValue shouldBe ()
+    app.injector.instanceOf[JourneyRepo].collection.drop().toFuture().futureValue shouldBe ()
+    journeyByTaxIdRepo.collection.drop().toFuture().futureValue shouldBe ()
     ()
   }
 
@@ -400,6 +410,345 @@ class PegaControllerSpec extends ItSpec {
           tdAll.pegaOauthToken,
           tdAll.pegaCaseId
         )
+
+      }
+
+    }
+
+    "handling a request to save a journey must" - {
+
+      "return an error when" - {
+        "no journey can be found for the given journey id" in new JourneyItTest {
+          stubCommonActions()
+
+          val exception = intercept[Exception](await(controller.saveJourney(tdAll.journeyId)(request)))
+          exception.getMessage should include("Expected journey to be found")
+
+        }
+
+        "no tax id has been determined yet in the journey" in new JourneyItTest {
+          insertJourneyForTest(tdAll.EpayeBta.journeyAfterStarted)
+          stubCommonActions()
+
+          val exception = intercept[Exception](await(controller.saveJourney(tdAll.journeyId)(request)))
+          exception.getMessage should include("Cannot save journey when no tax ID has been computed yet")
+        }
+      }
+
+      "save a journey if one can be found in an appropriate state" in new JourneyItTest {
+        val journey = tdAll.EpayeBta.journeyAfterCanPayUpfrontNo
+        insertJourneyForTest(journey)
+        stubCommonActions()
+
+        val result = controller.saveJourney(tdAll.journeyId)(request)
+        status(result) shouldBe OK
+
+        val document = journeyByTaxIdRepo.findById(journey.taxId).futureValue
+        document.map(_.journey) shouldBe Some(journey)
+        document.map(_.taxId) shouldBe Some(journey.taxId)
+      }
+
+    }
+
+    "handling a request to recreate a session for tax regime" - {
+
+      "EPAYE must" - {
+
+        "return an error when" - {
+
+            def testError(enrolments: Set[Enrolment], expectedResponseStatus: Int, expectedResponseMessage: String)(context: JourneyItTest) = {
+              stubCommonActions(Enrolments(enrolments))
+
+              val exception = intercept[UpstreamErrorResponse](
+                await(controller.recreateSession(TaxRegime.Epaye)(context.request))
+              )
+              exception.statusCode shouldBe expectedResponseStatus
+              exception.getMessage shouldBe expectedResponseMessage
+            }
+
+          "no IR-PAYE enrolment can be found" in new JourneyItTest {
+            testError(Set.empty, FORBIDDEN, "No enrolment found for tax regime Epaye: EnrolmentNotFound()")(this)
+          }
+
+          "no TaxOfficeNumber can be found" in new JourneyItTest {
+            testError(
+              Set(Enrolment("IR-PAYE", Seq(EnrolmentIdentifier("TaxOfficeReference", "t")), "activated")),
+              FORBIDDEN,
+              "No enrolment found for tax regime Epaye: IdentifierNotFound(Set(EnrolmentDef(IR-PAYE,TaxOfficeNumber)))"
+            )(this)
+          }
+
+          "no TaxOfficeReference can be found" in new JourneyItTest {
+            testError(
+              Set(Enrolment("IR-PAYE", Seq(EnrolmentIdentifier("TaxOfficeNumber", "t")), "activated")),
+              FORBIDDEN,
+              "No enrolment found for tax regime Epaye: IdentifierNotFound(Set(EnrolmentDef(IR-PAYE,TaxOfficeReference)))"
+            )(this)
+          }
+
+          "the IR-PAYE enrolment is inactive" in new JourneyItTest {
+            testError(
+              Set(
+                Enrolment(
+                  "IR-PAYE",
+                  Seq(EnrolmentIdentifier("TaxOfficeNumber", "t"), EnrolmentIdentifier("TaxOfficeReference", "t")),
+                  "something that's not activated"
+                )
+              ),
+              FORBIDDEN,
+              "No enrolment found for tax regime Epaye: Inactive()"
+            )(this)
+          }
+
+          "no journey can be found for the tax id found from the enrolments" in new JourneyItTest {
+            testError(
+              Set(
+                Enrolment(
+                  "IR-PAYE",
+                  Seq(EnrolmentIdentifier("TaxOfficeNumber", "12345"), EnrolmentIdentifier("TaxOfficeReference", "67890")),
+                  "Activated"
+                )
+              ),
+              NOT_FOUND,
+              "Journey not found for tax regime Epaye"
+            )(this)
+          }
+
+        }
+
+        "save the journey in the JourneyRepo if one can be found and return it in the response" in new JourneyItTest {
+          val journey = tdAll.EpayeBta.journeyAfterStartedPegaCase.copy(taxId = EmpRef("1234567890"))
+          await(journeyByTaxIdRepo.upsert(JourneyWithTaxId(journey.taxId, journey, Instant.now(Clock.systemUTC())))) shouldBe ()
+
+          stubCommonActions(Enrolments(
+            Set(
+              Enrolment(
+                "IR-PAYE",
+                Seq(EnrolmentIdentifier("TaxOfficeNumber", "12345"), EnrolmentIdentifier("TaxOfficeReference", "67890")),
+                "Activated"
+              )
+            )
+          ))
+
+          val result = controller.recreateSession(TaxRegime.Epaye)(request)
+          status(result) shouldBe OK
+          contentAsJson(result).validate[Journey].get shouldBe journey
+
+          journeyRepo.findById(tdAll.journeyId).futureValue shouldBe Some(journey)
+        }
+
+      }
+
+      "VAT must" - {
+
+        val mtdVatEnrolment = Enrolment(
+          "HMRC-MTD-VAT",
+          Seq(EnrolmentIdentifier("VRN", "12345678")),
+          "Activated"
+        )
+
+        val vatVarEnrolment = Enrolment(
+          "HMCE-VATVAR-ORG",
+          Seq(EnrolmentIdentifier("VATRegNo", "23456789")),
+          "Activated"
+        )
+
+        val vatDecEnrolment = Enrolment(
+          "HMCE-VATDEC-ORG",
+          Seq(EnrolmentIdentifier("VATRegNo", "34567890")),
+          "Activated"
+        )
+
+        "return an error when" - {
+
+            def testError(enrolments: Set[Enrolment], expectedResponseStatus: Int, expectedResponseMessage: String)(context: JourneyItTest) = {
+              stubCommonActions(Enrolments(enrolments))
+
+              val exception = intercept[UpstreamErrorResponse](
+                await(controller.recreateSession(TaxRegime.Vat)(context.request))
+              )
+              exception.statusCode shouldBe expectedResponseStatus
+              exception.getMessage shouldBe expectedResponseMessage
+            }
+
+          "no relevant enrolment can be found" in new JourneyItTest {
+            testError(Set.empty, FORBIDDEN, "No enrolment found for tax regime Vat: EnrolmentNotFound()")(this)
+          }
+
+          "an identifier for HMRC-MTD-VAT cannot be found" in new JourneyItTest {
+            testError(
+              Set(mtdVatEnrolment.copy(identifiers = Seq.empty)),
+              FORBIDDEN,
+              "No enrolment found for tax regime Vat: IdentifierNotFound(Set(EnrolmentDef(HMRC-MTD-VAT,VRN)))"
+            )(this)
+          }
+
+          "an identifier for HMCE-VATDEC-ORG cannot be found" in new JourneyItTest {
+            testError(
+              Set(vatDecEnrolment.copy(identifiers = Seq.empty)),
+              FORBIDDEN,
+              "No enrolment found for tax regime Vat: IdentifierNotFound(Set(EnrolmentDef(HMCE-VATDEC-ORG,VATRegNo)))"
+            )(this)
+          }
+
+          "an identifier for HMCE-VATVAR-ORG cannot be found" in new JourneyItTest {
+            testError(
+              Set(vatVarEnrolment.copy(identifiers = Seq.empty)),
+              FORBIDDEN,
+              "No enrolment found for tax regime Vat: IdentifierNotFound(Set(EnrolmentDef(HMCE-VATVAR-ORG,VATRegNo)))"
+            )(this)
+          }
+
+          "no active enrolment can be found" in new JourneyItTest {
+            testError(
+              Set(
+                vatVarEnrolment.copy(state = "uh oh"),
+                vatDecEnrolment.copy(state = "oh no"),
+                mtdVatEnrolment.copy(state = "aahhh")
+              ),
+              FORBIDDEN,
+              "No enrolment found for tax regime Vat: Inactive()"
+            )(this)
+          }
+
+          "no journey can be found for the tax id found from the enrolments" in new JourneyItTest {
+            testError(Set(mtdVatEnrolment), NOT_FOUND, "Journey not found for tax regime Vat")(this)
+          }
+
+        }
+
+        "save the journey in the JourneyRepo if one can be found and return it in the response when" - {
+            def test(enrolments: Set[Enrolment], expectedVrn: String)(context: JourneyItTest): Unit = {
+              val journey = context.tdAll.VatBta.journeyAfterStartedPegaCase.copy(taxId = Vrn(expectedVrn))
+              await(journeyByTaxIdRepo.upsert(JourneyWithTaxId(journey.taxId, journey, Instant.now(Clock.systemUTC())))) shouldBe ()
+
+              stubCommonActions(Enrolments(enrolments))
+
+              val result = controller.recreateSession(TaxRegime.Vat)(context.request)
+              status(result) shouldBe OK
+              contentAsJson(result).validate[Journey].get shouldBe journey
+
+              context.journeyRepo.findById(context.tdAll.journeyId).futureValue shouldBe Some(journey)
+              ()
+            }
+
+          "there are active MtdVat, VatVar and VatDec enrolments" in new JourneyItTest {
+            test(
+              Set(mtdVatEnrolment, vatVarEnrolment, vatDecEnrolment),
+              "12345678"
+            )(this)
+          }
+
+          "there are active MtdVat, VatVar enrolments" in new JourneyItTest {
+            test(
+              Set(mtdVatEnrolment, vatVarEnrolment),
+              "12345678"
+            )(this)
+          }
+
+          "there are active MtdVat, VatDec enrolments" in new JourneyItTest {
+            test(
+              Set(mtdVatEnrolment, vatDecEnrolment),
+              "12345678"
+            )(this)
+          }
+
+          "there are active VatVar and VatDec enrolments" in new JourneyItTest {
+            test(
+              Set(vatVarEnrolment, vatDecEnrolment),
+              "23456789"
+            )(this)
+          }
+
+          "there is only an active MtdVat enrolment" in new JourneyItTest {
+            test(
+              Set(mtdVatEnrolment),
+              "12345678"
+            )(this)
+          }
+
+          "there is only an active VatVar enrolment" in new JourneyItTest {
+            test(
+              Set(vatVarEnrolment),
+              "23456789"
+            )(this)
+          }
+
+          "there is only an active VatDec enrolment" in new JourneyItTest {
+            test(
+              Set(vatDecEnrolment),
+              "34567890"
+            )(this)
+          }
+
+        }
+
+      }
+
+      "SA must" - {
+
+        val saEnrolment = Enrolment(
+          "IR-SA",
+          Seq(EnrolmentIdentifier("UTR", "1234567895")),
+          "Activated"
+        )
+
+        "return an error when" - {
+
+            def testError(enrolments: Set[Enrolment], expectedResponseStatus: Int, expectedResponseMessage: String)(context: JourneyItTest) = {
+              stubCommonActions(Enrolments(enrolments))
+
+              val exception = intercept[UpstreamErrorResponse](
+                await(controller.recreateSession(TaxRegime.Sa)(context.request))
+              )
+              exception.statusCode shouldBe expectedResponseStatus
+              exception.getMessage shouldBe expectedResponseMessage
+            }
+
+          "no IR-SA enrolment can be found" in new JourneyItTest {
+            testError(Set.empty, FORBIDDEN, "No enrolment found for tax regime Sa: EnrolmentNotFound()")(this)
+          }
+
+          "no UTR can be found" in new JourneyItTest {
+            testError(
+              Set(saEnrolment.copy(identifiers = Seq.empty)),
+              FORBIDDEN,
+              "No enrolment found for tax regime Sa: IdentifierNotFound(Set(EnrolmentDef(IR-SA,UTR)))"
+            )(this)
+          }
+
+          "the IR-SA enrolment is inactive" in new JourneyItTest {
+            testError(
+              Set(saEnrolment.copy(state = "broken")),
+              FORBIDDEN,
+              "No enrolment found for tax regime Sa: Inactive()"
+            )(this)
+          }
+
+          "no journey can be found for the tax id found from the enrolments" in new JourneyItTest {
+            testError(
+              Set(saEnrolment),
+              NOT_FOUND,
+              "Journey not found for tax regime Sa"
+            )(this)
+          }
+        }
+
+        "save the journey in the JourneyRepo if one can be found and return it in the response" in new JourneyItTest {
+          val journey = tdAll.SaBta.journeyAfterStartedPegaCase.copy(
+            taxId     = SaUtr("1234567895"),
+            sessionId = SessionId("old-session-id")
+          )
+          await(journeyByTaxIdRepo.upsert(JourneyWithTaxId(journey.taxId, journey, Instant.now(Clock.systemUTC())))) shouldBe ()
+
+          stubCommonActions(Enrolments(Set(saEnrolment)))
+
+          val result = controller.recreateSession(TaxRegime.Sa)(request)
+          status(result) shouldBe OK
+          contentAsJson(result).validate[Journey].get shouldBe journey.copy(sessionId = tdAll.sessionId)
+
+          journeyRepo.findById(tdAll.journeyId).futureValue shouldBe Some(journey.copy(sessionId = tdAll.sessionId))
+        }
 
       }
 

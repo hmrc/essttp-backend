@@ -35,7 +35,7 @@ import services.{CorrelationIdGenerator, JourneyIdGenerator}
 import testsupport.stubs.{AuditConnectorStub, AuthStub}
 import testsupport.testdata.TdAll
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
-import uk.gov.hmrc.auth.core.AuthProviders
+import uk.gov.hmrc.auth.core.{AuthProviders, Enrolments}
 import uk.gov.hmrc.crypto.{AesCrypto, Decrypter, Encrypter, PlainText}
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.http.HeaderCarrier
@@ -182,9 +182,9 @@ trait ItSpec
     barsRepo.collection.deleteMany(BsonDocument("{}")).toFuture().futureValue
   }
 
-  def stubCommonActions(): StubMapping = {
+  def stubCommonActions(enrolments: Enrolments = Enrolments(Set.empty)): StubMapping = {
     AuditConnectorStub.audit()
-    AuthStub.authorise()
+    AuthStub.authorise(enrolments)
   }
 
   def verifyCommonActions(numberOfAuthCalls: Int): Unit =

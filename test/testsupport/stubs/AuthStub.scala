@@ -19,17 +19,27 @@ package testsupport.stubs
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.client.WireMock.{aResponse, post, stubFor, urlPathEqualTo}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import play.api.libs.json.{Json, OFormat}
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
-import uk.gov.hmrc.auth.core.{AuthProviders, AuthenticateHeaderParser}
+import uk.gov.hmrc.auth.core.{AuthProviders, AuthenticateHeaderParser, Enrolment, EnrolmentIdentifier, Enrolments}
 
 object AuthStub {
 
   private val authoriseUrl: String = "/auth/authorise"
 
-  def authorise(): StubMapping =
+  implicit val enrolmentFormat: OFormat[Enrolment] = {
+    implicit val f: OFormat[EnrolmentIdentifier] = Json.format[EnrolmentIdentifier]
+    Json.format[Enrolment]
+  }
+
+  def authorise(enrolments: Enrolments = Enrolments(Set.empty)): StubMapping =
     stubFor(
       post(urlPathEqualTo(authoriseUrl))
-        .willReturn(aResponse().withStatus(200).withBody("{}"))
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody(s"""{ "allEnrolments" : ${Json.toJson(enrolments.enrolments).toString} }""")
+        )
     )
 
   def authoriseError(authorisationExceptionString: String): StubMapping =
@@ -54,7 +64,7 @@ object AuthStub {
               |  "authorise": [
               |    ${authProviders.toJson.toString()}
               |  ],
-              |  "retrieve": [ ]
+              |  "retrieve": [ "allEnrolments" ]
               |}
               |""".stripMargin
           )
