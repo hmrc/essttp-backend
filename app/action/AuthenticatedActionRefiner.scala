@@ -22,6 +22,7 @@ import play.api.Logger
 import play.api.mvc.Results.{InternalServerError, Unauthorized}
 import play.api.mvc.{ActionRefiner, MessagesControllerComponents, Request, Result}
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthProviders, AuthorisationException, AuthorisedFunctions, NoActiveSession}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendHeaderCarrierProvider
 
@@ -38,8 +39,9 @@ class AuthenticatedActionRefiner @Inject() (
   private val logger = Logger(getClass)
 
   override protected def refine[A](request: Request[A]): Future[Either[Result, AuthenticatedRequest[A]]] = {
-    authorised(AuthProviders(GovernmentGateway)) {
-      Future.successful(Right(model.AuthenticatedRequest(request)))
+    authorised(AuthProviders(GovernmentGateway)).retrieve(Retrievals.allEnrolments) {
+      enrolments =>
+        Future.successful(Right(model.AuthenticatedRequest(request, enrolments)))
     }(hc(request), ec).recover {
       case _: NoActiveSession =>
         Left(Unauthorized)

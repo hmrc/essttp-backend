@@ -38,7 +38,7 @@ sealed trait Journey {
   def _id: JourneyId
   def origin: Origin
   def createdOn: Instant
-  val lastUpdated: Instant = Instant.now(Clock.systemUTC())
+
   def sjRequest: SjRequest
   def sessionId: SessionId
   def taxRegime: TaxRegime
@@ -78,7 +78,7 @@ object Journey {
       defaultFormat.writes(j) ++ Json.obj(
         "sessionId" -> j.sessionId,
         "createdAt" -> MongoJavatimeFormats.instantFormat.writes(j.createdOn),
-        "lastUpdated" -> MongoJavatimeFormats.instantFormat.writes(j.lastUpdated),
+        "lastUpdated" -> MongoJavatimeFormats.instantFormat.writes(Instant.now(Clock.systemUTC())),
         "correlationId" -> j.correlationId
       ))
     OFormat(

@@ -66,7 +66,7 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies ++= AppDependencies.microserviceDependencies,
     (Test / parallelExecution) := false,
     (Test / fork) := false,
-    routesImport ++= Seq("essttp.journey.model._"),
+    routesImport ++= Seq("essttp.journey.model._", "essttp.rootmodel.TaxRegime"),
     wartremoverExcluded ++= (Compile / routes).value
   )
   .disablePlugins(sbt.plugins.JUnitXmlReportPlugin)

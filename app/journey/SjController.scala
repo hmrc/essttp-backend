@@ -90,12 +90,9 @@ class SjController @Inject() (
   private def doJourneyStart(
       originatedRequest: OriginatedSjRequest
   )(implicit request: Request[_]): Future[Result] = {
+    val journey: Journey = journeyFactory.makeJourney(originatedRequest, RequestSupport.getSessionId())
 
-    for {
-      sessionId <- RequestSupport.getSessionId()
-      journey: Journey = journeyFactory.makeJourney(originatedRequest, sessionId)
-      _ <- journeyService.upsert(journey)
-    } yield {
+    journeyService.upsert(journey).map { _ =>
       val description: String = journeyDescription(originatedRequest.origin)
       val nextUrl: NextUrl = NextUrl(s"${journeyConfig.nextUrlHost}/set-up-a-payment-plan${originToRelativeUrl(originatedRequest.origin)}")
       val sjResponse: SjResponse = SjResponse(nextUrl, journey.journeyId)

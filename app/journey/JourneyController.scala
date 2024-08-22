@@ -62,6 +62,12 @@ class JourneyController @Inject() (
     }
   }
 
+  val storeJourney: Action[Journey] = actions.authenticatedAction(parse.json[Journey]).async { implicit request: Request[Journey] =>
+    journeyService
+      .upsert(request.body)
+      .map(_ => Created)
+  }
+
   private def notFound[Key](key: Key)(implicit request: RequestHeader): Result = {
     JourneyLogger.warn(s"Journey not found [${key.toString}]")
     val response = ErrorResponse(NOT_FOUND, s"Journey not found [${key.toString}]")

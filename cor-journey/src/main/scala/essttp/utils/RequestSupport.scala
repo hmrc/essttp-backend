@@ -23,7 +23,6 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.Inject
-import scala.concurrent.Future
 
 /**
  * Repeating the pattern which was brought originally by play-framework
@@ -41,14 +40,11 @@ object RequestSupport {
 
   implicit def hc(implicit request: RequestHeader): HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-  def getSessionId()(implicit request: Request[_]): Future[SessionId] = Future.successful{
-    //HINT: We wrapp it into future so it can throw exception inside for comprehension and propagate
-    // nicely failed result
+  def getSessionId()(implicit request: Request[_]): SessionId =
     hc
       .sessionId
       .map(s => SessionId(s.value))
       .getOrElse(
         Errors.throwBadRequestException("Session id must be provided")
       )
-  }
 }

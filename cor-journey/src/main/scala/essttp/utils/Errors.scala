@@ -54,6 +54,11 @@ object Errors {
     play.mvc.Http.Status.NOT_FOUND
   )
 
+  @inline def throwForbiddenException(message: => String): Nothing = throw UpstreamErrorResponse(
+    message,
+    play.mvc.Http.Status.FORBIDDEN
+  )
+
   @inline def throwServerErrorException(message: => String): Nothing = throw UpstreamErrorResponse(
     message,
     play.mvc.Http.Status.INTERNAL_SERVER_ERROR

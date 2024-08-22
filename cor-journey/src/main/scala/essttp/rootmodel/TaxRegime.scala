@@ -17,13 +17,37 @@
 package essttp.rootmodel
 
 import cats.Eq
+import cats.syntax.either._
 import enumeratum._
+import play.api.mvc.{PathBindable, QueryStringBindable}
 
+import java.util.Locale
 import scala.collection.immutable
 
 sealed trait TaxRegime extends EnumEntry with Product with Serializable
 
 object TaxRegime extends Enum[TaxRegime] {
+
+  implicit val pathBindable: PathBindable[TaxRegime] = new PathBindable[TaxRegime] {
+    override def bind(key: String, value: String): Either[String, TaxRegime] =
+      TaxRegime.withNameInsensitiveEither(value).leftMap(_.toString)
+
+    override def unbind(key: String, value: TaxRegime): String =
+      value.entryName.toLowerCase(Locale.UK)
+  }
+
+  implicit val queryStringBindable: QueryStringBindable[TaxRegime] = new QueryStringBindable[TaxRegime] {
+    override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, TaxRegime]] =
+      params.get(key).map{
+        _.toList match {
+          case regime :: Nil => TaxRegime.withNameInsensitiveEither(regime).leftMap(_.toString)
+          case _             => Left(s"Could not read tax regime from query parameter values ${params.toString}")
+        }
+      }
+
+    override def unbind(key: String, value: TaxRegime): String =
+      s"$key=${value.entryName.toLowerCase((Locale.UK))}"
+  }
 
   implicit val eqTaxRegime: Eq[TaxRegime] = Eq.fromUniversalEquals
 

@@ -30,6 +30,7 @@ object TaxId {
   implicit val format: OFormat[TaxId] = derived.oformat[TaxId]()
 
   implicit val eq: Eq[TaxId] = Eq.fromUniversalEquals
+
 }
 
 final case class EmpRef(value: String) extends TaxId

@@ -17,7 +17,9 @@
 package controllers
 
 import action.Actions
+import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.JourneyId
+import essttp.rootmodel.TaxRegime
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import services.PegaService
@@ -31,14 +33,26 @@ class PegaController @Inject() (
     pegaService: PegaService,
     actions:     Actions,
     cc:          ControllerComponents
-)(implicit ec: ExecutionContext) extends BackendController(cc) {
+)(implicit ec: ExecutionContext, operationalCryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
   def startCase(journeyId: JourneyId): Action[AnyContent] = actions.authenticatedAction.async { implicit request =>
-    pegaService.startCase(journeyId).map(response => Created(Json.toJson(response)))
+    pegaService.startCase(journeyId)
+      .map(response => Created(Json.toJson(response)))
   }
 
   def getCase(journeyId: JourneyId): Action[AnyContent] = actions.authenticatedAction.async { implicit request =>
-    pegaService.getCase(journeyId).map(response => Ok(Json.toJson(response)))
+    pegaService.getCase(journeyId)
+      .map(response => Ok(Json.toJson(response)))
+  }
+
+  def saveJourney(journeyId: JourneyId): Action[AnyContent] = actions.authenticatedAction.async { implicit request =>
+    pegaService.saveJourney(journeyId)
+      .map(_ => Ok)
+  }
+
+  def recreateSession(taxRegime: TaxRegime): Action[AnyContent] = actions.authenticatedAction.async { implicit request =>
+    pegaService.recreateSession(taxRegime, request.enrolments)
+      .map(journey => Ok(Json.toJson(journey)))
   }
 
 }
