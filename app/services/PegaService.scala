@@ -72,8 +72,6 @@ class PegaService @Inject() (
         Errors.throwBadRequestExceptionF("Cannot save journey when no tax ID has been computed yet")
       case j: Journey.AfterComputedTaxId =>
         val now = Instant.now(Clock.systemUTC())
-        println(s"Saving journey ${Json.toJson(j: Journey).toString}")
-
         journeyByTaxIdRepo.upsert(JourneyWithTaxId(j.taxId, j, now))
     }
   }
