@@ -17,7 +17,6 @@
 package services
 
 import connectors.PegaConnector
-import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.enrolments.{EnrolmentDef, EnrolmentDefResult}
 import essttp.journey.model.Journey.{Epaye, Sa, Vat}
 import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey, JourneyId, PaymentPlanAnswers, UpfrontPaymentAnswers, WhyCannotPayInFullAnswers}
@@ -31,7 +30,6 @@ import essttp.utils.{Errors, RequestSupport}
 import essttp.utils.RequestSupport.hc
 import models.pega.PegaStartCaseRequest.MDTPropertyMapping
 import models.pega.{PegaStartCaseRequest, PegaStartCaseResponse}
-import play.api.libs.json.Json
 import play.api.mvc.Request
 import repository.JourneyByTaxIdRepo
 import repository.JourneyByTaxIdRepo.JourneyWithTaxId
@@ -46,7 +44,7 @@ class PegaService @Inject() (
     pegaConnector:      PegaConnector,
     journeyByTaxIdRepo: JourneyByTaxIdRepo,
     journeyService:     JourneyService
-)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) {
+)(implicit ec: ExecutionContext) {
 
   def startCase(journeyId: JourneyId)(implicit r: Request[_]): Future[StartCaseResponse] = {
     for {
