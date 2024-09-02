@@ -19,6 +19,13 @@ POST        /sa/mobile/journey/start                                       journ
 POST        /sa/gov-uk/journey/start                                       journey.SjController.startJourneySaFromGovUk
 POST        /sa/detached-url/journey/start                                 journey.SjController.startJourneySaFromDetachedUrl
 
+#SIA
+POST        /sia/pta/journey/start                                          journey.SjController.startJourneySiaFromPta
+POST        /sia/mobile/journey/start                                       journey.SjController.startJourneySiaFromMobile
+POST        /sia/gov-uk/journey/start                                       journey.SjController.startJourneySiaFromGovUk
+POST        /sia/detached-url/journey/start                                 journey.SjController.startJourneySiaFromDetachedUrl
+
+
 POST        /bars/verify/status                                             bars.BarsVerifyStatusController.status
 POST        /bars/verify/update                                             bars.BarsVerifyStatusController.update
 

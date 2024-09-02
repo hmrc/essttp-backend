@@ -20,7 +20,7 @@ import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.{Epaye, Sa, Stages, Vat}
+import essttp.journey.model.Journey.{Epaye, Sa, Sia, Stages, Vat}
 import essttp.journey.model.{Journey, JourneyId, PaymentPlanAnswers, Stage}
 import essttp.rootmodel.pega.StartCaseResponse
 import essttp.utils.Errors
@@ -71,6 +71,11 @@ class UpdatePegaStartCaseResponseController @Inject() (
           .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
           .withFieldConst(_.startCaseResponse, startCaseResponse)
           .transform
+      case j: Sia.ObtainedCanPayWithinSixMonthsAnswers =>
+        j.into[Sia.StartedPegaCase]
+          .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+          .withFieldConst(_.startCaseResponse, startCaseResponse)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
@@ -91,6 +96,8 @@ class UpdatePegaStartCaseResponseController @Inject() (
             case j: Vat.StartedPegaCase =>
               j.copy(startCaseResponse = startCaseResponse)
             case j: Sa.StartedPegaCase =>
+              j.copy(startCaseResponse = startCaseResponse)
+            case j: Sia.StartedPegaCase =>
               j.copy(startCaseResponse = startCaseResponse)
           }
         )
@@ -121,6 +128,11 @@ class UpdatePegaStartCaseResponseController @Inject() (
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
                     .transform
+                case j: Sia.CheckedPaymentPlan =>
+                  j.into[Sa.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
 
                 case j: Epaye.EnteredDetailsAboutBankAccount =>
                   j.into[Epaye.StartedPegaCase]
@@ -137,6 +149,12 @@ class UpdatePegaStartCaseResponseController @Inject() (
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
                     .transform
+                case j: Sia.EnteredDetailsAboutBankAccount =>
+                  j.into[Sia.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+
                 case j: Epaye.EnteredDirectDebitDetails =>
                   j.into[Epaye.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
@@ -149,6 +167,11 @@ class UpdatePegaStartCaseResponseController @Inject() (
                     .transform
                 case j: Sa.EnteredDirectDebitDetails =>
                   j.into[Sa.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Sia.EnteredDirectDebitDetails =>
+                  j.into[Sia.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
                     .transform
@@ -168,6 +191,11 @@ class UpdatePegaStartCaseResponseController @Inject() (
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
                     .transform
+                case j: Sia.ConfirmedDirectDebitDetails =>
+                  j.into[Sia.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
 
                 case j: Epaye.AgreedTermsAndConditions =>
                   j.into[Epaye.StartedPegaCase]
@@ -181,6 +209,11 @@ class UpdatePegaStartCaseResponseController @Inject() (
                     .transform
                 case j: Sa.AgreedTermsAndConditions =>
                   j.into[Sa.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Sia.AgreedTermsAndConditions =>
+                  j.into[Sia.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
                     .transform
@@ -200,6 +233,11 @@ class UpdatePegaStartCaseResponseController @Inject() (
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
                     .transform
+                case j: Sia.SelectedEmailToBeVerified =>
+                  j.into[Sia.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
 
                 case j: Epaye.EmailVerificationComplete =>
                   j.into[Epaye.StartedPegaCase]
@@ -213,6 +251,11 @@ class UpdatePegaStartCaseResponseController @Inject() (
                     .transform
                 case j: Sa.EmailVerificationComplete =>
                   j.into[Sa.StartedPegaCase]
+                    .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .transform
+                case j: Sia.EmailVerificationComplete =>
+                  j.into[Sia.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
                     .transform

@@ -19,7 +19,7 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.{Epaye, Sa, Stages, Vat}
+import essttp.journey.model.Journey.{Epaye, Sa, Sia, Stages, Vat}
 import essttp.journey.model.{Journey, JourneyId, Stage}
 import essttp.rootmodel.Email
 import essttp.utils.Errors
@@ -75,6 +75,11 @@ class UpdateChosenEmailController @Inject() (
           .withFieldConst(_.stage, Stage.AfterSelectedAnEmailToBeVerified.EmailChosen)
           .withFieldConst(_.emailToBeVerified, email)
           .transform
+      case j: Sia.AgreedTermsAndConditions =>
+        j.into[Sia.SelectedEmailToBeVerified]
+          .withFieldConst(_.stage, Stage.AfterSelectedAnEmailToBeVerified.EmailChosen)
+          .withFieldConst(_.emailToBeVerified, email)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
@@ -91,6 +96,8 @@ class UpdateChosenEmailController @Inject() (
         j.copy(emailToBeVerified = email)
       case j: Journey.Sa.SelectedEmailToBeVerified =>
         j.copy(emailToBeVerified = email)
+      case j: Journey.Sia.SelectedEmailToBeVerified =>
+        j.copy(emailToBeVerified = email)
 
       case j: Journey.Epaye.EmailVerificationComplete =>
         j.into[Journey.Epaye.SelectedEmailToBeVerified]
@@ -104,6 +111,11 @@ class UpdateChosenEmailController @Inject() (
           .transform
       case j: Journey.Sa.EmailVerificationComplete =>
         j.into[Journey.Sa.SelectedEmailToBeVerified]
+          .withFieldConst(_.emailToBeVerified, email)
+          .withFieldConst(_.stage, Stage.AfterSelectedAnEmailToBeVerified.EmailChosen)
+          .transform
+      case j: Journey.Sia.EmailVerificationComplete =>
+        j.into[Journey.Sia.SelectedEmailToBeVerified]
           .withFieldConst(_.emailToBeVerified, email)
           .withFieldConst(_.stage, Stage.AfterSelectedAnEmailToBeVerified.EmailChosen)
           .transform

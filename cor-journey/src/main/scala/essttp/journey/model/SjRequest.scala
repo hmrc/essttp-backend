@@ -167,5 +167,51 @@ object SjRequest {
     }
   }
 
+  /**
+   * Marking trait aggregating all Sa [[SjRequest]]s
+   */
+  sealed trait Sia extends SjRequest {
+    self: SjRequest =>
+  }
+
+  /**
+   * SjRequest for Sia tax regime
+   */
+  object Sia {
+
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
+    implicit val format: OFormat[SjRequest.Sia] = derived.oformat[SjRequest.Sia]()
+
+    /**
+     * Start Journey (Sj) Request
+     * for Epaye (Employers' Pay as you earn)
+     * used by [[Origin]]s which provide only back and return urls
+     */
+    final case class Simple(
+        returnUrl: ReturnUrl,
+        backUrl:   BackUrl
+    )
+      extends SjRequest
+      with Sia
+
+    object Simple {
+      @SuppressWarnings(Array("org.wartremover.warts.Any"))
+      implicit val format: OFormat[Simple] = Json.format
+    }
+
+    /**
+     * Start Journey (Sj) Request
+     * for Epaye (Employers' Pay as you earn)
+     * It is used by origins which doesn't provide any data
+     */
+    final case class Empty()
+      extends SjRequest
+      with Sia
+
+    object Empty {
+      implicit val format: OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
+    }
+  }
+
 }
 

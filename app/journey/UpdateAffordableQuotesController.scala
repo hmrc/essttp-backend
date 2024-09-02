@@ -74,6 +74,11 @@ class UpdateAffordableQuotesController @Inject() (
           .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
           .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
           .transform
+      case j: Journey.Sia.RetrievedStartDates =>
+        j.into[Journey.Sia.RetrievedAffordableQuotes]
+          .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+          .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
@@ -94,6 +99,8 @@ class UpdateAffordableQuotesController @Inject() (
             j.copy(affordableQuotesResponse = affordableQuotesResponse)
           case j: Journey.Sa.RetrievedAffordableQuotes =>
             j.copy(affordableQuotesResponse = affordableQuotesResponse)
+          case j: Journey.Sia.RetrievedAffordableQuotes =>
+            j.copy(affordableQuotesResponse = affordableQuotesResponse)
 
           case j: Journey.Epaye.ChosenPaymentPlan =>
             j.into[Journey.Epaye.RetrievedAffordableQuotes]
@@ -110,7 +117,11 @@ class UpdateAffordableQuotesController @Inject() (
               .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
               .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
               .transform
-
+          case j: Journey.Sia.ChosenPaymentPlan =>
+            j.into[Journey.Sia.RetrievedAffordableQuotes]
+              .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+              .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+              .transform
         }
       )
 
@@ -149,6 +160,14 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
+              case j: Journey.Sia.CheckedPaymentPlan =>
+                j.into[Journey.Sia.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
 
               case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
                 j.into[Journey.Epaye.RetrievedAffordableQuotes]
@@ -168,6 +187,14 @@ class UpdateAffordableQuotesController @Inject() (
                   .transform
               case j: Journey.Sa.EnteredDetailsAboutBankAccount =>
                 j.into[Journey.Sa.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+              case j: Journey.Sia.EnteredDetailsAboutBankAccount =>
+                j.into[Journey.Sia.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                   .withFieldConst(_.dayOfMonth, p.dayOfMonth)
@@ -199,6 +226,14 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
+              case j: Journey.Sia.EnteredDirectDebitDetails =>
+                j.into[Journey.Sia.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
 
               case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
                 j.into[Journey.Epaye.RetrievedAffordableQuotes]
@@ -218,6 +253,14 @@ class UpdateAffordableQuotesController @Inject() (
                   .transform
               case j: Journey.Sa.ConfirmedDirectDebitDetails =>
                 j.into[Journey.Sa.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+              case j: Journey.Sia.ConfirmedDirectDebitDetails =>
+                j.into[Journey.Sia.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                   .withFieldConst(_.dayOfMonth, p.dayOfMonth)
@@ -249,6 +292,14 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
+              case j: Journey.Sia.AgreedTermsAndConditions =>
+                j.into[Journey.Sia.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
 
               case j: Journey.Epaye.SelectedEmailToBeVerified =>
                 j.into[Journey.Epaye.RetrievedAffordableQuotes]
@@ -274,6 +325,14 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
+              case j: Journey.Sia.SelectedEmailToBeVerified =>
+                j.into[Journey.Sia.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
 
               case j: Journey.Epaye.EmailVerificationComplete =>
                 j.into[Journey.Epaye.RetrievedAffordableQuotes]
@@ -293,6 +352,14 @@ class UpdateAffordableQuotesController @Inject() (
                   .transform
               case j: Journey.Sa.EmailVerificationComplete =>
                 j.into[Journey.Sa.RetrievedAffordableQuotes]
+                  .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+              case j: Journey.Sia.EmailVerificationComplete =>
+                j.into[Journey.Sia.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                   .withFieldConst(_.dayOfMonth, p.dayOfMonth)

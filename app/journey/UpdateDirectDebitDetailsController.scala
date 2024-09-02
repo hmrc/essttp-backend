@@ -71,6 +71,11 @@ class UpdateDirectDebitDetailsController @Inject() (
           .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
           .withFieldConst(_.directDebitDetails, directDebitDetails)
           .transform
+      case j: Journey.Sia.EnteredDetailsAboutBankAccount =>
+        j.into[Journey.Sia.EnteredDirectDebitDetails]
+          .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
+          .withFieldConst(_.directDebitDetails, directDebitDetails)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
@@ -100,6 +105,11 @@ class UpdateDirectDebitDetailsController @Inject() (
             directDebitDetails = directDebitDetails,
             stage              = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails
           )
+        case j: Journey.Sia.EnteredDirectDebitDetails =>
+          j.copy(
+            directDebitDetails = directDebitDetails,
+            stage              = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails
+          )
 
         case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
           j.into[Journey.Epaye.EnteredDirectDebitDetails]
@@ -113,6 +123,11 @@ class UpdateDirectDebitDetailsController @Inject() (
             .transform
         case j: Journey.Sa.ConfirmedDirectDebitDetails =>
           j.into[Journey.Sa.EnteredDirectDebitDetails]
+            .withFieldConst(_.directDebitDetails, directDebitDetails)
+            .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
+            .transform
+        case j: Journey.Sia.ConfirmedDirectDebitDetails =>
+          j.into[Journey.Sia.EnteredDirectDebitDetails]
             .withFieldConst(_.directDebitDetails, directDebitDetails)
             .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
             .transform
@@ -132,6 +147,11 @@ class UpdateDirectDebitDetailsController @Inject() (
             .withFieldConst(_.directDebitDetails, directDebitDetails)
             .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
             .transform
+        case j: Journey.Sia.AgreedTermsAndConditions =>
+          j.into[Journey.Sia.EnteredDirectDebitDetails]
+            .withFieldConst(_.directDebitDetails, directDebitDetails)
+            .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
+            .transform
 
         case j: Journey.Epaye.SelectedEmailToBeVerified =>
           j.into[Journey.Epaye.EnteredDirectDebitDetails]
@@ -148,6 +168,11 @@ class UpdateDirectDebitDetailsController @Inject() (
             .withFieldConst(_.directDebitDetails, directDebitDetails)
             .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
             .transform
+        case j: Journey.Sia.SelectedEmailToBeVerified =>
+          j.into[Journey.Sia.EnteredDirectDebitDetails]
+            .withFieldConst(_.directDebitDetails, directDebitDetails)
+            .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
+            .transform
 
         case j: Journey.Epaye.EmailVerificationComplete =>
           j.into[Journey.Epaye.EnteredDirectDebitDetails]
@@ -161,6 +186,11 @@ class UpdateDirectDebitDetailsController @Inject() (
             .transform
         case j: Journey.Sa.EmailVerificationComplete =>
           j.into[Journey.Sa.EnteredDirectDebitDetails]
+            .withFieldConst(_.directDebitDetails, directDebitDetails)
+            .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
+            .transform
+        case j: Journey.Sia.EmailVerificationComplete =>
+          j.into[Journey.Sia.EnteredDirectDebitDetails]
             .withFieldConst(_.directDebitDetails, directDebitDetails)
             .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
             .transform

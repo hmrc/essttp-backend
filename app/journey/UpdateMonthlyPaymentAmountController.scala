@@ -20,7 +20,7 @@ import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.{Epaye, Sa, Stages, Vat}
+import essttp.journey.model.Journey.{Epaye, Sa, Sia, Stages, Vat}
 import essttp.journey.model.{Journey, JourneyId, PaymentPlanAnswers, Stage}
 import essttp.rootmodel.MonthlyPaymentAmount
 import essttp.utils.Errors
@@ -71,6 +71,11 @@ class UpdateMonthlyPaymentAmountController @Inject() (
           .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
           .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
           .transform
+      case j: Sia.ObtainedCanPayWithinSixMonthsAnswers =>
+        j.into[Sia.EnteredMonthlyPaymentAmount]
+          .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+          .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
@@ -92,6 +97,8 @@ class UpdateMonthlyPaymentAmountController @Inject() (
               j.copy(monthlyPaymentAmount = monthlyPaymentAmount)
             case j: Sa.EnteredMonthlyPaymentAmount =>
               j.copy(monthlyPaymentAmount = monthlyPaymentAmount)
+            case j: Sia.EnteredMonthlyPaymentAmount =>
+              j.copy(monthlyPaymentAmount = monthlyPaymentAmount)
 
             case j: Epaye.EnteredDayOfMonth =>
               j.into[Epaye.EnteredMonthlyPaymentAmount]
@@ -105,6 +112,11 @@ class UpdateMonthlyPaymentAmountController @Inject() (
                 .transform
             case j: Sa.EnteredDayOfMonth =>
               j.into[Sa.EnteredMonthlyPaymentAmount]
+                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+                .transform
+            case j: Sia.EnteredDayOfMonth =>
+              j.into[Sia.EnteredMonthlyPaymentAmount]
                 .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
                 .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                 .transform
@@ -124,6 +136,11 @@ class UpdateMonthlyPaymentAmountController @Inject() (
                 .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
                 .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                 .transform
+            case j: Sia.RetrievedStartDates =>
+              j.into[Sia.EnteredMonthlyPaymentAmount]
+                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+                .transform
 
             case j: Epaye.RetrievedAffordableQuotes =>
               j.into[Epaye.EnteredMonthlyPaymentAmount]
@@ -140,6 +157,11 @@ class UpdateMonthlyPaymentAmountController @Inject() (
                 .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
                 .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                 .transform
+            case j: Sia.RetrievedAffordableQuotes =>
+              j.into[Sia.EnteredMonthlyPaymentAmount]
+                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+                .transform
 
             case j: Epaye.ChosenPaymentPlan =>
               j.into[Epaye.EnteredMonthlyPaymentAmount]
@@ -151,9 +173,13 @@ class UpdateMonthlyPaymentAmountController @Inject() (
                 .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
                 .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                 .transform
-
             case j: Sa.ChosenPaymentPlan =>
               j.into[Sa.EnteredMonthlyPaymentAmount]
+                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+                .transform
+            case j: Sia.ChosenPaymentPlan =>
+              j.into[Sia.EnteredMonthlyPaymentAmount]
                 .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
                 .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                 .transform
@@ -187,6 +213,11 @@ class UpdateMonthlyPaymentAmountController @Inject() (
                     .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
+                case j: Sia.CheckedPaymentPlan =>
+                  j.into[Sia.EnteredMonthlyPaymentAmount]
+                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+                    .transform
 
                 case j: Epaye.EnteredDetailsAboutBankAccount =>
                   j.into[Epaye.EnteredMonthlyPaymentAmount]
@@ -203,6 +234,12 @@ class UpdateMonthlyPaymentAmountController @Inject() (
                     .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
+                case j: Sia.EnteredDetailsAboutBankAccount =>
+                  j.into[Sia.EnteredMonthlyPaymentAmount]
+                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+                    .transform
+
                 case j: Epaye.EnteredDirectDebitDetails =>
                   j.into[Epaye.EnteredMonthlyPaymentAmount]
                     .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
@@ -215,6 +252,11 @@ class UpdateMonthlyPaymentAmountController @Inject() (
                     .transform
                 case j: Sa.EnteredDirectDebitDetails =>
                   j.into[Sa.EnteredMonthlyPaymentAmount]
+                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+                    .transform
+                case j: Sia.EnteredDirectDebitDetails =>
+                  j.into[Sia.EnteredMonthlyPaymentAmount]
                     .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
@@ -234,6 +276,11 @@ class UpdateMonthlyPaymentAmountController @Inject() (
                     .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
+                case j: Sia.ConfirmedDirectDebitDetails =>
+                  j.into[Sia.EnteredMonthlyPaymentAmount]
+                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+                    .transform
 
                 case j: Epaye.AgreedTermsAndConditions =>
                   j.into[Epaye.EnteredMonthlyPaymentAmount]
@@ -247,6 +294,11 @@ class UpdateMonthlyPaymentAmountController @Inject() (
                     .transform
                 case j: Sa.AgreedTermsAndConditions =>
                   j.into[Sa.EnteredMonthlyPaymentAmount]
+                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+                    .transform
+                case j: Sia.AgreedTermsAndConditions =>
+                  j.into[Sia.EnteredMonthlyPaymentAmount]
                     .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
@@ -266,6 +318,11 @@ class UpdateMonthlyPaymentAmountController @Inject() (
                     .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
+                case j: Sia.SelectedEmailToBeVerified =>
+                  j.into[Sia.EnteredMonthlyPaymentAmount]
+                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+                    .transform
 
                 case j: Epaye.EmailVerificationComplete =>
                   j.into[Epaye.EnteredMonthlyPaymentAmount]
@@ -279,6 +336,11 @@ class UpdateMonthlyPaymentAmountController @Inject() (
                     .transform
                 case j: Sa.EmailVerificationComplete =>
                   j.into[Sa.EnteredMonthlyPaymentAmount]
+                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+                    .transform
+                case j: Sia.EmailVerificationComplete =>
+                  j.into[Sia.EnteredMonthlyPaymentAmount]
                     .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform

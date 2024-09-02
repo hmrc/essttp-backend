@@ -18,7 +18,7 @@ package services
 
 import connectors.PegaConnector
 import essttp.enrolments.{EnrolmentDef, EnrolmentDefResult}
-import essttp.journey.model.Journey.{Epaye, Sa, Vat}
+import essttp.journey.model.Journey.{Epaye, Sa, Vat, Sia}
 import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey, JourneyId, PaymentPlanAnswers, UpfrontPaymentAnswers, WhyCannotPayInFullAnswers}
 import essttp.rootmodel.epaye.{TaxOfficeNumber, TaxOfficeReference}
 import essttp.rootmodel.{AmountInPence, EmpRef, SaUtr, SessionId, TaxId, TaxRegime, Vrn}
@@ -83,6 +83,7 @@ class PegaService @Inject() (
         EnrolmentDef.Epaye.findEnrolmentValues(enrolments).map((toEmpRef _).tupled)
       case TaxRegime.Vat => EnrolmentDef.Vat.findEnrolmentValues(enrolments)
       case TaxRegime.Sa  => EnrolmentDef.Sa.findEnrolmentValues(enrolments)
+      case TaxRegime.Sia => EnrolmentDef.Sia.findEnrolmentValues(enrolments)
     }
 
     enrolmentResult match {
@@ -174,6 +175,30 @@ class PegaService @Inject() (
       case j: Sa.SelectedEmailToBeVerified               => j.copy(sessionId = sessionId)
       case j: Sa.EmailVerificationComplete               => j.copy(sessionId = sessionId)
       case j: Sa.SubmittedArrangement                    => j.copy(sessionId = sessionId)
+
+      case j: Sia.Started                                => j.copy(sessionId = sessionId)
+      case j: Sia.ComputedTaxId                          => j.copy(sessionId = sessionId)
+      case j: Sia.EligibilityChecked                     => j.copy(sessionId = sessionId)
+      case j: Sia.StartedPegaCase                        => j.copy(sessionId = sessionId)
+      case j: Sia.ChosenPaymentPlan                      => j.copy(sessionId = sessionId)
+      case j: Sia.AgreedTermsAndConditions               => j.copy(sessionId = sessionId)
+      case j: Sia.AnsweredCanPayUpfront                  => j.copy(sessionId = sessionId)
+      case j: Sia.CheckedPaymentPlan                     => j.copy(sessionId = sessionId)
+      case j: Sia.ConfirmedDirectDebitDetails            => j.copy(sessionId = sessionId)
+      case j: Sia.EmailVerificationComplete              => j.copy(sessionId = sessionId)
+      case j: Sia.EnteredDayOfMonth                      => j.copy(sessionId = sessionId)
+      case j: Sia.EnteredDetailsAboutBankAccount         => j.copy(sessionId = sessionId)
+      case j: Sia.EnteredDirectDebitDetails              => j.copy(sessionId = sessionId)
+      case j: Sia.EnteredMonthlyPaymentAmount            => j.copy(sessionId = sessionId)
+      case j: Sia.EnteredUpfrontPaymentAmount            => j.copy(sessionId = sessionId)
+      case j: Sia.ObtainedCanPayWithinSixMonthsAnswers   => j.copy(sessionId = sessionId)
+      case j: Sia.ObtainedWhyCannotPayInFullAnswers      => j.copy(sessionId = sessionId)
+      case j: Sia.RetrievedAffordabilityResult           => j.copy(sessionId = sessionId)
+      case j: Sia.RetrievedAffordableQuotes              => j.copy(sessionId = sessionId)
+      case j: Sia.RetrievedExtremeDates                  => j.copy(sessionId = sessionId)
+      case j: Sia.RetrievedStartDates                    => j.copy(sessionId = sessionId)
+      case j: Sia.SelectedEmailToBeVerified              => j.copy(sessionId = sessionId)
+      case j: Sia.SubmittedArrangement                   => j.copy(sessionId = sessionId)
     }
   }
 
@@ -205,6 +230,7 @@ class PegaService @Inject() (
       case TaxRegime.Epaye => "PAYE"
       case TaxRegime.Vat   => "VAT"
       case TaxRegime.Sa    => "SA"
+      case TaxRegime.Sia   => "SIA"
     }
     val eligibilityCheckResult = journey match {
       case j: Journey.AfterEligibilityChecked => j.eligibilityCheckResult

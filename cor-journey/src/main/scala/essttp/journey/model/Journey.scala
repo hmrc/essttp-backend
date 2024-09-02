@@ -2698,4 +2698,610 @@ object Journey {
       with Journey.Sa
   }
 
+  sealed trait Sia extends Journey {
+    override def taxRegime: TaxRegime.Sia.type = TaxRegime.Sia
+
+    override def sjRequest: SjRequest.Sia
+
+    override def origin: Origins.Sia
+
+    override val (backUrl, returnUrl) = sjRequest match {
+      case r: SjRequest.Sia.Simple => (Some(r.backUrl), Some(r.returnUrl))
+      case _                       => (None, None)
+    }
+  }
+
+  object Sia {
+    /**
+     * [[Journey]] after started
+     * Sia
+     */
+    final case class Started(
+        override val _id:                  JourneyId,
+        override val origin:               Origins.Sia,
+        override val createdOn:            Instant,
+        override val sjRequest:            SjRequest.Sia,
+        override val sessionId:            SessionId,
+        override val correlationId:        CorrelationId,
+        override val stage:                Stage.AfterStarted,
+        override val affordabilityEnabled: Option[Boolean]
+    )
+      extends Journey
+      with Journey.Stages.Started
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after computed TaxIds
+     * Sia
+     */
+    final case class ComputedTaxId(
+        override val _id:                  JourneyId,
+        override val origin:               Origins.Sia,
+        override val createdOn:            Instant,
+        override val sjRequest:            SjRequest.Sia,
+        override val sessionId:            SessionId,
+        override val correlationId:        CorrelationId,
+        override val stage:                Stage.AfterComputedTaxId,
+        override val affordabilityEnabled: Option[Boolean],
+        override val taxId:                SaUtr
+    )
+      extends Journey
+      with Journey.Stages.ComputedTaxId
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after EligibilityCheck
+     * Sia
+     */
+    final case class EligibilityChecked(
+        override val _id:                    JourneyId,
+        override val origin:                 Origins.Sia,
+        override val createdOn:              Instant,
+        override val sjRequest:              SjRequest.Sia,
+        override val sessionId:              SessionId,
+        override val correlationId:          CorrelationId,
+        override val stage:                  Stage.AfterEligibilityCheck,
+        override val affordabilityEnabled:   Option[Boolean],
+        override val taxId:                  SaUtr,
+        override val eligibilityCheckResult: EligibilityCheckResult
+    )
+      extends Journey
+      with Journey.Stages.EligibilityChecked
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after WhyCannotPayInFullAnswers
+     * Sia
+     */
+    final case class ObtainedWhyCannotPayInFullAnswers(
+        override val _id:                       JourneyId,
+        override val origin:                    Origins.Sia,
+        override val createdOn:                 Instant,
+        override val sjRequest:                 SjRequest.Sia,
+        override val sessionId:                 SessionId,
+        override val correlationId:             CorrelationId,
+        override val stage:                     Stage.AfterWhyCannotPayInFullAnswers,
+        override val affordabilityEnabled:      Option[Boolean],
+        override val taxId:                     SaUtr,
+        override val eligibilityCheckResult:    EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers
+    )
+      extends Journey
+      with Journey.Stages.ObtainedWhyCannotPayInFullAnswers
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after CanPayUpfront
+     * Sia
+     */
+    final case class AnsweredCanPayUpfront(
+        override val _id:                       JourneyId,
+        override val origin:                    Origins.Sia,
+        override val createdOn:                 Instant,
+        override val sjRequest:                 SjRequest.Sia,
+        override val sessionId:                 SessionId,
+        override val correlationId:             CorrelationId,
+        override val stage:                     Stage.AfterCanPayUpfront,
+        override val affordabilityEnabled:      Option[Boolean],
+        override val taxId:                     SaUtr,
+        override val eligibilityCheckResult:    EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
+        override val canPayUpfront:             CanPayUpfront
+    )
+      extends Journey
+      with Journey.Stages.AnsweredCanPayUpfront
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after UpfrontPaymentAmount
+     * Sia
+     */
+    final case class EnteredUpfrontPaymentAmount(
+        override val _id:                       JourneyId,
+        override val origin:                    Origins.Sia,
+        override val createdOn:                 Instant,
+        override val sjRequest:                 SjRequest.Sia,
+        override val sessionId:                 SessionId,
+        override val correlationId:             CorrelationId,
+        override val stage:                     Stage.AfterUpfrontPaymentAmount,
+        override val affordabilityEnabled:      Option[Boolean],
+        override val taxId:                     SaUtr,
+        override val eligibilityCheckResult:    EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
+        override val canPayUpfront:             CanPayUpfront,
+        override val upfrontPaymentAmount:      UpfrontPaymentAmount
+    )
+      extends Journey
+      with Journey.Stages.EnteredUpfrontPaymentAmount
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after Extreme dates request to esstp-dates
+     * Sia
+     */
+    final case class RetrievedExtremeDates(
+        override val _id:                       JourneyId,
+        override val origin:                    Origins.Sia,
+        override val createdOn:                 Instant,
+        override val sjRequest:                 SjRequest.Sia,
+        override val sessionId:                 SessionId,
+        override val correlationId:             CorrelationId,
+        override val stage:                     Stage.AfterExtremeDatesResponse,
+        override val affordabilityEnabled:      Option[Boolean],
+        override val taxId:                     SaUtr,
+        override val eligibilityCheckResult:    EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:     UpfrontPaymentAnswers,
+        override val extremeDatesResponse:      ExtremeDatesResponse
+    )
+      extends Journey
+      with Journey.Stages.RetrievedExtremeDates
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after Affordability request to tpp
+     * Sia
+     */
+    final case class RetrievedAffordabilityResult(
+        override val _id:                       JourneyId,
+        override val origin:                    Origins.Sia,
+        override val createdOn:                 Instant,
+        override val sjRequest:                 SjRequest.Sia,
+        override val sessionId:                 SessionId,
+        override val correlationId:             CorrelationId,
+        override val stage:                     Stage.AfterAffordabilityResult,
+        override val affordabilityEnabled:      Option[Boolean],
+        override val taxId:                     SaUtr,
+        override val eligibilityCheckResult:    EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:     UpfrontPaymentAnswers,
+        override val extremeDatesResponse:      ExtremeDatesResponse,
+        override val instalmentAmounts:         InstalmentAmounts
+    )
+      extends Journey
+      with Journey.Stages.RetrievedAffordabilityResult
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after answers to CanPayWithinSixMonths if needed
+     * Sia
+     */
+    final case class ObtainedCanPayWithinSixMonthsAnswers(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Sia,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Sia,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterCanPayWithinSixMonthsAnswers,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        SaUtr,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers
+    )
+      extends Journey
+      with Journey.Stages.ObtainedCanPayWithinSixMonthsAnswers
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after started a PEGA case
+     * Sia
+     */
+    final case class StartedPegaCase(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Sia,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Sia,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterStartedPegaCase,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        SaUtr,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val startCaseResponse:            StartCaseResponse
+    )
+      extends Journey
+      with Journey.Stages.StartedPegaCase
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after MonthlyPaymentAmount
+     * Sia
+     */
+    final case class EnteredMonthlyPaymentAmount(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Sia,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Sia,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterMonthlyPaymentAmount,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        SaUtr,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val monthlyPaymentAmount:         MonthlyPaymentAmount
+    )
+      extends Journey
+      with Journey.Stages.EnteredMonthlyPaymentAmount
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after Day of month
+     * Sia
+     */
+    final case class EnteredDayOfMonth(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Sia,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Sia,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterEnteredDayOfMonth,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        SaUtr,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
+        override val dayOfMonth:                   DayOfMonth
+    )
+      extends Journey
+      with Journey.Stages.EnteredDayOfMonth
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after Start dates api call
+     * Sia
+     */
+    final case class RetrievedStartDates(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Sia,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Sia,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterStartDatesResponse,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        SaUtr,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
+        override val dayOfMonth:                   DayOfMonth,
+        override val startDatesResponse:           StartDatesResponse
+    )
+      extends Journey
+      with Journey.Stages.RetrievedStartDates
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after Affordable quotes call to ttp
+     * Sia
+     */
+    final case class RetrievedAffordableQuotes(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Sia,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Sia,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterAffordableQuotesResponse,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        SaUtr,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
+        override val dayOfMonth:                   DayOfMonth,
+        override val startDatesResponse:           StartDatesResponse,
+        override val affordableQuotesResponse:     AffordableQuotesResponse
+    )
+      extends Journey
+      with Journey.Stages.RetrievedAffordableQuotes
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after Payment plan has been chosen
+     * Sia
+     */
+    final case class ChosenPaymentPlan(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Sia,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Sia,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterSelectedPlan,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        SaUtr,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
+        override val dayOfMonth:                   DayOfMonth,
+        override val startDatesResponse:           StartDatesResponse,
+        override val affordableQuotesResponse:     AffordableQuotesResponse,
+        override val selectedPaymentPlan:          PaymentPlan
+    )
+      extends Journey
+      with Journey.Stages.ChosenPaymentPlan
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after Payment plan has been checked
+     * Sia
+     */
+    final case class CheckedPaymentPlan(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Sia,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Sia,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterCheckedPlan,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        SaUtr,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val paymentPlanAnswers:           PaymentPlanAnswers
+    )
+      extends Journey
+      with Journey.Stages.CheckedPaymentPlan
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after details about bank account
+     * Sia
+     */
+    final case class EnteredDetailsAboutBankAccount(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Sia,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Sia,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterEnteredDetailsAboutBankAccount,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        SaUtr,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
+        override val detailsAboutBankAccount:      DetailsAboutBankAccount
+    )
+      extends Journey
+      with Journey.Stages.EnteredDetailsAboutBankAccount
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after bank details have been entered
+     * Sia
+     */
+    final case class EnteredDirectDebitDetails(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Sia,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Sia,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterEnteredDirectDebitDetails,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        SaUtr,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
+        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val directDebitDetails:           BankDetails
+    )
+      extends Journey
+      with Journey.Stages.EnteredDirectDebitDetails
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after bank details have been confirmed
+     * Sia
+     */
+    final case class ConfirmedDirectDebitDetails(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Sia,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Sia,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterConfirmedDirectDebitDetails,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        SaUtr,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
+        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val directDebitDetails:           BankDetails
+    )
+      extends Journey
+      with Journey.Stages.ConfirmedDirectDebitDetails
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after Agreeing terms and conditions
+     * Sia
+     */
+    final case class AgreedTermsAndConditions(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Sia,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Sia,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterAgreedTermsAndConditions,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        SaUtr,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
+        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val directDebitDetails:           BankDetails,
+        override val isEmailAddressRequired:       IsEmailAddressRequired
+    )
+      extends Journey
+      with Journey.Stages.AgreedTermsAndConditions
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after Selecting email address to be verified
+     * Sia
+     */
+    final case class SelectedEmailToBeVerified(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Sia,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Sia,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterSelectedAnEmailToBeVerified,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        SaUtr,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
+        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val directDebitDetails:           BankDetails,
+        override val isEmailAddressRequired:       IsEmailAddressRequired,
+        override val emailToBeVerified:            Email
+    )
+      extends Journey
+      with Journey.Stages.SelectedEmailToBeVerified
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after email verification status journey is complete
+     * Sia
+     */
+    final case class EmailVerificationComplete(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Sia,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Sia,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterEmailVerificationPhase,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        SaUtr,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
+        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val directDebitDetails:           BankDetails,
+        override val isEmailAddressRequired:       IsEmailAddressRequired,
+        override val emailToBeVerified:            Email,
+        override val emailVerificationResult:      EmailVerificationResult,
+        override val emailVerificationAnswers:     EmailVerificationAnswers
+    )
+      extends Journey
+      with Journey.Stages.EmailVerificationComplete
+      with Journey.Sia
+
+    /**
+     * [[Journey]] after Submission of their arrangement to the enact api
+     * Sia
+     */
+    final case class SubmittedArrangement(
+        override val _id:                          JourneyId,
+        override val origin:                       Origins.Sia,
+        override val createdOn:                    Instant,
+        override val sjRequest:                    SjRequest.Sia,
+        override val sessionId:                    SessionId,
+        override val correlationId:                CorrelationId,
+        override val stage:                        Stage.AfterSubmittedArrangement,
+        override val affordabilityEnabled:         Option[Boolean],
+        override val taxId:                        SaUtr,
+        override val eligibilityCheckResult:       EligibilityCheckResult,
+        override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+        override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+        override val extremeDatesResponse:         ExtremeDatesResponse,
+        override val instalmentAmounts:            InstalmentAmounts,
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
+        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val directDebitDetails:           BankDetails,
+        override val isEmailAddressRequired:       IsEmailAddressRequired,
+        override val arrangementResponse:          ArrangementResponse,
+        override val emailVerificationAnswers:     EmailVerificationAnswers
+    )
+      extends Journey
+      with Journey.Stages.SubmittedArrangement
+      with Journey.Sia
+  }
 }

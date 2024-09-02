@@ -71,6 +71,11 @@ class UpdateDetailsAboutBankAccountController @Inject() (
           .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
           .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
           .transform
+      case j: Journey.Sia.CheckedPaymentPlan =>
+        j.into[Journey.Sia.EnteredDetailsAboutBankAccount]
+          .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
+          .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
@@ -100,6 +105,11 @@ class UpdateDetailsAboutBankAccountController @Inject() (
             detailsAboutBankAccount = detailsAboutBankAccount,
             stage                   = determineStage(detailsAboutBankAccount)
           )
+        case j: Journey.Sia.EnteredDetailsAboutBankAccount =>
+          j.copy(
+            detailsAboutBankAccount = detailsAboutBankAccount,
+            stage                   = determineStage(detailsAboutBankAccount)
+          )
 
         case j: Journey.Epaye.EnteredDirectDebitDetails =>
           j.into[Journey.Epaye.EnteredDetailsAboutBankAccount]
@@ -113,6 +123,11 @@ class UpdateDetailsAboutBankAccountController @Inject() (
             .transform
         case j: Journey.Sa.EnteredDirectDebitDetails =>
           j.into[Journey.Sa.EnteredDetailsAboutBankAccount]
+            .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
+            .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
+            .transform
+        case j: Journey.Sia.EnteredDirectDebitDetails =>
+          j.into[Journey.Sia.EnteredDetailsAboutBankAccount]
             .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
             .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
             .transform
@@ -132,6 +147,11 @@ class UpdateDetailsAboutBankAccountController @Inject() (
             .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
             .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
             .transform
+        case j: Journey.Sia.ConfirmedDirectDebitDetails =>
+          j.into[Journey.Sia.EnteredDetailsAboutBankAccount]
+            .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
+            .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
+            .transform
 
         case j: Journey.Epaye.AgreedTermsAndConditions =>
           j.into[Journey.Epaye.EnteredDetailsAboutBankAccount]
@@ -145,6 +165,11 @@ class UpdateDetailsAboutBankAccountController @Inject() (
             .transform
         case j: Journey.Sa.AgreedTermsAndConditions =>
           j.into[Journey.Sa.EnteredDetailsAboutBankAccount]
+            .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
+            .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
+            .transform
+        case j: Journey.Sia.AgreedTermsAndConditions =>
+          j.into[Journey.Sia.EnteredDetailsAboutBankAccount]
             .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
             .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
             .transform
@@ -164,6 +189,11 @@ class UpdateDetailsAboutBankAccountController @Inject() (
             .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
             .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
             .transform
+        case j: Journey.Sia.SelectedEmailToBeVerified =>
+          j.into[Journey.Sia.EnteredDetailsAboutBankAccount]
+            .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
+            .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
+            .transform
 
         case j: Journey.Epaye.EmailVerificationComplete =>
           j.into[Journey.Epaye.EnteredDetailsAboutBankAccount]
@@ -177,6 +207,11 @@ class UpdateDetailsAboutBankAccountController @Inject() (
             .transform
         case j: Journey.Sa.EmailVerificationComplete =>
           j.into[Journey.Sa.EnteredDetailsAboutBankAccount]
+            .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
+            .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
+            .transform
+        case j: Journey.Sia.EmailVerificationComplete =>
+          j.into[Journey.Sia.EnteredDetailsAboutBankAccount]
             .withFieldConst(_.detailsAboutBankAccount, detailsAboutBankAccount)
             .withFieldConst(_.stage, determineStage(detailsAboutBankAccount))
             .transform

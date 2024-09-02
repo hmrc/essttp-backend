@@ -60,6 +60,11 @@ class UpdateTaxIdController @Inject() (
           case saUtr: SaUtr => journeyService.upsert(asSaComputedTaxId(j, saUtr))
           case other        => Errors.throwBadRequestExceptionF(s"Why is there a ${other.getClass.getSimpleName}, this is for Sa...")
         }
+      case j: Journey.Sia.Started =>
+        taxId match {
+          case saUtr: SaUtr => journeyService.upsert(asSiaComputedTaxId(j, saUtr))
+          case other        => Errors.throwBadRequestExceptionF(s"Why is there a ${other.getClass.getSimpleName}, this is for Sia...")
+        }
       case j: Journey.AfterComputedTaxId =>
         Errors.throwBadRequestExceptionF(s"UpdateTaxId is not possible in this stage, why is it happening? Debug me... [${j.stage.toString}]")
     }
@@ -81,4 +86,10 @@ class UpdateTaxIdController @Inject() (
       .withFieldConst(_.stage, Stage.AfterComputedTaxId.ComputedTaxId)
       .withFieldConst(_.taxId, saUtr)
       .transform
+  private def asSiaComputedTaxId(journey: Journey.Sia.Started, saUtr: SaUtr): Journey.Sia.ComputedTaxId =
+    journey.into[Journey.Sia.ComputedTaxId]
+      .withFieldConst(_.stage, Stage.AfterComputedTaxId.ComputedTaxId)
+      .withFieldConst(_.taxId, saUtr)
+      .transform
+
 }
