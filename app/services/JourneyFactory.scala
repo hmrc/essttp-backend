@@ -84,7 +84,7 @@ class JourneyFactory @Inject() (
         sessionId            = sessionId,
         stage                = Stage.AfterStarted.Started,
         correlationId        = correlationIdGenerator.nextCorrelationId(),
-        affordabilityEnabled = Some(false) // SIA does not have affordability enabled
+        affordabilityEnabled = Some(affordabilityEnabledFor.contains(TaxRegime.Sia)) // SIA does not have affordability enabled
       )
   }
 }
