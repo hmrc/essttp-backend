@@ -81,6 +81,16 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             tdAll.SaBta.journeyAfterCanPayWithinSixMonths
           )(this)
       }
+
+      "Sia" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SiaPta.journeyAfterInstalmentAmounts,
+          TdAll.canPayWithinSixMonthsNotRequired
+        )(
+            journeyConnector.updateCanPayWithinSixMonthsAnswers,
+            tdAll.SiaPta.journeyAfterCanPayWithinSixMonths
+          )(this)
+      }
     }
 
     "should update the journey when a value already existed" - {
@@ -291,6 +301,76 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
 
         "EmailVerificationComplete" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+      }
+
+      "Sia when the current stage is" - {
+
+          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => CanPayWithinSixMonthsAnswers)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                TdAll.canPayWithinSixMonthsNo,
+                journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
+                context.tdAll.SiaPta.journeyAfterCanPayWithinSixMonths.copy(canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo, stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired)
+              )(context)
+
+        "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterCanPayWithinSixMonths)(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+        "StartedPegaCase" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+        "EnteredMonthlyPaymentAmount" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterMonthlyPaymentAmount)(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+        "EnteredDayOfMonth" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterDayOfMonth)(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+        "RetrievedStartDates" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterStartDatesResponse)(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+        "RetrievedAffordableQuotes" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterAffordableQuotesResponse)(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterSelectedPaymentPlan)(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.canPayWithinSixMonthsAnswers)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.canPayWithinSixMonthsAnswers)(this)
         }
 
       }

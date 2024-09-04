@@ -100,6 +100,20 @@ trait TdJourneySiaPta {
       eligibilityCheckResult = ineligibleEligibilityCheckResultSia
     )
 
+    def journeyAfterWhyCannotPayInFullRequired: Journey.Sia.ObtainedWhyCannotPayInFullAnswers = Journey.Sia.ObtainedWhyCannotPayInFullAnswers(
+      _id                       = dependencies.journeyId,
+      origin                    = Origins.Sia.Pta,
+      createdOn                 = dependencies.createdOn,
+      sjRequest                 = sjRequest,
+      sessionId                 = dependencies.sessionId,
+      stage                     = Stage.AfterWhyCannotPayInFullAnswers.AnswerRequired,
+      affordabilityEnabled      = Some(false),
+      correlationId             = dependencies.correlationId,
+      taxId                     = nino,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSia,
+      whyCannotPayInFullAnswers = whyCannotPayInFullRequired
+    )
+
     def journeyAfterWhyCannotPayInFullNotRequired: Journey.Sia.ObtainedWhyCannotPayInFullAnswers = Journey.Sia.ObtainedWhyCannotPayInFullAnswers(
       _id                       = dependencies.journeyId,
       origin                    = Origins.Sia.Pta,
@@ -222,6 +236,25 @@ trait TdJourneySiaPta {
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired
+    )
+
+    def journeyAfterStartedPegaCase: Journey.Sia.StartedPegaCase = Journey.Sia.StartedPegaCase(
+      _id                          = dependencies.journeyId,
+      origin                       = Origins.Sia.Pta,
+      createdOn                    = dependencies.createdOn,
+      sjRequest                    = sjRequest,
+      sessionId                    = dependencies.sessionId,
+      stage                        = Stage.AfterStartedPegaCase.StartedPegaCase,
+      affordabilityEnabled         = Some(false),
+      correlationId                = dependencies.correlationId,
+      taxId                        = nino,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultSia,
+      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts            = dependencies.instalmentAmounts,
+      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+      startCaseResponse            = dependencies.startCaseResponse
     )
 
     def updateMonthlyPaymentAmountRequest(): MonthlyPaymentAmount = dependencies.monthlyPaymentAmount

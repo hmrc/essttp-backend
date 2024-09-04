@@ -71,6 +71,16 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
             tdAll.SaBta.journeyAfterCanPayUpfrontYes
           )(this)
       }
+
+      "Sia" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SiaPta.journeyAfterWhyCannotPayInFullNotRequired,
+          TdAll.SiaPta.updateCanPayUpfrontYesRequest()
+        )(
+            journeyConnector.updateCanPayUpfront,
+            tdAll.SiaPta.journeyAfterCanPayUpfrontYes
+          )(this)
+      }
     }
 
     "should update the journey when a value already existed" - {
@@ -350,6 +360,99 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
 
         "EmailVerificationComplete" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+      }
+
+      "Sia when the current stage is" - {
+
+          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => CanPayUpfront)(context: JourneyItTest): Unit = {
+            val differentValue = CanPayUpfront(!existingValue(initialJourney).value)
+
+            val expectedUpdatedJourney =
+              if (differentValue.value) context.tdAll.SiaPta.journeyAfterCanPayUpfrontYes
+              else context.tdAll.SiaPta.journeyAfterCanPayUpfrontNo
+
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentValue,
+                journeyConnector.updateCanPayUpfront(_, _)(context.request),
+                expectedUpdatedJourney
+              )(context)
+          }
+
+        "AnsweredCanPayUpfront" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterCanPayUpfrontNo)(_.canPayUpfront)(this)
+        }
+
+        "EnteredUpfrontPaymentAmount" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterUpfrontPaymentAmount)(_.canPayUpfront)(this)
+        }
+
+        "RetrievedExtremeDates" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterExtremeDates)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "RetrievedAffordabilityResult" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterInstalmentAmounts)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterCanPayWithinSixMonths)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "StartedPegaJourney" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EnteredMonthlyPaymentAmount" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterMonthlyPaymentAmount)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EnteredDayOfMonth" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterDayOfMonth)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "RetrievedStartDates" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterStartDatesResponse)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "RetrievedAffordableQuotes" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterAffordableQuotesResponse)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterSelectedPaymentPlan)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
       }

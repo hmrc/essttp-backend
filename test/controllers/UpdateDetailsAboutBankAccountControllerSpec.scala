@@ -68,6 +68,16 @@ class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec with UpdateJour
             tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
           )(this)
       }
+
+      "Sia" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability,
+          TdAll.SiaPta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
+        )(
+            journeyConnector.updateDetailsAboutBankAccount,
+            tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+          )(this)
+      }
     }
 
     "should update the journey when a value already existed" - {
@@ -184,6 +194,44 @@ class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec with UpdateJour
 
         "EmailVerificationComplete" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.detailsAboutBankAccount)(this)
+        }
+
+      }
+
+      "Sia when the current stage is" - {
+
+          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => DetailsAboutBankAccount)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentDetailsAboutBankAccount,
+                journeyConnector.updateDetailsAboutBankAccount(_, _)(context.request),
+                context.tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = false).copy(detailsAboutBankAccount = differentDetailsAboutBankAccount)
+              )(context)
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.detailsAboutBankAccount)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.detailsAboutBankAccount)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.detailsAboutBankAccount)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.detailsAboutBankAccount)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.detailsAboutBankAccount)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.detailsAboutBankAccount)(this)
         }
 
       }

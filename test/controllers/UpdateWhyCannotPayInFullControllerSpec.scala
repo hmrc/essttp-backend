@@ -69,6 +69,16 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
             tdAll.SaBta.journeyAfterWhyCannotPayInFullRequired
           )(this)
       }
+
+      "Sia" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SiaPta.journeyAfterEligibilityCheckEligible,
+          TdAll.whyCannotPayInFullRequired
+        )(
+            journeyConnector.updateWhyCannotPayInFullAnswers,
+            tdAll.SiaPta.journeyAfterWhyCannotPayInFullRequired
+          )(this)
+      }
     }
 
     "should update the journey when a value already existed" - {
@@ -534,6 +544,162 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
 
         "EmailVerificationComplete" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+      }
+
+      "Sia when the current stage is" - {
+
+        val differentWhyCannotPayInFullReasons =
+          WhyCannotPayInFullAnswers.WhyCannotPayInFull(Set(CannotPayReason.Unemployed, CannotPayReason.IllHealth, CannotPayReason.NationalDisaster))
+
+          def testSiaPta[J <: Journey](initialJourney: J)(
+              existingValue:                              J => WhyCannotPayInFullAnswers,
+              expectedUpdateInitialJourneyTransformation: J => J
+          )(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentWhyCannotPayInFullReasons,
+                journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(context.request),
+                expectedUpdateInitialJourneyTransformation(initialJourney)
+              )(context)
+
+        "ObtainedWhyCannotPayInFullAnswers" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterWhyCannotPayInFullNotRequired)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(
+              whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons,
+              stage                     = Stage.AfterWhyCannotPayInFullAnswers.AnswerRequired
+            )
+          )(this)
+        }
+
+        "AnsweredCanPayUpfront" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterCanPayUpfrontNo)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "EnteredUpfrontPaymentAmount" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterUpfrontPaymentAmount)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "RetrievedExtremeDates" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterExtremeDates)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "RetrievedAffordabilityResult" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterInstalmentAmounts)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterCanPayWithinSixMonths)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "StartedPegaCase" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterStartedPegaCase)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "EnteredMonthlyPaymentAmount" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterMonthlyPaymentAmount)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "EnteredDayOfMonth" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterDayOfMonth)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "RetrievedStartDates" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterStartDatesResponse)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "RetrievedAffordableQuotes" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterAffordableQuotesResponse)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterSelectedPaymentPlan)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(
             _.whyCannotPayInFullAnswers,
             _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
           )(this)

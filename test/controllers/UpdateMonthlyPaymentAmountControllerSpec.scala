@@ -88,6 +88,16 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
             tdAll.SaBta.journeyAfterMonthlyPaymentAmount
           )(this)
       }
+
+      "Sia" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SiaPta.journeyAfterCanPayWithinSixMonths,
+          TdAll.SiaPta.updateMonthlyPaymentAmountRequest()
+        )(
+            journeyConnector.updateMonthlyPaymentAmount,
+            tdAll.SiaPta.journeyAfterMonthlyPaymentAmount
+          )(this)
+      }
     }
 
     "should update the journey when a value already existed" - {
@@ -280,6 +290,70 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
 
         "EmailVerificationComplete" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+        }
+
+      }
+
+      "Sia when the current stage is" - {
+
+        val differentAmount = MonthlyPaymentAmount(AmountInPence(4583972))
+
+          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => MonthlyPaymentAmount)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentAmount,
+                journeyConnector.updateMonthlyPaymentAmount(_, _)(context.request),
+                context.tdAll.SiaPta.journeyAfterMonthlyPaymentAmount.copy(monthlyPaymentAmount = differentAmount)
+              )(context)
+
+        "EnteredMonthlyPaymentAmount" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterMonthlyPaymentAmount)(_.monthlyPaymentAmount)(this)
+        }
+
+        "EnteredDayOfMonth" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterDayOfMonth)(_.monthlyPaymentAmount)(this)
+        }
+
+        "RetrievedStartDates" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterStartDatesResponse)(_.monthlyPaymentAmount)(this)
+        }
+
+        "RetrievedAffordableQuotes" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterAffordableQuotesResponse)(_.monthlyPaymentAmount)(this)
+        }
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterSelectedPaymentPlan)(_.monthlyPaymentAmount)(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
         }
 
       }

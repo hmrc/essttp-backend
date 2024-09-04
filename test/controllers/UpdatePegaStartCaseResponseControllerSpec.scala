@@ -78,6 +78,16 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
             tdAll.SaBta.journeyAfterStartedPegaCase
           )(this)
       }
+
+      "Sia" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SiaPta.journeyAfterCanPayWithinSixMonths,
+          tdAll.startCaseResponse
+        )(
+            journeyConnector.updatePegaStartCaseResponse,
+            tdAll.SiaPta.journeyAfterStartedPegaCase
+          )(this)
+      }
     }
 
     "should update the journey when a value already existed" - {
@@ -134,6 +144,24 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
 
         "StartedPegaCase" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterStartedPegaCase)(_.startCaseResponse)(this)
+        }
+
+      }
+
+      "Sia when the current stage is" - {
+
+          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => StartCaseResponse)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentResponse,
+                journeyConnector.updatePegaStartCaseResponse(_, _)(context.request),
+                context.tdAll.SiaPta.journeyAfterStartedPegaCase.copy(startCaseResponse = differentResponse)
+              )(context)
+
+        "StartedPegaCase" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.startCaseResponse)(this)
         }
 
       }

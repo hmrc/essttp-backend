@@ -67,6 +67,16 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
             tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
           )(this)
       }
+
+      "Sia" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SiaPta.journeyAfterSelectedEmail,
+          EmailVerificationResult.Verified
+        )(
+            journeyConnector.updateEmailVerificationResult,
+            tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+          )(this)
+      }
     }
 
     "should update the journey when a value already existed" - {
@@ -139,6 +149,30 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
 
         "EmailVerificationComplete" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.emailVerificationResult)(this)
+        }
+
+      }
+
+      "Sia when the current stage is" - {
+
+          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => EmailVerificationResult)(context: JourneyItTest): Unit = {
+            val differentVerificationResult: EmailVerificationResult = existingValue(initialJourney) match {
+              case EmailVerificationResult.Verified => EmailVerificationResult.Locked
+              case EmailVerificationResult.Locked   => EmailVerificationResult.Verified
+            }
+
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentVerificationResult,
+                journeyConnector.updateEmailVerificationResult(_, _)(context.request),
+                context.tdAll.SiaPta.journeyAfterEmailVerificationResult(differentVerificationResult)
+              )(context)
+          }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.emailVerificationResult)(this)
         }
 
       }
