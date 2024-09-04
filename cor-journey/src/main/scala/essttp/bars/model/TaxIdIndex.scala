@@ -16,7 +16,7 @@
 
 package essttp.bars.model
 
-import essttp.rootmodel.{EmpRef, SaUtr, TaxId, Vrn}
+import essttp.rootmodel.{EmpRef, Nino, SaUtr, TaxId, Vrn}
 import play.api.libs.json.{Format, Json}
 
 final case class TaxIdIndex(value: String)
@@ -28,5 +28,6 @@ object TaxIdIndex {
     case EmpRef(value) => TaxIdIndex(s"EmpRef-$value")
     case Vrn(value)    => TaxIdIndex(s"Vrn-$value")
     case SaUtr(value)  => TaxIdIndex(s"SaUtr-$value")
+    case Nino(value)   => TaxIdIndex(s"Nino-$value")
   }
 }

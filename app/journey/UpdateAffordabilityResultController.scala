@@ -71,6 +71,11 @@ class UpdateAffordabilityResultController @Inject() (
           .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
           .withFieldConst(_.instalmentAmounts, instalmentAmounts)
           .transform
+      case j: Journey.Sia.RetrievedExtremeDates =>
+        j.into[Journey.Sia.RetrievedAffordabilityResult]
+          .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+          .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
@@ -88,6 +93,7 @@ class UpdateAffordabilityResultController @Inject() (
         case j: Journey.Epaye.RetrievedAffordabilityResult => j.copy(instalmentAmounts = instalmentAmounts)
         case j: Journey.Vat.RetrievedAffordabilityResult   => j.copy(instalmentAmounts = instalmentAmounts)
         case j: Journey.Sa.RetrievedAffordabilityResult    => j.copy(instalmentAmounts = instalmentAmounts)
+        case j: Journey.Sia.RetrievedAffordabilityResult   => j.copy(instalmentAmounts = instalmentAmounts)
 
         case j: Journey.Epaye.ObtainedCanPayWithinSixMonthsAnswers =>
           j.into[Journey.Epaye.RetrievedAffordabilityResult]
@@ -101,6 +107,11 @@ class UpdateAffordabilityResultController @Inject() (
             .transform
         case j: Journey.Sa.ObtainedCanPayWithinSixMonthsAnswers =>
           j.into[Journey.Sa.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
+        case j: Journey.Sia.ObtainedCanPayWithinSixMonthsAnswers =>
+          j.into[Journey.Sia.RetrievedAffordabilityResult]
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
@@ -120,6 +131,11 @@ class UpdateAffordabilityResultController @Inject() (
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
+        case j: Journey.Sia.StartedPegaCase =>
+          j.into[Journey.Sia.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
 
         case j: Journey.Epaye.EnteredMonthlyPaymentAmount =>
           j.into[Journey.Epaye.RetrievedAffordabilityResult]
@@ -133,6 +149,11 @@ class UpdateAffordabilityResultController @Inject() (
             .transform
         case j: Journey.Sa.EnteredMonthlyPaymentAmount =>
           j.into[Journey.Sa.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
+        case j: Journey.Sia.EnteredMonthlyPaymentAmount =>
+          j.into[Journey.Sia.RetrievedAffordabilityResult]
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
@@ -152,6 +173,11 @@ class UpdateAffordabilityResultController @Inject() (
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
+        case j: Journey.Sia.EnteredDayOfMonth =>
+          j.into[Journey.Sia.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
 
         case j: Journey.Epaye.RetrievedStartDates =>
           j.into[Journey.Epaye.RetrievedAffordabilityResult]
@@ -165,6 +191,11 @@ class UpdateAffordabilityResultController @Inject() (
             .transform
         case j: Journey.Sa.RetrievedStartDates =>
           j.into[Journey.Sa.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
+        case j: Journey.Sia.RetrievedStartDates =>
+          j.into[Journey.Sia.RetrievedAffordabilityResult]
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
@@ -184,6 +215,11 @@ class UpdateAffordabilityResultController @Inject() (
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
+        case j: Journey.Sia.RetrievedAffordableQuotes =>
+          j.into[Journey.Sia.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
 
         case j: Journey.Epaye.ChosenPaymentPlan =>
           j.into[Journey.Epaye.RetrievedAffordabilityResult]
@@ -197,6 +233,11 @@ class UpdateAffordabilityResultController @Inject() (
             .transform
         case j: Journey.Sa.ChosenPaymentPlan =>
           j.into[Journey.Sa.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
+        case j: Journey.Sia.ChosenPaymentPlan =>
+          j.into[Journey.Sia.RetrievedAffordabilityResult]
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
@@ -216,6 +257,11 @@ class UpdateAffordabilityResultController @Inject() (
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
+        case j: Journey.Sia.CheckedPaymentPlan =>
+          j.into[Journey.Sia.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
 
         case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
           j.into[Journey.Epaye.RetrievedAffordabilityResult]
@@ -229,6 +275,11 @@ class UpdateAffordabilityResultController @Inject() (
             .transform
         case j: Journey.Sa.EnteredDetailsAboutBankAccount =>
           j.into[Journey.Sa.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
+        case j: Journey.Sia.EnteredDetailsAboutBankAccount =>
+          j.into[Journey.Sia.RetrievedAffordabilityResult]
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
@@ -248,6 +299,11 @@ class UpdateAffordabilityResultController @Inject() (
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
+        case j: Journey.Sia.EnteredDirectDebitDetails =>
+          j.into[Journey.Sia.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
 
         case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
           j.into[Journey.Epaye.RetrievedAffordabilityResult]
@@ -261,6 +317,11 @@ class UpdateAffordabilityResultController @Inject() (
             .transform
         case j: Journey.Sa.ConfirmedDirectDebitDetails =>
           j.into[Journey.Sa.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
+        case j: Journey.Sia.ConfirmedDirectDebitDetails =>
+          j.into[Journey.Sia.RetrievedAffordabilityResult]
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
@@ -280,6 +341,11 @@ class UpdateAffordabilityResultController @Inject() (
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
+        case j: Journey.Sia.AgreedTermsAndConditions =>
+          j.into[Journey.Sia.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
 
         case j: Journey.Epaye.SelectedEmailToBeVerified =>
           j.into[Journey.Epaye.RetrievedAffordabilityResult]
@@ -296,6 +362,11 @@ class UpdateAffordabilityResultController @Inject() (
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
+        case j: Journey.Sia.SelectedEmailToBeVerified =>
+          j.into[Journey.Sia.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
 
         case j: Journey.Epaye.EmailVerificationComplete =>
           j.into[Journey.Epaye.RetrievedAffordabilityResult]
@@ -309,6 +380,11 @@ class UpdateAffordabilityResultController @Inject() (
             .transform
         case j: Journey.Sa.EmailVerificationComplete =>
           j.into[Journey.Sa.RetrievedAffordabilityResult]
+            .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
+        case j: Journey.Sia.EmailVerificationComplete =>
+          j.into[Journey.Sia.RetrievedAffordabilityResult]
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform

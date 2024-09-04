@@ -67,6 +67,16 @@ class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec with Update
             tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
           )(this)
       }
+
+      "Sia" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability,
+          IsEmailAddressRequired(value = true)
+        )(
+            journeyConnector.updateHasAgreedTermsAndConditions,
+            tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
+          )(this)
+      }
     }
 
     "should update the journey when a value already existed" - {

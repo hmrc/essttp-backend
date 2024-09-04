@@ -69,6 +69,16 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
             tdAll.SaBta.journeyAfterSelectedEmailNoAffordability.copy(emailToBeVerified = tdAll.SaBta.updateSelectedEmailRequest())
           )(this)
       }
+
+      "Sia" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(true),
+          tdAll.SiaPta.updateSelectedEmailRequest()
+        )(
+            journeyConnector.updateSelectedEmailToBeVerified,
+            tdAll.SiaPta.journeyAfterSelectedEmail.copy(emailToBeVerified = tdAll.SaBta.updateSelectedEmailRequest())
+          )(this)
+      }
     }
 
     "should update the journey when an email already existed" - {
@@ -212,6 +222,47 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
 
             "EmailVerificationComplete" in new JourneyItTest {
               testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_ => differentEmail)(this)
+            }
+
+          }
+        }
+
+      }
+
+      "Sia when" - {
+
+          def testSiaPta[J <: Journey](initialJourney: J)(value: J => Email)(context: JourneyItTest): Unit =
+            testUpdate(initialJourney, value(initialJourney))(
+              _.journeyId,
+              journeyConnector.updateSelectedEmailToBeVerified(_, _)(context.request),
+              context.tdAll.SiaPta.journeyAfterSelectedEmail.copy(emailToBeVerified = value(initialJourney))
+            )(context)
+
+        "the value is the same and" - {
+
+          "the current stage is" - {
+
+            "SelectedEmailToBeVerified" in new JourneyItTest {
+              testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.emailToBeVerified)(this)
+            }
+
+            "EmailVerificationComplete" in new JourneyItTest {
+              testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.emailToBeVerified)(this)
+            }
+
+          }
+        }
+
+        "the value is the different and" - {
+
+          "the current stage is" - {
+
+            "SelectedEmailToBeVerified" in new JourneyItTest {
+              testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_ => differentEmail)(this)
+            }
+
+            "EmailVerificationComplete" in new JourneyItTest {
+              testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_ => differentEmail)(this)
             }
 
           }

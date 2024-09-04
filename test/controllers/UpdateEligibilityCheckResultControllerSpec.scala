@@ -68,6 +68,16 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
             tdAll.SaBta.journeyAfterEligibilityCheckEligible
           )(this)
       }
+
+      "Sia" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SiaPta.journeyAfterDetermineTaxIds,
+          TdAll.SiaPta.updateEligibilityCheckRequest()
+        )(
+            journeyConnector.updateEligibilityCheckResult,
+            tdAll.SiaPta.journeyAfterEligibilityCheckEligible
+          )(this)
+      }
     }
 
     "should update the journey when a value already existed" - {
@@ -359,6 +369,103 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
 
         "EmailVerificationComplete" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.eligibilityCheckResult)(this)
+        }
+
+      }
+
+      "Sia when the current stage is" - {
+
+        val differentEligibilityCheckResult =
+          TdAll.eligibleEligibilityCheckResultSa.copy(processingDateTime = ProcessingDateTime(Instant.now().toString))
+
+          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentEligibilityCheckResult,
+                journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+                context.tdAll.SiaPta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult)
+              )(context)
+
+        "EligibilityChecked" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)
+        }
+
+        "ObtainedWhyCannotPayInFullAnswers" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterWhyCannotPayInFullNotRequired)(_.eligibilityCheckResult)(this)
+        }
+
+        "AnsweredCanPayUpfront" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterCanPayUpfrontNo)(_.eligibilityCheckResult)(this)
+        }
+
+        "EnteredUpfrontPaymentAmount" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterUpfrontPaymentAmount)(_.eligibilityCheckResult)(this)
+        }
+
+        "RetrievedExtremeDates" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterExtremeDates)(_.eligibilityCheckResult)(this)
+        }
+
+        "RetrievedAffordabilityResult" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterInstalmentAmounts)(_.eligibilityCheckResult)(this)
+        }
+
+        "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterCanPayWithinSixMonths)(_.eligibilityCheckResult)(this)
+        }
+
+        "StartedPegaCase" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.eligibilityCheckResult)(this)
+        }
+
+        "EnteredMonthlyPaymentAmount" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterMonthlyPaymentAmount)(_.eligibilityCheckResult)(this)
+        }
+
+        "EnteredDayOfMonth" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterDayOfMonth)(_.eligibilityCheckResult)(this)
+        }
+
+        "RetrievedStartDates" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterStartDatesResponse)(_.eligibilityCheckResult)(this)
+        }
+
+        "RetrievedAffordableQuotes" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterAffordableQuotesResponse)(_.eligibilityCheckResult)(this)
+        }
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterSelectedPaymentPlan)(_.eligibilityCheckResult)(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.eligibilityCheckResult)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.eligibilityCheckResult)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.eligibilityCheckResult)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.eligibilityCheckResult)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.eligibilityCheckResult)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.eligibilityCheckResult)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.eligibilityCheckResult)(this)
         }
 
       }

@@ -42,4 +42,9 @@ object OriginatedSjRequest {
       override val sjRequest: SjRequest.Sa
   ) extends OriginatedSjRequest
 
+  final case class Sia(
+      override val origin:    Origins.Sia,
+      override val sjRequest: SjRequest.Sia
+  ) extends OriginatedSjRequest
+
 }

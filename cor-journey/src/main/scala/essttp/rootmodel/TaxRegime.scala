@@ -66,5 +66,10 @@ object TaxRegime extends Enum[TaxRegime] {
    */
   case object Sa extends TaxRegime
 
+  /**
+   *  Tax regime for Simple Assessment (Sia)
+   */
+  case object Sia extends TaxRegime
+
   override val values: immutable.IndexedSeq[TaxRegime] = findValues
 }

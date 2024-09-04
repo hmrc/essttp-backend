@@ -74,5 +74,17 @@ class JourneyFactory @Inject() (
         correlationId        = correlationIdGenerator.nextCorrelationId(),
         affordabilityEnabled = Some(affordabilityEnabledFor.contains(TaxRegime.Sa))
       )
+
+    case OriginatedSjRequest.Sia(origin, sjRequest) =>
+      Journey.Sia.Started(
+        _id                  = journeyIdGenerator.nextJourneyId(),
+        origin               = origin,
+        sjRequest            = sjRequest,
+        createdOn            = Instant.now(clock),
+        sessionId            = sessionId,
+        stage                = Stage.AfterStarted.Started,
+        correlationId        = correlationIdGenerator.nextCorrelationId(),
+        affordabilityEnabled = Some(affordabilityEnabledFor.contains(TaxRegime.Sia)) // SIA does not have affordability enabled
+      )
   }
 }

@@ -99,6 +99,16 @@ class UpdateHasCheckedInstalmentPlanControllerSpec extends ItSpec with UpdateJou
             tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability
           )(this)
       }
+
+      "Sia on non-affordability journey" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SiaPta.journeyAfterSelectedPaymentPlan,
+          tdAll.paymentPlanAnswersNoAffordability
+        )(
+            journeyConnector.updateHasCheckedPaymentPlan,
+            tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability
+          )(this)
+      }
     }
 
     "should update the journey when a value already existed" - {
@@ -235,6 +245,50 @@ class UpdateHasCheckedInstalmentPlanControllerSpec extends ItSpec with UpdateJou
 
         "EmailVerificationComplete" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.paymentPlanAnswers)(this)
+        }
+
+      }
+
+      "Sia when the current stage is" - {
+
+          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => PaymentPlanAnswers)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentAnswers,
+                journeyConnector.updateHasCheckedPaymentPlan(_, _)(context.request),
+                context.tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability.copy(
+                  paymentPlanAnswers = differentAnswers
+                )
+              )(context)
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.paymentPlanAnswers)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.paymentPlanAnswers)(this)
         }
 
       }

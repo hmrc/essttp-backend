@@ -18,16 +18,16 @@ package services
 
 import connectors.PegaConnector
 import essttp.enrolments.{EnrolmentDef, EnrolmentDefResult}
-import essttp.journey.model.Journey.{Epaye, Sa, Vat}
-import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey, JourneyId, PaymentPlanAnswers, UpfrontPaymentAnswers, WhyCannotPayInFullAnswers}
+import essttp.journey.model.Journey.{Epaye, Sa, Sia, Vat}
+import essttp.journey.model._
 import essttp.rootmodel.epaye.{TaxOfficeNumber, TaxOfficeReference}
-import essttp.rootmodel.{AmountInPence, EmpRef, SaUtr, SessionId, TaxId, TaxRegime, Vrn}
 import essttp.rootmodel.pega.{GetCaseResponse, PegaAssigmentId, PegaCaseId, StartCaseResponse}
 import essttp.rootmodel.ttp.PaymentPlanFrequencies
-import essttp.rootmodel.ttp.affordablequotes.{AccruedDebtInterest, ChannelIdentifiers, DebtItemCharge, DebtItemOriginalDueDate, OutstandingDebtAmount}
+import essttp.rootmodel.ttp.affordablequotes._
 import essttp.rootmodel.ttp.eligibility.{ChargeTypeAssessment, Charges, EligibilityCheckResult}
-import essttp.utils.{Errors, RequestSupport}
+import essttp.rootmodel._
 import essttp.utils.RequestSupport.hc
+import essttp.utils.{Errors, RequestSupport}
 import models.pega.PegaStartCaseRequest.MDTPropertyMapping
 import models.pega.{PegaStartCaseRequest, PegaStartCaseResponse}
 import play.api.mvc.Request
@@ -83,6 +83,7 @@ class PegaService @Inject() (
         EnrolmentDef.Epaye.findEnrolmentValues(enrolments).map((toEmpRef _).tupled)
       case TaxRegime.Vat => EnrolmentDef.Vat.findEnrolmentValues(enrolments)
       case TaxRegime.Sa  => EnrolmentDef.Sa.findEnrolmentValues(enrolments)
+      case TaxRegime.Sia => sys.error("SIA should have never ended up here")
     }
 
     enrolmentResult match {
@@ -174,6 +175,8 @@ class PegaService @Inject() (
       case j: Sa.SelectedEmailToBeVerified               => j.copy(sessionId = sessionId)
       case j: Sa.EmailVerificationComplete               => j.copy(sessionId = sessionId)
       case j: Sa.SubmittedArrangement                    => j.copy(sessionId = sessionId)
+
+      case _: Sia                                        => sys.error("No other regime should be found here")
     }
   }
 
@@ -200,11 +203,13 @@ class PegaService @Inject() (
       case _: EmpRef => "EMPREF"
       case _: Vrn    => "VRN"
       case _: SaUtr  => "SAUTR"
+      case _: Nino   => "NINO"
     }
     val regime = journey.taxRegime match {
       case TaxRegime.Epaye => "PAYE"
       case TaxRegime.Vat   => "VAT"
       case TaxRegime.Sa    => "SA"
+      case TaxRegime.Sia   => "SIA"
     }
     val eligibilityCheckResult = journey match {
       case j: Journey.AfterEligibilityChecked => j.eligibilityCheckResult

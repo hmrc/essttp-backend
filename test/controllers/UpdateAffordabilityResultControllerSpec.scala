@@ -67,6 +67,16 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
             tdAll.SaBta.journeyAfterInstalmentAmounts
           )(this)
       }
+
+      "Sia" in new JourneyItTest {
+        testUpdateWithoutExistingValue(
+          tdAll.SiaPta.journeyAfterExtremeDates,
+          TdAll.SiaPta.updateInstalmentAmountsRequest()
+        )(
+            journeyConnector.updateAffordabilityResult,
+            tdAll.SiaPta.journeyAfterInstalmentAmounts
+          )(this)
+      }
     }
 
     "should update the journey when a value already existed" - {
@@ -291,6 +301,80 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
 
         "EmailVerificationComplete" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.instalmentAmounts)(this)
+        }
+
+      }
+
+      "Sia when the current stage is" - {
+
+          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => InstalmentAmounts)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentInstalmentAmount,
+                journeyConnector.updateAffordabilityResult(_, _)(context.request),
+                context.tdAll.SiaPta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = differentInstalmentAmount)
+              )(context)
+
+        "RetrievedAffordabilityResult" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterInstalmentAmounts)(_.instalmentAmounts)(this)
+        }
+
+        "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterCanPayWithinSixMonths)(_.instalmentAmounts)(this)
+        }
+
+        "StartedPegaCase" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.instalmentAmounts)(this)
+        }
+
+        "EnteredMonthlyPaymentAmount" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterMonthlyPaymentAmount)(_.instalmentAmounts)(this)
+        }
+
+        "EnteredDayOfMonth" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterDayOfMonth)(_.instalmentAmounts)(this)
+        }
+
+        "RetrievedStartDates" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterStartDatesResponse)(_.instalmentAmounts)(this)
+        }
+
+        "RetrievedAffordableQuotes" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterAffordableQuotesResponse)(_.instalmentAmounts)(this)
+        }
+
+        "ChosenPaymentPlan" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterSelectedPaymentPlan)(_.instalmentAmounts)(this)
+        }
+
+        "CheckedPaymentPlan" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.instalmentAmounts)(this)
+        }
+
+        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.instalmentAmounts)(this)
+        }
+
+        "EnteredDirectDebitDetails" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.instalmentAmounts)(this)
+        }
+
+        "ConfirmedDirectDebitDetails" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.instalmentAmounts)(this)
+        }
+
+        "AgreedTermsAndConditions" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.instalmentAmounts)(this)
+        }
+
+        "SelectedEmailToBeVerified" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.instalmentAmounts)(this)
+        }
+
+        "EmailVerificationComplete" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.instalmentAmounts)(this)
         }
 
       }
