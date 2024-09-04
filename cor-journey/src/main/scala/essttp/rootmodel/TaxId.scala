@@ -70,3 +70,13 @@ object SaUtr {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[SaUtr] = derived.oformat[SaUtr]()
 }
+
+/**
+ * Simple Self Assessment Unique Tax Reference (Nino) Tax Id for Sia.
+ */
+final case class Nino(value: String) extends TaxId
+
+object Nino {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  implicit val format: OFormat[Nino] = derived.oformat[Nino]()
+}

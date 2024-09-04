@@ -113,15 +113,6 @@ object EnrolmentDef {
       findMatchingEnrolmentsValues(enrolments, `IR-SA`).map(SaUtr(_))
   }
 
-  //may need changing
-  object Sia {
-
-    val `IR-SA`: EnrolmentDef = EnrolmentDef("IR-SA", "UTR")
-
-    def findEnrolmentValues(enrolments: Enrolments): EnrolmentDefResult[SaUtr] =
-      findMatchingEnrolmentsValues(enrolments, `IR-SA`).map(SaUtr(_))
-  }
-
   private def findMatchingEnrolmentsValues(enrolments: Enrolments, enrolmentDef: EnrolmentDef): EnrolmentDefResult[String] = {
     enrolments.enrolments.find(_.key.equalsIgnoreCase(enrolmentDef.enrolmentKey)) match {
       case Some(enrolment) =>

@@ -279,6 +279,33 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: E
         .execute[SjResponse]
   }
 
+  object Sia {
+
+    def startJourneyPta(sjRequest: SjRequest.Sia.Simple)(implicit request: RequestHeader): Future[SjResponse] =
+      httpClient
+        .post(url"$baseUrl/essttp-backend/sia/pta/journey/start")
+        .withBody(Json.toJson(sjRequest))
+        .execute[SjResponse]
+
+    def startJourneyMobile(sjRequest: SjRequest.Sia.Simple)(implicit request: RequestHeader): Future[SjResponse] =
+      httpClient
+        .post(url"$baseUrl/essttp-backend/sia/mobile/journey/start")
+        .withBody(Json.toJson(sjRequest))
+        .execute[SjResponse]
+
+    def startJourneyDetachedUrl(sjRequest: SjRequest.Sia.Empty)(implicit request: RequestHeader): Future[SjResponse] =
+      httpClient
+        .post(url"$baseUrl/essttp-backend/sia/detached-url/journey/start")
+        .withBody(Json.toJson(sjRequest: SjRequest))
+        .execute[SjResponse]
+
+    def startJourneyGovUk(sjRequest: SjRequest.Sia.Empty)(implicit request: RequestHeader): Future[SjResponse] =
+      httpClient
+        .post(url"$baseUrl/essttp-backend/sia/gov-uk/journey/start")
+        .withBody(Json.toJson(sjRequest: SjRequest))
+        .execute[SjResponse]
+  }
+
   @Inject()
   def this(httpClient: HttpClientV2, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) = this(
     httpClient,

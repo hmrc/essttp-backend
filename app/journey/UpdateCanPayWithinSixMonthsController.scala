@@ -69,7 +69,7 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
           .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
           .transform
       case j: Sia.RetrievedAffordabilityResult =>
-        j.into[Sa.ObtainedCanPayWithinSixMonthsAnswers]
+        j.into[Sia.ObtainedCanPayWithinSixMonthsAnswers]
           .withFieldConst(_.stage, determineStage(answers))
           .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
           .transform
