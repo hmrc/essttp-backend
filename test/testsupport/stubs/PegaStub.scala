@@ -58,26 +58,47 @@ object PegaStub {
         .willReturn(
           result.fold(
             aResponse().withStatus(_),
-            response => {
-              val assignments =
-                response.data.caseInfo.assignments
-                  .map(a => s"""{ "ID": "${a.ID}" }""")
-                  .mkString(",")
-
-              aResponse().withStatus(200).withBody(
-                s"""{
-                   |  "ID": "${response.ID}",
-                   |  "data": {
-                   |    "caseInfo": {
-                   |      "assignments": [ $assignments ]
-                   |    }
-                   |  }
-                   |}""".stripMargin
-              )
-            }
+            response => aResponse().withStatus(200).withBody(generateResponseBody(response))
           )
         )
     )
+
+  def stubStartCaseScenario(result: Either[HttpStatus, PegaStartCaseResponse]): StubMapping = {
+    val scenarioName = "StartCaseScenario"
+    val initialState = "Initial"
+    val failedState = "Failed"
+
+    stubFor(post(urlPathEqualTo(startCaseUrlPath))
+      .inScenario(scenarioName)
+      .whenScenarioStateIs(initialState)
+      .willReturn(aResponse().withStatus(401))
+      .willSetStateTo(failedState))
+
+    stubFor(post(urlPathEqualTo(startCaseUrlPath))
+      .inScenario(scenarioName)
+      .whenScenarioStateIs(failedState)
+      .willReturn(
+        result.fold(
+          aResponse().withStatus(_),
+          response => aResponse().withStatus(200).withBody(generateResponseBody(response))
+        )
+      ))
+  }
+
+  private def generateResponseBody(response: PegaStartCaseResponse): String = {
+    val assignments =
+      response.data.caseInfo.assignments
+        .map(a => s"""{ "ID": "${a.ID}" }""")
+        .mkString(",")
+    s"""{
+       |  "ID": "${response.ID}",
+       |  "data": {
+       |    "caseInfo": {
+       |      "assignments": [ $assignments ]
+       |    }
+       |  }
+       |}""".stripMargin
+  }
 
   def stubGetCase(caseId: PegaCaseId, result: Either[HttpStatus, PegaGetCaseResponse]): StubMapping =
     stubFor(
@@ -92,12 +113,12 @@ object PegaStub {
         )
     )
 
-  def verifyOauthCalled(username: String, password: String): Unit = {
+  def verifyOauthCalled(username: String, password: String, numberOfTimes: Int = 1): Unit = {
     val expectedEncodedCreds =
       new String(Base64.getEncoder.encode(s"$username:$password".getBytes("UTF-8")), "UTF-8")
 
     verify(
-      exactly(1),
+      exactly(numberOfTimes),
       postRequestedFor(urlPathEqualTo(oauthUrlPath))
         .withRequestBody(equalTo("grant_type=client_credentials"))
         .withHeader("Authorization", equalTo(s"Basic $expectedEncodedCreds"))
@@ -105,17 +126,17 @@ object PegaStub {
     )
   }
 
-  def verifyStartCaseCalled(pegaOauthToken: PegaOauthToken, expectedRequestJson: String): Unit =
+  def verifyStartCaseCalled(pegaOauthToken: PegaOauthToken, expectedRequestJson: String, numberOfTimes: Int = 1): Unit =
     verify(
-      exactly(1),
+      exactly(numberOfTimes),
       postRequestedFor(urlPathEqualTo(startCaseUrlPath))
         .withRequestBody(equalToJson(expectedRequestJson))
         .withHeader("Authorization", equalTo(s"Bearer ${pegaOauthToken.accessToken}"))
     )
 
-  def verifyGetCaseCalled(pegaOauthToken: PegaOauthToken, caseId: PegaCaseId): Unit =
+  def verifyGetCaseCalled(pegaOauthToken: PegaOauthToken, caseId: PegaCaseId, numberOfTimes: Int = 1): Unit =
     verify(
-      exactly(1),
+      exactly(numberOfTimes),
       getRequestedFor(urlPathEqualTo(getCaseUrlPath(caseId)))
         .withHeader("Authorization", equalTo(s"Bearer ${pegaOauthToken.accessToken}"))
     )

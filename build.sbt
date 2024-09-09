@@ -64,6 +64,9 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     scalaVersion := appScalaVersion,
     libraryDependencies ++= AppDependencies.microserviceDependencies,
+    libraryDependencies ++= Seq(
+      caffeine
+    ),
     (Test / parallelExecution) := false,
     (Test / fork) := false,
     routesImport ++= Seq("essttp.journey.model._", "essttp.rootmodel.TaxRegime"),
