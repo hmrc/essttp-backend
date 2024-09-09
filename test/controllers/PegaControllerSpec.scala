@@ -247,7 +247,7 @@ class PegaControllerSpec extends ItSpec {
               .copy(whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
           )
           PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
-          PegaStub.stubStartCaseScenario(Right(tdAll.pegaStartCaseResponse))
+          PegaStub.stubStartCase(Right(tdAll.pegaStartCaseResponse), differentResponsesScenario = true)
 
           testSuccess(this)(
             tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo.copy(

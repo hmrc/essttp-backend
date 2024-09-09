@@ -52,37 +52,38 @@ object PegaStub {
         )
     )
 
-  def stubStartCase(result: Either[HttpStatus, PegaStartCaseResponse]): StubMapping =
-    stubFor(
-      post(urlPathEqualTo(startCaseUrlPath))
+  def stubStartCase(result: Either[HttpStatus, PegaStartCaseResponse], differentResponsesScenario: Boolean = false): StubMapping = {
+    if (differentResponsesScenario) {
+      val scenarioName = "StartCaseScenario"
+      val initialState = "Initial"
+      val failedState = "Failed"
+
+      stubFor(post(urlPathEqualTo(startCaseUrlPath))
+        .inScenario(scenarioName)
+        .whenScenarioStateIs(initialState)
+        .willReturn(aResponse().withStatus(401))
+        .willSetStateTo(failedState))
+
+      stubFor(post(urlPathEqualTo(startCaseUrlPath))
+        .inScenario(scenarioName)
+        .whenScenarioStateIs(failedState)
         .willReturn(
           result.fold(
             aResponse().withStatus(_),
             response => aResponse().withStatus(200).withBody(generateResponseBody(response))
           )
-        )
-    )
-
-  def stubStartCaseScenario(result: Either[HttpStatus, PegaStartCaseResponse]): StubMapping = {
-    val scenarioName = "StartCaseScenario"
-    val initialState = "Initial"
-    val failedState = "Failed"
-
-    stubFor(post(urlPathEqualTo(startCaseUrlPath))
-      .inScenario(scenarioName)
-      .whenScenarioStateIs(initialState)
-      .willReturn(aResponse().withStatus(401))
-      .willSetStateTo(failedState))
-
-    stubFor(post(urlPathEqualTo(startCaseUrlPath))
-      .inScenario(scenarioName)
-      .whenScenarioStateIs(failedState)
-      .willReturn(
-        result.fold(
-          aResponse().withStatus(_),
-          response => aResponse().withStatus(200).withBody(generateResponseBody(response))
-        )
-      ))
+        ))
+    } else {
+      stubFor(
+        post(urlPathEqualTo(startCaseUrlPath))
+          .willReturn(
+            result.fold(
+              aResponse().withStatus(_),
+              response => aResponse().withStatus(200).withBody(generateResponseBody(response))
+            )
+          )
+      )
+    }
   }
 
   private def generateResponseBody(response: PegaStartCaseResponse): String = {
