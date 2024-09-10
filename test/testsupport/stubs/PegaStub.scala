@@ -52,8 +52,8 @@ object PegaStub {
         )
     )
 
-  def stubStartCase(result: Either[HttpStatus, PegaStartCaseResponse], differentResponsesScenario: Boolean = false): StubMapping = {
-    if (differentResponsesScenario) {
+  def stubStartCase(result: Either[HttpStatus, PegaStartCaseResponse], expiredToken: Boolean = false): StubMapping = {
+    if (expiredToken) {
       val scenarioName = "StartCaseScenario"
       val initialState = "Initial"
       val failedState = "Failed"
@@ -101,9 +101,21 @@ object PegaStub {
        |}""".stripMargin
   }
 
-  def stubGetCase(caseId: PegaCaseId, result: Either[HttpStatus, PegaGetCaseResponse]): StubMapping =
-    stubFor(
-      get(urlPathEqualTo(getCaseUrlPath(caseId)))
+  def stubGetCase(caseId: PegaCaseId, result: Either[HttpStatus, PegaGetCaseResponse], expiredToken: Boolean = false): StubMapping = {
+    if (expiredToken) {
+      val scenarioName = "GetCaseScenario"
+      val initialState = "Started"
+      val failedState = "FirstFail"
+
+      stubFor(get(urlPathEqualTo(getCaseUrlPath(caseId)))
+        .inScenario(scenarioName)
+        .whenScenarioStateIs(initialState)
+        .willReturn(aResponse().withStatus(401))
+        .willSetStateTo(failedState))
+
+      stubFor(get(urlPathEqualTo(getCaseUrlPath(caseId)))
+        .inScenario(scenarioName)
+        .whenScenarioStateIs(failedState)
         .willReturn(
           result.fold(
             aResponse().withStatus(_),
@@ -111,8 +123,21 @@ object PegaStub {
               aResponse().withStatus(200).withBody(Json.toJson(response).toString)
             }
           )
-        )
-    )
+        ))
+    } else {
+      stubFor(
+        get(urlPathEqualTo(getCaseUrlPath(caseId)))
+          .willReturn(
+            result.fold(
+              aResponse().withStatus(_),
+              response => {
+                aResponse().withStatus(200).withBody(Json.toJson(response).toString)
+              }
+            )
+          )
+      )
+    }
+  }
 
   def verifyOauthCalled(username: String, password: String, numberOfTimes: Int = 1): Unit = {
     val expectedEncodedCreds =

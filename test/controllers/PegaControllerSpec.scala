@@ -30,12 +30,13 @@ import repository.JourneyByTaxIdRepo.JourneyWithTaxId
 import repository.{JourneyByTaxIdRepo, JourneyRepo}
 import testsupport.ItSpec
 import testsupport.stubs.PegaStub
+import testsupport.testdata.TdBase
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments}
 import uk.gov.hmrc.http.UpstreamErrorResponse
 
 import java.time.{Clock, Instant}
 
-class PegaControllerSpec extends ItSpec {
+class PegaControllerSpec extends ItSpec with TdBase {
 
   lazy val journeyByTaxIdRepo = app.injector.instanceOf[JourneyByTaxIdRepo]
 
@@ -247,7 +248,7 @@ class PegaControllerSpec extends ItSpec {
               .copy(whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
           )
           PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
-          PegaStub.stubStartCase(Right(tdAll.pegaStartCaseResponse), differentResponsesScenario = true)
+          PegaStub.stubStartCase(Right(tdAll.pegaStartCaseResponse), expiredToken = true)
 
           testSuccess(this)(
             tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo.copy(
@@ -439,12 +440,40 @@ class PegaControllerSpec extends ItSpec {
           testException(this)("returned 503")
         }
 
-        "there is an error calling the get case API" in new JourneyItTest {
+        "there is an error calling the get case API (not 401)" in new JourneyItTest {
           insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
           PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
           PegaStub.stubGetCase(tdAll.pegaCaseId, Left(502))
 
           testException(this)("returned 502")
+        }
+
+        "there are two consecutive 401 errors when calling the get case API, when the initial token has expired" in new JourneyItTest {
+          insertJourneyForTest(
+            tdAll.EpayeBta.journeyAfterStartedPegaCase
+          )
+          PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
+          PegaStub.stubGetCase(pegaCaseId, Left(401))
+
+          testException(this)("returned 401")
+
+          PegaStub.verifyOauthCalled("user", "pass", 2)
+          PegaStub.verifyGetCaseCalled(tdAll.pegaOauthToken, pegaCaseId, 2)
+        }
+
+        "there are two consecutive 401 errors when calling the get case API, when there is already a PEGA token in the cache" in new JourneyItTest {
+          cacheApi.set("pega-Oauth-token", "tokenInCache").futureValue shouldBe Done
+
+          insertJourneyForTest(
+            tdAll.EpayeBta.journeyAfterStartedPegaCase
+          )
+          PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
+          PegaStub.stubGetCase(pegaCaseId, Left(401))
+
+          testException(this)("returned 401")
+
+          PegaStub.verifyOauthCalled("user", "pass")
+          PegaStub.verifyGetCaseCalled(tdAll.pegaOauthToken, pegaCaseId)
         }
 
       }
@@ -465,6 +494,27 @@ class PegaControllerSpec extends ItSpec {
         PegaStub.verifyGetCaseCalled(
           tdAll.pegaOauthToken,
           tdAll.pegaCaseId
+        )
+
+      }
+
+      "returns the payment plan when the GetCase call initially fails and is successfully retried after refreshing the oauth token " in new JourneyItTest {
+        val paymentPlan = tdAll.paymentPlan(2)
+
+        insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
+        stubCommonActions()
+        PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
+        PegaStub.stubGetCase(tdAll.pegaCaseId, Right(PegaGetCaseResponse(paymentPlan)), expiredToken = true)
+
+        val result = controller.getCase(tdAll.journeyId)(request)
+        status(result) shouldBe OK
+        contentAsJson(result).as[GetCaseResponse] shouldBe GetCaseResponse(paymentPlan)
+
+        PegaStub.verifyOauthCalled("user", "pass", 2)
+        PegaStub.verifyGetCaseCalled(
+          tdAll.pegaOauthToken,
+          tdAll.pegaCaseId,
+          2
         )
 
       }
