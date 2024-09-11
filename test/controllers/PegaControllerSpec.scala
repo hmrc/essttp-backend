@@ -18,26 +18,30 @@ package controllers
 
 import essttp.crypto.CryptoFormat
 import essttp.journey.model.{Journey, UpfrontPaymentAnswers}
-import essttp.rootmodel.{EmpRef, SaUtr, SessionId, TaxRegime, Vrn}
+import essttp.rootmodel._
 import essttp.rootmodel.pega.{GetCaseResponse, StartCaseResponse}
 import models.pega.{PegaGetCaseResponse, PegaStartCaseResponse}
+import org.apache.pekko.Done
 import org.apache.pekko.stream.Materializer
+import play.api.cache.AsyncCacheApi
 import play.api.http.Status.CREATED
 import play.api.test.Helpers._
 import repository.JourneyByTaxIdRepo.JourneyWithTaxId
 import repository.{JourneyByTaxIdRepo, JourneyRepo}
 import testsupport.ItSpec
 import testsupport.stubs.PegaStub
+import testsupport.testdata.TdBase
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments}
 import uk.gov.hmrc.http.UpstreamErrorResponse
 
 import java.time.{Clock, Instant}
 
-class PegaControllerSpec extends ItSpec {
+class PegaControllerSpec extends ItSpec with TdBase {
 
   lazy val journeyByTaxIdRepo = app.injector.instanceOf[JourneyByTaxIdRepo]
 
   lazy val controller = app.injector.instanceOf[PegaController]
+  lazy val cacheApi: AsyncCacheApi = app.injector.instanceOf[AsyncCacheApi]
 
   implicit lazy val mat: Materializer = app.injector.instanceOf[Materializer]
 
@@ -47,12 +51,48 @@ class PegaControllerSpec extends ItSpec {
     super.beforeEach()
     app.injector.instanceOf[JourneyRepo].collection.drop().toFuture().futureValue shouldBe ()
     journeyByTaxIdRepo.collection.drop().toFuture().futureValue shouldBe ()
+    cacheApi.remove("pega-Oauth-token")
     ()
   }
 
   "PegaController when" - {
 
     "handling requests to start a case must" - {
+
+      val expectedEpayeStartCaseRequestJson =
+        """{
+            |  "caseTypeID" : "HMRC-Debt-Work-AffordAssess",
+            |  "processID" : "",
+            |  "parentCaseID" : "",
+            |  "content" : {
+            |    "UniqueIdentifier" : "864FZ00049",
+            |    "UniqueIdentifierType" : "EMPREF",
+            |    "Regime" : "PAYE",
+            |    "DebtAmount" : 300000,
+            |    "MDTPPropertyMapping" : {
+            |      "customerPostcodes" : [ {
+            |        "addressPostcode" : "AA11AA",
+            |        "postcodeDate" : "2020-01-01"
+            |      } ],
+            |      "initialPaymentDate" : "2022-01-01",
+            |      "channelIdentifier" : "eSSTTP",
+            |      "debtItemCharges" : [ {
+            |        "outstandingDebtAmount" : 100000,
+            |        "mainTrans" : "mainTrans",
+            |        "subTrans" : "subTrans",
+            |        "debtItemChargeId" : "A00000000001",
+            |        "interestStartDate" : "2022-05-17",
+            |        "debtItemOriginalDueDate" : "2022-05-17"
+            |      } ],
+            |      "accruedInterest" : 1597,
+            |      "initialPaymentAmount" : 1000,
+            |      "paymentPlanFrequency" : "Monthly",
+            |      "UnableToPayReason" : [ "Bankrupt" ],
+            |      "MakeUpfrontPayment" : true,
+            |      "CanDebtBePaidIn6Months" : false
+            |    }
+            |  }
+            |}""".stripMargin
 
       "return an error when" - {
 
@@ -124,7 +164,7 @@ class PegaControllerSpec extends ItSpec {
           testException(this)("returned 503")
         }
 
-        "there is an error calling the start case API" in new JourneyItTest {
+        "there is an error calling the start case API (not 401)" in new JourneyItTest {
           insertJourneyForTest(
             tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo
               .copy(whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
@@ -133,6 +173,36 @@ class PegaControllerSpec extends ItSpec {
           PegaStub.stubStartCase(Left(502))
 
           testException(this)("returned 502")
+        }
+
+        "there are two consecutive 401 errors when calling the start case API, when the initial token has expired" in new JourneyItTest {
+          insertJourneyForTest(
+            tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo
+              .copy(whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+          )
+          PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
+          PegaStub.stubStartCase(Left(401))
+
+          testException(this)("returned 401")
+
+          PegaStub.verifyOauthCalled("user", "pass", 2)
+          PegaStub.verifyStartCaseCalled(tdAll.pegaOauthToken, expectedEpayeStartCaseRequestJson, 2)
+        }
+
+        "there are two consecutive 401 errors when calling the start case API, when there is already a PEGA token in the cache" in new JourneyItTest {
+          cacheApi.set("pega-Oauth-token", "tokenInCache").futureValue shouldBe Done
+
+          insertJourneyForTest(
+            tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo
+              .copy(whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+          )
+          PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
+          PegaStub.stubStartCase(Left(401))
+
+          testException(this)("returned 401")
+
+          PegaStub.verifyOauthCalled("user", "pass")
+          PegaStub.verifyStartCaseCalled(tdAll.pegaOauthToken, expectedEpayeStartCaseRequestJson)
         }
 
         "no assignment ID can be found in the start case response" in new JourneyItTest {
@@ -172,6 +242,25 @@ class PegaControllerSpec extends ItSpec {
             )
           }
 
+        "the start case API returns a 401 initially and is successfully retried after refreshing the oauth token" in new JourneyItTest {
+          insertJourneyForTest(
+            tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo
+              .copy(whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
+          )
+          PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
+          PegaStub.stubStartCase(Right(tdAll.pegaStartCaseResponse), expiredToken = true)
+
+          testSuccess(this)(
+            tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo.copy(
+              whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired
+            ),
+            expectedEpayeStartCaseRequestJson
+          )
+
+          PegaStub.verifyOauthCalled("user", "pass")
+          PegaStub.verifyStartCaseCalled(tdAll.pegaOauthToken, expectedEpayeStartCaseRequestJson)
+        }
+
         "the tax regime is" - {
 
           "EPAYE" in new JourneyItTest {
@@ -179,39 +268,7 @@ class PegaControllerSpec extends ItSpec {
               tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo.copy(
                 whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired
               ),
-              """{
-                |  "caseTypeID" : "HMRC-Debt-Work-AffordAssess",
-                |  "processID" : "",
-                |  "parentCaseID" : "",
-                |  "content" : {
-                |    "UniqueIdentifier" : "864FZ00049",
-                |    "UniqueIdentifierType" : "EMPREF",
-                |    "Regime" : "PAYE",
-                |    "DebtAmount" : 300000,
-                |    "MDTPPropertyMapping" : {
-                |      "customerPostcodes" : [ {
-                |        "addressPostcode" : "AA11AA",
-                |        "postcodeDate" : "2020-01-01"
-                |      } ],
-                |      "initialPaymentDate" : "2022-01-01",
-                |      "channelIdentifier" : "eSSTTP",
-                |      "debtItemCharges" : [ {
-                |        "outstandingDebtAmount" : 100000,
-                |        "mainTrans" : "mainTrans",
-                |        "subTrans" : "subTrans",
-                |        "debtItemChargeId" : "A00000000001",
-                |        "interestStartDate" : "2022-05-17",
-                |        "debtItemOriginalDueDate" : "2022-05-17"
-                |      } ],
-                |      "accruedInterest" : 1597,
-                |      "initialPaymentAmount" : 1000,
-                |      "paymentPlanFrequency" : "Monthly",
-                |      "UnableToPayReason" : [ "Bankrupt" ],
-                |      "MakeUpfrontPayment" : true,
-                |      "CanDebtBePaidIn6Months" : false
-                |    }
-                |  }
-                |}""".stripMargin
+              expectedEpayeStartCaseRequestJson
             )
           }
 
@@ -383,12 +440,40 @@ class PegaControllerSpec extends ItSpec {
           testException(this)("returned 503")
         }
 
-        "there is an error calling the get case API" in new JourneyItTest {
+        "there is an error calling the get case API (not 401)" in new JourneyItTest {
           insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
           PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
           PegaStub.stubGetCase(tdAll.pegaCaseId, Left(502))
 
           testException(this)("returned 502")
+        }
+
+        "there are two consecutive 401 errors when calling the get case API, when the initial token has expired" in new JourneyItTest {
+          insertJourneyForTest(
+            tdAll.EpayeBta.journeyAfterStartedPegaCase
+          )
+          PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
+          PegaStub.stubGetCase(pegaCaseId, Left(401))
+
+          testException(this)("returned 401")
+
+          PegaStub.verifyOauthCalled("user", "pass", 2)
+          PegaStub.verifyGetCaseCalled(tdAll.pegaOauthToken, pegaCaseId, 2)
+        }
+
+        "there are two consecutive 401 errors when calling the get case API, when there is already a PEGA token in the cache" in new JourneyItTest {
+          cacheApi.set("pega-Oauth-token", "tokenInCache").futureValue shouldBe Done
+
+          insertJourneyForTest(
+            tdAll.EpayeBta.journeyAfterStartedPegaCase
+          )
+          PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
+          PegaStub.stubGetCase(pegaCaseId, Left(401))
+
+          testException(this)("returned 401")
+
+          PegaStub.verifyOauthCalled("user", "pass")
+          PegaStub.verifyGetCaseCalled(tdAll.pegaOauthToken, pegaCaseId)
         }
 
       }
@@ -409,6 +494,27 @@ class PegaControllerSpec extends ItSpec {
         PegaStub.verifyGetCaseCalled(
           tdAll.pegaOauthToken,
           tdAll.pegaCaseId
+        )
+
+      }
+
+      "returns the payment plan when the GetCase call initially fails and is successfully retried after refreshing the oauth token " in new JourneyItTest {
+        val paymentPlan = tdAll.paymentPlan(2)
+
+        insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
+        stubCommonActions()
+        PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
+        PegaStub.stubGetCase(tdAll.pegaCaseId, Right(PegaGetCaseResponse(paymentPlan)), expiredToken = true)
+
+        val result = controller.getCase(tdAll.journeyId)(request)
+        status(result) shouldBe OK
+        contentAsJson(result).as[GetCaseResponse] shouldBe GetCaseResponse(paymentPlan)
+
+        PegaStub.verifyOauthCalled("user", "pass", 2)
+        PegaStub.verifyGetCaseCalled(
+          tdAll.pegaOauthToken,
+          tdAll.pegaCaseId,
+          2
         )
 
       }

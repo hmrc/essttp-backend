@@ -16,24 +16,26 @@
 
 package services
 
+import cats.implicits.catsSyntaxEq
 import connectors.PegaConnector
 import essttp.enrolments.{EnrolmentDef, EnrolmentDefResult}
 import essttp.journey.model.Journey.{Epaye, Sa, Sia, Vat}
 import essttp.journey.model._
+import essttp.rootmodel._
 import essttp.rootmodel.epaye.{TaxOfficeNumber, TaxOfficeReference}
 import essttp.rootmodel.pega.{GetCaseResponse, PegaAssigmentId, PegaCaseId, StartCaseResponse}
 import essttp.rootmodel.ttp.PaymentPlanFrequencies
 import essttp.rootmodel.ttp.affordablequotes._
 import essttp.rootmodel.ttp.eligibility.{ChargeTypeAssessment, Charges, EligibilityCheckResult}
-import essttp.rootmodel._
 import essttp.utils.RequestSupport.hc
 import essttp.utils.{Errors, RequestSupport}
 import models.pega.PegaStartCaseRequest.MDTPropertyMapping
-import models.pega.{PegaStartCaseRequest, PegaStartCaseResponse}
+import models.pega.{PegaStartCaseRequest, PegaStartCaseResponse, PegaTokenManager}
 import play.api.mvc.Request
 import repository.JourneyByTaxIdRepo
 import repository.JourneyByTaxIdRepo.JourneyWithTaxId
 import uk.gov.hmrc.auth.core.Enrolments
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import java.time.{Clock, Instant}
 import javax.inject.{Inject, Singleton}
@@ -43,15 +45,15 @@ import scala.concurrent.{ExecutionContext, Future}
 class PegaService @Inject() (
     pegaConnector:      PegaConnector,
     journeyByTaxIdRepo: JourneyByTaxIdRepo,
-    journeyService:     JourneyService
+    journeyService:     JourneyService,
+    tokenManager:       PegaTokenManager
 )(implicit ec: ExecutionContext) {
 
   def startCase(journeyId: JourneyId)(implicit r: Request[_]): Future[StartCaseResponse] = {
     for {
       journey <- journeyService.get(journeyId)
       request = toPegaStartCaseRequest(journey)
-      token <- pegaConnector.getToken()
-      response <- pegaConnector.startCase(request, token)
+      response <- doPegaCall(pegaConnector.startCase(request, _))
     } yield toStartCaseResponse(response)
   }
 
@@ -59,9 +61,20 @@ class PegaService @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       caseId = getCaseId(journey)
-      token <- pegaConnector.getToken()
-      response <- pegaConnector.getCase(caseId, token)
+      response <- doPegaCall(pegaConnector.getCase(caseId, _))
     } yield GetCaseResponse(response.paymentPlan)
+  }
+
+  private def doPegaCall[A](callAPI: String => Future[A])(implicit hc: HeaderCarrier): Future[A] = {
+    tokenManager.getToken().flatMap { originalToken =>
+      callAPI(originalToken).recoverWith {
+        case u: UpstreamErrorResponse if u.statusCode === 401 =>
+          // Handle 401 Unauthorized, refresh token and retry once
+          tokenManager.fetchNewToken().flatMap { newToken =>
+            callAPI(newToken)
+          }
+      }
+    }
   }
 
   def saveJourney(journeyId: JourneyId)(implicit r: Request[_]): Future[Unit] = {
