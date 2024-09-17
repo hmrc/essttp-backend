@@ -149,7 +149,7 @@ object Origins extends Enum[Origin] {
     override def values: immutable.IndexedSeq[Sia] = findValues
   }
 
-  override def values: immutable.IndexedSeq[Origin] = Epaye.values ++ Vat.values ++ Sa.values
+  override def values: immutable.IndexedSeq[Origin] = Epaye.values ++ Vat.values ++ Sa.values ++ Sia.values
 }
 
 /**
