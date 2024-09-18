@@ -24,29 +24,19 @@ sealed trait CannotPayReason extends EnumEntry with Product with Serializable
 
 object CannotPayReason extends Enum[CannotPayReason] {
 
-  case object Bankrupt extends CannotPayReason
+  case object UnexpectedReductionOfIncome extends CannotPayReason
 
-  case object Bereavement extends CannotPayReason
+  case object UnexpectedIncreaseInSpending extends CannotPayReason
+
+  case object LostOrReducedAbilityToEarnOrTrade extends CannotPayReason
+
+  case object NationalOrLocalDisaster extends CannotPayReason
 
   case object ChangeToPersonalCircumstances extends CannotPayReason
 
-  case object FloodFireTheft extends CannotPayReason
+  case object NoMoneySetAside extends CannotPayReason
 
-  case object IllHealth extends CannotPayReason
-
-  case object LocalDisaster extends CannotPayReason
-
-  case object LostReducedBusiness extends CannotPayReason
-
-  case object LowIncome extends CannotPayReason
-
-  case object NationalDisaster extends CannotPayReason
-
-  case object NoProvisions extends CannotPayReason
-
-  case object OverRepayment extends CannotPayReason
-
-  case object Unemployed extends CannotPayReason
+  case object WaitingForRefund extends CannotPayReason
 
   case object Other extends CannotPayReason
 

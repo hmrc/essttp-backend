@@ -86,7 +86,9 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
       "Epaye when the current stage is" - {
 
         val differentWhyCannotPayInFullReasons =
-          WhyCannotPayInFullAnswers.WhyCannotPayInFull(Set(CannotPayReason.Unemployed, CannotPayReason.IllHealth, CannotPayReason.NationalDisaster))
+          WhyCannotPayInFullAnswers.WhyCannotPayInFull(
+            Set(CannotPayReason.NoMoneySetAside, CannotPayReason.LostOrReducedAbilityToEarnOrTrade, CannotPayReason.NationalOrLocalDisaster)
+          )
 
           def testEpayeBta[J <: Journey](initialJourney: J)(
               existingValue:                              J => WhyCannotPayInFullAnswers,
@@ -242,7 +244,9 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
       "Vat when the current stage is" - {
 
         val differentWhyCannotPayInFullReasons =
-          WhyCannotPayInFullAnswers.WhyCannotPayInFull(Set(CannotPayReason.Unemployed, CannotPayReason.IllHealth, CannotPayReason.NationalDisaster))
+          WhyCannotPayInFullAnswers.WhyCannotPayInFull(
+            Set(CannotPayReason.NoMoneySetAside, CannotPayReason.LostOrReducedAbilityToEarnOrTrade, CannotPayReason.NationalOrLocalDisaster)
+          )
 
           def testVatBta[J <: Journey](initialJourney: J)(
               existingValue:                              J => WhyCannotPayInFullAnswers,
@@ -398,7 +402,9 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
       "Sa when the current stage is" - {
 
         val differentWhyCannotPayInFullReasons =
-          WhyCannotPayInFullAnswers.WhyCannotPayInFull(Set(CannotPayReason.Unemployed, CannotPayReason.IllHealth, CannotPayReason.NationalDisaster))
+          WhyCannotPayInFullAnswers.WhyCannotPayInFull(
+            Set(CannotPayReason.NoMoneySetAside, CannotPayReason.LostOrReducedAbilityToEarnOrTrade, CannotPayReason.NationalOrLocalDisaster)
+          )
 
           def testSaBta[J <: Journey](initialJourney: J)(
               existingValue:                              J => WhyCannotPayInFullAnswers,
@@ -554,7 +560,9 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
       "Sia when the current stage is" - {
 
         val differentWhyCannotPayInFullReasons =
-          WhyCannotPayInFullAnswers.WhyCannotPayInFull(Set(CannotPayReason.Unemployed, CannotPayReason.IllHealth, CannotPayReason.NationalDisaster))
+          WhyCannotPayInFullAnswers.WhyCannotPayInFull(
+            Set(CannotPayReason.NoMoneySetAside, CannotPayReason.LostOrReducedAbilityToEarnOrTrade, CannotPayReason.NationalOrLocalDisaster)
+          )
 
           def testSiaPta[J <: Journey](initialJourney: J)(
               existingValue:                              J => WhyCannotPayInFullAnswers,

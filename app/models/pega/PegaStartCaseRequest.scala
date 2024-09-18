@@ -18,7 +18,7 @@ package models.pega
 
 import essttp.crypto.CryptoFormat
 import essttp.rootmodel.dates.InitialPaymentDate
-import essttp.rootmodel.{AmountInPence, CannotPayReason, UpfrontPaymentAmount}
+import essttp.rootmodel.{AmountInPence, UpfrontPaymentAmount}
 import essttp.rootmodel.ttp.PaymentPlanFrequency
 import essttp.rootmodel.ttp.affordablequotes.{AccruedDebtInterest, ChannelIdentifier, DebtItemCharge}
 import essttp.rootmodel.ttp.eligibility.CustomerPostcode
@@ -41,6 +41,12 @@ object PegaStartCaseRequest {
     implicit val writes: OWrites[Content] = Json.writes
   }
 
+  final case class UnableToPayReason(reason: String) extends AnyVal
+
+  object UnableToPayReason {
+    implicit val writes: OWrites[UnableToPayReason] = Json.writes
+  }
+
   final case class MDTPropertyMapping(
       customerPostcodes:      List[CustomerPostcode],
       initialPaymentDate:     Option[InitialPaymentDate],
@@ -49,7 +55,7 @@ object PegaStartCaseRequest {
       accruedInterest:        AccruedDebtInterest,
       initialPaymentAmount:   Option[UpfrontPaymentAmount],
       paymentPlanFrequency:   PaymentPlanFrequency,
-      UnableToPayReason:      Set[CannotPayReason],
+      UnableToPayReason:      Set[UnableToPayReason],
       MakeUpfrontPayment:     Boolean,
       CanDebtBePaidIn6Months: Boolean
   )

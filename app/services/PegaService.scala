@@ -29,7 +29,7 @@ import essttp.rootmodel.ttp.affordablequotes._
 import essttp.rootmodel.ttp.eligibility.{ChargeTypeAssessment, Charges, EligibilityCheckResult}
 import essttp.utils.RequestSupport.hc
 import essttp.utils.{Errors, RequestSupport}
-import models.pega.PegaStartCaseRequest.MDTPropertyMapping
+import models.pega.PegaStartCaseRequest.{MDTPropertyMapping, UnableToPayReason}
 import models.pega.{PegaStartCaseRequest, PegaStartCaseResponse, PegaTokenManager}
 import play.api.mvc.Request
 import repository.JourneyByTaxIdRepo
@@ -228,12 +228,12 @@ class PegaService @Inject() (
       case j: Journey.AfterEligibilityChecked => j.eligibilityCheckResult
       case _                                  => sys.error("Could not find eligibility check result")
     }
-    val whyCannotPayReasons = journey match {
+    val unableToPayReasons = journey match {
       case j: Journey.AfterWhyCannotPayInFullAnswers =>
         j.whyCannotPayInFullAnswers match {
           case WhyCannotPayInFullAnswers.AnswerNotRequired =>
             sys.error("Expected WhyCannotPayInFull reasons but answer was not required")
-          case WhyCannotPayInFullAnswers.WhyCannotPayInFull(reasons) => reasons
+          case WhyCannotPayInFullAnswers.WhyCannotPayInFull(reasons) => reasons.map(toUnableToPayReason)
         }
       case _ => sys.error("Could not find why cannot pay in full answers")
     }
@@ -271,7 +271,7 @@ class PegaService @Inject() (
       AccruedDebtInterest(calculateCumulativeInterest(eligibilityCheckResult)),
       upfrontPaymentAmount,
       PaymentPlanFrequencies.Monthly,
-      whyCannotPayReasons,
+      unableToPayReasons,
       upfrontPaymentAmount.isDefined,
       canPayWithinSixMonths
     )
@@ -285,6 +285,20 @@ class PegaService @Inject() (
     )
 
     PegaStartCaseRequest("HMRC-Debt-Work-AffordAssess", "", "", content)
+  }
+
+  private def toUnableToPayReason(cannotPayReason: CannotPayReason): UnableToPayReason = {
+    val code = cannotPayReason match {
+      case CannotPayReason.UnexpectedReductionOfIncome       => "UTPR-1"
+      case CannotPayReason.UnexpectedIncreaseInSpending      => "UTPR-2"
+      case CannotPayReason.LostOrReducedAbilityToEarnOrTrade => "UTPR-3"
+      case CannotPayReason.NationalOrLocalDisaster           => "UTPR-4"
+      case CannotPayReason.ChangeToPersonalCircumstances     => "UTPR-5"
+      case CannotPayReason.NoMoneySetAside                   => "UTPR-6"
+      case CannotPayReason.WaitingForRefund                  => "UTPR-7"
+      case CannotPayReason.Other                             => "UTPR-8"
+    }
+    UnableToPayReason(code)
   }
 
   private def toDebtItemCharges(chargeTypeAssessment: ChargeTypeAssessment): List[DebtItemCharge] =
