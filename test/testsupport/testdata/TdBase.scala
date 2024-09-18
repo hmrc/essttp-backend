@@ -90,7 +90,7 @@ trait TdBase {
 
   val whyCannotPayInFullNotRequired: WhyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired
 
-  val whyCannotPayInFullRequired: WhyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.WhyCannotPayInFull(Set(CannotPayReason.Bankrupt))
+  val whyCannotPayInFullRequired: WhyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.WhyCannotPayInFull(Set(CannotPayReason.LostOrReducedAbilityToEarnOrTrade))
 
   val canPayUpfrontYes: CanPayUpfront = CanPayUpfront(value = true)
   val canPayUpfrontNo: CanPayUpfront = CanPayUpfront(value = false)

@@ -17,7 +17,7 @@
 package controllers
 
 import essttp.crypto.CryptoFormat
-import essttp.journey.model.{Journey, UpfrontPaymentAnswers}
+import essttp.journey.model.{Journey, UpfrontPaymentAnswers, WhyCannotPayInFullAnswers}
 import essttp.rootmodel._
 import essttp.rootmodel.pega.{GetCaseResponse, StartCaseResponse}
 import models.pega.{PegaGetCaseResponse, PegaStartCaseResponse}
@@ -59,8 +59,8 @@ class PegaControllerSpec extends ItSpec with TdBase {
 
     "handling requests to start a case must" - {
 
-      val expectedEpayeStartCaseRequestJson =
-        """{
+        def expectedEpayeStartCaseRequestJson(unableToPayReasonsCodes: Seq[String] = Seq("UTPR-3")) =
+          s"""{
             |  "caseTypeID" : "HMRC-Debt-Work-AffordAssess",
             |  "processID" : "",
             |  "parentCaseID" : "",
@@ -87,7 +87,9 @@ class PegaControllerSpec extends ItSpec with TdBase {
             |      "accruedInterest" : 1597,
             |      "initialPaymentAmount" : 1000,
             |      "paymentPlanFrequency" : "Monthly",
-            |      "UnableToPayReason" : [ "Bankrupt" ],
+            |      "UnableToPayReason" : [
+            |         ${unableToPayReasonsCodes.map(c => s"""{ "reason": "$c" }""").mkString(", ")}
+            |       ],
             |      "MakeUpfrontPayment" : true,
             |      "CanDebtBePaidIn6Months" : false
             |    }
@@ -186,7 +188,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
           testException(this)("returned 401")
 
           PegaStub.verifyOauthCalled("user", "pass", 2)
-          PegaStub.verifyStartCaseCalled(tdAll.pegaOauthToken, expectedEpayeStartCaseRequestJson, 2)
+          PegaStub.verifyStartCaseCalled(tdAll.pegaOauthToken, expectedEpayeStartCaseRequestJson(), 2)
         }
 
         "there are two consecutive 401 errors when calling the start case API, when there is already a PEGA token in the cache" in new JourneyItTest {
@@ -202,7 +204,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
           testException(this)("returned 401")
 
           PegaStub.verifyOauthCalled("user", "pass")
-          PegaStub.verifyStartCaseCalled(tdAll.pegaOauthToken, expectedEpayeStartCaseRequestJson)
+          PegaStub.verifyStartCaseCalled(tdAll.pegaOauthToken, expectedEpayeStartCaseRequestJson())
         }
 
         "no assignment ID can be found in the start case response" in new JourneyItTest {
@@ -254,11 +256,11 @@ class PegaControllerSpec extends ItSpec with TdBase {
             tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo.copy(
               whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired
             ),
-            expectedEpayeStartCaseRequestJson
+            expectedEpayeStartCaseRequestJson()
           )
 
           PegaStub.verifyOauthCalled("user", "pass")
-          PegaStub.verifyStartCaseCalled(tdAll.pegaOauthToken, expectedEpayeStartCaseRequestJson)
+          PegaStub.verifyStartCaseCalled(tdAll.pegaOauthToken, expectedEpayeStartCaseRequestJson())
         }
 
         "the tax regime is" - {
@@ -268,7 +270,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
               tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo.copy(
                 whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired
               ),
-              expectedEpayeStartCaseRequestJson
+              expectedEpayeStartCaseRequestJson()
             )
           }
 
@@ -304,7 +306,9 @@ class PegaControllerSpec extends ItSpec with TdBase {
                 |      "accruedInterest" : 1597,
                 |      "initialPaymentAmount" : 1000,
                 |      "paymentPlanFrequency" : "Monthly",
-                |      "UnableToPayReason" : [ "Bankrupt" ],
+                |      "UnableToPayReason" : [
+                |         { "reason": "UTPR-3" }
+                |       ],
                 |      "MakeUpfrontPayment" : true,
                 |      "CanDebtBePaidIn6Months" : false
                 |    }
@@ -345,7 +349,9 @@ class PegaControllerSpec extends ItSpec with TdBase {
                 |      "accruedInterest" : 1597,
                 |      "initialPaymentAmount" : 1000,
                 |      "paymentPlanFrequency" : "Monthly",
-                |      "UnableToPayReason" : [ "Bankrupt" ],
+                |      "UnableToPayReason" : [
+                |         { "reason": "UTPR-3" }
+                |       ],
                 |      "MakeUpfrontPayment" : true,
                 |      "CanDebtBePaidIn6Months" : false
                 |    }
@@ -388,13 +394,40 @@ class PegaControllerSpec extends ItSpec with TdBase {
               |      } ],
               |      "accruedInterest" : 1597,
               |      "paymentPlanFrequency" : "Monthly",
-              |      "UnableToPayReason" : [ "Bankrupt" ],
+              |      "UnableToPayReason" : [
+              |         { "reason": "UTPR-3" }
+              |       ],
               |      "MakeUpfrontPayment" : false,
               |      "CanDebtBePaidIn6Months" : false
               |    }
               |  }
               |}""".stripMargin
           )
+        }
+
+        "mapping to the correct unable to pay reasons" in new JourneyItTest {
+          List(
+            (CannotPayReason.UnexpectedReductionOfIncome, "UTPR-1"),
+            (CannotPayReason.UnexpectedIncreaseInSpending, "UTPR-2"),
+            (CannotPayReason.LostOrReducedAbilityToEarnOrTrade, "UTPR-3"),
+            (CannotPayReason.NationalOrLocalDisaster, "UTPR-4"),
+            (CannotPayReason.ChangeToPersonalCircumstances, "UTPR-5"),
+            (CannotPayReason.NoMoneySetAside, "UTPR-6"),
+            (CannotPayReason.WaitingForRefund, "UTPR-7"),
+            (CannotPayReason.Other, "UTPR-8")
+          ).foreach{
+              case (cannotPayReason, expectedCode) =>
+                withClue(s"For ${cannotPayReason.toString}") {
+                  testSuccess(this)(
+                    tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo.copy(
+                      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.WhyCannotPayInFull(
+                        Set(cannotPayReason)
+                      )
+                    ),
+                    expectedEpayeStartCaseRequestJson(Seq(expectedCode))
+                  )
+                }
+            }
         }
 
       }
