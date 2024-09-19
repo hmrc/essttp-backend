@@ -60,41 +60,44 @@ class PegaControllerSpec extends ItSpec with TdBase {
     "handling requests to start a case must" - {
 
         def expectedEpayeStartCaseRequestJson(unableToPayReasonsCodes: Seq[String] = Seq("UTPR-3")) =
-          s"""{
-            |  "caseTypeID" : "HMRC-Debt-Work-AffordAssess",
-            |  "processID" : "",
-            |  "parentCaseID" : "",
-            |  "content" : {
-            |    "UniqueIdentifier" : "864FZ00049",
-            |    "UniqueIdentifierType" : "EMPREF",
-            |    "Regime" : "PAYE",
-            |    "DebtAmount" : 300000,
-            |    "MDTPPropertyMapping" : {
-            |      "customerPostcodes" : [ {
-            |        "addressPostcode" : "AA11AA",
-            |        "postcodeDate" : "2020-01-01"
-            |      } ],
-            |      "initialPaymentDate" : "2022-01-01",
-            |      "channelIdentifier" : "eSSTTP",
-            |      "debtItemCharges" : [ {
-            |        "outstandingDebtAmount" : 100000,
-            |        "mainTrans" : "mainTrans",
-            |        "subTrans" : "subTrans",
-            |        "debtItemChargeId" : "A00000000001",
-            |        "interestStartDate" : "2022-05-17",
-            |        "debtItemOriginalDueDate" : "2022-05-17"
-            |      } ],
-            |      "accruedInterest" : 1597,
-            |      "initialPaymentAmount" : 1000,
-            |      "paymentPlanFrequency" : "Monthly",
-            |      "UnableToPayReason" : [
-            |         ${unableToPayReasonsCodes.map(c => s"""{ "reason": "$c" }""").mkString(", ")}
-            |       ],
-            |      "MakeUpfrontPayment" : true,
-            |      "CanDebtBePaidIn6Months" : false
-            |    }
-            |  }
-            |}""".stripMargin
+          s"""
+             |{
+             |   "caseTypeID": "HMRC-Debt-Work-AffordAssess",
+             |   "content":{
+             |      "uniqueIdentifier": "864FZ00049",
+             |      "uniqueIdentifierType": "EMPREF",
+             |      "regime": "PAYE",
+             |      "AA": {
+             |         "debtAmount": 300000,
+             |         "makeUpFrontPayment": true,
+             |         "unableToPayReasons":[
+             |           ${unableToPayReasonsCodes.map(c => s"""{ "reason": "$c" }""").mkString(", ")}
+             |         ],
+             |         "mdtpPropertyMapping": {
+             |            "customerPostcodes": [
+             |               {
+             |                  "postcodeDate": "2020-01-01",
+             |                  "addressPostcode": "AA11AA"
+             |               }
+             |            ],
+             |            "initialPaymentDate": "2022-01-01",
+             |            "channelIdentifier": "eSSTTP",
+             |            "debtItemCharges" : [ {
+             |              "outstandingDebtAmount" : 100000,
+             |              "mainTrans" : "mainTrans",
+             |              "subTrans" : "subTrans",
+             |              "debtItemChargeId" : "A00000000001",
+             |              "interestStartDate" : "2022-05-17",
+             |              "debtItemOriginalDueDate" : "2022-05-17"
+             |            } ],
+             |            "accruedDebtInterest": 1597,
+             |            "initialPaymentAmount": 1000,
+             |            "paymentPlanFrequency": "Monthly"
+             |         }
+             |      }
+             |   }
+             |}
+             |""".stripMargin
 
       "return an error when" - {
 
@@ -279,41 +282,44 @@ class PegaControllerSpec extends ItSpec with TdBase {
               tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNo.copy(
                 whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired
               ),
-              """{
-                |  "caseTypeID" : "HMRC-Debt-Work-AffordAssess",
-                |  "processID" : "",
-                |  "parentCaseID" : "",
-                |  "content" : {
-                |    "UniqueIdentifier" : "101747001",
-                |    "UniqueIdentifierType" : "VRN",
-                |    "Regime" : "VAT",
-                |    "DebtAmount" : 300000,
-                |    "MDTPPropertyMapping" : {
-                |      "customerPostcodes" : [ {
-                |        "addressPostcode" : "AA11AA",
-                |        "postcodeDate" : "2020-01-01"
-                |      } ],
-                |      "initialPaymentDate" : "2022-01-01",
-                |      "channelIdentifier" : "eSSTTP",
-                |      "debtItemCharges" : [ {
-                |        "outstandingDebtAmount" : 100000,
-                |        "mainTrans" : "mainTrans",
-                |        "subTrans" : "subTrans",
-                |        "debtItemChargeId" : "A00000000001",
-                |        "interestStartDate" : "2022-05-17",
-                |        "debtItemOriginalDueDate" : "2022-05-17"
-                |      } ],
-                |      "accruedInterest" : 1597,
-                |      "initialPaymentAmount" : 1000,
-                |      "paymentPlanFrequency" : "Monthly",
-                |      "UnableToPayReason" : [
-                |         { "reason": "UTPR-3" }
-                |       ],
-                |      "MakeUpfrontPayment" : true,
-                |      "CanDebtBePaidIn6Months" : false
-                |    }
-                |  }
-                |}""".stripMargin
+              s"""
+                 |{
+                 |   "caseTypeID": "HMRC-Debt-Work-AffordAssess",
+                 |   "content":{
+                 |      "uniqueIdentifier": "101747001",
+                 |      "uniqueIdentifierType": "VRN",
+                 |      "regime": "VAT",
+                 |      "AA":{
+                 |         "debtAmount": 300000,
+                 |         "makeUpFrontPayment": true,
+                 |         "unableToPayReasons" : [
+                 |           { "reason": "UTPR-3" }
+                 |         ],
+                 |         "mdtpPropertyMapping":{
+                 |            "customerPostcodes":[
+                 |               {
+                 |                  "postcodeDate": "2020-01-01",
+                 |                  "addressPostcode": "AA11AA"
+                 |               }
+                 |            ],
+                 |            "initialPaymentDate":"2022-01-01",
+                 |            "channelIdentifier":"eSSTTP",
+                 |            "debtItemCharges" : [ {
+                 |              "outstandingDebtAmount" : 100000,
+                 |              "mainTrans" : "mainTrans",
+                 |              "subTrans" : "subTrans",
+                 |              "debtItemChargeId" : "A00000000001",
+                 |              "interestStartDate" : "2022-05-17",
+                 |              "debtItemOriginalDueDate" : "2022-05-17"
+                 |            } ],
+                 |            "accruedDebtInterest": 1597,
+                 |            "initialPaymentAmount": 1000,
+                 |            "paymentPlanFrequency": "Monthly"
+                 |         }
+                 |      }
+                 |   }
+                 |}
+                 |""".stripMargin
             )
           }
 
@@ -322,41 +328,44 @@ class PegaControllerSpec extends ItSpec with TdBase {
               tdAll.SaBta.journeyAfterCanPayWithinSixMonthsNo.copy(
                 whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired
               ),
-              """{
-                |  "caseTypeID" : "HMRC-Debt-Work-AffordAssess",
-                |  "processID" : "",
-                |  "parentCaseID" : "",
-                |  "content" : {
-                |    "UniqueIdentifier" : "1234567895",
-                |    "UniqueIdentifierType" : "SAUTR",
-                |    "Regime" : "SA",
-                |    "DebtAmount" : 300000,
-                |    "MDTPPropertyMapping" : {
-                |      "customerPostcodes" : [ {
-                |        "addressPostcode" : "AA11AA",
-                |        "postcodeDate" : "2020-01-01"
-                |      } ],
-                |      "initialPaymentDate" : "2022-01-01",
-                |      "channelIdentifier" : "eSSTTP",
-                |      "debtItemCharges" : [ {
-                |        "outstandingDebtAmount" : 100000,
-                |        "mainTrans" : "mainTrans",
-                |        "subTrans" : "subTrans",
-                |        "debtItemChargeId" : "A00000000001",
-                |        "interestStartDate" : "2022-05-17",
-                |        "debtItemOriginalDueDate" : "2022-05-17"
-                |      } ],
-                |      "accruedInterest" : 1597,
-                |      "initialPaymentAmount" : 1000,
-                |      "paymentPlanFrequency" : "Monthly",
-                |      "UnableToPayReason" : [
-                |         { "reason": "UTPR-3" }
-                |       ],
-                |      "MakeUpfrontPayment" : true,
-                |      "CanDebtBePaidIn6Months" : false
-                |    }
-                |  }
-                |}""".stripMargin
+              s"""
+                 |{
+                 |   "caseTypeID": "HMRC-Debt-Work-AffordAssess",
+                 |   "content":{
+                 |      "uniqueIdentifier": "1234567895",
+                 |      "uniqueIdentifierType": "SAUTR",
+                 |      "regime": "SA",
+                 |      "AA":{
+                 |         "debtAmount": 300000,
+                 |         "makeUpFrontPayment": true,
+                 |         "unableToPayReasons" : [
+                 |           { "reason": "UTPR-3" }
+                 |         ],
+                 |         "mdtpPropertyMapping":{
+                 |            "customerPostcodes":[
+                 |               {
+                 |                  "postcodeDate": "2020-01-01",
+                 |                  "addressPostcode": "AA11AA"
+                 |               }
+                 |            ],
+                 |            "initialPaymentDate":"2022-01-01",
+                 |            "channelIdentifier":"eSSTTP",
+                 |            "debtItemCharges" : [ {
+                 |              "outstandingDebtAmount" : 100000,
+                 |              "mainTrans" : "mainTrans",
+                 |              "subTrans" : "subTrans",
+                 |              "debtItemChargeId" : "A00000000001",
+                 |              "interestStartDate" : "2022-05-17",
+                 |              "debtItemOriginalDueDate" : "2022-05-17"
+                 |            } ],
+                 |            "accruedDebtInterest": 1597,
+                 |            "initialPaymentAmount": 1000,
+                 |            "paymentPlanFrequency": "Monthly"
+                 |         }
+                 |      }
+                 |   }
+                 |}
+                 |""".stripMargin
             )
           }
 
@@ -369,39 +378,42 @@ class PegaControllerSpec extends ItSpec with TdBase {
               upfrontPaymentAnswers     = UpfrontPaymentAnswers.NoUpfrontPayment,
               extremeDatesResponse      = tdAll.extremeDatesWithoutUpfrontPayment
             ),
-            """{
-              |  "caseTypeID" : "HMRC-Debt-Work-AffordAssess",
-              |  "processID" : "",
-              |  "parentCaseID" : "",
-              |  "content" : {
-              |    "UniqueIdentifier" : "864FZ00049",
-              |    "UniqueIdentifierType" : "EMPREF",
-              |    "Regime" : "PAYE",
-              |    "DebtAmount" : 300000,
-              |    "MDTPPropertyMapping" : {
-              |      "customerPostcodes" : [ {
-              |        "addressPostcode" : "AA11AA",
-              |        "postcodeDate" : "2020-01-01"
-              |      } ],
-              |      "channelIdentifier" : "eSSTTP",
-              |      "debtItemCharges" : [ {
-              |        "outstandingDebtAmount" : 100000,
-              |        "mainTrans" : "mainTrans",
-              |        "subTrans" : "subTrans",
-              |        "debtItemChargeId" : "A00000000001",
-              |        "interestStartDate" : "2022-05-17",
-              |        "debtItemOriginalDueDate" : "2022-05-17"
-              |      } ],
-              |      "accruedInterest" : 1597,
-              |      "paymentPlanFrequency" : "Monthly",
-              |      "UnableToPayReason" : [
-              |         { "reason": "UTPR-3" }
-              |       ],
-              |      "MakeUpfrontPayment" : false,
-              |      "CanDebtBePaidIn6Months" : false
-              |    }
-              |  }
-              |}""".stripMargin
+            s"""
+               |{
+               |   "caseTypeID": "HMRC-Debt-Work-AffordAssess",
+               |   "content":{
+               |      "uniqueIdentifier": "864FZ00049",
+               |      "uniqueIdentifierType": "EMPREF",
+               |      "regime": "PAYE",
+               |      "AA":{
+               |         "debtAmount": 300000,
+               |         "makeUpFrontPayment": false,
+               |         "unableToPayReasons" : [
+               |           { "reason": "UTPR-3" }
+               |         ],
+               |         "mdtpPropertyMapping":{
+               |            "customerPostcodes":[
+               |               {
+               |                  "postcodeDate": "2020-01-01",
+               |                  "addressPostcode": "AA11AA"
+               |               }
+               |            ],
+               |            "channelIdentifier":"eSSTTP",
+               |            "debtItemCharges" : [ {
+               |              "outstandingDebtAmount" : 100000,
+               |              "mainTrans" : "mainTrans",
+               |              "subTrans" : "subTrans",
+               |              "debtItemChargeId" : "A00000000001",
+               |              "interestStartDate" : "2022-05-17",
+               |              "debtItemOriginalDueDate" : "2022-05-17"
+               |            } ],
+               |            "accruedDebtInterest": 1597,
+               |            "paymentPlanFrequency": "Monthly"
+               |         }
+               |      }
+               |   }
+               |}
+               |""".stripMargin
           )
         }
 
