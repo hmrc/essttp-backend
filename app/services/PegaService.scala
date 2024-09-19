@@ -250,17 +250,6 @@ class PegaService @Inject() (
       case _                                    => sys.error("Could not find extreme dates result")
     }
 
-    val canPayWithinSixMonths = journey match {
-      case j: Journey.AfterCanPayWithinSixMonthsAnswers =>
-        j.canPayWithinSixMonthsAnswers match {
-          case CanPayWithinSixMonthsAnswers.AnswerNotRequired =>
-            sys.error("Expected WhyCannotPayInFull reasons but answer was not required")
-          case CanPayWithinSixMonthsAnswers.CanPayWithinSixMonths(value) => value
-        }
-
-      case _ => sys.error("Could not find why cannot pay in full answers")
-    }
-
     val totalDebt = AmountInPence(eligibilityCheckResult.chargeTypeAssessment.map(_.debtTotalAmount.value.value).sum)
 
     val mapping = MDTPropertyMapping(
@@ -270,21 +259,24 @@ class PegaService @Inject() (
       eligibilityCheckResult.chargeTypeAssessment.flatMap(toDebtItemCharges),
       AccruedDebtInterest(calculateCumulativeInterest(eligibilityCheckResult)),
       upfrontPaymentAmount,
-      PaymentPlanFrequencies.Monthly,
-      unableToPayReasons,
+      PaymentPlanFrequencies.Monthly
+    )
+
+    val aa = PegaStartCaseRequest.AA(
+      totalDebt,
       upfrontPaymentAmount.isDefined,
-      canPayWithinSixMonths
+      unableToPayReasons,
+      mapping
     )
 
     val content = PegaStartCaseRequest.Content(
       taxId.value,
       taxIdType,
       regime,
-      totalDebt,
-      mapping
+      aa
     )
 
-    PegaStartCaseRequest("HMRC-Debt-Work-AffordAssess", "", "", content)
+    PegaStartCaseRequest("HMRC-Debt-Work-AffordAssess", content)
   }
 
   private def toUnableToPayReason(cannotPayReason: CannotPayReason): UnableToPayReason = {

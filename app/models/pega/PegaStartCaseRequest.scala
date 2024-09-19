@@ -25,20 +25,30 @@ import essttp.rootmodel.ttp.eligibility.CustomerPostcode
 import models.pega.PegaStartCaseRequest.Content
 import play.api.libs.json.{Json, OWrites}
 
-final case class PegaStartCaseRequest(caseTypeID: String, processID: String, parentCaseID: String, content: Content)
+final case class PegaStartCaseRequest(caseTypeID: String, content: Content)
 
 object PegaStartCaseRequest {
 
   final case class Content(
-      UniqueIdentifier:      String,
-      UniqueIdentifierType:  String,
-      Regime:                String,
-      DebtAmount:            AmountInPence,
-      `MDTPPropertyMapping`: MDTPropertyMapping
+      uniqueIdentifier:     String,
+      uniqueIdentifierType: String,
+      regime:               String,
+      `AA`:                 AA
   )
 
   object Content {
     implicit val writes: OWrites[Content] = Json.writes
+  }
+
+  final case class AA(
+      debtAmount:          AmountInPence,
+      makeUpFrontPayment:  Boolean,
+      unableToPayReasons:  Set[UnableToPayReason],
+      mdtpPropertyMapping: MDTPropertyMapping
+  )
+
+  object AA {
+    implicit val writes: OWrites[AA] = Json.writes
   }
 
   final case class UnableToPayReason(reason: String) extends AnyVal
@@ -48,16 +58,13 @@ object PegaStartCaseRequest {
   }
 
   final case class MDTPropertyMapping(
-      customerPostcodes:      List[CustomerPostcode],
-      initialPaymentDate:     Option[InitialPaymentDate],
-      channelIdentifier:      ChannelIdentifier,
-      debtItemCharges:        List[DebtItemCharge],
-      accruedInterest:        AccruedDebtInterest,
-      initialPaymentAmount:   Option[UpfrontPaymentAmount],
-      paymentPlanFrequency:   PaymentPlanFrequency,
-      UnableToPayReason:      Set[UnableToPayReason],
-      MakeUpfrontPayment:     Boolean,
-      CanDebtBePaidIn6Months: Boolean
+      customerPostcodes:    List[CustomerPostcode],
+      initialPaymentDate:   Option[InitialPaymentDate],
+      channelIdentifier:    ChannelIdentifier,
+      debtItemCharges:      List[DebtItemCharge],
+      accruedDebtInterest:  AccruedDebtInterest,
+      initialPaymentAmount: Option[UpfrontPaymentAmount],
+      paymentPlanFrequency: PaymentPlanFrequency
   )
 
   object MDTPropertyMapping {
