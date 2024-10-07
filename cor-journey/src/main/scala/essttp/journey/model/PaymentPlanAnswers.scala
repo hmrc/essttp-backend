@@ -40,6 +40,7 @@ object PaymentPlanAnswers {
 
   final case class PaymentPlanAfterAffordability(
       startCaseResponse:   StartCaseResponse,
+      dayOfMonth:          DayOfMonth,
       selectedPaymentPlan: PaymentPlan
   ) extends PaymentPlanAnswers
 
@@ -51,16 +52,8 @@ object PaymentPlanAnswers {
     }
 
     def dayOfMonth: DayOfMonth = answers match {
-      case p: PaymentPlanNoAffordability =>
-        p.dayOfMonth
-
-      case p: PaymentPlanAfterAffordability =>
-        p.selectedPaymentPlan
-          .collections
-          .regularCollections
-          .lastOption
-          .map(c => DayOfMonth(c.dueDate.value.getDayOfMonth))
-          .getOrElse(sys.error("Could not find day of month from regularCollections in selected payment plan"))
+      case p: PaymentPlanNoAffordability    => p.dayOfMonth
+      case p: PaymentPlanAfterAffordability => p.dayOfMonth
     }
 
   }

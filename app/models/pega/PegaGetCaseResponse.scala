@@ -16,13 +16,82 @@
 
 package models.pega
 
-import essttp.rootmodel.ttp.affordablequotes.PaymentPlan
-import play.api.libs.json.{Json, OFormat}
+import models.pega.PegaGetCaseResponse.AA
+import play.api.libs.json.{JsError, JsResult, Json, Reads}
 
-final case class PegaGetCaseResponse(paymentPlan: PaymentPlan)
+import java.time.LocalDate
+import scala.util.Try
+
+final case class PegaGetCaseResponse(`AA`: AA)
 
 object PegaGetCaseResponse {
 
-  implicit val format: OFormat[PegaGetCaseResponse] = Json.format
+  final case class AA(paymentDay: Int, paymentPlan: Seq[PegaPaymentPlan])
+
+  object AA {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
+    implicit val reads: Reads[AA] =
+      Reads(json =>
+        for {
+          paymentDay <- (json \ "paymentDay").validate[String].flatMap(s =>
+            JsResult.fromTry(
+              Try(s.toInt),
+              e => JsError(s"Could not read paymentDay: ${e.getMessage}")
+            ))
+          paymentPlan <- (json \ "paymentPlan").validate[Seq[PegaPaymentPlan]]
+        } yield AA(paymentDay, paymentPlan))
+
+  }
+
+  final case class PegaPaymentPlan(
+      numberOfInstalments: Int,
+      planDuration:        Int,
+      totalDebt:           Long,
+      totalDebtIncInt:     Long,
+      planInterest:        Long,
+      collections:         PegaCollections,
+      instalments:         List[PegaInstalment],
+      planSelected:        Boolean
+  )
+
+  object PegaPaymentPlan {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
+    implicit val reads: Reads[PegaPaymentPlan] = Json.reads[PegaPaymentPlan]
+  }
+
+  final case class PegaCollections(
+      initialCollection:  Option[PegaCollection],
+      regularCollections: List[PegaCollection]
+  )
+
+  object PegaCollections {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
+    implicit val reads: Reads[PegaCollections] = Json.reads[PegaCollections]
+  }
+
+  final case class PegaCollection(dueDate: LocalDate, amountDue: Long)
+
+  object PegaCollection {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
+    implicit val reads: Reads[PegaCollection] = Json.reads[PegaCollection]
+  }
+
+  final case class PegaInstalment(
+      instalmentNumber:          Int,
+      dueDate:                   LocalDate,
+      instalmentInterestAccrued: Long,
+      instalmentBalance:         Long,
+      debtItemChargeId:          String,
+      amountDue:                 Long,
+      debtItemOriginalDueDate:   LocalDate
+  )
+
+  object PegaInstalment {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
+    implicit val reads: Reads[PegaInstalment] = Json.reads[PegaInstalment]
+  }
+
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  implicit val reads: Reads[PegaGetCaseResponse] = Json.reads
 
 }

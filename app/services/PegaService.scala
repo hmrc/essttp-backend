@@ -26,11 +26,12 @@ import essttp.rootmodel.epaye.{TaxOfficeNumber, TaxOfficeReference}
 import essttp.rootmodel.pega.{GetCaseResponse, PegaAssigmentId, PegaCaseId, StartCaseResponse}
 import essttp.rootmodel.ttp.PaymentPlanFrequencies
 import essttp.rootmodel.ttp.affordablequotes._
-import essttp.rootmodel.ttp.eligibility.{ChargeTypeAssessment, Charges, EligibilityCheckResult}
+import essttp.rootmodel.ttp.eligibility.{ChargeReference, ChargeTypeAssessment, Charges, EligibilityCheckResult}
 import essttp.utils.RequestSupport.hc
 import essttp.utils.{Errors, RequestSupport}
+import models.pega.PegaGetCaseResponse.{PegaCollection, PegaInstalment}
 import models.pega.PegaStartCaseRequest.{MDTPropertyMapping, UnableToPayReason}
-import models.pega.{PegaStartCaseRequest, PegaStartCaseResponse, PegaTokenManager}
+import models.pega.{PegaGetCaseResponse, PegaStartCaseRequest, PegaStartCaseResponse, PegaTokenManager}
 import play.api.mvc.Request
 import repository.JourneyByTaxIdRepo
 import repository.JourneyByTaxIdRepo.JourneyWithTaxId
@@ -62,7 +63,7 @@ class PegaService @Inject() (
       journey <- journeyService.get(journeyId)
       caseId = getCaseId(journey)
       response <- doPegaCall(pegaConnector.getCase(caseId, _))
-    } yield GetCaseResponse(response.paymentPlan)
+    } yield toGetCaseResponse(response)
   }
 
   private def doPegaCall[A](callAPI: String => Future[A])(implicit hc: HeaderCarrier): Future[A] = {
@@ -323,6 +324,44 @@ class PegaService @Inject() (
         .getOrElse(throw new Exception("Could not find assignment ID in PEGA start case response"))
 
     StartCaseResponse(PegaCaseId(response.ID), PegaAssigmentId(assignmentId))
+  }
+
+  private def toGetCaseResponse(response: PegaGetCaseResponse): GetCaseResponse = {
+    val paymentPlan =
+      response.AA.paymentPlan
+        .find(_.planSelected)
+        .getOrElse(throw new Exception("Could not find selected payment plan in PEGA get case response"))
+
+    val initialCollection =
+      paymentPlan.collections.initialCollection.map(c =>
+        InitialCollection(DueDate(c.dueDate), AmountDue(AmountInPence(c.amountDue))))
+
+      def toRegularCollection(pegaCollection: PegaCollection): RegularCollection =
+        RegularCollection(DueDate(pegaCollection.dueDate), AmountDue(AmountInPence(pegaCollection.amountDue)))
+
+      def toInstalment(pegaInstalment: PegaInstalment): Instalment =
+        Instalment(
+          InstalmentNumber(pegaInstalment.instalmentNumber),
+          DueDate(pegaInstalment.dueDate),
+          InterestAccrued(AmountInPence(pegaInstalment.instalmentInterestAccrued)),
+          InstalmentBalance(AmountInPence(pegaInstalment.instalmentBalance)),
+          ChargeReference(pegaInstalment.debtItemChargeId),
+          AmountDue(AmountInPence(pegaInstalment.amountDue)),
+          DebtItemOriginalDueDate(pegaInstalment.debtItemOriginalDueDate)
+        )
+
+    GetCaseResponse(
+      DayOfMonth(response.AA.paymentDay),
+      PaymentPlan(
+        NumberOfInstalments(paymentPlan.numberOfInstalments),
+        PlanDuration(paymentPlan.planDuration),
+        TotalDebt(AmountInPence(paymentPlan.totalDebt)),
+        TotalDebtIncludingInterest(AmountInPence(paymentPlan.totalDebtIncInt)),
+        PlanInterest(AmountInPence(paymentPlan.planInterest)),
+        Collection(initialCollection, paymentPlan.collections.regularCollections.map(toRegularCollection)),
+        paymentPlan.instalments.map(toInstalment)
+      )
+    )
   }
 
 }

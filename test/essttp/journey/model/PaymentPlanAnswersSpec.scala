@@ -32,24 +32,9 @@ class PaymentPlanAnswersSpec extends UnitSpec {
 
       "returns the correct value" in {
         (TdAll.paymentPlanAnswersNoAffordability: PaymentPlanAnswers).dayOfMonth shouldBe TdAll.dayOfMonth
-        TdAll.paymentPlanAnswersWithAffordability.dayOfMonth.value shouldBe TdAll.dueDate.value.getDayOfMonth
+        TdAll.paymentPlanAnswersWithAffordability.dayOfMonth shouldBe TdAll.dayOfMonth
       }
 
-      "throws an exception if there are no regular collections in the payment plan" in {
-        val exception = intercept[Exception](
-          TdAll.paymentPlanAnswersWithAffordability
-            .copy(
-              selectedPaymentPlan = TdAll.paymentPlanAnswersNoAffordability.selectedPaymentPlan.copy(
-                collections = TdAll.paymentPlanAnswersNoAffordability.selectedPaymentPlan.collections.copy(
-                  regularCollections = List.empty
-                )
-              )
-            )
-            .dayOfMonth
-        )
-
-        exception.getMessage shouldBe "Could not find day of month from regularCollections in selected payment plan"
-      }
     }
 
   }
