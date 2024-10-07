@@ -19,8 +19,7 @@ package testsupport.stubs
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import essttp.rootmodel.pega.PegaCaseId
-import models.pega.{PegaGetCaseResponse, PegaOauthToken, PegaStartCaseResponse}
-import play.api.libs.json.Json
+import models.pega.{PegaOauthToken, PegaStartCaseResponse}
 
 import java.util.Base64
 
@@ -101,7 +100,7 @@ object PegaStub {
        |}""".stripMargin
   }
 
-  def stubGetCase(caseId: PegaCaseId, result: Either[HttpStatus, PegaGetCaseResponse], expiredToken: Boolean = false): StubMapping = {
+  def stubGetCase(caseId: PegaCaseId, result: Either[HttpStatus, String], expiredToken: Boolean = false): StubMapping = {
     if (expiredToken) {
       val scenarioName = "GetCaseScenario"
       val initialState = "Started"
@@ -120,7 +119,7 @@ object PegaStub {
           result.fold(
             aResponse().withStatus(_),
             response => {
-              aResponse().withStatus(200).withBody(Json.toJson(response).toString)
+              aResponse().withStatus(200).withBody(response)
             }
           )
         ))
@@ -131,7 +130,7 @@ object PegaStub {
             result.fold(
               aResponse().withStatus(_),
               response => {
-                aResponse().withStatus(200).withBody(Json.toJson(response).toString)
+                aResponse().withStatus(200).withBody(response)
               }
             )
           )

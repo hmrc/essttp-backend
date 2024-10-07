@@ -16,13 +16,15 @@
 
 package essttp.rootmodel.pega
 
+import essttp.rootmodel.DayOfMonth
 import essttp.rootmodel.ttp.affordablequotes.PaymentPlan
 import play.api.libs.json.{Json, OFormat}
 
-final case class GetCaseResponse(paymentPlan: PaymentPlan)
+final case class GetCaseResponse(paymentDay: DayOfMonth, paymentPlan: PaymentPlan)
 
 object GetCaseResponse {
 
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[GetCaseResponse] = Json.format
 
 }

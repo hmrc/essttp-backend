@@ -16,7 +16,7 @@
 
 package testsupport.testdata
 
-import essttp.journey.model.{CanPayWithinSixMonthsAnswers, CorrelationId, EmailVerificationAnswers, JourneyId, PaymentPlanAnswers, UpfrontPaymentAnswers, WhyCannotPayInFullAnswers}
+import essttp.journey.model._
 import essttp.rootmodel._
 import essttp.rootmodel.bank._
 import essttp.rootmodel.dates.InitialPaymentDate
@@ -34,6 +34,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 import uk.gov.hmrc.http.Authorization
 
+import java.time.format.DateTimeFormatter
 import java.time.{Instant, LocalDate, LocalDateTime, ZoneOffset}
 import java.util.UUID
 
@@ -162,6 +163,7 @@ trait TdBase {
 
   def paymentPlanAnswersWithAffordability = PaymentPlanAnswers.PaymentPlanAfterAffordability(
     startCaseResponse,
+    dayOfMonth,
     paymentPlan(1)
   )
 
@@ -248,6 +250,76 @@ trait TdBase {
       )
     )
   )
+
+  def pegaGetCaseResponse(dayOfMonth: DayOfMonth, paymentPlan: PaymentPlan) = {
+
+    val initialCollectionJsonString = paymentPlan.collections.initialCollection.map(c =>
+      s"""
+        |"initialCollection": {
+        |  "amountDue": ${c.amountDue.value.value.toString},
+        |  "dueDate": "${c.dueDate.value.format(DateTimeFormatter.ISO_LOCAL_DATE)}"
+        |},
+        |""".stripMargin).getOrElse("")
+
+      def regularCollectionsJsonString = paymentPlan.collections.regularCollections.map(c =>
+        s"""{
+         |  "amountDue": ${c.amountDue.value.value.toString},
+         |  "dueDate": "${c.dueDate.value.format(DateTimeFormatter.ISO_LOCAL_DATE)}"
+         |}
+         |""".stripMargin).mkString(", ")
+
+      def instalmentsJsonString = paymentPlan.instalments.map(i =>
+        s"""
+        |{
+        |  "amountDue": ${i.amountDue.value.value.toString},
+        |  "debtItemChargeId": "${i.debtItemChargeId.value}",
+        |  "debtItemOriginalDueDate": "${i.debtItemOriginalDueDate.value.format(DateTimeFormatter.ISO_LOCAL_DATE)}",
+        |  "dueDate": "${i.dueDate.value.format(DateTimeFormatter.ISO_LOCAL_DATE)}",
+        |  "instalmentBalance": ${i.instalmentBalance.value.value.toString},
+        |  "instalmentInterestAccrued": ${i.instalmentInterestAccrued.value.value.toString},
+        |  "instalmentNumber": ${i.instalmentNumber.value.toString}
+        |}
+        |""".stripMargin).mkString(", ")
+
+    s"""
+       |{
+       |  "AA": {
+       |    "paymentDay": "${dayOfMonth.value.toString}",
+       |    "paymentPlan": [
+       |      {
+       |        "planDuration": ${paymentPlan.planDuration.value.toString},
+       |        "planSelected": true,
+       |        "numberOfInstalments": ${paymentPlan.numberOfInstalments.value.toString},
+       |        "totalDebt": ${paymentPlan.totalDebt.value.value.toString},
+       |        "totalDebtIncInt": ${paymentPlan.totalDebtIncInt.value.value.toString},
+       |        "planInterest": ${paymentPlan.planInterest.value.value.toString},
+       |        "collections": {
+       |          $initialCollectionJsonString
+       |          "regularCollections": [ ${regularCollectionsJsonString} ]
+       |        },
+       |        "instalments": [ $instalmentsJsonString ]
+       |      },
+       |      {
+       |        "planDuration": 0,
+       |        "planSelected": false,
+       |        "numberOfInstalments": 0,
+       |        "totalDebt": 0,
+       |        "totalDebtIncInt": 0,
+       |        "planInterest": 0,
+       |        "collections": {
+       |          "initialCollection": {
+       |            "amountDue": 0,
+       |            "dueDate": "1932-12-04"
+       |          },
+       |          "regularCollections": []
+       |        },
+       |        "instalments": []
+       |      }
+       |    ]
+       |  }
+       |}
+       |""".stripMargin
+  }
 
   val startCaseResponse = StartCaseResponse(pegaCaseId, pegaAssignmentId)
 

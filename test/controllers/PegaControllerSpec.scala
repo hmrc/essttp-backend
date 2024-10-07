@@ -20,7 +20,7 @@ import essttp.crypto.CryptoFormat
 import essttp.journey.model.{Journey, UpfrontPaymentAnswers, WhyCannotPayInFullAnswers}
 import essttp.rootmodel._
 import essttp.rootmodel.pega.{GetCaseResponse, StartCaseResponse}
-import models.pega.{PegaGetCaseResponse, PegaStartCaseResponse}
+import models.pega.PegaStartCaseResponse
 import org.apache.pekko.Done
 import org.apache.pekko.stream.Materializer
 import play.api.cache.AsyncCacheApi
@@ -529,11 +529,11 @@ class PegaControllerSpec extends ItSpec with TdBase {
         insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
         stubCommonActions()
         PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
-        PegaStub.stubGetCase(tdAll.pegaCaseId, Right(PegaGetCaseResponse(paymentPlan)))
+        PegaStub.stubGetCase(tdAll.pegaCaseId, Right(tdAll.pegaGetCaseResponse(tdAll.dayOfMonth, paymentPlan)))
 
         val result = controller.getCase(tdAll.journeyId)(request)
         status(result) shouldBe OK
-        contentAsJson(result).as[GetCaseResponse] shouldBe GetCaseResponse(paymentPlan)
+        contentAsJson(result).as[GetCaseResponse] shouldBe GetCaseResponse(tdAll.dayOfMonth, paymentPlan)
 
         PegaStub.verifyOauthCalled("user", "pass")
         PegaStub.verifyGetCaseCalled(
@@ -543,26 +543,27 @@ class PegaControllerSpec extends ItSpec with TdBase {
 
       }
 
-      "returns the payment plan when the GetCase call initially fails and is successfully retried after refreshing the oauth token " in new JourneyItTest {
-        val paymentPlan = tdAll.paymentPlan(2)
+      "returns the payment plan when the GetCase call initially fails and is successfully retried after " +
+        "refreshing the oauth token " in new JourneyItTest {
+          val paymentPlan = tdAll.paymentPlan(2)
 
-        insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
-        stubCommonActions()
-        PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
-        PegaStub.stubGetCase(tdAll.pegaCaseId, Right(PegaGetCaseResponse(paymentPlan)), expiredToken = true)
+          insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
+          stubCommonActions()
+          PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
+          PegaStub.stubGetCase(tdAll.pegaCaseId, Right(tdAll.pegaGetCaseResponse(tdAll.dayOfMonth, paymentPlan)), expiredToken = true)
 
-        val result = controller.getCase(tdAll.journeyId)(request)
-        status(result) shouldBe OK
-        contentAsJson(result).as[GetCaseResponse] shouldBe GetCaseResponse(paymentPlan)
+          val result = controller.getCase(tdAll.journeyId)(request)
+          status(result) shouldBe OK
+          contentAsJson(result).as[GetCaseResponse] shouldBe GetCaseResponse(tdAll.dayOfMonth, paymentPlan)
 
-        PegaStub.verifyOauthCalled("user", "pass", 2)
-        PegaStub.verifyGetCaseCalled(
-          tdAll.pegaOauthToken,
-          tdAll.pegaCaseId,
-          2
-        )
+          PegaStub.verifyOauthCalled("user", "pass", 2)
+          PegaStub.verifyGetCaseCalled(
+            tdAll.pegaOauthToken,
+            tdAll.pegaCaseId,
+            2
+          )
 
-      }
+        }
 
     }
 
