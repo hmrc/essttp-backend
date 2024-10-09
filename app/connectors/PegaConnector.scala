@@ -40,7 +40,7 @@ class PegaConnector @Inject() (
 
   private val startCaseUrl: URL = url"${config.baseUrl("pega")}/prweb/api/payments/v1/aa/createorupdatecase"
 
-  private val getCaseUrl: URL = url"${config.baseUrl("pega")}/prweb/api/payments/v1/aa/getcase"
+  private val getCaseUrl: URL = url"${config.baseUrl("pega")}/prweb/api/payments/v1/cases"
 
   private val oauthUrl: URL = url"${config.baseUrl("pega")}/prweb/PRRestService/oauth2/v1/token"
 
@@ -78,7 +78,7 @@ class PegaConnector @Inject() (
 
   def getCase(caseId: PegaCaseId, pegaToken: String)(implicit hc: HeaderCarrier): Future[PegaGetCaseResponse] = {
     httpClient
-      .get(url"$getCaseUrl/${caseId.value}")
+      .get(url"$getCaseUrl/${caseId.value}?viewType=none&pageName=GetCaseDetailsWrapper&getBusinessDataOnly=true")
       .withProxy
       .setHeader(HeaderNames.AUTHORIZATION -> s"Bearer $pegaToken")
       .execute[Either[UpstreamErrorResponse, PegaGetCaseResponse]]
