@@ -22,6 +22,7 @@ import essttp.rootmodel.pega.PegaCaseId
 import models.pega.{PegaOauthToken, PegaStartCaseResponse}
 
 import java.util.Base64
+import scala.jdk.CollectionConverters._
 
 object PegaStub {
 
@@ -31,7 +32,14 @@ object PegaStub {
 
   private val startCaseUrlPath = "/prweb/api/payments/v1/aa/createorupdatecase"
 
-  private def getCaseUrlPath(caseId: PegaCaseId) = s"/prweb/api/payments/v1/aa/getcase/${caseId.value}"
+  private def getCaseUrlPath(caseId: PegaCaseId) =
+    s"/prweb/api/payments/v1/cases/${caseId.value}"
+
+  val getCaseRequestQueryParams = Map(
+    "viewType" -> equalTo("none"),
+    "pageName" -> equalTo("GetCaseDetailsWrapper"),
+    "getBusinessDataOnly" -> equalTo("true")
+  ).asJava
 
   def stubOauthToken(result: Either[HttpStatus, PegaOauthToken]): StubMapping =
     stubFor(
@@ -107,12 +115,14 @@ object PegaStub {
       val failedState = "FirstFail"
 
       stubFor(get(urlPathEqualTo(getCaseUrlPath(caseId)))
+        .withQueryParams(getCaseRequestQueryParams)
         .inScenario(scenarioName)
         .whenScenarioStateIs(initialState)
         .willReturn(aResponse().withStatus(401))
         .willSetStateTo(failedState))
 
       stubFor(get(urlPathEqualTo(getCaseUrlPath(caseId)))
+        .withQueryParams(getCaseRequestQueryParams)
         .inScenario(scenarioName)
         .whenScenarioStateIs(failedState)
         .willReturn(
@@ -126,6 +136,7 @@ object PegaStub {
     } else {
       stubFor(
         get(urlPathEqualTo(getCaseUrlPath(caseId)))
+          .withQueryParams(getCaseRequestQueryParams)
           .willReturn(
             result.fold(
               aResponse().withStatus(_),
