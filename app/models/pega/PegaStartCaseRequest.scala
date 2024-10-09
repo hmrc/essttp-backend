@@ -58,7 +58,7 @@ object PegaStartCaseRequest {
   }
 
   final case class MDTPropertyMapping(
-      customerPostcodes:    List[CustomerPostcode],
+      customerPostcodes:    Option[List[CustomerPostcode]],
       initialPaymentDate:   Option[InitialPaymentDate],
       channelIdentifier:    ChannelIdentifier,
       debtItemCharges:      List[DebtItemCharge],
