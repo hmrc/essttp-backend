@@ -51,7 +51,7 @@ trait TdEpaye {
       )
     ),
     invalidSignals                  = None,
-    customerPostcodes               = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate(LocalDate.of(2020, 1, 1)))),
+    customerPostcodes               = Some(List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate(LocalDate.of(2020, 1, 1))))),
     customerDetails                 = None,
     addresses                       = None,
     customerType                    = None,
@@ -69,31 +69,43 @@ trait TdEpaye {
         chargeReference = ChargeReference("A00000000001"),
         charges         = List(
           Charges(
-            chargeType                    = ChargeType("InYearRTICharge-Tax"),
-            mainType                      = MainType("InYearRTICharge(FPS)"),
-            mainTrans                     = MainTrans("mainTrans"),
-            subTrans                      = SubTrans("subTrans"),
-            outstandingAmount             = OutstandingAmount(AmountInPence(100000)),
-            dueDate                       = DueDate(reusableDate),
-            interestStartDate             = Some(InterestStartDate(reusableDate)),
-            accruedInterest               = AccruedInterest(AmountInPence(1597)),
-            ineligibleChargeType          = IneligibleChargeType(value = false),
-            chargeOverMaxDebtAge          = Some(ChargeOverMaxDebtAge(value = false)),
-            locks                         = Some(
-              List(
-                Lock(
-                  lockType                 = LockType("Payment"),
-                  lockReason               = LockReason("Risk/Fraud"),
-                  disallowedChargeLockType = DisallowedChargeLockType(value = false)
+            Charges1(
+              chargeType              = ChargeType("InYearRTICharge-Tax"),
+              mainType                = MainType("InYearRTICharge(FPS)"),
+              mainTrans               = MainTrans("mainTrans"),
+              subTrans                = SubTrans("subTrans"),
+              outstandingAmount       = OutstandingAmount(AmountInPence(100000)),
+              dueDate                 = DueDate(reusableDate),
+              interestStartDate       = Some(InterestStartDate(reusableDate)),
+              accruedInterest         = AccruedInterest(AmountInPence(1597)),
+              ineligibleChargeType    = IneligibleChargeType(value = false),
+              chargeOverMaxDebtAge    = Some(ChargeOverMaxDebtAge(value = false)),
+              locks                   = Some(
+                List(
+                  Lock(
+                    lockType                 = LockType("Payment"),
+                    lockReason               = LockReason("Risk/Fraud"),
+                    disallowedChargeLockType = DisallowedChargeLockType(value = false)
+                  )
                 )
-              )
+              ),
+              dueDateNotReached       = false,
+              isInterestBearingCharge = None
             ),
-            dueDateNotReached             = false,
-            isInterestBearingCharge       = None,
-            useChargeReference            = None,
-            chargeBeforeMaxAccountingDate = None,
-            ddInProgress                  = Some(DdInProgress(value = false)),
-            chargeSource                  = None
+            Charges2(
+              useChargeReference            = None,
+              chargeBeforeMaxAccountingDate = None,
+              ddInProgress                  = Some(DdInProgress(value = false)),
+              chargeSource                  = None,
+              parentChargeReference         = None,
+              parentMainTrans               = None,
+              originalCreationDate          = None,
+              tieBreaker                    = None,
+              originalTieBreaker            = None,
+              saTaxYearEnd                  = None,
+              creationDate                  = None,
+              originalChargeType            = None
+            )
           )
         )
       )
