@@ -17,14 +17,17 @@
 package essttp.rootmodel.ttp.arrangement
 
 import essttp.crypto.CryptoFormat
-import essttp.rootmodel.ttp.{PaymentPlanFrequency, RegimeType}
+import essttp.rootmodel.pega.PegaCaseId
 import essttp.rootmodel.ttp.affordablequotes.ChannelIdentifier
 import essttp.rootmodel.ttp.eligibility.{CustomerDetail, Identification, RegimeDigitalCorrespondence}
+import essttp.rootmodel.ttp.{PaymentPlanFrequency, RegimeType}
 import play.api.libs.json.{Json, OFormat}
 
 final case class ArrangementRequest(
     channelIdentifier:           ChannelIdentifier,
     regimeType:                  RegimeType,
+    hasAffordabilityAssessment:  Boolean,
+    caseID:                      Option[PegaCaseId],
     regimePaymentFrequency:      PaymentPlanFrequency,
     arrangementAgreedDate:       ArrangementAgreedDate,
     identification:              List[Identification],
