@@ -29,7 +29,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import java.net.URL
-import java.util.Base64
+import java.util.{Base64, UUID}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -56,6 +56,10 @@ class PegaConnector @Inject() (
   private val oauthRequestBody: Map[String, String] =
     Map("grant_type" -> "client_credentials")
 
+  private val correlationIdHeaderName: String = "correlationid"
+
+  private def newCorrelationId(): String = UUID.randomUUID().toString
+
   def getToken()(implicit hc: HeaderCarrier): Future[PegaOauthToken] =
     httpClient
       .post(oauthUrl)
@@ -67,19 +71,29 @@ class PegaConnector @Inject() (
       .map(_.leftMap(throw _).merge)
 
   def startCase(startCaseRequest: PegaStartCaseRequest, pegaToken: String)(implicit hc: HeaderCarrier): Future[PegaStartCaseResponse] = {
+    val correlationId = newCorrelationId()
+
+    logger.info(s"Calling PEGA start case with correlation id $correlationId")
+
     httpClient
       .post(startCaseUrl)
       .withProxy
       .withBody(Json.toJson(startCaseRequest))
       .setHeader(HeaderNames.AUTHORIZATION -> s"Bearer $pegaToken")
+      .setHeader(correlationIdHeaderName -> correlationId)
       .execute[Either[UpstreamErrorResponse, PegaStartCaseResponse]]
       .map(_.leftMap(throw _).merge)
   }
 
   def getCase(caseId: PegaCaseId, pegaToken: String)(implicit hc: HeaderCarrier): Future[PegaGetCaseResponse] = {
+    val correlationId = newCorrelationId()
+
+    logger.info(s"Calling PEGA get case with correlation id $correlationId")
+
     httpClient
       .get(url"$getCaseUrl/${caseId.value}?viewType=none&pageName=GetCaseDetailsWrapper&getBusinessDataOnly=true")
       .withProxy
+      .setHeader(correlationIdHeaderName -> correlationId)
       .setHeader(HeaderNames.AUTHORIZATION -> s"Bearer $pegaToken")
       .execute[Either[UpstreamErrorResponse, PegaGetCaseResponse]]
       .map(_.leftMap(throw _).merge)
