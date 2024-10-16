@@ -31,8 +31,6 @@ class ChargesSpec extends UnitSpec {
 
   val json = Json.parse(
     """
-      |{
-      | "Charges":
       |        {
       |          "chargeType": "VAT Return Debit Charge",
       |          "mainType": "VAT Return Debit Charge",
@@ -66,7 +64,6 @@ class ChargesSpec extends UnitSpec {
       |          "creationDate": "2022-05-17",
       |          "originalChargeType": "VAT Return Debit Charge"
       |        }
-      |    }
       |""".stripMargin
   )
 

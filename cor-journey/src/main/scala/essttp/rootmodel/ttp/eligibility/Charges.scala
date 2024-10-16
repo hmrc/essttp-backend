@@ -58,7 +58,7 @@ final case class Charges2(
 object Charges {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val writes: Writes[Charges] = Writes { charge =>
-    Json.obj("Charges" -> Json.obj(
+    Json.obj(
       "chargeType" -> charge.charges1.chargeType,
       "mainType" -> charge.charges1.mainType,
       "mainTrans" -> charge.charges1.mainTrans,
@@ -84,36 +84,36 @@ object Charges {
       "saTaxYearEnd" -> charge.charges2.saTaxYearEnd,
       "creationDate" -> charge.charges2.creationDate,
       "originalChargeType" -> charge.charges2.originalChargeType
-    ))
+    )
   }
 
   implicit val reads: Reads[Charges] = { json =>
     for {
-      chargeType <- (json \ "Charges" \ "chargeType").validate[ChargeType]
-      mainType <- (json \ "Charges" \ "mainType").validate[MainType]
-      mainTrans <- (json \ "Charges" \ "mainTrans").validate[MainTrans]
-      subTrans <- (json \ "Charges" \ "subTrans").validate[SubTrans]
-      outstandingAmount <- (json \ "Charges" \ "outstandingAmount").validate[OutstandingAmount]
-      interestStartDate <- (json \ "Charges" \ "interestStartDate").validateOpt[InterestStartDate]
-      dueDate <- (json \ "Charges" \ "dueDate").validate[DueDate]
-      accruedInterest <- (json \ "Charges" \ "accruedInterest").validate[AccruedInterest]
-      ineligibleChargeType <- (json \ "Charges" \ "ineligibleChargeType").validate[IneligibleChargeType]
-      chargeOverMaxDebtAge <- (json \ "Charges" \ "chargeOverMaxDebtAge").validateOpt[ChargeOverMaxDebtAge]
-      locks <- (json \ "Charges" \ "locks").validateOpt[List[Lock]]
-      dueDateNotReached <- (json \ "Charges" \ "dueDateNotReached").validate[Boolean]
-      isInterestBearingCharge <- (json \ "Charges" \ "isInterestBearingCharge").validateOpt[IsInterestBearingCharge]
-      useChargeReference <- (json \ "Charges" \ "useChargeReference").validateOpt[UseChargeReference]
-      chargeBeforeMaxAccountingDate <- (json \ "Charges" \ "chargeBeforeMaxAccountingDate").validateOpt[ChargeBeforeMaxAccountingDate]
-      ddInProgress <- (json \ "Charges" \ "ddInProgress").validateOpt[DdInProgress]
-      chargeSource <- (json \ "Charges" \ "chargeSource").validateOpt[ChargeSource]
-      parentChargeReference <- (json \ "Charges" \ "parentChargeReference").validateOpt[ParentChargeReference]
-      parentMainTrans <- (json \ "Charges" \ "parentMainTrans").validateOpt[ParentMainTrans]
-      originalCreationDate <- (json \ "Charges" \ "originalCreationDate").validateOpt[OriginalCreationDate]
-      tieBreaker <- (json \ "Charges" \ "tieBreaker").validateOpt[TieBreaker]
-      originalTieBreaker <- (json \ "Charges" \ "originalTieBreaker").validateOpt[OriginalTieBreaker]
-      saTaxYearEnd <- (json \ "Charges" \ "saTaxYearEnd").validateOpt[SaTaxYearEnd]
-      creationDate <- (json \ "Charges" \ "creationDate").validateOpt[CreationDate]
-      originalChargeType <- (json \ "Charges" \ "originalChargeType").validateOpt[OriginalChargeType]
+      chargeType <- (json \ "chargeType").validate[ChargeType]
+      mainType <- (json \ "mainType").validate[MainType]
+      mainTrans <- (json \ "mainTrans").validate[MainTrans]
+      subTrans <- (json \ "subTrans").validate[SubTrans]
+      outstandingAmount <- (json \ "outstandingAmount").validate[OutstandingAmount]
+      interestStartDate <- (json \ "interestStartDate").validateOpt[InterestStartDate]
+      dueDate <- (json \ "dueDate").validate[DueDate]
+      accruedInterest <- (json \ "accruedInterest").validate[AccruedInterest]
+      ineligibleChargeType <- (json \ "ineligibleChargeType").validate[IneligibleChargeType]
+      chargeOverMaxDebtAge <- (json \ "chargeOverMaxDebtAge").validateOpt[ChargeOverMaxDebtAge]
+      locks <- (json \ "locks").validateOpt[List[Lock]]
+      dueDateNotReached <- (json \ "dueDateNotReached").validate[Boolean]
+      isInterestBearingCharge <- (json \ "isInterestBearingCharge").validateOpt[IsInterestBearingCharge]
+      useChargeReference <- (json \ "useChargeReference").validateOpt[UseChargeReference]
+      chargeBeforeMaxAccountingDate <- (json \ "chargeBeforeMaxAccountingDate").validateOpt[ChargeBeforeMaxAccountingDate]
+      ddInProgress <- (json \ "ddInProgress").validateOpt[DdInProgress]
+      chargeSource <- (json \ "chargeSource").validateOpt[ChargeSource]
+      parentChargeReference <- (json \ "parentChargeReference").validateOpt[ParentChargeReference]
+      parentMainTrans <- (json \ "parentMainTrans").validateOpt[ParentMainTrans]
+      originalCreationDate <- (json \ "originalCreationDate").validateOpt[OriginalCreationDate]
+      tieBreaker <- (json \ "tieBreaker").validateOpt[TieBreaker]
+      originalTieBreaker <- (json \ "originalTieBreaker").validateOpt[OriginalTieBreaker]
+      saTaxYearEnd <- (json \ "saTaxYearEnd").validateOpt[SaTaxYearEnd]
+      creationDate <- (json \ "creationDate").validateOpt[CreationDate]
+      originalChargeType <- (json \ "originalChargeType").validateOpt[OriginalChargeType]
     } yield Charges(
       Charges1(
         chargeType,
