@@ -41,6 +41,8 @@ object PegaStub {
     "getBusinessDataOnly" -> equalTo("true")
   ).asJava
 
+  val correlationIdRegex = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$".r
+
   def stubOauthToken(result: Either[HttpStatus, PegaOauthToken]): StubMapping =
     stubFor(
       post(urlPathEqualTo(oauthUrlPath))
@@ -168,6 +170,7 @@ object PegaStub {
       postRequestedFor(urlPathEqualTo(startCaseUrlPath))
         .withRequestBody(equalToJson(expectedRequestJson))
         .withHeader("Authorization", equalTo(s"Bearer ${pegaOauthToken.accessToken}"))
+        .withHeader("correlationid", matching(correlationIdRegex.regex))
     )
 
   def verifyGetCaseCalled(pegaOauthToken: PegaOauthToken, caseId: PegaCaseId, numberOfTimes: Int = 1): Unit =
@@ -175,6 +178,7 @@ object PegaStub {
       exactly(numberOfTimes),
       getRequestedFor(urlPathEqualTo(getCaseUrlPath(caseId)))
         .withHeader("Authorization", equalTo(s"Bearer ${pegaOauthToken.accessToken}"))
+        .withHeader("correlationid", matching(correlationIdRegex.regex))
     )
 
 }

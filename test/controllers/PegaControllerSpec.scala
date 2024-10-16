@@ -41,6 +41,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
   lazy val journeyByTaxIdRepo = app.injector.instanceOf[JourneyByTaxIdRepo]
 
   lazy val controller = app.injector.instanceOf[PegaController]
+
   lazy val cacheApi: AsyncCacheApi = app.injector.instanceOf[AsyncCacheApi]
 
   implicit lazy val mat: Materializer = app.injector.instanceOf[Materializer]
