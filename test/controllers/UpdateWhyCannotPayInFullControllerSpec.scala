@@ -197,8 +197,8 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
           )(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
             _.whyCannotPayInFullAnswers,
             _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
           )(this)
@@ -355,8 +355,8 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
           )(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
             _.whyCannotPayInFullAnswers,
             _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
           )(this)
@@ -513,8 +513,8 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
           )(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
             _.whyCannotPayInFullAnswers,
             _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
           )(this)
@@ -671,8 +671,8 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
           )(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
             _.whyCannotPayInFullAnswers,
             _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
           )(this)

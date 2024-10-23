@@ -17,22 +17,22 @@
 package controllers
 
 import essttp.journey.model.Journey
-import essttp.rootmodel.bank.DetailsAboutBankAccount
+import essttp.rootmodel.bank.CanSetUpDirectDebit
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
 class UpdateCheckYouCanSetupDDControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
 
-  "POST /journey/:journeyId/update-details-about-bank-account" - {
+  "POST /journey/:journeyId/update-can-set-up-direct-debit" - {
     "should throw Bad Request when Journey is in a stage [BeforeCheckedPaymentPlan]" in new JourneyItTest {
       stubCommonActions()
 
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
 
-      val requestBody = TdAll.EpayeBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
-      val result: Throwable = journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, requestBody).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"UpdateDetailsAboutBankAccount is not possible in that state: [Started]"}""")
+      val requestBody = TdAll.EpayeBta.updateCanSetUpDirectDebitRequest(isAccountHolder = true)
+      val result: Throwable = journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, requestBody).failed.futureValue
+      result.getMessage should include("""{"statusCode":400,"message":"UpdateCheckYouCanSetupDD is not possible in that state: [Started]"}""")
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }
@@ -42,196 +42,196 @@ class UpdateCheckYouCanSetupDDControllerSpec extends ItSpec with UpdateJourneyCo
       "Epaye" in new JourneyItTest {
         testUpdateWithoutExistingValue(
           tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability,
-          TdAll.EpayeBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
+          TdAll.EpayeBta.updateCanSetUpDirectDebitRequest(isAccountHolder = true)
         )(
-            journeyConnector.updateDetailsAboutBankAccount,
-            tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+            journeyConnector.updateCanSetUpDirectDebit,
+            tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
           )(this)
       }
 
       "Vat" in new JourneyItTest {
         testUpdateWithoutExistingValue(
           tdAll.VatBta.journeyAfterCheckedPaymentPlanNonAffordability,
-          TdAll.VatBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
+          TdAll.VatBta.updateCanSetUpDirectDebitRequest(isAccountHolder = true)
         )(
-            journeyConnector.updateDetailsAboutBankAccount,
-            tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+            journeyConnector.updateCanSetUpDirectDebit,
+            tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
           )(this)
       }
 
       "Sa" in new JourneyItTest {
         testUpdateWithoutExistingValue(
           tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability,
-          TdAll.SaBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
+          TdAll.SaBta.updateCanSetUpDirectDebitRequest(isAccountHolder = true)
         )(
-            journeyConnector.updateDetailsAboutBankAccount,
-            tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+            journeyConnector.updateCanSetUpDirectDebit,
+            tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
           )(this)
       }
 
       "Sia" in new JourneyItTest {
         testUpdateWithoutExistingValue(
           tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability,
-          TdAll.SiaPta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
+          TdAll.SiaPta.updateCanSetUpDirectDebitRequest(isAccountHolder = true)
         )(
-            journeyConnector.updateDetailsAboutBankAccount,
-            tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+            journeyConnector.updateCanSetUpDirectDebit,
+            tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
           )(this)
       }
     }
 
     "should update the journey when a value already existed" - {
 
-      val differentDetailsAboutBankAccount = DetailsAboutBankAccount(isAccountHolder = false)
+      val differentAnswerToCanSetUpDirectDebit = CanSetUpDirectDebit(isAccountHolder = false)
 
       "Epaye when the current stage is" - {
 
-          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => DetailsAboutBankAccount)(context: JourneyItTest): Unit =
+          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => CanSetUpDirectDebit)(context: JourneyItTest): Unit =
             testUpdateWithExistingValue(initialJourney)(
               _.journeyId,
               existingValue(initialJourney)
             )(
-                differentDetailsAboutBankAccount,
-                journeyConnector.updateDetailsAboutBankAccount(_, _)(context.request),
-                context.tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = false).copy(detailsAboutBankAccount = differentDetailsAboutBankAccount)
+                differentAnswerToCanSetUpDirectDebit,
+                journeyConnector.updateCanSetUpDirectDebit(_, _)(context.request),
+                context.tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = false).copy(canSetUpDirectDebitAnswer = differentAnswerToCanSetUpDirectDebit)
               )(context)
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.detailsAboutBankAccount)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.detailsAboutBankAccount)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.detailsAboutBankAccount)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.detailsAboutBankAccount)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability)(_.detailsAboutBankAccount)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability)(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.detailsAboutBankAccount)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.canSetUpDirectDebitAnswer)(this)
         }
 
       }
 
       "Vat when the current stage is" - {
 
-          def testVatBta[J <: Journey](initialJourney: J)(existingValue: J => DetailsAboutBankAccount)(context: JourneyItTest): Unit =
+          def testVatBta[J <: Journey](initialJourney: J)(existingValue: J => CanSetUpDirectDebit)(context: JourneyItTest): Unit =
             testUpdateWithExistingValue(initialJourney)(
               _.journeyId,
               existingValue(initialJourney)
             )(
-                differentDetailsAboutBankAccount,
-                journeyConnector.updateDetailsAboutBankAccount(_, _)(context.request),
-                context.tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = false).copy(detailsAboutBankAccount = differentDetailsAboutBankAccount)
+                differentAnswerToCanSetUpDirectDebit,
+                journeyConnector.updateCanSetUpDirectDebit(_, _)(context.request),
+                context.tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = false).copy(canSetUpDirectDebitAnswer = differentAnswerToCanSetUpDirectDebit)
               )(context)
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.detailsAboutBankAccount)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.detailsAboutBankAccount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.detailsAboutBankAccount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.detailsAboutBankAccount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterSelectedEmailNoAffordability)(_.detailsAboutBankAccount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterSelectedEmailNoAffordability)(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.detailsAboutBankAccount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.canSetUpDirectDebitAnswer)(this)
         }
 
       }
 
       "Sa when the current stage is" - {
 
-          def testSaBta[J <: Journey](initialJourney: J)(existingValue: J => DetailsAboutBankAccount)(context: JourneyItTest): Unit =
+          def testSaBta[J <: Journey](initialJourney: J)(existingValue: J => CanSetUpDirectDebit)(context: JourneyItTest): Unit =
             testUpdateWithExistingValue(initialJourney)(
               _.journeyId,
               existingValue(initialJourney)
             )(
-                differentDetailsAboutBankAccount,
-                journeyConnector.updateDetailsAboutBankAccount(_, _)(context.request),
-                context.tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = false).copy(detailsAboutBankAccount = differentDetailsAboutBankAccount)
+                differentAnswerToCanSetUpDirectDebit,
+                journeyConnector.updateCanSetUpDirectDebit(_, _)(context.request),
+                context.tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = false).copy(canSetUpDirectDebitAnswer = differentAnswerToCanSetUpDirectDebit)
               )(context)
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.detailsAboutBankAccount)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.detailsAboutBankAccount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.detailsAboutBankAccount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.detailsAboutBankAccount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterSelectedEmailNoAffordability)(_.detailsAboutBankAccount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterSelectedEmailNoAffordability)(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.detailsAboutBankAccount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.canSetUpDirectDebitAnswer)(this)
         }
 
       }
 
       "Sia when the current stage is" - {
 
-          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => DetailsAboutBankAccount)(context: JourneyItTest): Unit =
+          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => CanSetUpDirectDebit)(context: JourneyItTest): Unit =
             testUpdateWithExistingValue(initialJourney)(
               _.journeyId,
               existingValue(initialJourney)
             )(
-                differentDetailsAboutBankAccount,
-                journeyConnector.updateDetailsAboutBankAccount(_, _)(context.request),
-                context.tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = false).copy(detailsAboutBankAccount = differentDetailsAboutBankAccount)
+                differentAnswerToCanSetUpDirectDebit,
+                journeyConnector.updateCanSetUpDirectDebit(_, _)(context.request),
+                context.tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = false).copy(canSetUpDirectDebitAnswer = differentAnswerToCanSetUpDirectDebit)
               )(context)
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.detailsAboutBankAccount)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.detailsAboutBankAccount)(this)
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.detailsAboutBankAccount)(this)
+          testSiaPta(tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.detailsAboutBankAccount)(this)
+          testSiaPta(tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.detailsAboutBankAccount)(this)
+          testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.detailsAboutBankAccount)(this)
+          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.canSetUpDirectDebitAnswer)(this)
         }
 
       }
@@ -243,9 +243,9 @@ class UpdateCheckYouCanSetupDDControllerSpec extends ItSpec with UpdateJourneyCo
 
       insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
 
-      val requestBody = TdAll.EpayeBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)
-      val result: Throwable = journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, requestBody).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"Cannot update DetailsAboutBankAccount when journey is in completed state"}""")
+      val requestBody = TdAll.EpayeBta.updateCanSetUpDirectDebitRequest(isAccountHolder = true)
+      val result: Throwable = journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, requestBody).failed.futureValue
+      result.getMessage should include("""{"statusCode":400,"message":"Cannot update CanSetUpDirectDebit when journey is in completed state"}""")
 
       verifyCommonActions(numberOfAuthCalls = 1)
     }

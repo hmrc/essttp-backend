@@ -18,7 +18,7 @@ package essttp.journey
 
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey, JourneyId, PaymentPlanAnswers, SjRequest, SjResponse, WhyCannotPayInFullAnswers}
-import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
+import essttp.rootmodel.bank.{BankDetails, CanSetUpDirectDebit}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.pega.StartCaseResponse
@@ -143,10 +143,10 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: E
       .withBody(Json.toJson(paymentPlanAnswers))
       .execute[Journey]
 
-  def updateDetailsAboutBankAccount(journeyId: JourneyId, detailsAboutBankAccount: DetailsAboutBankAccount)(implicit request: RequestHeader): Future[Journey] =
+  def updateCanSetUpDirectDebit(journeyId: JourneyId, canSetUpDirectDebit: CanSetUpDirectDebit)(implicit request: RequestHeader): Future[Journey] =
     httpClient
-      .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-details-about-bank-account")
-      .withBody(Json.toJson(detailsAboutBankAccount))
+      .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-can-set-up-direct-debit")
+      .withBody(Json.toJson(canSetUpDirectDebit))
       .execute[Journey]
 
   def updateDirectDebitDetails(journeyId: JourneyId, directDebitDetails: BankDetails)(implicit request: RequestHeader): Future[Journey] =

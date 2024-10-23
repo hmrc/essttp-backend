@@ -310,22 +310,22 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
 
-        case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
+        case j: Journey.Epaye.EnteredCanYouSetUpDirectDebit =>
           j.into[Journey.Epaye.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Vat.EnteredDetailsAboutBankAccount =>
+        case j: Journey.Vat.EnteredCanYouSetUpDirectDebit =>
           j.into[Journey.Vat.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Sa.EnteredDetailsAboutBankAccount =>
+        case j: Journey.Sa.EnteredCanYouSetUpDirectDebit =>
           j.into[Journey.Sa.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Sia.EnteredDetailsAboutBankAccount =>
+        case j: Journey.Sia.EnteredCanYouSetUpDirectDebit =>
           j.into[Journey.Sia.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -589,28 +589,28 @@ class UpdateDatesController @Inject() (
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
 
-                case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
+                case j: Journey.Epaye.EnteredCanYouSetUpDirectDebit =>
                   j.into[Journey.Epaye.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Vat.EnteredDetailsAboutBankAccount =>
+                case j: Journey.Vat.EnteredCanYouSetUpDirectDebit =>
                   j.into[Journey.Vat.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Sa.EnteredDetailsAboutBankAccount =>
+                case j: Journey.Sa.EnteredCanYouSetUpDirectDebit =>
                   j.into[Journey.Sa.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Sia.EnteredDetailsAboutBankAccount =>
+                case j: Journey.Sia.EnteredCanYouSetUpDirectDebit =>
                   j.into[Journey.Sia.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)

@@ -201,25 +201,25 @@ class UpdateDayOfMonthController @Inject() (
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
 
-                case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
+                case j: Journey.Epaye.EnteredCanYouSetUpDirectDebit =>
                   j.into[Journey.Epaye.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Vat.EnteredDetailsAboutBankAccount =>
+                case j: Journey.Vat.EnteredCanYouSetUpDirectDebit =>
                   j.into[Journey.Vat.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Sa.EnteredDetailsAboutBankAccount =>
+                case j: Journey.Sa.EnteredCanYouSetUpDirectDebit =>
                   j.into[Journey.Sa.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Sia.EnteredDetailsAboutBankAccount =>
+                case j: Journey.Sia.EnteredCanYouSetUpDirectDebit =>
                   j.into[Journey.Sia.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)

@@ -41,8 +41,8 @@ class UpdateDirectDebitDetailsController @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       newJourney <- journey match {
-        case j: Journey.BeforeEnteredDetailsAboutBankAccount  => Errors.throwBadRequestExceptionF(s"UpdateDirectDebitDetails is not possible in that state: [${j.stage.toString}]")
-        case j: Journey.Stages.EnteredDetailsAboutBankAccount => updateJourneyWithNewValue(j, request.body)
+        case j: Journey.BeforeEnteredCanYouSetUpDirectDebit  => Errors.throwBadRequestExceptionF(s"UpdateDirectDebitDetails is not possible in that state: [${j.stage.toString}]")
+        case j: Journey.Stages.EnteredCanYouSetUpDirectDebit => updateJourneyWithNewValue(j, request.body)
         case j: Journey.AfterEnteredDirectDebitDetails => j match {
           case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(j, request.body)
           case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update DirectDebitDetails when journey is in completed state")
@@ -52,26 +52,26 @@ class UpdateDirectDebitDetailsController @Inject() (
   }
 
   private def updateJourneyWithNewValue(
-      journey:            Journey.Stages.EnteredDetailsAboutBankAccount,
+      journey:            Journey.Stages.EnteredCanYouSetUpDirectDebit,
       directDebitDetails: BankDetails
   )(implicit request: Request[_]): Future[Journey] = {
     val newJourney: Journey.AfterEnteredDirectDebitDetails = journey match {
-      case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
+      case j: Journey.Epaye.EnteredCanYouSetUpDirectDebit =>
         j.into[Journey.Epaye.EnteredDirectDebitDetails]
           .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
           .withFieldConst(_.directDebitDetails, directDebitDetails)
           .transform
-      case j: Journey.Vat.EnteredDetailsAboutBankAccount =>
+      case j: Journey.Vat.EnteredCanYouSetUpDirectDebit =>
         j.into[Journey.Vat.EnteredDirectDebitDetails]
           .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
           .withFieldConst(_.directDebitDetails, directDebitDetails)
           .transform
-      case j: Journey.Sa.EnteredDetailsAboutBankAccount =>
+      case j: Journey.Sa.EnteredCanYouSetUpDirectDebit =>
         j.into[Journey.Sa.EnteredDirectDebitDetails]
           .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
           .withFieldConst(_.directDebitDetails, directDebitDetails)
           .transform
-      case j: Journey.Sia.EnteredDetailsAboutBankAccount =>
+      case j: Journey.Sia.EnteredCanYouSetUpDirectDebit =>
         j.into[Journey.Sia.EnteredDirectDebitDetails]
           .withFieldConst(_.stage, Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails)
           .withFieldConst(_.directDebitDetails, directDebitDetails)

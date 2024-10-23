@@ -19,7 +19,7 @@ package testsupport.testdata.epaye
 import essttp.journey.model.SjRequest.Epaye
 import essttp.journey.model._
 import essttp.rootmodel._
-import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
+import essttp.rootmodel.bank.{BankDetails, CanSetUpDirectDebit}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
@@ -356,16 +356,16 @@ trait TdJourneyEpayeEpayeService {
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability
     )
 
-    def updateDetailsAboutBankAccountRequest(isAccountHolder: Boolean): DetailsAboutBankAccount =
-      DetailsAboutBankAccount(isAccountHolder)
+    def updateCanSetUpDirectDebitRequest(isAccountHolder: Boolean): CanSetUpDirectDebit =
+      CanSetUpDirectDebit(isAccountHolder)
 
-    def journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder: Boolean): Journey.AfterEnteredDetailsAboutBankAccount = Journey.Epaye.EnteredDetailsAboutBankAccount(
+    def journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder: Boolean): Journey.AfterEnteredCanYouSetUpDirectDebit = Journey.Epaye.EnteredCanYouSetUpDirectDebit(
       _id                          = dependencies.journeyId,
       origin                       = Origins.Epaye.EpayeService,
       createdOn                    = dependencies.createdOn,
       sjRequest                    = sjRequest,
       sessionId                    = dependencies.sessionId,
-      stage                        = if (isAccountHolder) Stage.AfterEnteredDetailsAboutBankAccount.IsAccountHolder else Stage.AfterEnteredDetailsAboutBankAccount.IsNotAccountHolder,
+      stage                        = if (isAccountHolder) Stage.AfterEnteredCanYouSetUpDirectDebit.IsAccountHolder else Stage.AfterEnteredCanYouSetUpDirectDebit.IsNotAccountHolder,
       affordabilityEnabled         = Some(false),
       correlationId                = dependencies.correlationId,
       taxId                        = empRef,
@@ -376,7 +376,7 @@ trait TdJourneyEpayeEpayeService {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder)
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder)
     )
 
     def updateDirectDebitDetailsRequest(): BankDetails = dependencies.directDebitDetails
@@ -398,7 +398,7 @@ trait TdJourneyEpayeEpayeService {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
       directDebitDetails           = directDebitDetails
     )
 
@@ -421,7 +421,7 @@ trait TdJourneyEpayeEpayeService {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
       directDebitDetails           = directDebitDetails
     )
 
@@ -449,7 +449,7 @@ trait TdJourneyEpayeEpayeService {
         instalmentAmounts            = dependencies.instalmentAmounts,
         canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
         paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-        detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+        canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
         directDebitDetails           = directDebitDetails,
         isEmailAddressRequired       = IsEmailAddressRequired(isEmailAddressRequired)
       )
@@ -474,7 +474,7 @@ trait TdJourneyEpayeEpayeService {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
       directDebitDetails           = directDebitDetails,
       isEmailAddressRequired       = IsEmailAddressRequired(value = true),
       emailToBeVerified            = dependencies.email
@@ -500,7 +500,7 @@ trait TdJourneyEpayeEpayeService {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
       directDebitDetails           = directDebitDetails,
       isEmailAddressRequired       = IsEmailAddressRequired(value = true),
       emailToBeVerified            = dependencies.email,
@@ -527,7 +527,7 @@ trait TdJourneyEpayeEpayeService {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
       directDebitDetails           = directDebitDetails,
       isEmailAddressRequired       = IsEmailAddressRequired(isEmailAddressRequired),
       emailVerificationAnswers     = if (isEmailAddressRequired) {

@@ -132,8 +132,8 @@ class UpdateDayOfMonthControllerSpec extends ItSpec with UpdateJourneyController
           testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -186,8 +186,8 @@ class UpdateDayOfMonthControllerSpec extends ItSpec with UpdateJourneyController
           testVatBta(tdAll.VatBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -240,8 +240,8 @@ class UpdateDayOfMonthControllerSpec extends ItSpec with UpdateJourneyController
           testSaBta(tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -294,8 +294,8 @@ class UpdateDayOfMonthControllerSpec extends ItSpec with UpdateJourneyController
           testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {

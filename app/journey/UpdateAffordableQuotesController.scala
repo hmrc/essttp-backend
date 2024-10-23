@@ -169,7 +169,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
 
-              case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
+              case j: Journey.Epaye.EnteredCanYouSetUpDirectDebit =>
                 j.into[Journey.Epaye.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -177,7 +177,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Vat.EnteredDetailsAboutBankAccount =>
+              case j: Journey.Vat.EnteredCanYouSetUpDirectDebit =>
                 j.into[Journey.Vat.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -185,7 +185,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Sa.EnteredDetailsAboutBankAccount =>
+              case j: Journey.Sa.EnteredCanYouSetUpDirectDebit =>
                 j.into[Journey.Sa.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -193,7 +193,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Sia.EnteredDetailsAboutBankAccount =>
+              case j: Journey.Sia.EnteredCanYouSetUpDirectDebit =>
                 j.into[Journey.Sia.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)

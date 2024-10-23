@@ -130,8 +130,8 @@ class UpdateAffordableQuotesControllerSpec extends ItSpec with UpdateJourneyCont
           testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -180,8 +180,8 @@ class UpdateAffordableQuotesControllerSpec extends ItSpec with UpdateJourneyCont
           testVatBta(tdAll.VatBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -230,8 +230,8 @@ class UpdateAffordableQuotesControllerSpec extends ItSpec with UpdateJourneyCont
           testSaBta(tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -280,8 +280,8 @@ class UpdateAffordableQuotesControllerSpec extends ItSpec with UpdateJourneyCont
           testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {

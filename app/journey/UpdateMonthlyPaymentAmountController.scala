@@ -219,22 +219,22 @@ class UpdateMonthlyPaymentAmountController @Inject() (
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
 
-                case j: Epaye.EnteredDetailsAboutBankAccount =>
+                case j: Epaye.EnteredCanYouSetUpDirectDebit =>
                   j.into[Epaye.EnteredMonthlyPaymentAmount]
                     .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
-                case j: Vat.EnteredDetailsAboutBankAccount =>
+                case j: Vat.EnteredCanYouSetUpDirectDebit =>
                   j.into[Vat.EnteredMonthlyPaymentAmount]
                     .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
-                case j: Sa.EnteredDetailsAboutBankAccount =>
+                case j: Sa.EnteredCanYouSetUpDirectDebit =>
                   j.into[Sa.EnteredMonthlyPaymentAmount]
                     .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
-                case j: Sia.EnteredDetailsAboutBankAccount =>
+                case j: Sia.EnteredCanYouSetUpDirectDebit =>
                   j.into[Sia.EnteredMonthlyPaymentAmount]
                     .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)

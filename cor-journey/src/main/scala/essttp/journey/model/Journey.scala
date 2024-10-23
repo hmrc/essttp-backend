@@ -18,7 +18,7 @@ package essttp.journey.model
 
 import essttp.crypto.CryptoFormat
 import essttp.rootmodel._
-import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
+import essttp.rootmodel.bank.{BankDetails, CanSetUpDirectDebit}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.pega.StartCaseResponse
@@ -189,10 +189,10 @@ object Journey {
     def paymentPlanAnswers: PaymentPlanAnswers
   }
 
-  sealed trait BeforeEnteredDetailsAboutBankAccount extends Journey with Stages.JourneyStage
+  sealed trait BeforeEnteredCanYouSetUpDirectDebit extends Journey with Stages.JourneyStage
 
-  sealed trait AfterEnteredDetailsAboutBankAccount extends Journey {
-    def detailsAboutBankAccount: DetailsAboutBankAccount
+  sealed trait AfterEnteredCanYouSetUpDirectDebit extends Journey {
+    def canSetUpDirectDebitAnswer: CanSetUpDirectDebit
   }
 
   sealed trait BeforeEnteredDirectDebitDetails extends Journey with Stages.JourneyStage
@@ -269,7 +269,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeEnteredDetailsAboutBankAccount
+      with BeforeEnteredCanYouSetUpDirectDebit
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -300,7 +300,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeEnteredDetailsAboutBankAccount
+      with BeforeEnteredCanYouSetUpDirectDebit
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -331,7 +331,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeEnteredDetailsAboutBankAccount
+      with BeforeEnteredCanYouSetUpDirectDebit
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -362,7 +362,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeEnteredDetailsAboutBankAccount
+      with BeforeEnteredCanYouSetUpDirectDebit
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -393,7 +393,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeEnteredDetailsAboutBankAccount
+      with BeforeEnteredCanYouSetUpDirectDebit
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -424,7 +424,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeEnteredDetailsAboutBankAccount
+      with BeforeEnteredCanYouSetUpDirectDebit
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -452,7 +452,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeEnteredDetailsAboutBankAccount
+      with BeforeEnteredCanYouSetUpDirectDebit
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -481,7 +481,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeEnteredDetailsAboutBankAccount
+      with BeforeEnteredCanYouSetUpDirectDebit
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -510,7 +510,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeEnteredDetailsAboutBankAccount
+      with BeforeEnteredCanYouSetUpDirectDebit
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -534,7 +534,7 @@ object Journey {
       with AfterCanPayWithinSixMonthsAnswers
       with AfterStartedPegaCase
       with BeforeCheckedPaymentPlan
-      with BeforeEnteredDetailsAboutBankAccount
+      with BeforeEnteredCanYouSetUpDirectDebit
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -562,7 +562,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeEnteredDetailsAboutBankAccount
+      with BeforeEnteredCanYouSetUpDirectDebit
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -590,7 +590,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeEnteredDetailsAboutBankAccount
+      with BeforeEnteredCanYouSetUpDirectDebit
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -618,7 +618,7 @@ object Journey {
       with BeforeAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeEnteredDetailsAboutBankAccount
+      with BeforeEnteredCanYouSetUpDirectDebit
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -646,7 +646,7 @@ object Journey {
       with AfterAffordableQuotesResponse
       with BeforeSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeEnteredDetailsAboutBankAccount
+      with BeforeEnteredCanYouSetUpDirectDebit
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -674,7 +674,7 @@ object Journey {
       with AfterAffordableQuotesResponse
       with AfterSelectedPaymentPlan
       with BeforeCheckedPaymentPlan
-      with BeforeEnteredDetailsAboutBankAccount
+      with BeforeEnteredCanYouSetUpDirectDebit
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -697,7 +697,7 @@ object Journey {
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
       with AfterCheckedPaymentPlan
-      with BeforeEnteredDetailsAboutBankAccount
+      with BeforeEnteredCanYouSetUpDirectDebit
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -709,7 +709,7 @@ object Journey {
       def stage: Stage.AfterCheckedPlan
     }
 
-    sealed trait EnteredDetailsAboutBankAccount
+    sealed trait EnteredCanYouSetUpDirectDebit
       extends Journey
       with JourneyStage
       with AfterComputedTaxId
@@ -720,7 +720,7 @@ object Journey {
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
       with AfterCheckedPaymentPlan
-      with AfterEnteredDetailsAboutBankAccount
+      with AfterEnteredCanYouSetUpDirectDebit
       with BeforeEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -728,8 +728,8 @@ object Journey {
       with BeforeEmailAddressVerificationResult
       with BeforeEmailVerificationPhase
       with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterEnteredDetailsAboutBankAccount.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterEnteredDetailsAboutBankAccount
+      Errors.sanityCheck(Stage.AfterEnteredCanYouSetUpDirectDebit.values.contains(stage), sanityMessage)
+      def stage: Stage.AfterEnteredCanYouSetUpDirectDebit
     }
 
     sealed trait EnteredDirectDebitDetails
@@ -743,7 +743,7 @@ object Journey {
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
       with AfterCheckedPaymentPlan
-      with AfterEnteredDetailsAboutBankAccount
+      with AfterEnteredCanYouSetUpDirectDebit
       with AfterEnteredDirectDebitDetails
       with BeforeConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -766,7 +766,7 @@ object Journey {
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
       with AfterCheckedPaymentPlan
-      with AfterEnteredDetailsAboutBankAccount
+      with AfterEnteredCanYouSetUpDirectDebit
       with AfterEnteredDirectDebitDetails
       with AfterConfirmedDirectDebitDetails
       with BeforeAgreedTermsAndConditions
@@ -789,7 +789,7 @@ object Journey {
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
       with AfterCheckedPaymentPlan
-      with AfterEnteredDetailsAboutBankAccount
+      with AfterEnteredCanYouSetUpDirectDebit
       with AfterEnteredDirectDebitDetails
       with AfterConfirmedDirectDebitDetails
       with AfterAgreedTermsAndConditions
@@ -812,7 +812,7 @@ object Journey {
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
       with AfterCheckedPaymentPlan
-      with AfterEnteredDetailsAboutBankAccount
+      with AfterEnteredCanYouSetUpDirectDebit
       with AfterEnteredDirectDebitDetails
       with AfterConfirmedDirectDebitDetails
       with AfterAgreedTermsAndConditions
@@ -835,7 +835,7 @@ object Journey {
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
       with AfterCheckedPaymentPlan
-      with AfterEnteredDetailsAboutBankAccount
+      with AfterEnteredCanYouSetUpDirectDebit
       with AfterEnteredDirectDebitDetails
       with AfterConfirmedDirectDebitDetails
       with AfterAgreedTermsAndConditions
@@ -858,7 +858,7 @@ object Journey {
       with AfterRetrievedAffordabilityResult
       with AfterCanPayWithinSixMonthsAnswers
       with AfterCheckedPaymentPlan
-      with AfterEnteredDetailsAboutBankAccount
+      with AfterEnteredCanYouSetUpDirectDebit
       with AfterEnteredDirectDebitDetails
       with AfterConfirmedDirectDebitDetails
       with AfterAgreedTermsAndConditions
@@ -1277,14 +1277,14 @@ object Journey {
      * [[Journey]] after details about bank account
      * Epaye
      */
-    final case class EnteredDetailsAboutBankAccount(
+    final case class EnteredCanYouSetUpDirectDebit(
         override val _id:                          JourneyId,
         override val origin:                       Origins.Epaye,
         override val createdOn:                    Instant,
         override val sjRequest:                    SjRequest.Epaye,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
-        override val stage:                        Stage.AfterEnteredDetailsAboutBankAccount,
+        override val stage:                        Stage.AfterEnteredCanYouSetUpDirectDebit,
         override val affordabilityEnabled:         Option[Boolean],
         override val taxId:                        EmpRef,
         override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1294,10 +1294,10 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit
     )
       extends Journey
-      with Journey.Stages.EnteredDetailsAboutBankAccount
+      with Journey.Stages.EnteredCanYouSetUpDirectDebit
       with Journey.Epaye
 
     /**
@@ -1321,7 +1321,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails
     )
       extends Journey
@@ -1349,7 +1349,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails
     )
       extends Journey
@@ -1377,7 +1377,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired
     )
@@ -1406,7 +1406,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val emailToBeVerified:            Email
@@ -1436,7 +1436,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val emailToBeVerified:            Email,
@@ -1468,7 +1468,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val arrangementResponse:          ArrangementResponse,
@@ -1886,14 +1886,14 @@ object Journey {
      * [[Journey]] after details about bank account
      * Vat
      */
-    final case class EnteredDetailsAboutBankAccount(
+    final case class EnteredCanYouSetUpDirectDebit(
         override val _id:                          JourneyId,
         override val origin:                       Origins.Vat,
         override val createdOn:                    Instant,
         override val sjRequest:                    SjRequest.Vat,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
-        override val stage:                        Stage.AfterEnteredDetailsAboutBankAccount,
+        override val stage:                        Stage.AfterEnteredCanYouSetUpDirectDebit,
         override val affordabilityEnabled:         Option[Boolean],
         override val taxId:                        Vrn,
         override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1903,10 +1903,10 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit
     )
       extends Journey
-      with Journey.Stages.EnteredDetailsAboutBankAccount
+      with Journey.Stages.EnteredCanYouSetUpDirectDebit
       with Journey.Vat
 
     /**
@@ -1930,7 +1930,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails
     )
       extends Journey
@@ -1958,7 +1958,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails
     )
       extends Journey
@@ -1986,7 +1986,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired
     )
@@ -2015,7 +2015,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val emailToBeVerified:            Email
@@ -2045,7 +2045,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val emailToBeVerified:            Email,
@@ -2077,7 +2077,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val arrangementResponse:          ArrangementResponse,
@@ -2496,14 +2496,14 @@ object Journey {
      * [[Journey]] after details about bank account
      * Sa
      */
-    final case class EnteredDetailsAboutBankAccount(
+    final case class EnteredCanYouSetUpDirectDebit(
         override val _id:                          JourneyId,
         override val origin:                       Origins.Sa,
         override val createdOn:                    Instant,
         override val sjRequest:                    SjRequest.Sa,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
-        override val stage:                        Stage.AfterEnteredDetailsAboutBankAccount,
+        override val stage:                        Stage.AfterEnteredCanYouSetUpDirectDebit,
         override val affordabilityEnabled:         Option[Boolean],
         override val taxId:                        SaUtr,
         override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2513,10 +2513,10 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit
     )
       extends Journey
-      with Journey.Stages.EnteredDetailsAboutBankAccount
+      with Journey.Stages.EnteredCanYouSetUpDirectDebit
       with Journey.Sa
 
     /**
@@ -2540,7 +2540,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails
     )
       extends Journey
@@ -2568,7 +2568,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails
     )
       extends Journey
@@ -2596,7 +2596,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired
     )
@@ -2625,7 +2625,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val emailToBeVerified:            Email
@@ -2655,7 +2655,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val emailToBeVerified:            Email,
@@ -2687,7 +2687,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val arrangementResponse:          ArrangementResponse,
@@ -3103,14 +3103,14 @@ object Journey {
      * [[Journey]] after details about bank account
      * Sia
      */
-    final case class EnteredDetailsAboutBankAccount(
+    final case class EnteredCanYouSetUpDirectDebit(
         override val _id:                          JourneyId,
         override val origin:                       Origins.Sia,
         override val createdOn:                    Instant,
         override val sjRequest:                    SjRequest.Sia,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
-        override val stage:                        Stage.AfterEnteredDetailsAboutBankAccount,
+        override val stage:                        Stage.AfterEnteredCanYouSetUpDirectDebit,
         override val affordabilityEnabled:         Option[Boolean],
         override val taxId:                        Nino,
         override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -3120,10 +3120,10 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit
     )
       extends Journey
-      with Journey.Stages.EnteredDetailsAboutBankAccount
+      with Journey.Stages.EnteredCanYouSetUpDirectDebit
       with Journey.Sia
 
     /**
@@ -3147,7 +3147,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails
     )
       extends Journey
@@ -3175,7 +3175,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails
     )
       extends Journey
@@ -3203,7 +3203,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired
     )
@@ -3232,7 +3232,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val emailToBeVerified:            Email
@@ -3262,7 +3262,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val emailToBeVerified:            Email,
@@ -3294,7 +3294,7 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val detailsAboutBankAccount:      DetailsAboutBankAccount,
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val arrangementResponse:          ArrangementResponse,

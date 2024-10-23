@@ -153,7 +153,7 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
 
-                case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
+                case j: Journey.Epaye.EnteredCanYouSetUpDirectDebit =>
                   j.into[Journey.Epaye.ChosenPaymentPlan]
                     .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -162,7 +162,7 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
-                case j: Journey.Vat.EnteredDetailsAboutBankAccount =>
+                case j: Journey.Vat.EnteredCanYouSetUpDirectDebit =>
                   j.into[Journey.Vat.ChosenPaymentPlan]
                     .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -171,7 +171,7 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
-                case j: Journey.Sa.EnteredDetailsAboutBankAccount =>
+                case j: Journey.Sa.EnteredCanYouSetUpDirectDebit =>
                   j.into[Journey.Sa.ChosenPaymentPlan]
                     .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -180,7 +180,7 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
-                case j: Journey.Sia.EnteredDetailsAboutBankAccount =>
+                case j: Journey.Sia.EnteredCanYouSetUpDirectDebit =>
                   j.into[Journey.Sia.ChosenPaymentPlan]
                     .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)

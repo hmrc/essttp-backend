@@ -241,22 +241,22 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
 
-        case j: Epaye.EnteredDetailsAboutBankAccount =>
+        case j: Epaye.EnteredCanYouSetUpDirectDebit =>
           j.into[Epaye.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Vat.EnteredDetailsAboutBankAccount =>
+        case j: Vat.EnteredCanYouSetUpDirectDebit =>
           j.into[Vat.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sa.EnteredDetailsAboutBankAccount =>
+        case j: Sa.EnteredCanYouSetUpDirectDebit =>
           j.into[Sa.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sia.EnteredDetailsAboutBankAccount =>
+        case j: Sia.EnteredCanYouSetUpDirectDebit =>
           j.into[Sia.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)

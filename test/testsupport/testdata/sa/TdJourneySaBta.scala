@@ -19,7 +19,7 @@ package testsupport.testdata.sa
 import essttp.journey.model.SjRequest.Sa
 import essttp.journey.model._
 import essttp.rootmodel._
-import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
+import essttp.rootmodel.bank.{BankDetails, CanSetUpDirectDebit}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
@@ -414,16 +414,16 @@ trait TdJourneySaBta {
     def journeyAfterCheckedPaymentPlanWithAffordability: Journey.Sa.CheckedPaymentPlan =
       journeyAfterCheckedPaymentPlanNonAffordability.copy(paymentPlanAnswers = dependencies.paymentPlanAnswersWithAffordability)
 
-    def updateDetailsAboutBankAccountRequest(isAccountHolder: Boolean): DetailsAboutBankAccount =
-      DetailsAboutBankAccount(isAccountHolder)
+    def updateCanSetUpDirectDebitRequest(isAccountHolder: Boolean): CanSetUpDirectDebit =
+      CanSetUpDirectDebit(isAccountHolder)
 
-    def journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder: Boolean): Journey.Sa.EnteredDetailsAboutBankAccount = Journey.Sa.EnteredDetailsAboutBankAccount(
+    def journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder: Boolean): Journey.Sa.EnteredCanYouSetUpDirectDebit = Journey.Sa.EnteredCanYouSetUpDirectDebit(
       _id                          = dependencies.journeyId,
       origin                       = Origins.Sa.Bta,
       createdOn                    = dependencies.createdOn,
       sjRequest                    = sjRequest,
       sessionId                    = dependencies.sessionId,
-      stage                        = if (isAccountHolder) Stage.AfterEnteredDetailsAboutBankAccount.IsAccountHolder else Stage.AfterEnteredDetailsAboutBankAccount.IsNotAccountHolder,
+      stage                        = if (isAccountHolder) Stage.AfterEnteredCanYouSetUpDirectDebit.IsAccountHolder else Stage.AfterEnteredCanYouSetUpDirectDebit.IsNotAccountHolder,
       affordabilityEnabled         = Some(false),
       correlationId                = dependencies.correlationId,
       taxId                        = saUtr,
@@ -434,11 +434,11 @@ trait TdJourneySaBta {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder)
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder)
     )
 
-    def journeyAfterEnteredDetailsAboutBankAccountWithAffordability(isAccountHolder: Boolean): Journey.Sa.EnteredDetailsAboutBankAccount =
-      journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder).copy(paymentPlanAnswers = dependencies.paymentPlanAnswersWithAffordability)
+    def journeyAfterEnteredCanYouSetUpDirectDebitWithAffordability(isAccountHolder: Boolean): Journey.Sa.EnteredCanYouSetUpDirectDebit =
+      journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder).copy(paymentPlanAnswers = dependencies.paymentPlanAnswersWithAffordability)
 
     val updateDirectDebitDetailsRequest: BankDetails = dependencies.directDebitDetails
 
@@ -459,7 +459,7 @@ trait TdJourneySaBta {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
       directDebitDetails           = directDebitDetails
     )
 
@@ -485,7 +485,7 @@ trait TdJourneySaBta {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
       directDebitDetails           = directDebitDetails
     )
 
@@ -516,7 +516,7 @@ trait TdJourneySaBta {
         instalmentAmounts            = dependencies.instalmentAmounts,
         canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
         paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-        detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+        canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
         directDebitDetails           = directDebitDetails,
         isEmailAddressRequired       = IsEmailAddressRequired(isEmailAddressRequired)
       )
@@ -544,7 +544,7 @@ trait TdJourneySaBta {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
       directDebitDetails           = directDebitDetails,
       isEmailAddressRequired       = IsEmailAddressRequired(value = true),
       emailToBeVerified            = dependencies.email
@@ -573,7 +573,7 @@ trait TdJourneySaBta {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
       directDebitDetails           = directDebitDetails,
       isEmailAddressRequired       = IsEmailAddressRequired(value = true),
       emailToBeVerified            = dependencies.email,
@@ -603,7 +603,7 @@ trait TdJourneySaBta {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
       directDebitDetails           = directDebitDetails,
       isEmailAddressRequired       = IsEmailAddressRequired(isEmailAddressRequired),
       emailVerificationAnswers     = if (isEmailAddressRequired) {

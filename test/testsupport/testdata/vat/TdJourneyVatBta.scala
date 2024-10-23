@@ -18,7 +18,7 @@ package testsupport.testdata.vat
 
 import essttp.journey.model.SjRequest.Vat
 import essttp.journey.model._
-import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
+import essttp.rootmodel.bank.{BankDetails, CanSetUpDirectDebit}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
@@ -411,17 +411,17 @@ trait TdJourneyVatBta {
       paymentPlanAnswers           = dependencies.paymentPlanAnswersWithAffordability,
     )
 
-    def updateDetailsAboutBankAccountRequest(isAccountHolder: Boolean): DetailsAboutBankAccount =
-      DetailsAboutBankAccount(isAccountHolder)
+    def updateCanSetUpDirectDebitRequest(isAccountHolder: Boolean): CanSetUpDirectDebit =
+      CanSetUpDirectDebit(isAccountHolder)
 
-    def journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder: Boolean): Journey.Vat.EnteredDetailsAboutBankAccount = Journey.Vat.EnteredDetailsAboutBankAccount(
+    def journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder: Boolean): Journey.Vat.EnteredCanYouSetUpDirectDebit = Journey.Vat.EnteredCanYouSetUpDirectDebit(
       _id                          = dependencies.journeyId,
       origin                       = Origins.Vat.Bta,
       createdOn                    = dependencies.createdOn,
       sjRequest                    = sjRequest,
       sessionId                    = dependencies.sessionId,
       correlationId                = dependencies.correlationId,
-      stage                        = if (isAccountHolder) Stage.AfterEnteredDetailsAboutBankAccount.IsAccountHolder else Stage.AfterEnteredDetailsAboutBankAccount.IsNotAccountHolder,
+      stage                        = if (isAccountHolder) Stage.AfterEnteredCanYouSetUpDirectDebit.IsAccountHolder else Stage.AfterEnteredCanYouSetUpDirectDebit.IsNotAccountHolder,
       affordabilityEnabled         = Some(false),
       taxId                        = vrn,
       eligibilityCheckResult       = eligibleEligibilityCheckResultVat(),
@@ -431,7 +431,7 @@ trait TdJourneyVatBta {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder)
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder)
     )
 
     val updateDirectDebitDetailsRequest: BankDetails = dependencies.directDebitDetails
@@ -453,7 +453,7 @@ trait TdJourneyVatBta {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
       directDebitDetails           = directDebitDetails
     )
 
@@ -476,7 +476,7 @@ trait TdJourneyVatBta {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
       directDebitDetails           = directDebitDetails
     )
 
@@ -504,7 +504,7 @@ trait TdJourneyVatBta {
         instalmentAmounts            = dependencies.instalmentAmounts,
         canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
         paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-        detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+        canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
         directDebitDetails           = directDebitDetails,
         isEmailAddressRequired       = IsEmailAddressRequired(isEmailAddressRequired)
       )
@@ -529,7 +529,7 @@ trait TdJourneyVatBta {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
       directDebitDetails           = directDebitDetails,
       isEmailAddressRequired       = IsEmailAddressRequired(value = true),
       emailToBeVerified            = dependencies.email
@@ -555,7 +555,7 @@ trait TdJourneyVatBta {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
       directDebitDetails           = directDebitDetails,
       isEmailAddressRequired       = IsEmailAddressRequired(value = true),
       emailToBeVerified            = dependencies.email,
@@ -582,7 +582,7 @@ trait TdJourneyVatBta {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      detailsAboutBankAccount      = DetailsAboutBankAccount(isAccountHolder = true),
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
       directDebitDetails           = directDebitDetails,
       isEmailAddressRequired       = IsEmailAddressRequired(isEmailAddressRequired),
       emailVerificationAnswers     = if (isEmailAddressRequired) {

@@ -17,7 +17,7 @@
 package testsupport.testdata
 
 import essttp.journey.model.{Journey, SjRequest, SjResponse}
-import essttp.rootmodel.bank.{BankDetails, DetailsAboutBankAccount}
+import essttp.rootmodel.bank.{BankDetails, CanSetUpDirectDebit}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
@@ -93,9 +93,9 @@ trait TdJourneyStructure {
 
   def journeyAfterCheckedPaymentPlanNonAffordability: Journey.AfterCheckedPaymentPlan
 
-  def updateDetailsAboutBankAccountRequest(isAccountHolder: Boolean): DetailsAboutBankAccount
+  def updateCanSetUpDirectDebitRequest(isAccountHolder: Boolean): CanSetUpDirectDebit
 
-  def journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder: Boolean): Journey.AfterEnteredDetailsAboutBankAccount
+  def journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder: Boolean): Journey.AfterEnteredCanYouSetUpDirectDebit
 
   def updateDirectDebitDetailsRequest(): BankDetails
 

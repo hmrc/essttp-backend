@@ -258,18 +258,18 @@ object Stage {
     case object AcceptedPlan extends AfterCheckedPlan
   }
 
-  sealed trait AfterEnteredDetailsAboutBankAccount extends Stage with EnumEntry
+  sealed trait AfterEnteredCanYouSetUpDirectDebit extends Stage with EnumEntry
 
   /**
    * [[Journey]] has been orchestrated with details about the user's bank account
    */
-  object AfterEnteredDetailsAboutBankAccount extends Enum[AfterEnteredDetailsAboutBankAccount] {
+  object AfterEnteredCanYouSetUpDirectDebit extends Enum[AfterEnteredCanYouSetUpDirectDebit] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterEnteredDetailsAboutBankAccount] = derived.oformat[AfterEnteredDetailsAboutBankAccount]()
-    val values: immutable.IndexedSeq[AfterEnteredDetailsAboutBankAccount] = findValues
+    implicit val format: OFormat[AfterEnteredCanYouSetUpDirectDebit] = derived.oformat[AfterEnteredCanYouSetUpDirectDebit]()
+    val values: immutable.IndexedSeq[AfterEnteredCanYouSetUpDirectDebit] = findValues
 
-    case object IsNotAccountHolder extends AfterEnteredDetailsAboutBankAccount
-    case object IsAccountHolder extends AfterEnteredDetailsAboutBankAccount
+    case object IsNotAccountHolder extends AfterEnteredCanYouSetUpDirectDebit
+    case object IsAccountHolder extends AfterEnteredCanYouSetUpDirectDebit
   }
 
   sealed trait AfterEnteredDirectDebitDetails extends Stage with EnumEntry
