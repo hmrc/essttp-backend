@@ -21,7 +21,7 @@ import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{Journey, JourneyId, Stage}
-import essttp.rootmodel.bank.{DetailsAboutBankAccount, TypesOfBankAccount}
+import essttp.rootmodel.bank.DetailsAboutBankAccount
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformationOps
 import play.api.mvc.{Action, ControllerComponents, Request}
@@ -31,13 +31,13 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UpdateDetailsAboutBankAccountController @Inject() (
+class UpdateCheckYouCanSetupDDController @Inject() (
     actions:        Actions,
     journeyService: JourneyService,
     cc:             ControllerComponents
 )(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
-  def updateDetailsAboutBankAccount(journeyId: JourneyId): Action[DetailsAboutBankAccount] = actions.authenticatedAction.async(parse.json[DetailsAboutBankAccount]) { implicit request =>
+  def updateCheckYouCanSetupDD(journeyId: JourneyId): Action[DetailsAboutBankAccount] = actions.authenticatedAction.async(parse.json[DetailsAboutBankAccount]) { implicit request =>
     for {
       journey <- journeyService.get(journeyId)
       newJourney <- journey match {
@@ -227,10 +227,7 @@ class UpdateDetailsAboutBankAccountController @Inject() (
 
   private def determineStage(detailsAboutBankAccount: DetailsAboutBankAccount): Stage.AfterEnteredDetailsAboutBankAccount =
     if (detailsAboutBankAccount.isAccountHolder)
-      detailsAboutBankAccount.typeOfBankAccount match {
-        case TypesOfBankAccount.Business => Stage.AfterEnteredDetailsAboutBankAccount.Business
-        case TypesOfBankAccount.Personal => Stage.AfterEnteredDetailsAboutBankAccount.Personal
-      }
+      Stage.AfterEnteredDetailsAboutBankAccount.IsAccountHolder
     else
       Stage.AfterEnteredDetailsAboutBankAccount.IsNotAccountHolder
 

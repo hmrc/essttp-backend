@@ -19,7 +19,7 @@ package essttp.rootmodel.bank
 import cats.Eq
 import play.api.libs.json.{Json, OFormat}
 
-final case class DetailsAboutBankAccount(typeOfBankAccount: TypeOfBankAccount, isAccountHolder: Boolean)
+final case class DetailsAboutBankAccount(isAccountHolder: Boolean)
 
 object DetailsAboutBankAccount {
 

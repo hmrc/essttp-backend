@@ -17,12 +17,12 @@
 package controllers
 
 import essttp.journey.model.Journey
-import essttp.rootmodel.bank.{DetailsAboutBankAccount, TypesOfBankAccount}
+import essttp.rootmodel.bank.DetailsAboutBankAccount
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateCheckYouCanSetupDDControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-details-about-bank-account" - {
     "should throw Bad Request when Journey is in a stage [BeforeCheckedPaymentPlan]" in new JourneyItTest {
@@ -82,7 +82,7 @@ class UpdateDetailsAboutBankAccountControllerSpec extends ItSpec with UpdateJour
 
     "should update the journey when a value already existed" - {
 
-      val differentDetailsAboutBankAccount = DetailsAboutBankAccount(TypesOfBankAccount.Business, isAccountHolder = false)
+      val differentDetailsAboutBankAccount = DetailsAboutBankAccount(isAccountHolder = false)
 
       "Epaye when the current stage is" - {
 

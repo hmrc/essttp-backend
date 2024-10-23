@@ -268,11 +268,8 @@ object Stage {
     implicit val format: OFormat[AfterEnteredDetailsAboutBankAccount] = derived.oformat[AfterEnteredDetailsAboutBankAccount]()
     val values: immutable.IndexedSeq[AfterEnteredDetailsAboutBankAccount] = findValues
 
-    case object Business extends AfterEnteredDetailsAboutBankAccount
-
-    case object Personal extends AfterEnteredDetailsAboutBankAccount
-
     case object IsNotAccountHolder extends AfterEnteredDetailsAboutBankAccount
+    case object IsAccountHolder extends AfterEnteredDetailsAboutBankAccount
   }
 
   sealed trait AfterEnteredDirectDebitDetails extends Stage with EnumEntry
