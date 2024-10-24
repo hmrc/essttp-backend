@@ -134,22 +134,22 @@ class UpdatePegaStartCaseResponseController @Inject() (
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
                     .transform
 
-                case j: Epaye.EnteredDetailsAboutBankAccount =>
+                case j: Epaye.EnteredCanYouSetUpDirectDebit =>
                   j.into[Epaye.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
                     .transform
-                case j: Vat.EnteredDetailsAboutBankAccount =>
+                case j: Vat.EnteredCanYouSetUpDirectDebit =>
                   j.into[Vat.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
                     .transform
-                case j: Sa.EnteredDetailsAboutBankAccount =>
+                case j: Sa.EnteredCanYouSetUpDirectDebit =>
                   j.into[Sa.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
                     .transform
-                case j: Sia.EnteredDetailsAboutBankAccount =>
+                case j: Sia.EnteredCanYouSetUpDirectDebit =>
                   j.into[Sia.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)

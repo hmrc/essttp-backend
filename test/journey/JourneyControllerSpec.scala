@@ -49,7 +49,7 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateCanPayWithinSixMonths]" +
       "[UpdateSelectedPaymentPlan]" +
       "[UpdateHasCheckedPaymentPlan]" +
-      "[UpdateEnteredDetailsAboutBankAccount]" +
+      "[UpdateEnteredCanYouSetUpDirectDebit]" +
       "[UpdateEnteredDirectDebitDetails]" +
       "[UpdateConfirmedDirectDebitDetails]" +
       "[UpdateChosenEmail]" +
@@ -129,8 +129,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.EpayeBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.EpayeBta.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeBta.updateDirectDebitDetailsRequest).futureValue
@@ -231,8 +231,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.EpayeGovUk.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.EpayeGovUk.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeGovUk.updateDirectDebitDetailsRequest()).futureValue
@@ -333,8 +333,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateDirectDebitDetailsRequest()).futureValue
@@ -435,8 +435,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.EpayeEpayeService.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.EpayeEpayeService.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeEpayeService.updateDirectDebitDetailsRequest()).futureValue
@@ -480,7 +480,7 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateAffordableQuotes]" +
       "[UpdateSelectedPaymentPlan]" +
       "[UpdateHasCheckedPaymentPlan]" +
-      "[EnteredDetailsAboutBankAccount]" +
+      "[EnteredCanYouSetUpDirectDebit]" +
       "[UpdateEnteredDirectDebitDetails]" +
       "[UpdateConfirmedDirectDebitDetails]" +
       "[UpdateHasAgreedTermsAndConditions]"
@@ -557,8 +557,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.VatBta.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatBta.updateDirectDebitDetailsRequest).futureValue
@@ -657,8 +657,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatGovUk.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.VatGovUk.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatGovUk.updateDirectDebitDetailsRequest).futureValue
@@ -757,8 +757,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatDetachedUrl.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.VatDetachedUrl.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatDetachedUrl.updateDirectDebitDetailsRequest).futureValue
@@ -857,8 +857,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatVatService.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.VatVatService.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatVatService.updateDirectDebitDetailsRequest).futureValue
@@ -957,8 +957,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.VatVatPenalties.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.VatVatPenalties.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.VatVatPenalties.updateDirectDebitDetailsRequest).futureValue
@@ -1002,7 +1002,7 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateAffordableQuotes]" +
       "[UpdateSelectedPaymentPlan]" +
       "[UpdateHasCheckedPaymentPlan]" +
-      "[EnteredDetailsAboutBankAccount]" +
+      "[EnteredCanYouSetUpDirectDebit]" +
       "[UpdateEnteredDirectDebitDetails]" +
       "[UpdateConfirmedDirectDebitDetails]" +
       "[UpdateHasAgreedTermsAndConditions]"
@@ -1079,8 +1079,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SaBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SaBta.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SaBta.updateDirectDebitDetailsRequest).futureValue
@@ -1179,8 +1179,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SaPta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SaPta.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SaPta.updateDirectDebitDetailsRequest).futureValue
@@ -1279,8 +1279,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SaMobile.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SaMobile.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SaMobile.updateDirectDebitDetailsRequest()).futureValue
@@ -1379,8 +1379,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SaGovUk.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SaGovUk.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SaGovUk.updateDirectDebitDetailsRequest()).futureValue
@@ -1479,8 +1479,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SaDetachedUrl.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SaDetachedUrl.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SaDetachedUrl.updateDirectDebitDetailsRequest()).futureValue
@@ -1524,7 +1524,7 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateAffordableQuotes]" +
       "[UpdateSelectedPaymentPlan]" +
       "[UpdateHasCheckedPaymentPlan]" +
-      "[EnteredDetailsAboutBankAccount]" +
+      "[EnteredCanYouSetUpDirectDebit]" +
       "[UpdateEnteredDirectDebitDetails]" +
       "[UpdateConfirmedDirectDebitDetails]" +
       "[UpdateHasAgreedTermsAndConditions]"
@@ -1600,8 +1600,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SiaPta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SiaPta.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SiaPta.updateDirectDebitDetailsRequest).futureValue
@@ -1700,8 +1700,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SiaMobile.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SiaMobile.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SiaMobile.updateDirectDebitDetailsRequest()).futureValue
@@ -1800,8 +1800,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SiaGovUk.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SiaGovUk.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SiaGovUk.updateDirectDebitDetailsRequest()).futureValue
@@ -1900,8 +1900,8 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SiaDetachedUrl.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SiaDetachedUrl.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
       journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SiaDetachedUrl.updateDirectDebitDetailsRequest()).futureValue
@@ -2012,8 +2012,8 @@ class JourneyControllerAffordabilityEnabledSpec extends ItSpec {
       .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Details about Bank Account */
-    journeyConnector.updateDetailsAboutBankAccount(tdAll.journeyId, tdAll.SaBta.updateDetailsAboutBankAccountRequest(isAccountHolder = true)).futureValue
-    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountWithAffordability(isAccountHolder = true)
+    journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SaBta.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitWithAffordability(isAccountHolder = true)
       .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     /** Update Direct debit details */

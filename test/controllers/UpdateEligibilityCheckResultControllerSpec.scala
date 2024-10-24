@@ -153,8 +153,8 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
           testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.eligibilityCheckResult)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.eligibilityCheckResult)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.eligibilityCheckResult)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -250,8 +250,8 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
           testVatBta(tdAll.VatBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.eligibilityCheckResult)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.eligibilityCheckResult)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.eligibilityCheckResult)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -347,8 +347,8 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
           testSaBta(tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.eligibilityCheckResult)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.eligibilityCheckResult)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.eligibilityCheckResult)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -444,8 +444,8 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
           testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.eligibilityCheckResult)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.eligibilityCheckResult)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.eligibilityCheckResult)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {

@@ -90,7 +90,7 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
       }
     }
 
-    "should update the journey when a value already existed" - {
+    "should update the journey when a isAccountHolder already existed" - {
 
       val differentResponse = StartCaseResponse(PegaCaseId("different-case-id"), PegaAssigmentId("different-assignment-id"))
 

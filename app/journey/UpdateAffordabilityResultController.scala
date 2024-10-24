@@ -263,22 +263,22 @@ class UpdateAffordabilityResultController @Inject() (
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
 
-        case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
+        case j: Journey.Epaye.EnteredCanYouSetUpDirectDebit =>
           j.into[Journey.Epaye.RetrievedAffordabilityResult]
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
-        case j: Journey.Vat.EnteredDetailsAboutBankAccount =>
+        case j: Journey.Vat.EnteredCanYouSetUpDirectDebit =>
           j.into[Journey.Vat.RetrievedAffordabilityResult]
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
-        case j: Journey.Sa.EnteredDetailsAboutBankAccount =>
+        case j: Journey.Sa.EnteredCanYouSetUpDirectDebit =>
           j.into[Journey.Sa.RetrievedAffordabilityResult]
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
-        case j: Journey.Sia.EnteredDetailsAboutBankAccount =>
+        case j: Journey.Sia.EnteredCanYouSetUpDirectDebit =>
           j.into[Journey.Sia.RetrievedAffordabilityResult]
             .withFieldConst(_.stage, Stage.AfterAffordabilityResult.RetrievedAffordabilityResult)
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)

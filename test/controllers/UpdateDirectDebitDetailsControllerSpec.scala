@@ -41,7 +41,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec with UpdateJourneyCo
 
       "Epaye" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true),
+          tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true),
           TdAll.EpayeBta.updateDirectDebitDetailsRequest
         )(
             journeyConnector.updateDirectDebitDetails,
@@ -51,7 +51,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec with UpdateJourneyCo
 
       "Vat" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true),
+          tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true),
           TdAll.VatBta.updateDirectDebitDetailsRequest
         )(
             journeyConnector.updateDirectDebitDetails,
@@ -61,7 +61,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec with UpdateJourneyCo
 
       "Sa" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true),
+          tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true),
           TdAll.SaBta.updateDirectDebitDetailsRequest
         )(
             journeyConnector.updateDirectDebitDetails,
@@ -71,7 +71,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec with UpdateJourneyCo
 
       "Sia" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true),
+          tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true),
           TdAll.SiaPta.updateDirectDebitDetailsRequest
         )(
             journeyConnector.updateDirectDebitDetails,

@@ -139,8 +139,8 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
           testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.canPayWithinSixMonthsAnswers)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -209,8 +209,8 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
           testVatBta(tdAll.VatBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.canPayWithinSixMonthsAnswers)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -279,8 +279,8 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
           testSaBta(tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.canPayWithinSixMonthsAnswers)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -349,8 +349,8 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
           testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.canPayWithinSixMonthsAnswers)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {

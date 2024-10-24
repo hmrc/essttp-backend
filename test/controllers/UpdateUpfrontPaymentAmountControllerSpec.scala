@@ -140,8 +140,8 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
           testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -224,8 +224,8 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
           testVatBta(tdAll.VatBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -308,8 +308,8 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
           testSaBta(tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -392,8 +392,8 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
           testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
-        "EnteredDetailsAboutBankAccount" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDetailsAboutBankAccountNoAffordability(isAccountHolder = true))(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+        "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
+          testSiaPta(tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {

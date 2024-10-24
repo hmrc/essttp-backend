@@ -89,7 +89,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
     verifyCommonActions(numberOfAuthCalls = 10)
   }
 
-  "[Epaye.Bta][Update UpfrontPaymentAmount with new value]" in {
+  "[Epaye.Bta][Update UpfrontPaymentAmount with new isAccountHolder]" in {
     stubCommonActions()
 
     val tdAll = new TdAll {

@@ -122,22 +122,22 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
         case j: Journey.Sia.CheckedPaymentPlan =>
           j.copy(paymentPlanAnswers = answers)
 
-        case j: Journey.Epaye.EnteredDetailsAboutBankAccount =>
+        case j: Journey.Epaye.EnteredCanYouSetUpDirectDebit =>
           j.into[Journey.Epaye.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Vat.EnteredDetailsAboutBankAccount =>
+        case j: Journey.Vat.EnteredCanYouSetUpDirectDebit =>
           j.into[Journey.Vat.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Sa.EnteredDetailsAboutBankAccount =>
+        case j: Journey.Sa.EnteredCanYouSetUpDirectDebit =>
           j.into[Journey.Sa.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Sia.EnteredDetailsAboutBankAccount =>
+        case j: Journey.Sia.EnteredCanYouSetUpDirectDebit =>
           j.into[Journey.Sia.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)

@@ -221,13 +221,13 @@ class UpdateWhyCannotPayInFullController @Inject() (
         case j: Sia.CheckedPaymentPlan =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.EnteredDetailsAboutBankAccount =>
+        case j: Epaye.EnteredCanYouSetUpDirectDebit =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.EnteredDetailsAboutBankAccount =>
+        case j: Vat.EnteredCanYouSetUpDirectDebit =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.EnteredDetailsAboutBankAccount =>
+        case j: Sa.EnteredCanYouSetUpDirectDebit =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.EnteredDetailsAboutBankAccount =>
+        case j: Sia.EnteredCanYouSetUpDirectDebit =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.EnteredDirectDebitDetails =>
