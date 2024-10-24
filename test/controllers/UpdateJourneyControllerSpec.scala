@@ -46,7 +46,7 @@ trait UpdateJourneyControllerSpec { this: ItSpec =>
     result1 shouldBe expectedNewJourney
     journeyConnector.getJourney(journeyId).futureValue shouldBe expectedNewJourney
 
-    // test an update with the same isAccountHolder doesn't change the journey we just put in
+    // test an update with the same value doesn't change the journey we just put in
     val result2 = doUpdate(journeyId, newValue).futureValue
     result2 shouldBe expectedNewJourney
     journeyConnector.getJourney(journeyId).futureValue shouldBe expectedNewJourney
@@ -71,12 +71,12 @@ trait UpdateJourneyControllerSpec { this: ItSpec =>
 
     context.insertJourneyForTest(initialJourney)
 
-    // test updating with the same isAccountHolder doesn't change the initial journey
+    // test updating with the same value doesn't change the initial journey
     val result1 = doUpdate(journeyId, existingValue).futureValue
     result1 shouldBe initialJourney
     journeyConnector.getJourney(journeyId).futureValue shouldBe initialJourney
 
-    // test updating with a different isAccountHolder updates the initial journey
+    // test updating with a different value updates the initial journey
     val result2 = doUpdate(journeyId, differentValue).futureValue
     result2 shouldBe expectedNewJourney
     journeyConnector.getJourney(journeyId).futureValue shouldBe expectedNewJourney

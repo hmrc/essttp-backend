@@ -27,7 +27,7 @@ object ValueClassBinder {
       def parseString(str: String) =
         JsString(str).validate[A] match {
           case JsSuccess(a, _) => Right(a)
-          case JsError(error)  => Left(s"No valid isAccountHolder in path: $str. Error: ${error.toString}")
+          case JsError(error)  => Left(s"No valid value in path: $str. Error: ${error.toString}")
         }
 
     new PathBindable[A] {

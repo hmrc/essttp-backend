@@ -22,7 +22,7 @@ class CanPayUpfrontSpec extends UnitSpec {
 
   "CanPayUpfront must" - {
 
-    "have a userCanPayUpFront isAccountHolder" in {
+    "have a userCanPayUpFront value" in {
       CanPayUpfront(value = true).userCanPayUpfront shouldBe true
       CanPayUpfront(value = false).userCanPayUpfront shouldBe false
     }

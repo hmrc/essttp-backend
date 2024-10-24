@@ -61,7 +61,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
     verifyCommonActions(numberOfAuthCalls = 10)
   }
 
-  "[Epaye.Bta][CanPayUpfront.Yes, Update UpfrontPaymentAmount with isAccountHolder, then change to CanPayFrontNo]" in {
+  "[Epaye.Bta][CanPayUpfront.Yes, Update UpfrontPaymentAmount with value, then change to CanPayFrontNo]" in {
     stubCommonActions()
 
     val tdAll = new TdAll {
@@ -109,7 +109,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
     journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateUpfrontPaymentAmountRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
 
-    /** Update UpfrontPaymentAmount with different isAccountHolder */
+    /** Update UpfrontPaymentAmount with different value */
     journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.anotherUpdateUpfrontPaymentAmountRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = UpfrontPaymentAmount(AmountInPence(1001)))
 
