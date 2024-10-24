@@ -47,7 +47,7 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
       }
     }
 
-    "should update the journey when an existing value didn't exist before for" - {
+    "should update the journey when an existing isAccountHolder didn't exist before for" - {
 
       "Epaye" in new JourneyItTest {
         testUpdateWithoutExistingValue(
@@ -90,7 +90,7 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
       }
     }
 
-    "should update the journey when a value already existed" - {
+    "should update the journey when a isAccountHolder already existed" - {
 
       val differentResponse = StartCaseResponse(PegaCaseId("different-case-id"), PegaAssigmentId("different-assignment-id"))
 

@@ -78,7 +78,7 @@ object JourneyByTaxIdRepo {
       indexOptions = IndexOptions().expireAfter(cacheTtl.toSeconds, TimeUnit.SECONDS).name("lastUpdatedIdx")
     ),
     IndexModel(
-      keys = Indexes.ascending("taxId.value")
+      keys = Indexes.ascending("taxId.isAccountHolder")
     )
   )
 

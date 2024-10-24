@@ -32,7 +32,7 @@ object EnumFormat {
       case JsString(value) =>
         e.withNameOption(transformation.readsTransformation(value))
           .map[JsResult[T]](JsSuccess(_))
-          .getOrElse(JsError(s"Unknown ${e.getClass.getSimpleName} value: $value"))
+          .getOrElse(JsError(s"Unknown ${e.getClass.getSimpleName} isAccountHolder: $value"))
 
       case _ =>
         JsError("Can only parse String")

@@ -26,7 +26,7 @@ import scala.collection.immutable
  * Journey Stage
  * It defines how journey propagates through stages.
  * Each stage defines what data are available in journey at this stage.
- * Each enum value defines what states journey can be in within this stage.
+ * Each enum isAccountHolder defines what states journey can be in within this stage.
  */
 sealed trait Stage extends Product with Serializable
 
@@ -268,8 +268,8 @@ object Stage {
     implicit val format: OFormat[AfterEnteredCanYouSetUpDirectDebit] = derived.oformat[AfterEnteredCanYouSetUpDirectDebit]()
     val values: immutable.IndexedSeq[AfterEnteredCanYouSetUpDirectDebit] = findValues
 
-    case object IsNotAccountHolder extends AfterEnteredCanYouSetUpDirectDebit
-    case object IsAccountHolder extends AfterEnteredCanYouSetUpDirectDebit
+    case object CannotSetUpDirectDebit extends AfterEnteredCanYouSetUpDirectDebit
+    case object CanSetUpDirectDebit extends AfterEnteredCanYouSetUpDirectDebit
   }
 
   sealed trait AfterEnteredDirectDebitDetails extends Stage with EnumEntry

@@ -37,7 +37,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec with UpdateJourneyCo
       verifyCommonActions(numberOfAuthCalls = 2)
     }
 
-    "should update the journey when an existing value didn't exist before for" - {
+    "should update the journey when an existing isAccountHolder didn't exist before for" - {
 
       "Epaye" in new JourneyItTest {
         testUpdateWithoutExistingValue(
@@ -80,7 +80,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec with UpdateJourneyCo
       }
     }
 
-    "should update the journey when a value already existed" - {
+    "should update the journey when a isAccountHolder already existed" - {
 
       val differentBankDetails = TdAll.directDebitDetails.copy(name = AccountName(SensitiveString("Afdgusi Ydfgysu")))
 

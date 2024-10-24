@@ -36,7 +36,7 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
       verifyCommonActions(numberOfAuthCalls = 2)
     }
 
-    "should update the journey when an existing value didn't exist before for" - {
+    "should update the journey when an existing isAccountHolder didn't exist before for" - {
 
       "Epaye" in new JourneyItTest {
         testUpdateWithoutExistingValue(
@@ -79,7 +79,7 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
       }
     }
 
-    "should update the journey when a value already existed" - {
+    "should update the journey when a isAccountHolder already existed" - {
 
       val differentInstalmentAmount = TdAll.instalmentAmounts.copy(minimumInstalmentAmount = AmountInPence(67897))
 

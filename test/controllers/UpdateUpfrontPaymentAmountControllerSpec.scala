@@ -37,7 +37,7 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
       verifyCommonActions(numberOfAuthCalls = 2)
     }
 
-    "should update the journey when an existing value didn't exist before for" - {
+    "should update the journey when an existing isAccountHolder didn't exist before for" - {
 
       "Epaye" in new JourneyItTest {
         testUpdateWithoutExistingValue(
@@ -80,7 +80,7 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
       }
     }
 
-    "should update the journey when a value already existed" - {
+    "should update the journey when a isAccountHolder already existed" - {
 
       "Epaye when the current stage is" - {
 

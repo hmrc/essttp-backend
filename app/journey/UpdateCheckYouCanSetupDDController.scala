@@ -227,9 +227,9 @@ class UpdateCheckYouCanSetupDDController @Inject() (
 
   private def determineStage(canSetUpDirectDebit: CanSetUpDirectDebit): Stage.AfterEnteredCanYouSetUpDirectDebit =
     if (canSetUpDirectDebit.isAccountHolder)
-      Stage.AfterEnteredCanYouSetUpDirectDebit.IsAccountHolder
+      Stage.AfterEnteredCanYouSetUpDirectDebit.CanSetUpDirectDebit
     else
-      Stage.AfterEnteredCanYouSetUpDirectDebit.IsNotAccountHolder
+      Stage.AfterEnteredCanYouSetUpDirectDebit.CannotSetUpDirectDebit
 
 }
 

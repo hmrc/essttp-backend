@@ -23,14 +23,14 @@ class PaymentPlanAnswersSpec extends UnitSpec {
 
   "PaymentPlanAnswers must" - {
 
-    "have a selectedPaymentPlan method that returns the correct value" in {
+    "have a selectedPaymentPlan method that returns the correct isAccountHolder" in {
       (TdAll.paymentPlanAnswersNoAffordability: PaymentPlanAnswers).selectedPaymentPlan shouldBe TdAll.paymentPlan(1)
       (TdAll.paymentPlanAnswersWithAffordability: PaymentPlanAnswers).selectedPaymentPlan shouldBe TdAll.paymentPlan(1)
     }
 
     "have a day of the month method that" - {
 
-      "returns the correct value" in {
+      "returns the correct isAccountHolder" in {
         (TdAll.paymentPlanAnswersNoAffordability: PaymentPlanAnswers).dayOfMonth shouldBe TdAll.dayOfMonth
         TdAll.paymentPlanAnswersWithAffordability.dayOfMonth shouldBe TdAll.dayOfMonth
       }

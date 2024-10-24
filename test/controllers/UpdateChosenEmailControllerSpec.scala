@@ -38,7 +38,7 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
       verifyCommonActions(numberOfAuthCalls = 2)
     }
 
-    "should update the journey when an existing value didn't exist before for" - {
+    "should update the journey when an existing isAccountHolder didn't exist before for" - {
 
       "Epaye" in new JourneyItTest {
         testUpdateWithoutExistingValue(
@@ -115,7 +115,7 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
               context.tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability.copy(emailToBeVerified = value(initialJourney))
             )(context)
 
-        "the value is the same and" - {
+        "the isAccountHolder is the same and" - {
 
           "the current stage is" - {
 
@@ -130,7 +130,7 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
           }
         }
 
-        "the value is the different and" - {
+        "the isAccountHolder is the different and" - {
 
           "the current stage is" - {
 
@@ -156,7 +156,7 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
               context.tdAll.VatBta.journeyAfterSelectedEmailNoAffordability.copy(emailToBeVerified = value(initialJourney))
             )(context)
 
-        "the value is the same and" - {
+        "the isAccountHolder is the same and" - {
 
           "the current stage is" - {
 
@@ -171,7 +171,7 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
           }
         }
 
-        "the value is the different and" - {
+        "the isAccountHolder is the different and" - {
 
           "the current stage is" - {
 
@@ -197,7 +197,7 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
               context.tdAll.SaBta.journeyAfterSelectedEmailNoAffordability.copy(emailToBeVerified = value(initialJourney))
             )(context)
 
-        "the value is the same and" - {
+        "the isAccountHolder is the same and" - {
 
           "the current stage is" - {
 
@@ -212,7 +212,7 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
           }
         }
 
-        "the value is the different and" - {
+        "the isAccountHolder is the different and" - {
 
           "the current stage is" - {
 
@@ -238,7 +238,7 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
               context.tdAll.SiaPta.journeyAfterSelectedEmail.copy(emailToBeVerified = value(initialJourney))
             )(context)
 
-        "the value is the same and" - {
+        "the isAccountHolder is the same and" - {
 
           "the current stage is" - {
 
@@ -253,7 +253,7 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
           }
         }
 
-        "the value is the different and" - {
+        "the isAccountHolder is the different and" - {
 
           "the current stage is" - {
 

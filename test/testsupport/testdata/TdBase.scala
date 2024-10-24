@@ -222,11 +222,11 @@ trait TdBase {
     .withTrueClientPort()
     .withDeviceId()
 
-  def authToken: String = "authorization-value-123"
+  def authToken: String = "authorization-isAccountHolder-123"
 
-  def akamaiReputationValue: String = "akamai-reputation-value-123"
+  def akamaiReputationValue: String = "akamai-reputation-isAccountHolder-123"
 
-  def requestId: String = "request-id-value-123"
+  def requestId: String = "request-id-isAccountHolder-123"
 
   def trueClientIp: String = "client-ip-123"
 

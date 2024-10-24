@@ -38,7 +38,7 @@ class UpdateHasCheckedInstalmentPlanControllerSpec extends ItSpec with UpdateJou
       verifyCommonActions(numberOfAuthCalls = 2)
     }
 
-    "should update the journey when an existing value didn't exist before for" - {
+    "should update the journey when an existing isAccountHolder didn't exist before for" - {
 
       "Epaye on affordability journey" in new JourneyItTest {
         testUpdateWithoutExistingValue(
@@ -111,7 +111,7 @@ class UpdateHasCheckedInstalmentPlanControllerSpec extends ItSpec with UpdateJou
       }
     }
 
-    "should update the journey when a value already existed" - {
+    "should update the journey when a isAccountHolder already existed" - {
 
       val differentAnswers = TdAll.paymentPlanAnswersNoAffordability.copy(
         monthlyPaymentAmount = MonthlyPaymentAmount(AmountInPence(6723478L))
