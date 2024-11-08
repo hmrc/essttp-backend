@@ -37,13 +37,15 @@ final case class EligibilityCheckResult(
     eligibilityRules:                EligibilityRules,
     chargeTypeAssessment:            List[ChargeTypeAssessment],
     customerDetails:                 Option[List[CustomerDetail]],
+    individualDetails:               Option[IndividualDetails],
     addresses:                       Option[List[Address]],
     regimeDigitalCorrespondence:     Option[RegimeDigitalCorrespondence],
     chargeTypesExcluded:             Option[Boolean],
     futureChargeLiabilitiesExcluded: Boolean,
     invalidSignals:                  Option[List[InvalidSignals]],
-    customerType:                    Option[CustomerType],
-    transitionToCDCS:                Option[TransitionToCDCS]
+    //TODO OPS-12584 - Clean this up when TTP has implemented the changes to the Eligibility API - customerType and transitionToCDCS have moved in customerDetails/individualDetails
+    customerType:     Option[CustomerType],
+    transitionToCDCS: Option[TransitionToCDCS]
 )
 
 object EligibilityCheckResult {
@@ -55,7 +57,7 @@ object EligibilityCheckResult {
     //TODO OPS-12584 - Clean this up when TTP has implemented the changes to the Eligibility API. The email address will be coming from the addresses field only
     def email: Option[Email] = {
       // Check for email in customerDetails
-      val emailFromCustomerDetails = e.customerDetails.flatMap(_.collectFirst{ case CustomerDetail(Some(email), _, _, _, _, _, _, _) => email })
+      val emailFromCustomerDetails = e.customerDetails.flatMap(_.collectFirst{ case CustomerDetail(Some(email), _) => email })
 
       // If not found in customerDetails, check in addresses' contactDetails
       val emailFromAddresses = emailFromCustomerDetails.orElse {

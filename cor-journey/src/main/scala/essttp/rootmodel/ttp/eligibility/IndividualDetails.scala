@@ -16,18 +16,20 @@
 
 package essttp.rootmodel.ttp.eligibility
 
-import essttp.crypto.CryptoFormat
-import essttp.rootmodel.Email
-import play.api.libs.json.{Format, Json}
+import essttp.rootmodel.ttp.CustomerType
+import play.api.libs.json.{Json, Format}
 
-//TODO OPS-12584 - Clean this up when TTP has implemented the changes to the Eligibility API. Check this does not affect ArrangementRequest!
-final case class CustomerDetail(
-    emailAddress: Option[Email],
-    emailSource:  Option[EmailSource]
+final case class IndividualDetails(
+    title:            Option[Title],
+    firstName:        Option[FirstName],
+    lastName:         Option[LastName],
+    dateOfBirth:      Option[DateOfBirth],
+    districtNumber:   Option[DistrictNumber],
+    customerType:     Option[CustomerType],
+    transitionToCDCS: Option[TransitionToCDCS]
 )
 
-object CustomerDetail {
+object IndividualDetails {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): Format[CustomerDetail] = Json.format[CustomerDetail]
-
+  implicit def format: Format[IndividualDetails] = Json.format[IndividualDetails]
 }

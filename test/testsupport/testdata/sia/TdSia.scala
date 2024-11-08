@@ -48,6 +48,7 @@ trait TdSia {
     )),
     customerPostcodes               = Some(List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate(LocalDate.of(2020, 1, 1))))),
     customerDetails                 = None,
+    individualDetails               = None,
     addresses                       = None,
     customerType                    = Some(CustomerTypes.MTDITSA),
     regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
