@@ -30,7 +30,7 @@ final case class Address(
     contactDetails:  Option[List[ContactDetail]],
     postcode:        Option[Postcode],
     country:         Option[Country],
-    postCodeHistory: Option[List[PostCodeHistory]]
+    postcodeHistory: Option[List[PostcodeHistory]]
 )
 
 object Address {

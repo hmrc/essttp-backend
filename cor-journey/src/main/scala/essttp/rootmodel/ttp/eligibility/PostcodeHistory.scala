@@ -20,12 +20,12 @@ import essttp.crypto.CryptoFormat
 import play.api.libs.json.{Format, Json}
 
 //TODO OPS-12584 - Clean this up when TTP has implemented the changes to the Eligibility API. addressPostCode and postcodeDate will be required
-final case class PostCodeHistory(
+final case class PostcodeHistory(
     addressPostCode: Option[Postcode],
     postcodeDate:    Option[PostcodeDate]
 )
 
-object PostCodeHistory {
+object PostcodeHistory {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): Format[PostCodeHistory] = Json.format[PostCodeHistory]
+  implicit def format(implicit cryptoFormat: CryptoFormat): Format[PostcodeHistory] = Json.format[PostcodeHistory]
 }

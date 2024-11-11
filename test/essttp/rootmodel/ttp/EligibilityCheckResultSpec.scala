@@ -44,9 +44,9 @@ class EligibilityCheckResultSpec extends UnitSpec {
         val expectedEmail = Email(SensitiveString("abc@email.com"))
         TdAll.eligibleEligibilityCheckResultSa.copy(
           customerDetails = Some(List(
-            CustomerDetail(None, None, None, None, None, None, None, None),
-            CustomerDetail(Some(expectedEmail), None, None, None, None, None, None, None),
-            CustomerDetail(Some(Email(SensitiveString("xyz@email.com"))), None, None, None, None, None, None, None)
+            CustomerDetail(None, None),
+            CustomerDetail(Some(expectedEmail), None),
+            CustomerDetail(Some(Email(SensitiveString("xyz@email.com"))), None)
           )), addresses = None
         ).email shouldBe Some(expectedEmail)
       }

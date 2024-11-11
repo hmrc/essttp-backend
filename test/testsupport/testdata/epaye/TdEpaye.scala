@@ -53,6 +53,7 @@ trait TdEpaye {
     invalidSignals                  = None,
     customerPostcodes               = Some(List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate(LocalDate.of(2020, 1, 1))))),
     customerDetails                 = None,
+    individualDetails               = None,
     addresses                       = None,
     customerType                    = None,
     regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
