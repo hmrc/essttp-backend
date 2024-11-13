@@ -17,6 +17,7 @@
 package controllers
 
 import essttp.journey.model.Journey
+import essttp.rootmodel.pega.PegaCaseId
 import essttp.rootmodel.ttp.eligibility.{EligibilityCheckResult, ProcessingDateTime}
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
@@ -97,6 +98,16 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
                 context.tdAll.EpayeBta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult)
               )(context)
 
+          def testEpayeBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentEligibilityCheckResult,
+                journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+                context.tdAll.EpayeBta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult, pegaCaseId = Some(PegaCaseId("case-id")))
+              )(context)
+
         "EligibilityChecked" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)
         }
@@ -126,7 +137,7 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterStartedPegaCase)(_.eligibilityCheckResult)(this)
+          testEpayeBtaWithCaseId(tdAll.EpayeBta.journeyAfterStartedPegaCase)(_.eligibilityCheckResult)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -194,6 +205,16 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
                 context.tdAll.VatBta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult)
               )(context)
 
+          def testVatBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentEligibilityCheckResult,
+                journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+                context.tdAll.VatBta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult, pegaCaseId = Some(PegaCaseId("case-id")))
+              )(context)
+
         "EligibilityChecked" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)
         }
@@ -223,7 +244,7 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterStartedPegaCase)(_.eligibilityCheckResult)(this)
+          testVatBtaWithCaseId(tdAll.VatBta.journeyAfterStartedPegaCase)(_.eligibilityCheckResult)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -291,6 +312,16 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
                 context.tdAll.SaBta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult)
               )(context)
 
+          def testSaBtaWithcaseId[J <: Journey](initialJourney: J)(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentEligibilityCheckResult,
+                journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+                context.tdAll.SaBta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult, pegaCaseId = Some(PegaCaseId("case-id")))
+              )(context)
+
         "EligibilityChecked" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)
         }
@@ -320,7 +351,7 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterStartedPegaCase)(_.eligibilityCheckResult)(this)
+          testSaBtaWithcaseId(tdAll.SaBta.journeyAfterStartedPegaCase)(_.eligibilityCheckResult)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -388,6 +419,16 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
                 context.tdAll.SiaPta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult)
               )(context)
 
+          def testSiaPtaWithCaseid[J <: Journey](initialJourney: J)(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentEligibilityCheckResult,
+                journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+                context.tdAll.SiaPta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult, pegaCaseId = Some(PegaCaseId("case-id")))
+              )(context)
+
         "EligibilityChecked" in new JourneyItTest {
           testSiaPta(tdAll.SiaPta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)
         }
@@ -417,7 +458,7 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.eligibilityCheckResult)(this)
+          testSiaPtaWithCaseid(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.eligibilityCheckResult)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {

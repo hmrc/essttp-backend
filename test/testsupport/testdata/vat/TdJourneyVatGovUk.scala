@@ -51,6 +51,7 @@ trait TdJourneyVatGovUk {
       stage                = Stage.AfterStarted.Started,
       affordabilityEnabled = Some(false),
       correlationId        = dependencies.correlationId,
+      pegaCaseId           = None
     )
 
     def updateTaxIdRequest(): TaxId = vrn
@@ -64,7 +65,8 @@ trait TdJourneyVatGovUk {
       stage                = Stage.AfterComputedTaxId.ComputedTaxId,
       affordabilityEnabled = Some(false),
       correlationId        = dependencies.correlationId,
-      taxId                = vrn
+      taxId                = vrn,
+      pegaCaseId           = None
     )
 
     def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResultVat()
@@ -79,7 +81,8 @@ trait TdJourneyVatGovUk {
       affordabilityEnabled   = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = vrn,
-      eligibilityCheckResult = eligibleEligibilityCheckResultVat()
+      eligibilityCheckResult = eligibleEligibilityCheckResultVat(),
+      pegaCaseId             = None
     )
 
     def journeyAfterEligibilityCheckNotEligible: Journey.Vat.EligibilityChecked = Journey.Vat.EligibilityChecked(
@@ -92,7 +95,8 @@ trait TdJourneyVatGovUk {
       affordabilityEnabled   = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = vrn,
-      eligibilityCheckResult = ineligibleEligibilityCheckResult(eligibleEligibilityCheckResultVat())
+      eligibilityCheckResult = ineligibleEligibilityCheckResult(eligibleEligibilityCheckResultVat()),
+      pegaCaseId             = None
     )
 
     def journeyAfterWhyCannotPayInFullNotRequired: Journey.Vat.ObtainedWhyCannotPayInFullAnswers = Journey.Vat.ObtainedWhyCannotPayInFullAnswers(
@@ -106,7 +110,8 @@ trait TdJourneyVatGovUk {
       correlationId             = dependencies.correlationId,
       taxId                     = vrn,
       eligibilityCheckResult    = eligibleEligibilityCheckResultVat(),
-      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      pegaCaseId                = None
     )
 
     def updateCanPayUpfrontYesRequest(): CanPayUpfront = canPayUpfrontYes
@@ -125,7 +130,8 @@ trait TdJourneyVatGovUk {
       taxId                     = vrn,
       eligibilityCheckResult    = eligibleEligibilityCheckResultVat(),
       whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      canPayUpfront             = canPayUpfrontYes
+      canPayUpfront             = canPayUpfrontYes,
+      pegaCaseId                = None
     )
 
     def journeyAfterCanPayUpfrontNo: Journey.Vat.AnsweredCanPayUpfront = Journey.Vat.AnsweredCanPayUpfront(
@@ -140,7 +146,8 @@ trait TdJourneyVatGovUk {
       taxId                     = vrn,
       eligibilityCheckResult    = eligibleEligibilityCheckResultVat(),
       whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      canPayUpfront             = canPayUpfrontNo
+      canPayUpfront             = canPayUpfrontNo,
+      pegaCaseId                = None
     )
 
     def updateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.upfrontPaymentAmount
@@ -158,7 +165,8 @@ trait TdJourneyVatGovUk {
       eligibilityCheckResult    = eligibleEligibilityCheckResultVat(),
       whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
       canPayUpfront             = canPayUpfrontYes,
-      upfrontPaymentAmount      = dependencies.upfrontPaymentAmount
+      upfrontPaymentAmount      = dependencies.upfrontPaymentAmount,
+      pegaCaseId                = None
     )
 
     def updateExtremeDatesRequest(): ExtremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment
@@ -176,7 +184,8 @@ trait TdJourneyVatGovUk {
       eligibilityCheckResult    = eligibleEligibilityCheckResultVat(),
       whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
       upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment
+      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
+      pegaCaseId                = None
     )
 
     def updateInstalmentAmountsRequest(): InstalmentAmounts = dependencies.instalmentAmounts
@@ -195,7 +204,8 @@ trait TdJourneyVatGovUk {
       whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
       upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts         = dependencies.instalmentAmounts
+      instalmentAmounts         = dependencies.instalmentAmounts,
+      pegaCaseId                = None
     )
 
     def journeyAfterCanPayWithinSixMonths: Journey.Vat.ObtainedCanPayWithinSixMonthsAnswers = Journey.Vat.ObtainedCanPayWithinSixMonthsAnswers(
@@ -213,7 +223,8 @@ trait TdJourneyVatGovUk {
       upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts            = dependencies.instalmentAmounts,
-      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired
+      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+      pegaCaseId                   = None
     )
 
     def updateMonthlyPaymentAmountRequest(): MonthlyPaymentAmount = dependencies.monthlyPaymentAmount
@@ -234,7 +245,8 @@ trait TdJourneyVatGovUk {
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      monthlyPaymentAmount         = dependencies.monthlyPaymentAmount
+      monthlyPaymentAmount         = dependencies.monthlyPaymentAmount,
+      pegaCaseId                   = None
     )
 
     def updateDayOfMonthRequest(): DayOfMonth = dependencies.dayOfMonth
@@ -256,7 +268,8 @@ trait TdJourneyVatGovUk {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       monthlyPaymentAmount         = dependencies.monthlyPaymentAmount,
-      dayOfMonth                   = dependencies.dayOfMonth
+      dayOfMonth                   = dependencies.dayOfMonth,
+      pegaCaseId                   = None
     )
 
     def updateStartDatesResponse(): StartDatesResponse = dependencies.startDatesResponseWithInitialPayment
@@ -279,7 +292,8 @@ trait TdJourneyVatGovUk {
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       monthlyPaymentAmount         = dependencies.monthlyPaymentAmount,
       dayOfMonth                   = dependencies.dayOfMonth,
-      startDatesResponse           = dependencies.startDatesResponseWithInitialPayment
+      startDatesResponse           = dependencies.startDatesResponseWithInitialPayment,
+      pegaCaseId                   = None
     )
 
     def updateAffordableQuotesResponse(): AffordableQuotesResponse = dependencies.affordableQuotesResponse
@@ -303,7 +317,8 @@ trait TdJourneyVatGovUk {
       monthlyPaymentAmount         = dependencies.monthlyPaymentAmount,
       dayOfMonth                   = dependencies.dayOfMonth,
       startDatesResponse           = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse     = dependencies.affordableQuotesResponse
+      affordableQuotesResponse     = dependencies.affordableQuotesResponse,
+      pegaCaseId                   = None
     )
 
     def updateSelectedPaymentPlanRequest(): PaymentPlan = dependencies.paymentPlan(1)
@@ -328,7 +343,8 @@ trait TdJourneyVatGovUk {
       dayOfMonth                   = dependencies.dayOfMonth,
       startDatesResponse           = dependencies.startDatesResponseWithInitialPayment,
       affordableQuotesResponse     = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan          = dependencies.paymentPlan(1)
+      selectedPaymentPlan          = dependencies.paymentPlan(1),
+      pegaCaseId                   = None
     )
 
     def updateCheckedPaymentPlanRequest(): JsNull.type = JsNull
@@ -350,6 +366,7 @@ trait TdJourneyVatGovUk {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
+      pegaCaseId                   = None
     )
 
     def updateCanSetUpDirectDebitRequest(isAccountHolder: Boolean): CanSetUpDirectDebit =
@@ -372,7 +389,8 @@ trait TdJourneyVatGovUk {
       instalmentAmounts            = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder)
+      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder),
+      pegaCaseId                   = None
     )
 
     val updateDirectDebitDetailsRequest: BankDetails = dependencies.directDebitDetails
@@ -395,7 +413,8 @@ trait TdJourneyVatGovUk {
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
       canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
-      directDebitDetails           = directDebitDetails
+      directDebitDetails           = directDebitDetails,
+      pegaCaseId                   = None
     )
 
     def updateConfirmedDirectDebitDetailsRequest(): JsNull.type = JsNull
@@ -418,7 +437,8 @@ trait TdJourneyVatGovUk {
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
       canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
-      directDebitDetails           = directDebitDetails
+      directDebitDetails           = directDebitDetails,
+      pegaCaseId                   = None
     )
 
     def updateAgreedTermsAndConditionsRequest(isEmailAddressRequired: Boolean): IsEmailAddressRequired = IsEmailAddressRequired(isEmailAddressRequired)
@@ -447,7 +467,8 @@ trait TdJourneyVatGovUk {
         paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
         canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
         directDebitDetails           = directDebitDetails,
-        isEmailAddressRequired       = IsEmailAddressRequired(isEmailAddressRequired)
+        isEmailAddressRequired       = IsEmailAddressRequired(isEmailAddressRequired),
+        pegaCaseId                   = None
       )
     }
 
@@ -473,7 +494,8 @@ trait TdJourneyVatGovUk {
       canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
       directDebitDetails           = directDebitDetails,
       isEmailAddressRequired       = IsEmailAddressRequired(value = true),
-      emailToBeVerified            = dependencies.email
+      emailToBeVerified            = dependencies.email,
+      pegaCaseId                   = None
     )
 
     def journeyAfterEmailVerificationResult(result: EmailVerificationResult): Journey.Vat.EmailVerificationComplete = Journey.Vat.EmailVerificationComplete(
@@ -501,7 +523,8 @@ trait TdJourneyVatGovUk {
       isEmailAddressRequired       = IsEmailAddressRequired(value = true),
       emailToBeVerified            = dependencies.email,
       emailVerificationResult      = result,
-      emailVerificationAnswers     = emailVerificationAnswers(Some(result))
+      emailVerificationAnswers     = emailVerificationAnswers(Some(result)),
+      pegaCaseId                   = None
     )
 
     def updateArrangementRequest(): ArrangementResponse = dependencies.arrangementResponseVat
@@ -531,7 +554,8 @@ trait TdJourneyVatGovUk {
       } else {
         EmailVerificationAnswers.NoEmailJourney
       },
-      arrangementResponse          = dependencies.arrangementResponseVat
+      arrangementResponse          = dependencies.arrangementResponseVat,
+      pegaCaseId                   = None
     )
 
   }

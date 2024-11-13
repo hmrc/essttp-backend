@@ -60,21 +60,25 @@ class UpdatePegaStartCaseResponseController @Inject() (
         j.into[Epaye.StartedPegaCase]
           .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
           .withFieldConst(_.startCaseResponse, startCaseResponse)
+          .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
           .transform
       case j: Vat.ObtainedCanPayWithinSixMonthsAnswers =>
         j.into[Vat.StartedPegaCase]
           .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
           .withFieldConst(_.startCaseResponse, startCaseResponse)
+          .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
           .transform
       case j: Sa.ObtainedCanPayWithinSixMonthsAnswers =>
         j.into[Sa.StartedPegaCase]
           .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
           .withFieldConst(_.startCaseResponse, startCaseResponse)
+          .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
           .transform
       case j: Sia.ObtainedCanPayWithinSixMonthsAnswers =>
         j.into[Sia.StartedPegaCase]
           .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
           .withFieldConst(_.startCaseResponse, startCaseResponse)
+          .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
           .transform
     }
     journeyService.upsert(newJourney)
@@ -117,147 +121,174 @@ class UpdatePegaStartCaseResponseController @Inject() (
                   j.into[Epaye.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Vat.CheckedPaymentPlan =>
                   j.into[Vat.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Sa.CheckedPaymentPlan =>
                   j.into[Sa.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Sia.CheckedPaymentPlan =>
                   j.into[Sa.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
-
                 case j: Epaye.EnteredCanYouSetUpDirectDebit =>
                   j.into[Epaye.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Vat.EnteredCanYouSetUpDirectDebit =>
                   j.into[Vat.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Sa.EnteredCanYouSetUpDirectDebit =>
                   j.into[Sa.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Sia.EnteredCanYouSetUpDirectDebit =>
                   j.into[Sia.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
 
                 case j: Epaye.EnteredDirectDebitDetails =>
                   j.into[Epaye.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Vat.EnteredDirectDebitDetails =>
                   j.into[Vat.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Sa.EnteredDirectDebitDetails =>
                   j.into[Sa.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Sia.EnteredDirectDebitDetails =>
                   j.into[Sia.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
 
                 case j: Epaye.ConfirmedDirectDebitDetails =>
                   j.into[Epaye.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Vat.ConfirmedDirectDebitDetails =>
                   j.into[Vat.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Sa.ConfirmedDirectDebitDetails =>
                   j.into[Sa.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Sia.ConfirmedDirectDebitDetails =>
                   j.into[Sia.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
 
                 case j: Epaye.AgreedTermsAndConditions =>
                   j.into[Epaye.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Vat.AgreedTermsAndConditions =>
                   j.into[Vat.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Sa.AgreedTermsAndConditions =>
                   j.into[Sa.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Sia.AgreedTermsAndConditions =>
                   j.into[Sia.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
 
                 case j: Epaye.SelectedEmailToBeVerified =>
                   j.into[Epaye.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Vat.SelectedEmailToBeVerified =>
                   j.into[Vat.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Sa.SelectedEmailToBeVerified =>
                   j.into[Sa.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Sia.SelectedEmailToBeVerified =>
                   j.into[Sia.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
 
                 case j: Epaye.EmailVerificationComplete =>
                   j.into[Epaye.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Vat.EmailVerificationComplete =>
                   j.into[Vat.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Sa.EmailVerificationComplete =>
                   j.into[Sa.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
                 case j: Sia.EmailVerificationComplete =>
                   j.into[Sia.StartedPegaCase]
                     .withFieldConst(_.stage, Stage.AfterStartedPegaCase.StartedPegaCase)
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
 
                 case _: Stages.SubmittedArrangement =>

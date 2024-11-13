@@ -21,7 +21,7 @@ import essttp.rootmodel._
 import essttp.rootmodel.bank.{BankDetails, CanSetUpDirectDebit}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
-import essttp.rootmodel.pega.StartCaseResponse
+import essttp.rootmodel.pega.{PegaCaseId, StartCaseResponse}
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
@@ -45,6 +45,7 @@ sealed trait Journey {
   def stage: Stage
   def correlationId: CorrelationId
   def affordabilityEnabled: Option[Boolean]
+  def pegaCaseId: Option[PegaCaseId]
 
   /* derived stuff: */
 
@@ -898,7 +899,8 @@ object Journey {
         override val sessionId:            SessionId,
         override val correlationId:        CorrelationId,
         override val stage:                Stage.AfterStarted,
-        override val affordabilityEnabled: Option[Boolean]
+        override val affordabilityEnabled: Option[Boolean],
+        override val pegaCaseId:           Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.Started
@@ -917,7 +919,8 @@ object Journey {
         override val correlationId:        CorrelationId,
         override val stage:                Stage.AfterComputedTaxId,
         override val affordabilityEnabled: Option[Boolean],
-        override val taxId:                EmpRef
+        override val taxId:                EmpRef,
+        override val pegaCaseId:           Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ComputedTaxId
@@ -937,7 +940,8 @@ object Journey {
         override val stage:                  Stage.AfterEligibilityCheck,
         override val affordabilityEnabled:   Option[Boolean],
         override val taxId:                  EmpRef,
-        override val eligibilityCheckResult: EligibilityCheckResult
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val pegaCaseId:             Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EligibilityChecked
@@ -958,7 +962,8 @@ object Journey {
         override val affordabilityEnabled:      Option[Boolean],
         override val taxId:                     EmpRef,
         override val eligibilityCheckResult:    EligibilityCheckResult,
-        override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers
+        override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ObtainedWhyCannotPayInFullAnswers
@@ -980,7 +985,8 @@ object Journey {
         override val taxId:                     EmpRef,
         override val eligibilityCheckResult:    EligibilityCheckResult,
         override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
-        override val canPayUpfront:             CanPayUpfront
+        override val canPayUpfront:             CanPayUpfront,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.AnsweredCanPayUpfront
@@ -1003,7 +1009,8 @@ object Journey {
         override val eligibilityCheckResult:    EligibilityCheckResult,
         override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
         override val canPayUpfront:             CanPayUpfront,
-        override val upfrontPaymentAmount:      UpfrontPaymentAmount
+        override val upfrontPaymentAmount:      UpfrontPaymentAmount,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredUpfrontPaymentAmount
@@ -1026,7 +1033,8 @@ object Journey {
         override val eligibilityCheckResult:    EligibilityCheckResult,
         override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
         override val upfrontPaymentAnswers:     UpfrontPaymentAnswers,
-        override val extremeDatesResponse:      ExtremeDatesResponse
+        override val extremeDatesResponse:      ExtremeDatesResponse,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.RetrievedExtremeDates
@@ -1050,7 +1058,8 @@ object Journey {
         override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
         override val upfrontPaymentAnswers:     UpfrontPaymentAnswers,
         override val extremeDatesResponse:      ExtremeDatesResponse,
-        override val instalmentAmounts:         InstalmentAmounts
+        override val instalmentAmounts:         InstalmentAmounts,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.RetrievedAffordabilityResult
@@ -1075,7 +1084,8 @@ object Journey {
         override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
-        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ObtainedCanPayWithinSixMonthsAnswers
@@ -1101,7 +1111,8 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val startCaseResponse:            StartCaseResponse
+        override val startCaseResponse:            StartCaseResponse,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.StartedPegaCase
@@ -1127,7 +1138,8 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount
+        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredMonthlyPaymentAmount
@@ -1154,7 +1166,8 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth
+        override val dayOfMonth:                   DayOfMonth,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredDayOfMonth
@@ -1182,7 +1195,8 @@ object Journey {
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val monthlyPaymentAmount:         MonthlyPaymentAmount,
         override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse
+        override val startDatesResponse:           StartDatesResponse,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.RetrievedStartDates
@@ -1211,7 +1225,8 @@ object Journey {
         override val monthlyPaymentAmount:         MonthlyPaymentAmount,
         override val dayOfMonth:                   DayOfMonth,
         override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse
+        override val affordableQuotesResponse:     AffordableQuotesResponse,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.RetrievedAffordableQuotes
@@ -1241,7 +1256,8 @@ object Journey {
         override val dayOfMonth:                   DayOfMonth,
         override val startDatesResponse:           StartDatesResponse,
         override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan
+        override val selectedPaymentPlan:          PaymentPlan,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ChosenPaymentPlan
@@ -1267,7 +1283,8 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val paymentPlanAnswers:           PaymentPlanAnswers
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.CheckedPaymentPlan
@@ -1294,7 +1311,8 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredCanYouSetUpDirectDebit
@@ -1322,7 +1340,8 @@ object Journey {
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
-        override val directDebitDetails:           BankDetails
+        override val directDebitDetails:           BankDetails,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredDirectDebitDetails
@@ -1350,7 +1369,8 @@ object Journey {
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
-        override val directDebitDetails:           BankDetails
+        override val directDebitDetails:           BankDetails,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ConfirmedDirectDebitDetails
@@ -1379,7 +1399,8 @@ object Journey {
         override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
-        override val isEmailAddressRequired:       IsEmailAddressRequired
+        override val isEmailAddressRequired:       IsEmailAddressRequired,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.AgreedTermsAndConditions
@@ -1409,7 +1430,8 @@ object Journey {
         override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
-        override val emailToBeVerified:            Email
+        override val emailToBeVerified:            Email,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.SelectedEmailToBeVerified
@@ -1441,7 +1463,8 @@ object Journey {
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val emailToBeVerified:            Email,
         override val emailVerificationResult:      EmailVerificationResult,
-        override val emailVerificationAnswers:     EmailVerificationAnswers
+        override val emailVerificationAnswers:     EmailVerificationAnswers,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EmailVerificationComplete
@@ -1472,7 +1495,8 @@ object Journey {
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val arrangementResponse:          ArrangementResponse,
-        override val emailVerificationAnswers:     EmailVerificationAnswers
+        override val emailVerificationAnswers:     EmailVerificationAnswers,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.SubmittedArrangement
@@ -1507,7 +1531,8 @@ object Journey {
         override val sessionId:            SessionId,
         override val correlationId:        CorrelationId,
         override val stage:                Stage.AfterStarted,
-        override val affordabilityEnabled: Option[Boolean]
+        override val affordabilityEnabled: Option[Boolean],
+        override val pegaCaseId:           Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.Started
@@ -1526,7 +1551,8 @@ object Journey {
         override val correlationId:        CorrelationId,
         override val stage:                Stage.AfterComputedTaxId,
         override val affordabilityEnabled: Option[Boolean],
-        override val taxId:                Vrn
+        override val taxId:                Vrn,
+        override val pegaCaseId:           Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ComputedTaxId
@@ -1546,7 +1572,8 @@ object Journey {
         override val stage:                  Stage.AfterEligibilityCheck,
         override val affordabilityEnabled:   Option[Boolean],
         override val taxId:                  Vrn,
-        override val eligibilityCheckResult: EligibilityCheckResult
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val pegaCaseId:             Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EligibilityChecked
@@ -1567,7 +1594,8 @@ object Journey {
         override val affordabilityEnabled:      Option[Boolean],
         override val taxId:                     Vrn,
         override val eligibilityCheckResult:    EligibilityCheckResult,
-        override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers
+        override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ObtainedWhyCannotPayInFullAnswers
@@ -1589,7 +1617,8 @@ object Journey {
         override val taxId:                     Vrn,
         override val eligibilityCheckResult:    EligibilityCheckResult,
         override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
-        override val canPayUpfront:             CanPayUpfront
+        override val canPayUpfront:             CanPayUpfront,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.AnsweredCanPayUpfront
@@ -1612,7 +1641,8 @@ object Journey {
         override val eligibilityCheckResult:    EligibilityCheckResult,
         override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
         override val canPayUpfront:             CanPayUpfront,
-        override val upfrontPaymentAmount:      UpfrontPaymentAmount
+        override val upfrontPaymentAmount:      UpfrontPaymentAmount,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredUpfrontPaymentAmount
@@ -1635,7 +1665,8 @@ object Journey {
         override val eligibilityCheckResult:    EligibilityCheckResult,
         override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
         override val upfrontPaymentAnswers:     UpfrontPaymentAnswers,
-        override val extremeDatesResponse:      ExtremeDatesResponse
+        override val extremeDatesResponse:      ExtremeDatesResponse,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.RetrievedExtremeDates
@@ -1659,7 +1690,8 @@ object Journey {
         override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
         override val upfrontPaymentAnswers:     UpfrontPaymentAnswers,
         override val extremeDatesResponse:      ExtremeDatesResponse,
-        override val instalmentAmounts:         InstalmentAmounts
+        override val instalmentAmounts:         InstalmentAmounts,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.RetrievedAffordabilityResult
@@ -1684,7 +1716,8 @@ object Journey {
         override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
-        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ObtainedCanPayWithinSixMonthsAnswers
@@ -1710,7 +1743,8 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val startCaseResponse:            StartCaseResponse
+        override val startCaseResponse:            StartCaseResponse,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.StartedPegaCase
@@ -1736,7 +1770,8 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount
+        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredMonthlyPaymentAmount
@@ -1763,7 +1798,8 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth
+        override val dayOfMonth:                   DayOfMonth,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredDayOfMonth
@@ -1791,7 +1827,8 @@ object Journey {
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val monthlyPaymentAmount:         MonthlyPaymentAmount,
         override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse
+        override val startDatesResponse:           StartDatesResponse,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.RetrievedStartDates
@@ -1820,7 +1857,8 @@ object Journey {
         override val monthlyPaymentAmount:         MonthlyPaymentAmount,
         override val dayOfMonth:                   DayOfMonth,
         override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse
+        override val affordableQuotesResponse:     AffordableQuotesResponse,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.RetrievedAffordableQuotes
@@ -1850,7 +1888,8 @@ object Journey {
         override val dayOfMonth:                   DayOfMonth,
         override val startDatesResponse:           StartDatesResponse,
         override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan
+        override val selectedPaymentPlan:          PaymentPlan,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ChosenPaymentPlan
@@ -1876,7 +1915,8 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val paymentPlanAnswers:           PaymentPlanAnswers
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.CheckedPaymentPlan
@@ -1903,7 +1943,8 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredCanYouSetUpDirectDebit
@@ -1931,7 +1972,8 @@ object Journey {
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
-        override val directDebitDetails:           BankDetails
+        override val directDebitDetails:           BankDetails,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredDirectDebitDetails
@@ -1959,7 +2001,8 @@ object Journey {
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
-        override val directDebitDetails:           BankDetails
+        override val directDebitDetails:           BankDetails,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ConfirmedDirectDebitDetails
@@ -1988,7 +2031,8 @@ object Journey {
         override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
-        override val isEmailAddressRequired:       IsEmailAddressRequired
+        override val isEmailAddressRequired:       IsEmailAddressRequired,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.AgreedTermsAndConditions
@@ -2018,7 +2062,8 @@ object Journey {
         override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
-        override val emailToBeVerified:            Email
+        override val emailToBeVerified:            Email,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.SelectedEmailToBeVerified
@@ -2050,7 +2095,8 @@ object Journey {
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val emailToBeVerified:            Email,
         override val emailVerificationResult:      EmailVerificationResult,
-        override val emailVerificationAnswers:     EmailVerificationAnswers
+        override val emailVerificationAnswers:     EmailVerificationAnswers,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EmailVerificationComplete
@@ -2081,7 +2127,8 @@ object Journey {
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val arrangementResponse:          ArrangementResponse,
-        override val emailVerificationAnswers:     EmailVerificationAnswers
+        override val emailVerificationAnswers:     EmailVerificationAnswers,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.SubmittedArrangement
@@ -2117,7 +2164,8 @@ object Journey {
         override val sessionId:            SessionId,
         override val correlationId:        CorrelationId,
         override val stage:                Stage.AfterStarted,
-        override val affordabilityEnabled: Option[Boolean]
+        override val affordabilityEnabled: Option[Boolean],
+        override val pegaCaseId:           Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.Started
@@ -2136,7 +2184,8 @@ object Journey {
         override val correlationId:        CorrelationId,
         override val stage:                Stage.AfterComputedTaxId,
         override val affordabilityEnabled: Option[Boolean],
-        override val taxId:                SaUtr
+        override val taxId:                SaUtr,
+        override val pegaCaseId:           Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ComputedTaxId
@@ -2156,7 +2205,8 @@ object Journey {
         override val stage:                  Stage.AfterEligibilityCheck,
         override val affordabilityEnabled:   Option[Boolean],
         override val taxId:                  SaUtr,
-        override val eligibilityCheckResult: EligibilityCheckResult
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val pegaCaseId:             Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EligibilityChecked
@@ -2177,7 +2227,8 @@ object Journey {
         override val affordabilityEnabled:      Option[Boolean],
         override val taxId:                     SaUtr,
         override val eligibilityCheckResult:    EligibilityCheckResult,
-        override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers
+        override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ObtainedWhyCannotPayInFullAnswers
@@ -2199,7 +2250,8 @@ object Journey {
         override val taxId:                     SaUtr,
         override val eligibilityCheckResult:    EligibilityCheckResult,
         override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
-        override val canPayUpfront:             CanPayUpfront
+        override val canPayUpfront:             CanPayUpfront,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.AnsweredCanPayUpfront
@@ -2222,7 +2274,8 @@ object Journey {
         override val eligibilityCheckResult:    EligibilityCheckResult,
         override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
         override val canPayUpfront:             CanPayUpfront,
-        override val upfrontPaymentAmount:      UpfrontPaymentAmount
+        override val upfrontPaymentAmount:      UpfrontPaymentAmount,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredUpfrontPaymentAmount
@@ -2245,7 +2298,8 @@ object Journey {
         override val eligibilityCheckResult:    EligibilityCheckResult,
         override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
         override val upfrontPaymentAnswers:     UpfrontPaymentAnswers,
-        override val extremeDatesResponse:      ExtremeDatesResponse
+        override val extremeDatesResponse:      ExtremeDatesResponse,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.RetrievedExtremeDates
@@ -2269,7 +2323,8 @@ object Journey {
         override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
         override val upfrontPaymentAnswers:     UpfrontPaymentAnswers,
         override val extremeDatesResponse:      ExtremeDatesResponse,
-        override val instalmentAmounts:         InstalmentAmounts
+        override val instalmentAmounts:         InstalmentAmounts,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.RetrievedAffordabilityResult
@@ -2294,7 +2349,8 @@ object Journey {
         override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
-        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ObtainedCanPayWithinSixMonthsAnswers
@@ -2320,7 +2376,8 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val startCaseResponse:            StartCaseResponse
+        override val startCaseResponse:            StartCaseResponse,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.StartedPegaCase
@@ -2346,7 +2403,8 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount
+        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredMonthlyPaymentAmount
@@ -2373,7 +2431,8 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth
+        override val dayOfMonth:                   DayOfMonth,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredDayOfMonth
@@ -2401,7 +2460,8 @@ object Journey {
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val monthlyPaymentAmount:         MonthlyPaymentAmount,
         override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse
+        override val startDatesResponse:           StartDatesResponse,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.RetrievedStartDates
@@ -2430,7 +2490,8 @@ object Journey {
         override val monthlyPaymentAmount:         MonthlyPaymentAmount,
         override val dayOfMonth:                   DayOfMonth,
         override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse
+        override val affordableQuotesResponse:     AffordableQuotesResponse,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.RetrievedAffordableQuotes
@@ -2460,7 +2521,8 @@ object Journey {
         override val dayOfMonth:                   DayOfMonth,
         override val startDatesResponse:           StartDatesResponse,
         override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan
+        override val selectedPaymentPlan:          PaymentPlan,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ChosenPaymentPlan
@@ -2486,7 +2548,8 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val paymentPlanAnswers:           PaymentPlanAnswers
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.CheckedPaymentPlan
@@ -2513,7 +2576,8 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredCanYouSetUpDirectDebit
@@ -2541,7 +2605,8 @@ object Journey {
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
-        override val directDebitDetails:           BankDetails
+        override val directDebitDetails:           BankDetails,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredDirectDebitDetails
@@ -2569,7 +2634,8 @@ object Journey {
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
-        override val directDebitDetails:           BankDetails
+        override val directDebitDetails:           BankDetails,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ConfirmedDirectDebitDetails
@@ -2598,7 +2664,8 @@ object Journey {
         override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
-        override val isEmailAddressRequired:       IsEmailAddressRequired
+        override val isEmailAddressRequired:       IsEmailAddressRequired,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.AgreedTermsAndConditions
@@ -2628,7 +2695,8 @@ object Journey {
         override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
-        override val emailToBeVerified:            Email
+        override val emailToBeVerified:            Email,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.SelectedEmailToBeVerified
@@ -2660,7 +2728,8 @@ object Journey {
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val emailToBeVerified:            Email,
         override val emailVerificationResult:      EmailVerificationResult,
-        override val emailVerificationAnswers:     EmailVerificationAnswers
+        override val emailVerificationAnswers:     EmailVerificationAnswers,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EmailVerificationComplete
@@ -2691,7 +2760,8 @@ object Journey {
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val arrangementResponse:          ArrangementResponse,
-        override val emailVerificationAnswers:     EmailVerificationAnswers
+        override val emailVerificationAnswers:     EmailVerificationAnswers,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.SubmittedArrangement
@@ -2724,7 +2794,8 @@ object Journey {
         override val sessionId:            SessionId,
         override val correlationId:        CorrelationId,
         override val stage:                Stage.AfterStarted,
-        override val affordabilityEnabled: Option[Boolean]
+        override val affordabilityEnabled: Option[Boolean],
+        override val pegaCaseId:           Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.Started
@@ -2743,7 +2814,8 @@ object Journey {
         override val correlationId:        CorrelationId,
         override val stage:                Stage.AfterComputedTaxId,
         override val affordabilityEnabled: Option[Boolean],
-        override val taxId:                Nino
+        override val taxId:                Nino,
+        override val pegaCaseId:           Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ComputedTaxId
@@ -2763,7 +2835,8 @@ object Journey {
         override val stage:                  Stage.AfterEligibilityCheck,
         override val affordabilityEnabled:   Option[Boolean],
         override val taxId:                  Nino,
-        override val eligibilityCheckResult: EligibilityCheckResult
+        override val eligibilityCheckResult: EligibilityCheckResult,
+        override val pegaCaseId:             Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EligibilityChecked
@@ -2784,7 +2857,8 @@ object Journey {
         override val affordabilityEnabled:      Option[Boolean],
         override val taxId:                     Nino,
         override val eligibilityCheckResult:    EligibilityCheckResult,
-        override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers
+        override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ObtainedWhyCannotPayInFullAnswers
@@ -2806,7 +2880,8 @@ object Journey {
         override val taxId:                     Nino,
         override val eligibilityCheckResult:    EligibilityCheckResult,
         override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
-        override val canPayUpfront:             CanPayUpfront
+        override val canPayUpfront:             CanPayUpfront,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.AnsweredCanPayUpfront
@@ -2829,7 +2904,8 @@ object Journey {
         override val eligibilityCheckResult:    EligibilityCheckResult,
         override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
         override val canPayUpfront:             CanPayUpfront,
-        override val upfrontPaymentAmount:      UpfrontPaymentAmount
+        override val upfrontPaymentAmount:      UpfrontPaymentAmount,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredUpfrontPaymentAmount
@@ -2852,7 +2928,8 @@ object Journey {
         override val eligibilityCheckResult:    EligibilityCheckResult,
         override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
         override val upfrontPaymentAnswers:     UpfrontPaymentAnswers,
-        override val extremeDatesResponse:      ExtremeDatesResponse
+        override val extremeDatesResponse:      ExtremeDatesResponse,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.RetrievedExtremeDates
@@ -2876,7 +2953,8 @@ object Journey {
         override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
         override val upfrontPaymentAnswers:     UpfrontPaymentAnswers,
         override val extremeDatesResponse:      ExtremeDatesResponse,
-        override val instalmentAmounts:         InstalmentAmounts
+        override val instalmentAmounts:         InstalmentAmounts,
+        override val pegaCaseId:                Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.RetrievedAffordabilityResult
@@ -2901,7 +2979,8 @@ object Journey {
         override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
-        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers
+        override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ObtainedCanPayWithinSixMonthsAnswers
@@ -2927,7 +3006,8 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val startCaseResponse:            StartCaseResponse
+        override val startCaseResponse:            StartCaseResponse,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.StartedPegaCase
@@ -2953,7 +3033,8 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val monthlyPaymentAmount:         MonthlyPaymentAmount
+        override val monthlyPaymentAmount:         MonthlyPaymentAmount,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredMonthlyPaymentAmount
@@ -2980,7 +3061,8 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-        override val dayOfMonth:                   DayOfMonth
+        override val dayOfMonth:                   DayOfMonth,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredDayOfMonth
@@ -3008,7 +3090,8 @@ object Journey {
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val monthlyPaymentAmount:         MonthlyPaymentAmount,
         override val dayOfMonth:                   DayOfMonth,
-        override val startDatesResponse:           StartDatesResponse
+        override val startDatesResponse:           StartDatesResponse,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.RetrievedStartDates
@@ -3037,7 +3120,8 @@ object Journey {
         override val monthlyPaymentAmount:         MonthlyPaymentAmount,
         override val dayOfMonth:                   DayOfMonth,
         override val startDatesResponse:           StartDatesResponse,
-        override val affordableQuotesResponse:     AffordableQuotesResponse
+        override val affordableQuotesResponse:     AffordableQuotesResponse,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.RetrievedAffordableQuotes
@@ -3067,7 +3151,8 @@ object Journey {
         override val dayOfMonth:                   DayOfMonth,
         override val startDatesResponse:           StartDatesResponse,
         override val affordableQuotesResponse:     AffordableQuotesResponse,
-        override val selectedPaymentPlan:          PaymentPlan
+        override val selectedPaymentPlan:          PaymentPlan,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ChosenPaymentPlan
@@ -3093,7 +3178,8 @@ object Journey {
         override val extremeDatesResponse:         ExtremeDatesResponse,
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-        override val paymentPlanAnswers:           PaymentPlanAnswers
+        override val paymentPlanAnswers:           PaymentPlanAnswers,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.CheckedPaymentPlan
@@ -3120,7 +3206,8 @@ object Journey {
         override val instalmentAmounts:            InstalmentAmounts,
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
-        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit
+        override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredCanYouSetUpDirectDebit
@@ -3148,7 +3235,8 @@ object Journey {
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
-        override val directDebitDetails:           BankDetails
+        override val directDebitDetails:           BankDetails,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EnteredDirectDebitDetails
@@ -3176,7 +3264,8 @@ object Journey {
         override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
         override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
-        override val directDebitDetails:           BankDetails
+        override val directDebitDetails:           BankDetails,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.ConfirmedDirectDebitDetails
@@ -3205,7 +3294,8 @@ object Journey {
         override val paymentPlanAnswers:           PaymentPlanAnswers,
         override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
-        override val isEmailAddressRequired:       IsEmailAddressRequired
+        override val isEmailAddressRequired:       IsEmailAddressRequired,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.AgreedTermsAndConditions
@@ -3235,7 +3325,8 @@ object Journey {
         override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
-        override val emailToBeVerified:            Email
+        override val emailToBeVerified:            Email,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.SelectedEmailToBeVerified
@@ -3267,7 +3358,8 @@ object Journey {
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val emailToBeVerified:            Email,
         override val emailVerificationResult:      EmailVerificationResult,
-        override val emailVerificationAnswers:     EmailVerificationAnswers
+        override val emailVerificationAnswers:     EmailVerificationAnswers,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.EmailVerificationComplete
@@ -3298,7 +3390,8 @@ object Journey {
         override val directDebitDetails:           BankDetails,
         override val isEmailAddressRequired:       IsEmailAddressRequired,
         override val arrangementResponse:          ArrangementResponse,
-        override val emailVerificationAnswers:     EmailVerificationAnswers
+        override val emailVerificationAnswers:     EmailVerificationAnswers,
+        override val pegaCaseId:                   Option[PegaCaseId]
     )
       extends Journey
       with Journey.Stages.SubmittedArrangement

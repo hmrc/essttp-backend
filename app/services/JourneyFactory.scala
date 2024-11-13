@@ -48,7 +48,8 @@ class JourneyFactory @Inject() (
         sessionId            = sessionId,
         stage                = Stage.AfterStarted.Started,
         correlationId        = correlationIdGenerator.nextCorrelationId(),
-        affordabilityEnabled = Some(affordabilityEnabledFor.contains(TaxRegime.Epaye))
+        affordabilityEnabled = Some(affordabilityEnabledFor.contains(TaxRegime.Epaye)),
+        pegaCaseId           = None
       )
 
     case OriginatedSjRequest.Vat(origin, sjRequest) =>
@@ -60,7 +61,8 @@ class JourneyFactory @Inject() (
         sessionId            = sessionId,
         stage                = Stage.AfterStarted.Started,
         correlationId        = correlationIdGenerator.nextCorrelationId(),
-        affordabilityEnabled = Some(affordabilityEnabledFor.contains(TaxRegime.Vat))
+        affordabilityEnabled = Some(affordabilityEnabledFor.contains(TaxRegime.Vat)),
+        pegaCaseId           = None
       )
 
     case OriginatedSjRequest.Sa(origin, sjRequest) =>
@@ -72,7 +74,8 @@ class JourneyFactory @Inject() (
         sessionId            = sessionId,
         stage                = Stage.AfterStarted.Started,
         correlationId        = correlationIdGenerator.nextCorrelationId(),
-        affordabilityEnabled = Some(affordabilityEnabledFor.contains(TaxRegime.Sa))
+        affordabilityEnabled = Some(affordabilityEnabledFor.contains(TaxRegime.Sa)),
+        pegaCaseId           = None
       )
 
     case OriginatedSjRequest.Sia(origin, sjRequest) =>
@@ -84,7 +87,8 @@ class JourneyFactory @Inject() (
         sessionId            = sessionId,
         stage                = Stage.AfterStarted.Started,
         correlationId        = correlationIdGenerator.nextCorrelationId(),
-        affordabilityEnabled = Some(affordabilityEnabledFor.contains(TaxRegime.Sia)) // SIA does not have affordability enabled
+        affordabilityEnabled = Some(affordabilityEnabledFor.contains(TaxRegime.Sia)), // SIA does not have affordability enabled
+        pegaCaseId           = None
       )
   }
 }

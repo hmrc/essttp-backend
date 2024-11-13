@@ -17,6 +17,7 @@
 package controllers
 
 import essttp.journey.model.{Journey, PaymentPlanAnswers}
+import essttp.rootmodel.pega.PegaCaseId
 import essttp.rootmodel.{AmountInPence, MonthlyPaymentAmount}
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
@@ -46,7 +47,7 @@ class UpdateHasCheckedInstalmentPlanControllerSpec extends ItSpec with UpdateJou
           tdAll.paymentPlanAnswersWithAffordability
         )(
             journeyConnector.updateHasCheckedPaymentPlan,
-            tdAll.EpayeBta.journeyAfterCheckedPaymentPlanWithAffordability
+            tdAll.EpayeBta.journeyAfterCheckedPaymentPlanWithAffordability.copy(pegaCaseId = Some(PegaCaseId("case-id")))
           )(this)
       }
 
@@ -66,7 +67,7 @@ class UpdateHasCheckedInstalmentPlanControllerSpec extends ItSpec with UpdateJou
           tdAll.paymentPlanAnswersWithAffordability
         )(
             journeyConnector.updateHasCheckedPaymentPlan,
-            tdAll.VatBta.journeyAfterCheckedPaymentPlanWithAffordability
+            tdAll.VatBta.journeyAfterCheckedPaymentPlanWithAffordability.copy(pegaCaseId = Some(PegaCaseId("case-id")))
           )(this)
       }
 
