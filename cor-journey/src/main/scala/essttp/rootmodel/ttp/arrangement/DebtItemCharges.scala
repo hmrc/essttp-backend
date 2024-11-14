@@ -28,8 +28,8 @@ final case class DebtItemCharges(
     accruedInterest:         AccruedInterest,
     isInterestBearingCharge: Option[IsInterestBearingCharge],
     useChargeReference:      Option[UseChargeReference],
-    mainTrans:               MainTrans,
-    subTrans:                SubTrans,
+    mainTrans:               Option[MainTrans],
+    subTrans:                Option[SubTrans],
     parentChargeReference:   Option[ParentChargeReference],
     parentMainTrans:         Option[ParentMainTrans],
     creationDate:            Option[CreationDate],
@@ -37,7 +37,7 @@ final case class DebtItemCharges(
     saTaxYearEnd:            Option[SaTaxYearEnd],
     tieBreaker:              Option[TieBreaker],
     originalTieBreaker:      Option[OriginalTieBreaker],
-    chargeType:              ChargeType,
+    chargeType:              Option[ChargeType],
     originalChargeType:      Option[OriginalChargeType],
     chargeSource:            Option[ChargeSource]
 )
