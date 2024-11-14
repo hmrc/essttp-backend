@@ -19,7 +19,7 @@ package essttp.rootmodel.ttp.arrangement
 import essttp.crypto.CryptoFormat
 import essttp.rootmodel.pega.PegaCaseId
 import essttp.rootmodel.ttp.affordablequotes.ChannelIdentifier
-import essttp.rootmodel.ttp.eligibility.{CustomerDetail, Identification, RegimeDigitalCorrespondence}
+import essttp.rootmodel.ttp.eligibility.{Address, CustomerDetail, Identification, IndividualDetails, RegimeDigitalCorrespondence}
 import essttp.rootmodel.ttp.{PaymentPlanFrequency, RegimeType}
 import play.api.libs.json.{Json, OFormat}
 
@@ -34,6 +34,8 @@ final case class ArrangementRequest(
     directDebitInstruction:      DirectDebitInstruction,
     paymentPlan:                 EnactPaymentPlan,
     customerDetails:             Option[List[CustomerDetail]],
+    individualDetails:           Option[IndividualDetails],
+    addresses:                   Option[List[Address]],
     regimeDigitalCorrespondence: Option[RegimeDigitalCorrespondence]
 )
 
