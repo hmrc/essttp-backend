@@ -35,8 +35,8 @@ class PegaController @Inject() (
     cc:          ControllerComponents
 )(implicit ec: ExecutionContext, operationalCryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
 
-  def startCase(journeyId: JourneyId): Action[AnyContent] = actions.authenticatedAction.async { implicit request =>
-    pegaService.startCase(journeyId)
+  def startCase(journeyId: JourneyId, recalculationNeeded: Boolean): Action[AnyContent] = actions.authenticatedAction.async { implicit request =>
+    pegaService.startCase(journeyId, recalculationNeeded)
       .map(response => Created(Json.toJson(response)))
   }
 

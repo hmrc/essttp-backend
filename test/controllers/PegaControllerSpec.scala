@@ -108,7 +108,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
             stubCommonActions()
 
             val exception = intercept[Exception]{
-              controller.startCase(context.tdAll.journeyId)(context.request).futureValue
+              controller.startCase(context.tdAll.journeyId, recalculationNeeded = true)(context.request).futureValue
             }
 
             exception.getMessage should include(expectedErrorMessage)
@@ -237,7 +237,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
             PegaStub.stubOauthToken(Right(context.tdAll.pegaOauthToken))
             PegaStub.stubStartCase(Right(context.tdAll.pegaStartCaseResponse))
 
-            val result = controller.startCase(context.tdAll.journeyId)(context.request)
+            val result = controller.startCase(context.tdAll.journeyId, recalculationNeeded = true)(context.request)
             status(result) shouldBe CREATED
             contentAsJson(result).as[StartCaseResponse] shouldBe context.tdAll.startCaseResponse
 
