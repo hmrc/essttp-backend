@@ -70,7 +70,7 @@ POST        /start-dates                                                    date
 POST        /extreme-dates                                                  dates.DatesController.extremeDates
 
 # pega
-POST        /pega/case/:journeyId/:recalculationNeeded                      controllers.PegaController.startCase(journeyId: JourneyId, recalculationNeeded: Boolean)
+POST        /pega/case/:journeyId                                           controllers.PegaController.startCase(journeyId: JourneyId, recalculationNeeded: Boolean)
 GET         /pega/case/:journeyId                                           controllers.PegaController.getCase(journeyId: JourneyId)
 POST        /pega/journey/:journeyId                                        controllers.PegaController.saveJourney(journeyId: JourneyId)
 GET         /pega/recreate-session/:taxRegime                               controllers.PegaController.recreateSession(taxRegime: TaxRegime)
