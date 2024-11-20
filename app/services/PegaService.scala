@@ -32,6 +32,7 @@ import essttp.utils.{Errors, RequestSupport}
 import models.pega.PegaGetCaseResponse.{PegaCollection, PegaInstalment}
 import models.pega.PegaStartCaseRequest.{MDTPropertyMapping, UnableToPayReason}
 import models.pega.{PegaGetCaseResponse, PegaStartCaseRequest, PegaStartCaseResponse, PegaTokenManager}
+import org.apache.commons.lang3.StringUtils
 import play.api.mvc.Request
 import repository.JourneyByTaxIdRepo
 import repository.JourneyByTaxIdRepo.JourneyWithTaxId
@@ -39,7 +40,7 @@ import uk.gov.hmrc.auth.core.Enrolments
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import java.time.{Clock, Instant}
-import java.util.{Locale, UUID}
+import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -385,12 +386,16 @@ class PegaService @Inject() (
   }
 
   private def toCamelCase(s: String): String = {
-    val (first, rest) = s.trim.splitAt(1)
-    first.toLowerCase(Locale.UK) + rest.replace(" ", "")
+    s.trim.split(" ").toList.filter(_.nonEmpty) match {
+      case Nil => ""
+      case first :: rest =>
+        StringUtils.uncapitalize(first) + rest.map(_.capitalize).mkString("")
+
+    }
   }
 
   private def toBigDecimal(s: String): BigDecimal = {
-    val trimmed = s.trim
+    val trimmed = s.trim.filter(c => c.isDigit || c === '.')
     if (trimmed.isEmpty) BigDecimal(0)
     else BigDecimal(trimmed)
   }
