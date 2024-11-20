@@ -50,10 +50,10 @@ class PegaService @Inject() (
     tokenManager:       PegaTokenManager
 )(implicit ec: ExecutionContext) {
 
-  def startCase(journeyId: JourneyId)(implicit r: Request[_]): Future[StartCaseResponse] = {
+  def startCase(journeyId: JourneyId, recalculationNeeded: Boolean)(implicit r: Request[_]): Future[StartCaseResponse] = {
     for {
       journey <- journeyService.get(journeyId)
-      request = toPegaStartCaseRequest(journey)
+      request = toPegaStartCaseRequest(journey, recalculationNeeded)
       response <- doPegaCall(pegaConnector.startCase(request, _))
     } yield toStartCaseResponse(response)
   }
@@ -208,7 +208,7 @@ class PegaService @Inject() (
       sys.error(s"Could not find PEGA case id in journey in state ${other.name}")
   }
 
-  private def toPegaStartCaseRequest(journey: Journey): PegaStartCaseRequest = {
+  private def toPegaStartCaseRequest(journey: Journey, recalculationNeeded: Boolean): PegaStartCaseRequest = {
     val taxId = journey match {
       case j: Journey.AfterComputedTaxId => j.taxId
       case _                             => sys.error("Could not find tax id")
@@ -270,10 +270,14 @@ class PegaService @Inject() (
       mapping
     )
 
+    val pegaCaseId = journey.pegaCaseId
+
     val content = PegaStartCaseRequest.Content(
       taxId.value,
       taxIdType,
       regime,
+      pegaCaseId,
+      pegaCaseId.map(_ => recalculationNeeded),
       aa
     )
 

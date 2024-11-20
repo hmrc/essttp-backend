@@ -20,6 +20,7 @@ import essttp.journey.model.{Journey, UpfrontPaymentAnswers}
 import essttp.rootmodel.dates.InitialPaymentDate
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
+import essttp.rootmodel.pega.PegaCaseId
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
@@ -151,6 +152,16 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
                 context.tdAll.EpayeBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
               )(context)
 
+          def testEpayeBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentExtremeDates,
+                journeyConnector.updateExtremeDates(_, _)(context.request),
+                context.tdAll.EpayeBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
+              )(context)
+
         "RetrievedExtremeDates" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterExtremeDates)(_.extremeDatesResponse)(this)
         }
@@ -164,7 +175,7 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterStartedPegaCase)(_.extremeDatesResponse)(this)
+          testEpayeBtaWithCaseId(tdAll.EpayeBta.journeyAfterStartedPegaCase)(_.extremeDatesResponse)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -229,6 +240,16 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
                 context.tdAll.VatBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
               )(context)
 
+          def testVatBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentExtremeDates,
+                journeyConnector.updateExtremeDates(_, _)(context.request),
+                context.tdAll.VatBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
+              )(context)
+
         "RetrievedExtremeDates" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterExtremeDates)(_.extremeDatesResponse)(this)
         }
@@ -242,7 +263,7 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterStartedPegaCase)(_.extremeDatesResponse)(this)
+          testVatBtaWithCaseId(tdAll.VatBta.journeyAfterStartedPegaCase)(_.extremeDatesResponse)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -307,6 +328,16 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
                 context.tdAll.SaBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
               )(context)
 
+          def testSaBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentExtremeDates,
+                journeyConnector.updateExtremeDates(_, _)(context.request),
+                context.tdAll.SaBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
+              )(context)
+
         "RetrievedExtremeDates" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterExtremeDates)(_.extremeDatesResponse)(this)
         }
@@ -320,7 +351,7 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterStartedPegaCase)(_.extremeDatesResponse)(this)
+          testSaBtaWithCaseId(tdAll.SaBta.journeyAfterStartedPegaCase)(_.extremeDatesResponse)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -385,6 +416,16 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
                 context.tdAll.SiaPta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
               )(context)
 
+          def testSiaPtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentExtremeDates,
+                journeyConnector.updateExtremeDates(_, _)(context.request),
+                context.tdAll.SiaPta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
+              )(context)
+
         "RetrievedExtremeDates" in new JourneyItTest {
           testSiaPta(tdAll.SiaPta.journeyAfterExtremeDates)(_.extremeDatesResponse)(this)
         }
@@ -398,7 +439,7 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.extremeDatesResponse)(this)
+          testSiaPtaWithCaseId(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.extremeDatesResponse)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {

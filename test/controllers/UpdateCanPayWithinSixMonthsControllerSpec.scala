@@ -33,6 +33,7 @@ package controllers
  */
 
 import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey, Stage}
+import essttp.rootmodel.pega.PegaCaseId
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
@@ -107,12 +108,22 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
                 context.tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired.copy(canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo, stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired)
               )(context)
 
+          def testEpayeBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => CanPayWithinSixMonthsAnswers)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                TdAll.canPayWithinSixMonthsNo,
+                journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
+                context.tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired.copy(canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo, stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired, pegaCaseId = Some(PegaCaseId("case-id")))
+              )(context)
+
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterStartedPegaCase)(_.canPayWithinSixMonthsAnswers)(this)
+          testEpayeBtaWithCaseId(tdAll.EpayeBta.journeyAfterStartedPegaCase)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -177,12 +188,22 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
                 context.tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired.copy(canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo, stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired)
               )(context)
 
+          def testVatBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => CanPayWithinSixMonthsAnswers)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                TdAll.canPayWithinSixMonthsNo,
+                journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
+                context.tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired.copy(canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo, stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired, pegaCaseId = Some(PegaCaseId("case-id")))
+              )(context)
+
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterStartedPegaCase)(_.canPayWithinSixMonthsAnswers)(this)
+          testVatBtaWithCaseId(tdAll.VatBta.journeyAfterStartedPegaCase)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -247,12 +268,22 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
                 context.tdAll.SaBta.journeyAfterCanPayWithinSixMonths.copy(canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo, stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired)
               )(context)
 
+          def testSaBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => CanPayWithinSixMonthsAnswers)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                TdAll.canPayWithinSixMonthsNo,
+                journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
+                context.tdAll.SaBta.journeyAfterCanPayWithinSixMonths.copy(canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo, stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired, pegaCaseId = Some(PegaCaseId("case-id")))
+              )(context)
+
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterCanPayWithinSixMonths)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterStartedPegaCase)(_.canPayWithinSixMonthsAnswers)(this)
+          testSaBtaWithCaseId(tdAll.SaBta.journeyAfterStartedPegaCase)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -317,12 +348,22 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
                 context.tdAll.SiaPta.journeyAfterCanPayWithinSixMonths.copy(canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo, stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired)
               )(context)
 
+          def testSiaPtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => CanPayWithinSixMonthsAnswers)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                TdAll.canPayWithinSixMonthsNo,
+                journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
+                context.tdAll.SiaPta.journeyAfterCanPayWithinSixMonths.copy(canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo, stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired, pegaCaseId = Some(PegaCaseId("case-id")))
+              )(context)
+
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
           testSiaPta(tdAll.SiaPta.journeyAfterCanPayWithinSixMonths)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.canPayWithinSixMonthsAnswers)(this)
+          testSiaPtaWithCaseId(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {

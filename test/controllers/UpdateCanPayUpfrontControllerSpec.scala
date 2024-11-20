@@ -18,6 +18,7 @@ package controllers
 
 import essttp.journey.model.{Journey, UpfrontPaymentAnswers}
 import essttp.rootmodel.CanPayUpfront
+import essttp.rootmodel.pega.PegaCaseId
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
@@ -104,6 +105,23 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
               )(context)
           }
 
+          def testEpayeBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => CanPayUpfront)(context: JourneyItTest): Unit = {
+            val differentValue = CanPayUpfront(!existingValue(initialJourney).value)
+
+            val expectedUpdatedJourney =
+              if (differentValue.value) context.tdAll.EpayeBta.journeyAfterCanPayUpfrontYes.copy(pegaCaseId = Some(PegaCaseId("case-id")))
+              else context.tdAll.EpayeBta.journeyAfterCanPayUpfrontNo.copy(pegaCaseId = Some(PegaCaseId("case-id")))
+
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentValue,
+                journeyConnector.updateCanPayUpfront(_, _)(context.request),
+                expectedUpdatedJourney
+              )(context)
+          }
+
         "AnsweredCanPayUpfront" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayUpfrontNo)(_.canPayUpfront)(this)
         }
@@ -125,7 +143,7 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
         }
 
         "StartedPegaJourney" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testEpayeBtaWithCaseId(tdAll.EpayeBta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -197,6 +215,23 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
               )(context)
           }
 
+          def testVatBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => CanPayUpfront)(context: JourneyItTest): Unit = {
+            val differentValue = CanPayUpfront(!existingValue(initialJourney).value)
+
+            val expectedUpdatedJourney =
+              if (differentValue.value) context.tdAll.VatBta.journeyAfterCanPayUpfrontYes.copy(pegaCaseId = Some(PegaCaseId("case-id")))
+              else context.tdAll.VatBta.journeyAfterCanPayUpfrontNo.copy(pegaCaseId = Some(PegaCaseId("case-id")))
+
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentValue,
+                journeyConnector.updateCanPayUpfront(_, _)(context.request),
+                expectedUpdatedJourney
+              )(context)
+          }
+
         "AnsweredCanPayUpfront" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterCanPayUpfrontNo)(_.canPayUpfront)(this)
         }
@@ -218,7 +253,7 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
         }
 
         "StartedPegaJourney" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testVatBtaWithCaseId(tdAll.VatBta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -290,6 +325,23 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
               )(context)
           }
 
+          def testSaBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => CanPayUpfront)(context: JourneyItTest): Unit = {
+            val differentValue = CanPayUpfront(!existingValue(initialJourney).value)
+
+            val expectedUpdatedJourney =
+              if (differentValue.value) context.tdAll.SaBta.journeyAfterCanPayUpfrontYes.copy(pegaCaseId = Some(PegaCaseId("case-id")))
+              else context.tdAll.SaBta.journeyAfterCanPayUpfrontNo.copy(pegaCaseId = Some(PegaCaseId("case-id")))
+
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentValue,
+                journeyConnector.updateCanPayUpfront(_, _)(context.request),
+                expectedUpdatedJourney
+              )(context)
+          }
+
         "AnsweredCanPayUpfront" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterCanPayUpfrontNo)(_.canPayUpfront)(this)
         }
@@ -311,7 +363,7 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
         }
 
         "StartedPegaJourney" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testSaBtaWithCaseId(tdAll.SaBta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -383,6 +435,23 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
               )(context)
           }
 
+          def testSiaPtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => CanPayUpfront)(context: JourneyItTest): Unit = {
+            val differentValue = CanPayUpfront(!existingValue(initialJourney).value)
+
+            val expectedUpdatedJourney =
+              if (differentValue.value) context.tdAll.SiaPta.journeyAfterCanPayUpfrontYes.copy(pegaCaseId = Some(PegaCaseId("case-id")))
+              else context.tdAll.SiaPta.journeyAfterCanPayUpfrontNo.copy(pegaCaseId = Some(PegaCaseId("case-id")))
+
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentValue,
+                journeyConnector.updateCanPayUpfront(_, _)(context.request),
+                expectedUpdatedJourney
+              )(context)
+          }
+
         "AnsweredCanPayUpfront" in new JourneyItTest {
           testSiaPta(tdAll.SiaPta.journeyAfterCanPayUpfrontNo)(_.canPayUpfront)(this)
         }
@@ -404,7 +473,7 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
         }
 
         "StartedPegaJourney" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
+          testSiaPtaWithCaseId(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.asCanPayUpfront)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {

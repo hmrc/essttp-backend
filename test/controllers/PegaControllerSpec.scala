@@ -100,6 +100,48 @@ class PegaControllerSpec extends ItSpec with TdBase {
              |}
              |""".stripMargin
 
+        def expectedEpayeStartCaseRequestAfterStartedPegaCaseJson(unableToPayReasonsCodes: Seq[String] = Seq("UTPR-3"), recalculationNeeded: Boolean) =
+          s"""
+             |{
+             |   "caseTypeID": "HMRC-Debt-Work-AffordAssess",
+             |   "content":{
+             |      "uniqueIdentifier": "864FZ00049",
+             |      "uniqueIdentifierType": "EMPREF",
+             |      "regime": "PAYE",
+             |      "caseId": "case-id",
+             |      "recalculationNeeded": ${recalculationNeeded.toString},
+             |      "AA": {
+             |         "debtAmount": 300000,
+             |         "makeUpFrontPayment": true,
+             |         "unableToPayReasons":[
+             |           ${unableToPayReasonsCodes.map(c => s"""{ "reason": "$c" }""").mkString(", ")}
+             |         ],
+             |         "mdtpPropertyMapping": {
+             |            "customerPostcodes": [
+             |               {
+             |                  "postcodeDate": "2020-01-01",
+             |                  "addressPostcode": "AA11AA"
+             |               }
+             |            ],
+             |            "initialPaymentDate": "2022-01-01",
+             |            "channelIdentifier": "eSSTTP",
+             |            "debtItemCharges" : [ {
+             |              "outstandingDebtAmount" : 100000,
+             |              "mainTrans" : "mainTrans",
+             |              "subTrans" : "subTrans",
+             |              "debtItemChargeId" : "A00000000001",
+             |              "interestStartDate" : "2022-05-17",
+             |              "debtItemOriginalDueDate" : "2022-05-17"
+             |            } ],
+             |            "accruedDebtInterest": 1597,
+             |            "initialPaymentAmount": 1000,
+             |            "paymentPlanFrequency": "Monthly"
+             |         }
+             |      }
+             |   }
+             |}
+             |""".stripMargin
+
       "return an error when" - {
 
           def testException(context: JourneyItTest)(
@@ -108,7 +150,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
             stubCommonActions()
 
             val exception = intercept[Exception]{
-              controller.startCase(context.tdAll.journeyId)(context.request).futureValue
+              controller.startCase(context.tdAll.journeyId, recalculationNeeded = true)(context.request).futureValue
             }
 
             exception.getMessage should include(expectedErrorMessage)
@@ -231,13 +273,13 @@ class PegaControllerSpec extends ItSpec with TdBase {
 
       "submit the correct payload and return the correct id's when" - {
 
-          def testSuccess(context: JourneyItTest)(journey: Journey, expectedRequestJson: String) = {
+          def testSuccess(context: JourneyItTest)(journey: Journey, expectedRequestJson: String, recalculationNeeded: Boolean) = {
             context.insertJourneyForTest(journey)
             stubCommonActions()
             PegaStub.stubOauthToken(Right(context.tdAll.pegaOauthToken))
             PegaStub.stubStartCase(Right(context.tdAll.pegaStartCaseResponse))
 
-            val result = controller.startCase(context.tdAll.journeyId)(context.request)
+            val result = controller.startCase(context.tdAll.journeyId, recalculationNeeded)(context.request)
             status(result) shouldBe CREATED
             contentAsJson(result).as[StartCaseResponse] shouldBe context.tdAll.startCaseResponse
 
@@ -260,7 +302,8 @@ class PegaControllerSpec extends ItSpec with TdBase {
             tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo.copy(
               whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired
             ),
-            expectedEpayeStartCaseRequestJson()
+            expectedEpayeStartCaseRequestJson(),
+            recalculationNeeded = true
           )
 
           PegaStub.verifyOauthCalled("user", "pass")
@@ -274,7 +317,28 @@ class PegaControllerSpec extends ItSpec with TdBase {
               tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo.copy(
                 whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired
               ),
-              expectedEpayeStartCaseRequestJson()
+              expectedEpayeStartCaseRequestJson(),
+              recalculationNeeded = true
+            )
+          }
+
+          "EPAYE after started pegacase and recalculationNeeded is true" in new JourneyItTest {
+            testSuccess(this)(
+              tdAll.EpayeBta.journeyAfterStartedPegaCase.copy(
+                whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired
+              ),
+              expectedEpayeStartCaseRequestAfterStartedPegaCaseJson(recalculationNeeded = true),
+              recalculationNeeded = true
+            )
+          }
+
+          "EPAYE after started pegacase and recalculationNeeded is false" in new JourneyItTest {
+            testSuccess(this)(
+              tdAll.EpayeBta.journeyAfterStartedPegaCase.copy(
+                whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired
+              ),
+              expectedEpayeStartCaseRequestAfterStartedPegaCaseJson(recalculationNeeded = false),
+              recalculationNeeded = false
             )
           }
 
@@ -320,7 +384,106 @@ class PegaControllerSpec extends ItSpec with TdBase {
                  |      }
                  |   }
                  |}
-                 |""".stripMargin
+                 |""".stripMargin,
+              recalculationNeeded = true
+            )
+          }
+
+          "VAT after started pega case and recalculationNeeded is true" in new JourneyItTest {
+            testSuccess(this)(
+              tdAll.VatBta.journeyAfterStartedPegaCase.copy(
+                whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired
+              ),
+              s"""
+                 |{
+                 |   "caseTypeID": "HMRC-Debt-Work-AffordAssess",
+                 |   "content":{
+                 |      "uniqueIdentifier": "101747001",
+                 |      "uniqueIdentifierType": "VRN",
+                 |      "regime": "VAT",
+                 |      "caseId": "case-id",
+                 |      "recalculationNeeded": true,
+                 |      "AA":{
+                 |         "debtAmount": 300000,
+                 |         "makeUpFrontPayment": true,
+                 |         "unableToPayReasons" : [
+                 |           { "reason": "UTPR-3" }
+                 |         ],
+                 |         "mdtpPropertyMapping":{
+                 |            "customerPostcodes":[
+                 |               {
+                 |                  "postcodeDate": "2020-01-01",
+                 |                  "addressPostcode": "AA11AA"
+                 |               }
+                 |            ],
+                 |            "initialPaymentDate":"2022-01-01",
+                 |            "channelIdentifier":"eSSTTP",
+                 |            "debtItemCharges" : [ {
+                 |              "outstandingDebtAmount" : 100000,
+                 |              "mainTrans" : "mainTrans",
+                 |              "subTrans" : "subTrans",
+                 |              "debtItemChargeId" : "A00000000001",
+                 |              "interestStartDate" : "2022-05-17",
+                 |              "debtItemOriginalDueDate" : "2022-05-17"
+                 |            } ],
+                 |            "accruedDebtInterest": 1597,
+                 |            "initialPaymentAmount": 1000,
+                 |            "paymentPlanFrequency": "Monthly"
+                 |         }
+                 |      }
+                 |   }
+                 |}
+                 |""".stripMargin,
+              recalculationNeeded = true
+            )
+          }
+
+          "VAT after started pega case and recalculationNeeded is false" in new JourneyItTest {
+            testSuccess(this)(
+              tdAll.VatBta.journeyAfterStartedPegaCase.copy(
+                whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired
+              ),
+              s"""
+                 |{
+                 |   "caseTypeID": "HMRC-Debt-Work-AffordAssess",
+                 |   "content":{
+                 |      "uniqueIdentifier": "101747001",
+                 |      "uniqueIdentifierType": "VRN",
+                 |      "regime": "VAT",
+                 |      "caseId": "case-id",
+                 |      "recalculationNeeded": false,
+                 |      "AA":{
+                 |         "debtAmount": 300000,
+                 |         "makeUpFrontPayment": true,
+                 |         "unableToPayReasons" : [
+                 |           { "reason": "UTPR-3" }
+                 |         ],
+                 |         "mdtpPropertyMapping":{
+                 |            "customerPostcodes":[
+                 |               {
+                 |                  "postcodeDate": "2020-01-01",
+                 |                  "addressPostcode": "AA11AA"
+                 |               }
+                 |            ],
+                 |            "initialPaymentDate":"2022-01-01",
+                 |            "channelIdentifier":"eSSTTP",
+                 |            "debtItemCharges" : [ {
+                 |              "outstandingDebtAmount" : 100000,
+                 |              "mainTrans" : "mainTrans",
+                 |              "subTrans" : "subTrans",
+                 |              "debtItemChargeId" : "A00000000001",
+                 |              "interestStartDate" : "2022-05-17",
+                 |              "debtItemOriginalDueDate" : "2022-05-17"
+                 |            } ],
+                 |            "accruedDebtInterest": 1597,
+                 |            "initialPaymentAmount": 1000,
+                 |            "paymentPlanFrequency": "Monthly"
+                 |         }
+                 |      }
+                 |   }
+                 |}
+                 |""".stripMargin,
+              recalculationNeeded = false
             )
           }
 
@@ -366,7 +529,106 @@ class PegaControllerSpec extends ItSpec with TdBase {
                  |      }
                  |   }
                  |}
-                 |""".stripMargin
+                 |""".stripMargin,
+              recalculationNeeded = true
+            )
+          }
+
+          "SA after started pega case and recalculationNeeded is true" in new JourneyItTest {
+            testSuccess(this)(
+              tdAll.SaBta.journeyAfterStartedPegaCase.copy(
+                whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired
+              ),
+              s"""
+                 |{
+                 |   "caseTypeID": "HMRC-Debt-Work-AffordAssess",
+                 |   "content":{
+                 |      "uniqueIdentifier": "1234567895",
+                 |      "uniqueIdentifierType": "SAUTR",
+                 |      "regime": "SA",
+                 |      "caseId": "case-id",
+                 |      "recalculationNeeded": true,
+                 |      "AA":{
+                 |         "debtAmount": 300000,
+                 |         "makeUpFrontPayment": true,
+                 |         "unableToPayReasons" : [
+                 |           { "reason": "UTPR-3" }
+                 |         ],
+                 |         "mdtpPropertyMapping":{
+                 |            "customerPostcodes":[
+                 |               {
+                 |                  "postcodeDate": "2020-01-01",
+                 |                  "addressPostcode": "AA11AA"
+                 |               }
+                 |            ],
+                 |            "initialPaymentDate":"2022-01-01",
+                 |            "channelIdentifier":"eSSTTP",
+                 |            "debtItemCharges" : [ {
+                 |              "outstandingDebtAmount" : 100000,
+                 |              "mainTrans" : "mainTrans",
+                 |              "subTrans" : "subTrans",
+                 |              "debtItemChargeId" : "A00000000001",
+                 |              "interestStartDate" : "2022-05-17",
+                 |              "debtItemOriginalDueDate" : "2022-05-17"
+                 |            } ],
+                 |            "accruedDebtInterest": 1597,
+                 |            "initialPaymentAmount": 1000,
+                 |            "paymentPlanFrequency": "Monthly"
+                 |         }
+                 |      }
+                 |   }
+                 |}
+                 |""".stripMargin,
+              recalculationNeeded = true
+            )
+          }
+
+          "SA after started pega case and recalculationNeeded is false" in new JourneyItTest {
+            testSuccess(this)(
+              tdAll.SaBta.journeyAfterStartedPegaCase.copy(
+                whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired
+              ),
+              s"""
+                 |{
+                 |   "caseTypeID": "HMRC-Debt-Work-AffordAssess",
+                 |   "content":{
+                 |      "uniqueIdentifier": "1234567895",
+                 |      "uniqueIdentifierType": "SAUTR",
+                 |      "regime": "SA",
+                 |      "caseId": "case-id",
+                 |      "recalculationNeeded": false,
+                 |      "AA":{
+                 |         "debtAmount": 300000,
+                 |         "makeUpFrontPayment": true,
+                 |         "unableToPayReasons" : [
+                 |           { "reason": "UTPR-3" }
+                 |         ],
+                 |         "mdtpPropertyMapping":{
+                 |            "customerPostcodes":[
+                 |               {
+                 |                  "postcodeDate": "2020-01-01",
+                 |                  "addressPostcode": "AA11AA"
+                 |               }
+                 |            ],
+                 |            "initialPaymentDate":"2022-01-01",
+                 |            "channelIdentifier":"eSSTTP",
+                 |            "debtItemCharges" : [ {
+                 |              "outstandingDebtAmount" : 100000,
+                 |              "mainTrans" : "mainTrans",
+                 |              "subTrans" : "subTrans",
+                 |              "debtItemChargeId" : "A00000000001",
+                 |              "interestStartDate" : "2022-05-17",
+                 |              "debtItemOriginalDueDate" : "2022-05-17"
+                 |            } ],
+                 |            "accruedDebtInterest": 1597,
+                 |            "initialPaymentAmount": 1000,
+                 |            "paymentPlanFrequency": "Monthly"
+                 |         }
+                 |      }
+                 |   }
+                 |}
+                 |""".stripMargin,
+              recalculationNeeded = false
             )
           }
 
@@ -414,7 +676,8 @@ class PegaControllerSpec extends ItSpec with TdBase {
                |      }
                |   }
                |}
-               |""".stripMargin
+               |""".stripMargin,
+            recalculationNeeded = true
           )
         }
 
@@ -437,7 +700,8 @@ class PegaControllerSpec extends ItSpec with TdBase {
                         Set(cannotPayReason)
                       )
                     ),
-                    expectedEpayeStartCaseRequestJson(Seq(expectedCode))
+                    expectedEpayeStartCaseRequestJson(Seq(expectedCode)),
+                    recalculationNeeded = true
                   )
                 }
             }

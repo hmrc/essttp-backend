@@ -18,6 +18,7 @@ package models.pega
 
 import essttp.crypto.CryptoFormat
 import essttp.rootmodel.dates.InitialPaymentDate
+import essttp.rootmodel.pega.PegaCaseId
 import essttp.rootmodel.{AmountInPence, UpfrontPaymentAmount}
 import essttp.rootmodel.ttp.PaymentPlanFrequency
 import essttp.rootmodel.ttp.affordablequotes.{AccruedDebtInterest, ChannelIdentifier, DebtItemCharge}
@@ -33,6 +34,8 @@ object PegaStartCaseRequest {
       uniqueIdentifier:     String,
       uniqueIdentifierType: String,
       regime:               String,
+      caseId:               Option[PegaCaseId],
+      recalculationNeeded:  Option[Boolean],
       `AA`:                 AA
   )
 

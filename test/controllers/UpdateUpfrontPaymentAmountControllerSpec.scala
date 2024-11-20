@@ -17,6 +17,7 @@
 package controllers
 
 import essttp.journey.model.{Journey, UpfrontPaymentAnswers}
+import essttp.rootmodel.pega.PegaCaseId
 import essttp.rootmodel.{AmountInPence, UpfrontPaymentAmount}
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
@@ -96,6 +97,16 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
                 context.tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = differentUpfrontPaymentAmount)
               )(context)
 
+          def testEpayeBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => UpfrontPaymentAmount)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentUpfrontPaymentAmount,
+                journeyConnector.updateUpfrontPaymentAmount(_, _)(context.request),
+                context.tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = differentUpfrontPaymentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
+              )(context)
+
         "EnteredUpfrontPaymentAmount" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount)(_.upfrontPaymentAmount)(this)
         }
@@ -113,7 +124,7 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testEpayeBtaWithCaseId(tdAll.EpayeBta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -180,6 +191,16 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
                 context.tdAll.VatBta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = differentUpfrontPaymentAmount)
               )(context)
 
+          def testVatBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => UpfrontPaymentAmount)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentUpfrontPaymentAmount,
+                journeyConnector.updateUpfrontPaymentAmount(_, _)(context.request),
+                context.tdAll.VatBta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = differentUpfrontPaymentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
+              )(context)
+
         "EnteredUpfrontPaymentAmount" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterUpfrontPaymentAmount)(_.upfrontPaymentAmount)(this)
         }
@@ -197,7 +218,7 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testVatBtaWithCaseId(tdAll.VatBta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -264,6 +285,16 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
                 context.tdAll.SaBta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = differentUpfrontPaymentAmount)
               )(context)
 
+          def testSaBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => UpfrontPaymentAmount)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentUpfrontPaymentAmount,
+                journeyConnector.updateUpfrontPaymentAmount(_, _)(context.request),
+                context.tdAll.SaBta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = differentUpfrontPaymentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
+              )(context)
+
         "EnteredUpfrontPaymentAmount" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterUpfrontPaymentAmount)(_.upfrontPaymentAmount)(this)
         }
@@ -281,7 +312,7 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSaBtaWithCaseId(tdAll.SaBta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
@@ -348,6 +379,16 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
                 context.tdAll.SiaPta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = differentUpfrontPaymentAmount)
               )(context)
 
+          def testSiaPtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => UpfrontPaymentAmount)(context: JourneyItTest): Unit =
+            testUpdateWithExistingValue(initialJourney)(
+              _.journeyId,
+              existingValue(initialJourney)
+            )(
+                differentUpfrontPaymentAmount,
+                journeyConnector.updateUpfrontPaymentAmount(_, _)(context.request),
+                context.tdAll.SiaPta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = differentUpfrontPaymentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
+              )(context)
+
         "EnteredUpfrontPaymentAmount" in new JourneyItTest {
           testSiaPta(tdAll.SiaPta.journeyAfterUpfrontPaymentAmount)(_.upfrontPaymentAmount)(this)
         }
@@ -365,7 +406,7 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSiaPtaWithCaseId(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
