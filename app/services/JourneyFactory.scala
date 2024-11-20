@@ -18,21 +18,17 @@ package services
 
 import essttp.journey.model.{Journey, OriginatedSjRequest, Stage}
 import essttp.rootmodel.{SessionId, TaxRegime}
-import play.api.Configuration
 
 import java.time.{Clock, Instant}
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 class JourneyFactory @Inject() (
-    journeyIdGenerator:     JourneyIdGenerator,
-    correlationIdGenerator: CorrelationIdGenerator,
-    clock:                  Clock,
-    config:                 Configuration
+    journeyIdGenerator:          JourneyIdGenerator,
+    correlationIdGenerator:      CorrelationIdGenerator,
+    clock:                       Clock,
+    affordabilityEnablerService: AffordabilityEnablerService
 ) {
-
-  private val affordabilityEnabledFor: Seq[TaxRegime] =
-    config.get[Seq[String]]("affordability.tax-regimes").filter(_.nonEmpty).map(TaxRegime.withNameInsensitive)
 
   def makeJourney(
       originatedSjRequest: OriginatedSjRequest,
@@ -48,7 +44,7 @@ class JourneyFactory @Inject() (
         sessionId            = sessionId,
         stage                = Stage.AfterStarted.Started,
         correlationId        = correlationIdGenerator.nextCorrelationId(),
-        affordabilityEnabled = Some(affordabilityEnabledFor.contains(TaxRegime.Epaye)),
+        affordabilityEnabled = Some(affordabilityEnablerService.affordabilityEnabled(TaxRegime.Epaye)),
         pegaCaseId           = None
       )
 
@@ -61,7 +57,7 @@ class JourneyFactory @Inject() (
         sessionId            = sessionId,
         stage                = Stage.AfterStarted.Started,
         correlationId        = correlationIdGenerator.nextCorrelationId(),
-        affordabilityEnabled = Some(affordabilityEnabledFor.contains(TaxRegime.Vat)),
+        affordabilityEnabled = Some(affordabilityEnablerService.affordabilityEnabled(TaxRegime.Vat)),
         pegaCaseId           = None
       )
 
@@ -74,7 +70,7 @@ class JourneyFactory @Inject() (
         sessionId            = sessionId,
         stage                = Stage.AfterStarted.Started,
         correlationId        = correlationIdGenerator.nextCorrelationId(),
-        affordabilityEnabled = Some(affordabilityEnabledFor.contains(TaxRegime.Sa)),
+        affordabilityEnabled = Some(affordabilityEnablerService.affordabilityEnabled(TaxRegime.Sa)),
         pegaCaseId           = None
       )
 
@@ -87,7 +83,7 @@ class JourneyFactory @Inject() (
         sessionId            = sessionId,
         stage                = Stage.AfterStarted.Started,
         correlationId        = correlationIdGenerator.nextCorrelationId(),
-        affordabilityEnabled = Some(affordabilityEnabledFor.contains(TaxRegime.Sia)), // SIA does not have affordability enabled
+        affordabilityEnabled = Some(affordabilityEnablerService.affordabilityEnabled(TaxRegime.Sia)),
         pegaCaseId           = None
       )
   }

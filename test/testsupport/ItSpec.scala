@@ -120,6 +120,8 @@ trait ItSpec
     def testPegaCorrelationIdGenerator(): PegaCorrelationIdGenerator = pegaCorrelationIdGenerator
   }
 
+  lazy val overrideBindings: Seq[GuiceableModule] = Seq.empty
+
   def journeyIdGenerator: TestJourneyIdGenerator = app.injector.instanceOf[TestJourneyIdGenerator]
   def correlationIdGenerator: TestCorrelationIdGenerator = app.injector.instanceOf[TestCorrelationIdGenerator]
   val pegaCorrelationIdGenerator: TestPegaCorrelationIdGenerator = new TestPegaCorrelationIdGenerator
@@ -148,6 +150,7 @@ trait ItSpec
   override def fakeApplication(): Application = new GuiceApplicationBuilder()
     .configure(conf)
     .overrides(GuiceableModule.fromGuiceModules(Seq(overridingsModule)))
+    .overrides(overrideBindings: _*)
     .build()
 
   object TestServerFactory extends DefaultTestServerFactory {
@@ -243,3 +246,4 @@ class TestPegaCorrelationIdGenerator extends PegaCorrelationIdGenerator {
   override def nextCorrelationId(): String = fixedCorrelationId
 
 }
+
