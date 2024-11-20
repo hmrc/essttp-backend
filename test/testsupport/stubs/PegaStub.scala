@@ -110,7 +110,11 @@ object PegaStub {
        |}""".stripMargin
   }
 
-  def stubGetCase(caseId: PegaCaseId, result: Either[HttpStatus, String], expiredToken: Boolean = false): StubMapping = {
+  def stubGetCase(
+      caseId:       PegaCaseId,
+      result:       Either[HttpStatus, String],
+      expiredToken: Boolean                    = false
+  ): StubMapping = {
     if (expiredToken) {
       val scenarioName = "GetCaseScenario"
       val initialState = "Started"

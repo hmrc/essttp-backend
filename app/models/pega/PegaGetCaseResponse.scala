@@ -26,7 +26,12 @@ final case class PegaGetCaseResponse(`AA`: AA)
 
 object PegaGetCaseResponse {
 
-  final case class AA(paymentDay: Int, paymentPlan: Seq[PegaPaymentPlan])
+  final case class AA(
+      paymentDay:  Int,
+      paymentPlan: Seq[PegaPaymentPlan],
+      expenditure: Seq[ExpenditureItem],
+      income:      Seq[IncomeItem]
+  )
 
   object AA {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
@@ -39,8 +44,30 @@ object PegaGetCaseResponse {
               e => JsError(s"Could not read paymentDay: ${e.getMessage}")
             ))
           paymentPlan <- (json \ "paymentPlan").validate[Seq[PegaPaymentPlan]]
-        } yield AA(paymentDay, paymentPlan))
+          expenditure <- (json \ "expenditure").validate[Seq[ExpenditureItem]]
+          income <- (json \ "income").validate[Seq[IncomeItem]]
+        } yield AA(paymentDay, paymentPlan, expenditure, income))
 
+  }
+
+  final case class ExpenditureItem(
+      amountValue: String,
+      pyLabel:     String
+  )
+
+  object ExpenditureItem {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
+    implicit val reads: Reads[ExpenditureItem] = Json.reads
+  }
+
+  final case class IncomeItem(
+      amountValue: String,
+      pyLabel:     String
+  )
+
+  object IncomeItem {
+    @SuppressWarnings(Array("org.wartremover.warts.Any"))
+    implicit val reads: Reads[IncomeItem] = Json.reads
   }
 
   final case class PegaPaymentPlan(

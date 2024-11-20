@@ -31,7 +31,7 @@ import play.api.test.{DefaultTestServerFactory, FakeRequest, RunningServer}
 import play.api.{Application, Mode}
 import play.core.server.ServerConfig
 import repository.JourneyRepo
-import services.{CorrelationIdGenerator, JourneyIdGenerator}
+import services.{CorrelationIdGenerator, JourneyIdGenerator, PegaCorrelationIdGenerator}
 import testsupport.stubs.{AuditConnectorStub, AuthStub}
 import testsupport.testdata.TdAll
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
@@ -113,10 +113,16 @@ trait ItSpec
       val correlationIdPrefix: TestCorrelationIdPrefix = TestCorrelationIdPrefix(s"$randomPart-843f-4988-89c6-d4d3e2e91e26")
       new TestCorrelationIdGenerator(correlationIdPrefix)
     }
+
+    @Provides
+    @Singleton
+    @nowarn // silence "method never used" warning
+    def testPegaCorrelationIdGenerator(): PegaCorrelationIdGenerator = pegaCorrelationIdGenerator
   }
 
   def journeyIdGenerator: TestJourneyIdGenerator = app.injector.instanceOf[TestJourneyIdGenerator]
   def correlationIdGenerator: TestCorrelationIdGenerator = app.injector.instanceOf[TestCorrelationIdGenerator]
+  val pegaCorrelationIdGenerator: TestPegaCorrelationIdGenerator = new TestPegaCorrelationIdGenerator
 
   implicit def hc: HeaderCarrier = HeaderCarrier()
 
@@ -228,4 +234,12 @@ class TestCorrelationIdGenerator(testCorrelationIdPrefix: TestCorrelationIdPrefi
   override def nextCorrelationId(): CorrelationId = {
     nextCorrelationIdCached.getAndSet(correlationIdIterator.next())
   }
+}
+
+class TestPegaCorrelationIdGenerator extends PegaCorrelationIdGenerator {
+
+  val fixedCorrelationId: String = UUID.randomUUID().toString
+
+  override def nextCorrelationId(): String = fixedCorrelationId
+
 }
