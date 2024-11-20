@@ -790,15 +790,23 @@ class PegaControllerSpec extends ItSpec with TdBase {
 
       "return the payment plan when one is returned by PEGA" in new JourneyItTest {
         val paymentPlan = tdAll.paymentPlan(2)
+        val expenditure = Map(" a Bc def " -> "", " Gh i" -> "101.21")
+        val income = Map(" Mn op " -> "2,000 ", "q R S" -> "0.99")
 
         insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
         stubCommonActions()
         PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
-        PegaStub.stubGetCase(tdAll.pegaCaseId, Right(tdAll.pegaGetCaseResponse(tdAll.dayOfMonth, paymentPlan)))
+        PegaStub.stubGetCase(tdAll.pegaCaseId, Right(tdAll.pegaGetCaseResponse(tdAll.dayOfMonth, paymentPlan, expenditure, income)))
 
         val result = controller.getCase(tdAll.journeyId)(request)
         status(result) shouldBe OK
-        contentAsJson(result).as[GetCaseResponse] shouldBe GetCaseResponse(tdAll.dayOfMonth, paymentPlan)
+        contentAsJson(result).as[GetCaseResponse] shouldBe GetCaseResponse(
+          tdAll.dayOfMonth,
+          paymentPlan,
+          Map("aBcDef" -> BigDecimal("0"), "ghI" -> BigDecimal("101.21")),
+          Map("mnOp" -> BigDecimal("2000"), "qRS" -> BigDecimal("0.99")),
+          pegaCorrelationIdGenerator.fixedCorrelationId
+        )
 
         PegaStub.verifyOauthCalled("user", "pass")
         PegaStub.verifyGetCaseCalled(
@@ -815,11 +823,21 @@ class PegaControllerSpec extends ItSpec with TdBase {
           insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
           stubCommonActions()
           PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
-          PegaStub.stubGetCase(tdAll.pegaCaseId, Right(tdAll.pegaGetCaseResponse(tdAll.dayOfMonth, paymentPlan)), expiredToken = true)
+          PegaStub.stubGetCase(
+            tdAll.pegaCaseId,
+            Right(tdAll.pegaGetCaseResponse(tdAll.dayOfMonth, paymentPlan, Map.empty, Map.empty)),
+            expiredToken = true
+          )
 
           val result = controller.getCase(tdAll.journeyId)(request)
           status(result) shouldBe OK
-          contentAsJson(result).as[GetCaseResponse] shouldBe GetCaseResponse(tdAll.dayOfMonth, paymentPlan)
+          contentAsJson(result).as[GetCaseResponse] shouldBe GetCaseResponse(
+            tdAll.dayOfMonth,
+            paymentPlan,
+            Map.empty,
+            Map.empty,
+            pegaCorrelationIdGenerator.fixedCorrelationId
+          )
 
           PegaStub.verifyOauthCalled("user", "pass", 2)
           PegaStub.verifyGetCaseCalled(

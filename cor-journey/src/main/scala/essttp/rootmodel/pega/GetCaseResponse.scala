@@ -20,7 +20,13 @@ import essttp.rootmodel.DayOfMonth
 import essttp.rootmodel.ttp.affordablequotes.PaymentPlan
 import play.api.libs.json.{Json, OFormat}
 
-final case class GetCaseResponse(paymentDay: DayOfMonth, paymentPlan: PaymentPlan)
+final case class GetCaseResponse(
+    paymentDay:    DayOfMonth,
+    paymentPlan:   PaymentPlan,
+    expenditure:   Map[String, BigDecimal],
+    income:        Map[String, BigDecimal],
+    correlationId: String
+)
 
 object GetCaseResponse {
 

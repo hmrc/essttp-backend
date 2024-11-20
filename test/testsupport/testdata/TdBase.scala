@@ -252,7 +252,12 @@ trait TdBase {
     )
   )
 
-  def pegaGetCaseResponse(dayOfMonth: DayOfMonth, paymentPlan: PaymentPlan) = {
+  def pegaGetCaseResponse(
+      dayOfMonth:  DayOfMonth,
+      paymentPlan: PaymentPlan,
+      expenditure: Map[String, String],
+      income:      Map[String, String]
+  ) = {
 
     val initialCollectionJsonString = paymentPlan.collections.initialCollection.map(c =>
       s"""
@@ -281,6 +286,30 @@ trait TdBase {
         |  "instalmentNumber": ${i.instalmentNumber.value.toString}
         |}
         |""".stripMargin).mkString(", ")
+
+    val expenditureJsonString = {
+      val items = expenditure.map{
+        case (k, v) =>
+          s"""{
+           |  "pyLabel": "$k",
+           |  "amountValue": "$v"
+           |}""".stripMargin
+      }.mkString(",")
+
+      s"[ $items ]"
+    }
+
+    val incomeJsonString = {
+      val items = income.map{
+        case (k, v) =>
+          s"""{
+           |  "pyLabel": "$k",
+           |  "amountValue": "$v"
+           |}""".stripMargin
+      }.mkString(",")
+
+      s"[ $items ]"
+    }
 
     s"""
        |{
@@ -316,7 +345,9 @@ trait TdBase {
        |        },
        |        "instalments": []
        |      }
-       |    ]
+       |    ],
+       |    "expenditure": $expenditureJsonString,
+       |    "income": $incomeJsonString
        |  }
        |}
        |""".stripMargin

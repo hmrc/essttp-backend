@@ -32,6 +32,7 @@ import essttp.utils.{Errors, RequestSupport}
 import models.pega.PegaGetCaseResponse.{PegaCollection, PegaInstalment}
 import models.pega.PegaStartCaseRequest.{MDTPropertyMapping, UnableToPayReason}
 import models.pega.{PegaGetCaseResponse, PegaStartCaseRequest, PegaStartCaseResponse, PegaTokenManager}
+import org.apache.commons.lang3.StringUtils
 import play.api.mvc.Request
 import repository.JourneyByTaxIdRepo
 import repository.JourneyByTaxIdRepo.JourneyWithTaxId
@@ -39,22 +40,24 @@ import uk.gov.hmrc.auth.core.Enrolments
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import java.time.{Clock, Instant}
+import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class PegaService @Inject() (
-    pegaConnector:      PegaConnector,
-    journeyByTaxIdRepo: JourneyByTaxIdRepo,
-    journeyService:     JourneyService,
-    tokenManager:       PegaTokenManager
+    pegaConnector:          PegaConnector,
+    journeyByTaxIdRepo:     JourneyByTaxIdRepo,
+    journeyService:         JourneyService,
+    tokenManager:           PegaTokenManager,
+    correlationIdGenerator: PegaCorrelationIdGenerator
 )(implicit ec: ExecutionContext) {
 
   def startCase(journeyId: JourneyId, recalculationNeeded: Boolean)(implicit r: Request[_]): Future[StartCaseResponse] = {
     for {
       journey <- journeyService.get(journeyId)
       request = toPegaStartCaseRequest(journey, recalculationNeeded)
-      response <- doPegaCall(pegaConnector.startCase(request, _))
+      response <- doPegaCall(pegaConnector.startCase(request, _, correlationIdGenerator.nextCorrelationId()))
     } yield toStartCaseResponse(response)
   }
 
@@ -62,8 +65,9 @@ class PegaService @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       caseId = getCaseId(journey)
-      response <- doPegaCall(pegaConnector.getCase(caseId, _))
-    } yield toGetCaseResponse(response)
+      correlationId = correlationIdGenerator.nextCorrelationId()
+      response <- doPegaCall(pegaConnector.getCase(caseId, _, correlationId))
+    } yield toGetCaseResponse(response, correlationId)
   }
 
   private def doPegaCall[A](callAPI: String => Future[A])(implicit hc: HeaderCarrier): Future[A] = {
@@ -330,7 +334,7 @@ class PegaService @Inject() (
     StartCaseResponse(PegaCaseId(response.ID), PegaAssigmentId(assignmentId))
   }
 
-  private def toGetCaseResponse(response: PegaGetCaseResponse): GetCaseResponse = {
+  private def toGetCaseResponse(response: PegaGetCaseResponse, correlationId: String): GetCaseResponse = {
     val paymentPlan =
       response.AA.paymentPlan
         .find(_.planSelected)
@@ -354,6 +358,16 @@ class PegaService @Inject() (
           DebtItemOriginalDueDate(pegaInstalment.debtItemOriginalDueDate)
         )
 
+    val expenditure =
+      response.`AA`.expenditure
+        .map(e => toCamelCase(e.pyLabel) -> toBigDecimal(e.amountValue))
+        .toMap
+
+    val income =
+      response.`AA`.income
+        .map(e => toCamelCase(e.pyLabel) -> toBigDecimal(e.amountValue))
+        .toMap
+
     GetCaseResponse(
       DayOfMonth(response.AA.paymentDay),
       PaymentPlan(
@@ -364,8 +378,33 @@ class PegaService @Inject() (
         PlanInterest(AmountInPence(paymentPlan.planInterest)),
         Collection(initialCollection, paymentPlan.collections.regularCollections.map(toRegularCollection)),
         paymentPlan.instalments.map(toInstalment)
-      )
+      ),
+      expenditure,
+      income,
+      correlationId
     )
   }
+
+  private def toCamelCase(s: String): String = {
+    s.trim.split(" ").toList.filter(_.nonEmpty) match {
+      case Nil => ""
+      case first :: rest =>
+        StringUtils.uncapitalize(first) + rest.map(_.capitalize).mkString("")
+
+    }
+  }
+
+  private def toBigDecimal(s: String): BigDecimal = {
+    val trimmed = s.trim.filter(c => c.isDigit || c === '.')
+    if (trimmed.isEmpty) BigDecimal(0)
+    else BigDecimal(trimmed)
+  }
+
+}
+
+@Singleton
+class PegaCorrelationIdGenerator {
+
+  def nextCorrelationId(): String = UUID.randomUUID().toString
 
 }
