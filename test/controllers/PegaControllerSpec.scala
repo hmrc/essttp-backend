@@ -791,7 +791,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
       "return the payment plan when one is returned by PEGA" in new JourneyItTest {
         val paymentPlan = tdAll.paymentPlan(2)
         val expenditure = Map(" a Bc def " -> "", " Gh i" -> "101.21")
-        val income = Map(" Mn op " -> " ", "q R S" -> "0.99")
+        val income = Map(" Mn op " -> "2,000 ", "q R S" -> "0.99")
 
         insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
         stubCommonActions()
@@ -804,7 +804,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
           tdAll.dayOfMonth,
           paymentPlan,
           Map("aBcDef" -> BigDecimal("0"), "ghI" -> BigDecimal("101.21")),
-          Map("mnOp" -> BigDecimal("0"), "qRS" -> BigDecimal("0.99")),
+          Map("mnOp" -> BigDecimal("2000"), "qRS" -> BigDecimal("0.99")),
           pegaCorrelationIdGenerator.fixedCorrelationId
         )
 
