@@ -16,11 +16,15 @@
 
 package journey
 
+import play.api.inject.bind
 import essttp.journey.JourneyConnector
 import essttp.journey.model.{CorrelationId, JourneyId, SjResponse, Stage}
-import essttp.rootmodel.IsEmailAddressRequired
+import essttp.rootmodel.{IsEmailAddressRequired, TaxRegime}
+import journey.JourneyControllerAffordabilityEnabledSpec.TestAffordabilityEnablerService
 import paymentsEmailVerification.models.EmailVerificationResult
+import play.api.inject.guice.GuiceableModule
 import play.api.mvc.Request
+import services.AffordabilityEnablerService
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
@@ -1933,15 +1937,36 @@ class JourneyControllerSpec extends ItSpec {
 
 }
 
+object JourneyControllerAffordabilityEnabledSpec {
+
+  class TestAffordabilityEnablerService extends AffordabilityEnablerService {
+
+    @SuppressWarnings(Array("org.wartremover.warts.Var")) // var will only work in single threaded run
+    private var enabled: Map[TaxRegime, Boolean] = TaxRegime.values.map(_ -> false).toMap
+
+    def enable(taxRegime: TaxRegime): Unit = enabled = enabled.updated(taxRegime, true)
+
+    def disable(taxRegime: TaxRegime): Unit = enabled = enabled.updated(taxRegime, false)
+
+    override def affordabilityEnabled(taxRegime: TaxRegime): Boolean =
+      enabled(taxRegime)
+  }
+
+}
+
 class JourneyControllerAffordabilityEnabledSpec extends ItSpec {
 
-  override val overrideConfig: Map[String, Any] = Map(
-    "affordability.tax-regimes" -> Seq("sa")
-  )
+  lazy val testAffordabilityEnablerService = new TestAffordabilityEnablerService
+
+  override lazy val overrideBindings: Seq[GuiceableModule] =
+    Seq[GuiceableModule](
+      bind[AffordabilityEnablerService].toInstance(testAffordabilityEnablerService)
+    )
 
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
   "The journey must be able to be updated when affordability is enabled for a tax regime" in {
+    testAffordabilityEnablerService.enable(TaxRegime.Sa)
 
     stubCommonActions()
     val tdAll = new TdAll {
@@ -2047,6 +2072,23 @@ class JourneyControllerAffordabilityEnabledSpec extends ItSpec {
       .copy(affordabilityEnabled         = Some(true), whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired, canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo)
 
     verifyCommonActions(numberOfAuthCalls = 36)
+  }
+
+  "A journey must have affordability disabled if the AffordabilityEnablerService disables it" in {
+    testAffordabilityEnablerService.disable(TaxRegime.Sa)
+
+    stubCommonActions()
+    val tdAll = new TdAll {
+      override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
+      override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
+    }
+    implicit val request: Request[_] = tdAll.request
+    val response: SjResponse = journeyConnector.Sa.startJourneyBta(tdAll.SaBta.sjRequest).futureValue
+
+    /** Start journey */
+    response shouldBe tdAll.SaBta.sjResponse
+    journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterStarted
+      .copy(affordabilityEnabled = Some(false))
   }
 
 }
