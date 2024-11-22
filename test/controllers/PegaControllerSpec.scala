@@ -108,7 +108,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
              |      "uniqueIdentifier": "864FZ00049",
              |      "uniqueIdentifierType": "EMPREF",
              |      "regime": "PAYE",
-             |      "caseId": "case-id",
+             |      "caseID": "case-id",
              |      "recalculationNeeded": ${recalculationNeeded.toString},
              |      "AA": {
              |         "debtAmount": 300000,
@@ -401,7 +401,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
                  |      "uniqueIdentifier": "101747001",
                  |      "uniqueIdentifierType": "VRN",
                  |      "regime": "VAT",
-                 |      "caseId": "case-id",
+                 |      "caseID": "case-id",
                  |      "recalculationNeeded": true,
                  |      "AA":{
                  |         "debtAmount": 300000,
@@ -450,7 +450,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
                  |      "uniqueIdentifier": "101747001",
                  |      "uniqueIdentifierType": "VRN",
                  |      "regime": "VAT",
-                 |      "caseId": "case-id",
+                 |      "caseID": "case-id",
                  |      "recalculationNeeded": false,
                  |      "AA":{
                  |         "debtAmount": 300000,
@@ -546,7 +546,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
                  |      "uniqueIdentifier": "1234567895",
                  |      "uniqueIdentifierType": "SAUTR",
                  |      "regime": "SA",
-                 |      "caseId": "case-id",
+                 |      "caseID": "case-id",
                  |      "recalculationNeeded": true,
                  |      "AA":{
                  |         "debtAmount": 300000,
@@ -595,7 +595,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
                  |      "uniqueIdentifier": "1234567895",
                  |      "uniqueIdentifierType": "SAUTR",
                  |      "regime": "SA",
-                 |      "caseId": "case-id",
+                 |      "caseID": "case-id",
                  |      "recalculationNeeded": false,
                  |      "AA":{
                  |         "debtAmount": 300000,
