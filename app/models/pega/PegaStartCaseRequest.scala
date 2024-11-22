@@ -34,7 +34,7 @@ object PegaStartCaseRequest {
       uniqueIdentifier:     String,
       uniqueIdentifierType: String,
       regime:               String,
-      caseId:               Option[PegaCaseId],
+      caseID:               Option[PegaCaseId],
       recalculationNeeded:  Option[Boolean],
       `AA`:                 AA
   )
