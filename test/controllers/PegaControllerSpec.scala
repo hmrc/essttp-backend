@@ -20,7 +20,6 @@ import essttp.crypto.CryptoFormat
 import essttp.journey.model.{Journey, UpfrontPaymentAnswers, WhyCannotPayInFullAnswers}
 import essttp.rootmodel._
 import essttp.rootmodel.pega.{GetCaseResponse, StartCaseResponse}
-import models.pega.PegaStartCaseResponse
 import org.apache.pekko.Done
 import org.apache.pekko.stream.Materializer
 import play.api.cache.AsyncCacheApi
@@ -251,22 +250,6 @@ class PegaControllerSpec extends ItSpec with TdBase {
 
           PegaStub.verifyOauthCalled("user", "pass")
           PegaStub.verifyStartCaseCalled(tdAll.pegaOauthToken, expectedEpayeStartCaseRequestJson())
-        }
-
-        "no assignment ID can be found in the start case response" in new JourneyItTest {
-          insertJourneyForTest(
-            tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo
-              .copy(whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired)
-          )
-          PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
-          PegaStub.stubStartCase(Right(
-            PegaStartCaseResponse(
-              "id",
-              PegaStartCaseResponse.Data(PegaStartCaseResponse.CaseInfo(List.empty))
-            )
-          ))
-
-          testException(this)("Could not find assignment ID in PEGA start case response")
         }
 
       }

@@ -16,30 +16,11 @@
 
 package models.pega
 
-import models.pega.PegaStartCaseResponse.Data
 import play.api.libs.json.{Json, Reads}
 
-final case class PegaStartCaseResponse(ID: String, data: Data)
+final case class PegaStartCaseResponse(ID: String)
 
 object PegaStartCaseResponse {
-
-  final case class Data(caseInfo: CaseInfo)
-
-  object Data {
-    implicit val reads: Reads[Data] = Json.reads
-  }
-
-  final case class CaseInfo(assignments: List[Assignment])
-
-  object CaseInfo {
-    implicit val reads: Reads[CaseInfo] = Json.reads
-  }
-
-  final case class Assignment(ID: String)
-
-  object Assignment {
-    implicit val reads: Reads[Assignment] = Json.reads
-  }
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val reads: Reads[PegaStartCaseResponse] = Json.reads

@@ -17,7 +17,7 @@
 package controllers
 
 import essttp.journey.model.Journey
-import essttp.rootmodel.pega.{PegaAssigmentId, PegaCaseId, StartCaseResponse}
+import essttp.rootmodel.pega.{PegaCaseId, StartCaseResponse}
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
@@ -92,7 +92,7 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
 
     "should update the journey when a isAccountHolder already existed" - {
 
-      val differentResponse = StartCaseResponse(PegaCaseId("different-case-id"), PegaAssigmentId("different-assignment-id"))
+      val differentResponse = StartCaseResponse(PegaCaseId("different-case-id"))
 
       "Epaye when the current stage is" - {
 
