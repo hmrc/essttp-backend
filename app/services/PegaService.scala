@@ -23,7 +23,7 @@ import essttp.journey.model.Journey.{Epaye, Sa, Sia, Vat}
 import essttp.journey.model._
 import essttp.rootmodel._
 import essttp.rootmodel.epaye.{TaxOfficeNumber, TaxOfficeReference}
-import essttp.rootmodel.pega.{GetCaseResponse, PegaAssigmentId, PegaCaseId, StartCaseResponse}
+import essttp.rootmodel.pega.{GetCaseResponse, PegaCaseId, StartCaseResponse}
 import essttp.rootmodel.ttp.PaymentPlanFrequencies
 import essttp.rootmodel.ttp.affordablequotes._
 import essttp.rootmodel.ttp.eligibility.{ChargeReference, ChargeTypeAssessment, Charges, EligibilityCheckResult}
@@ -324,15 +324,8 @@ class PegaService @Inject() (
         .sum
     )
 
-  private def toStartCaseResponse(response: PegaStartCaseResponse): StartCaseResponse = {
-    val assignmentId =
-      response.data.caseInfo.assignments
-        .headOption
-        .map(_.ID)
-        .getOrElse(throw new Exception("Could not find assignment ID in PEGA start case response"))
-
-    StartCaseResponse(PegaCaseId(response.ID), PegaAssigmentId(assignmentId))
-  }
+  private def toStartCaseResponse(response: PegaStartCaseResponse): StartCaseResponse =
+    StartCaseResponse(PegaCaseId(response.ID))
 
   private def toGetCaseResponse(response: PegaGetCaseResponse, correlationId: String): GetCaseResponse = {
     val paymentPlan =

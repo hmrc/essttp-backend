@@ -95,20 +95,10 @@ object PegaStub {
     }
   }
 
-  private def generateResponseBody(response: PegaStartCaseResponse): String = {
-    val assignments =
-      response.data.caseInfo.assignments
-        .map(a => s"""{ "ID": "${a.ID}" }""")
-        .mkString(",")
+  private def generateResponseBody(response: PegaStartCaseResponse): String =
     s"""{
-       |  "ID": "${response.ID}",
-       |  "data": {
-       |    "caseInfo": {
-       |      "assignments": [ $assignments ]
-       |    }
-       |  }
+       |  "ID": "${response.ID}"
        |}""".stripMargin
-  }
 
   def stubGetCase(
       caseId:       PegaCaseId,

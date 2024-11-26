@@ -19,7 +19,7 @@ package essttp.rootmodel.pega
 import cats.Eq
 import play.api.libs.json.{Json, OFormat}
 
-final case class StartCaseResponse(caseId: PegaCaseId, assignmentId: PegaAssigmentId)
+final case class StartCaseResponse(caseId: PegaCaseId)
 
 object StartCaseResponse {
 

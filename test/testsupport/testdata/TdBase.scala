@@ -22,7 +22,7 @@ import essttp.rootmodel.bank._
 import essttp.rootmodel.dates.InitialPaymentDate
 import essttp.rootmodel.dates.extremedates.{EarliestPaymentPlanStartDate, ExtremeDatesResponse, LatestPaymentPlanStartDate}
 import essttp.rootmodel.dates.startdates.{InstalmentStartDate, StartDatesResponse}
-import essttp.rootmodel.pega.{PegaAssigmentId, PegaCaseId, StartCaseResponse}
+import essttp.rootmodel.pega.{PegaCaseId, StartCaseResponse}
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes._
 import essttp.rootmodel.ttp.eligibility.{ChargeReference, EligibilityCheckResult, EligibilityPass, EligibilityRules, EligibilityStatus}
@@ -236,21 +236,9 @@ trait TdBase {
 
   val pegaCaseId = PegaCaseId("case-id")
 
-  val pegaAssignmentId = PegaAssigmentId("assignment-id")
-
   val pegaOauthToken = PegaOauthToken("access", "type", 123456L)
 
-  val pegaStartCaseResponse = PegaStartCaseResponse(
-    pegaCaseId.value,
-    PegaStartCaseResponse.Data(
-      PegaStartCaseResponse.CaseInfo(
-        List(
-          PegaStartCaseResponse.Assignment(pegaAssignmentId.value),
-          PegaStartCaseResponse.Assignment(s"unused-${pegaAssignmentId.value}")
-        )
-      )
-    )
-  )
+  val pegaStartCaseResponse = PegaStartCaseResponse(pegaCaseId.value)
 
   def pegaGetCaseResponse(
       dayOfMonth:  DayOfMonth,
@@ -353,6 +341,6 @@ trait TdBase {
        |""".stripMargin
   }
 
-  val startCaseResponse = StartCaseResponse(pegaCaseId, pegaAssignmentId)
+  val startCaseResponse = StartCaseResponse(pegaCaseId)
 
 }
