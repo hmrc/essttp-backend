@@ -37,7 +37,7 @@ class EligibilityCheckResultSpec extends UnitSpec {
         TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = None, addresses = None).email shouldBe None
         TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = Some(List.empty), addresses = None).email shouldBe None
         TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = None, addresses = Some(List(Address(None, None, None, None, None, None, Some(List.empty), None, None, None)))).email shouldBe None
-        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = None, addresses = Some(List(Address(None, None, None, None, None, None, Some(List(ContactDetail(None, None, None, None, None))), None, None, None)))).email shouldBe None
+        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = None, addresses = Some(List(Address(None, None, None, None, None, None, Some(List(ContactDetail(None, None, None, None, None, None))), None, None, None)))).email shouldBe None
       }
 
       "there are emails in customerDetails" in {
@@ -54,9 +54,9 @@ class EligibilityCheckResultSpec extends UnitSpec {
       "there are no emails in customerDetails, but there are emails in addresses" in {
         val expectedEmail = Email(SensitiveString("abc@email.com"))
         TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = None, addresses = Some(List(
-          Address(None, None, None, None, None, None, Some(List(ContactDetail(None, None, None, None, None))), None, None, None),
-          Address(None, None, None, None, None, None, Some(List(ContactDetail(None, None, None, Some(Email(SensitiveString("abc@email.com"))), None))), None, None, None),
-          Address(None, None, None, None, None, None, Some(List(ContactDetail(None, None, None, Some(Email(SensitiveString("xyz@email.com"))), None))), None, None, None)
+          Address(None, None, None, None, None, None, Some(List(ContactDetail(None, None, None, None, None, None))), None, None, None),
+          Address(None, None, None, None, None, None, Some(List(ContactDetail(None, None, None, Some(Email(SensitiveString("abc@email.com"))), None, None))), None, None, None),
+          Address(None, None, None, None, None, None, Some(List(ContactDetail(None, None, None, Some(Email(SensitiveString("xyz@email.com"))), None, None))), None, None, None)
         ))).email shouldBe Some(expectedEmail)
       }
     }

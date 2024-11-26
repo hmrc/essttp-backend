@@ -25,6 +25,7 @@ final case class ContactDetail(
     fax:             Option[FaxNumber],
     mobile:          Option[TelNumber],
     emailAddress:    Option[Email],
+    emailSource:     Option[EmailSource],
     altFormat:       Option[AltLetterFormat]
 )
 
