@@ -65,7 +65,7 @@ object EligibilityCheckResult {
           addresses
             .flatMap(_.contactDetails.getOrElse(List.empty))
             .collectFirst {
-              case ContactDetail(_, _, _, Some(emailAddress), _) => emailAddress
+              case ContactDetail(_, _, _, Some(emailAddress), _, _) => emailAddress
             }
         }
       }
