@@ -68,26 +68,26 @@ class PegaConnector @Inject() (
       .execute[Either[UpstreamErrorResponse, PegaOauthToken]]
       .map(_.leftMap(throw _).merge)
 
-  def startCase(startCaseRequest: PegaStartCaseRequest, pegaToken: String, correlationId: String)(implicit hc: HeaderCarrier): Future[PegaStartCaseResponse] = {
-    logger.info(s"Calling PEGA start case with correlation id $correlationId")
+  def startCase(startCaseRequest: PegaStartCaseRequest, pegaToken: String, pegaCorrelationId: String)(implicit hc: HeaderCarrier): Future[PegaStartCaseResponse] = {
+    logger.info(s"Calling PEGA start case with correlation id $pegaCorrelationId")
 
     httpClient
       .post(startCaseUrl)
       .withProxy
       .withBody(Json.toJson(startCaseRequest))
       .setHeader(HeaderNames.AUTHORIZATION -> s"Bearer $pegaToken")
-      .setHeader(correlationIdHeaderName -> correlationId)
+      .setHeader(correlationIdHeaderName -> pegaCorrelationId)
       .execute[Either[UpstreamErrorResponse, PegaStartCaseResponse]]
       .map(_.leftMap(throw _).merge)
   }
 
-  def getCase(caseId: PegaCaseId, pegaToken: String, correlationId: String)(implicit hc: HeaderCarrier): Future[PegaGetCaseResponse] = {
-    logger.info(s"Calling PEGA get case with correlation id $correlationId")
+  def getCase(caseId: PegaCaseId, pegaToken: String, pegaCorrelationId: String)(implicit hc: HeaderCarrier): Future[PegaGetCaseResponse] = {
+    logger.info(s"Calling PEGA get case with correlation id $pegaCorrelationId")
 
     httpClient
       .get(url"$getCaseUrl/${caseId.value}?viewType=none&pageName=GetCaseDetailsWrapper&getBusinessDataOnly=true")
       .withProxy
-      .setHeader(correlationIdHeaderName -> correlationId)
+      .setHeader(correlationIdHeaderName -> pegaCorrelationId)
       .setHeader(HeaderNames.AUTHORIZATION -> s"Bearer $pegaToken")
       .execute[Either[UpstreamErrorResponse, PegaGetCaseResponse]]
       .map(_.leftMap(throw _).merge)

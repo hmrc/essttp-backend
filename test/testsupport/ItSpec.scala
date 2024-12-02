@@ -36,8 +36,8 @@ import testsupport.stubs.{AuditConnectorStub, AuthStub}
 import testsupport.testdata.TdAll
 import uk.gov.hmrc.auth.core.AuthProvider.GovernmentGateway
 import uk.gov.hmrc.auth.core.{AuthProviders, Enrolments}
-import uk.gov.hmrc.crypto.{AesCrypto, Decrypter, Encrypter, PlainText}
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
+import uk.gov.hmrc.crypto.{AesCrypto, Decrypter, Encrypter, PlainText}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.Clock
