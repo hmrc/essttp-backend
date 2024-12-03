@@ -57,17 +57,18 @@ class PegaService @Inject() (
     for {
       journey <- journeyService.get(journeyId)
       request = toPegaStartCaseRequest(journey, recalculationNeeded)
-      response <- doPegaCall(pegaConnector.startCase(request, _, correlationIdGenerator.nextCorrelationId()))
-    } yield toStartCaseResponse(response)
+      pegaCorrelationId = correlationIdGenerator.nextCorrelationId()
+      response <- doPegaCall(pegaConnector.startCase(request, _, pegaCorrelationId))
+    } yield toStartCaseResponse(response, pegaCorrelationId)
   }
 
   def getCase(journeyId: JourneyId)(implicit r: Request[_]): Future[GetCaseResponse] = {
     for {
       journey <- journeyService.get(journeyId)
       caseId = getCaseId(journey)
-      correlationId = correlationIdGenerator.nextCorrelationId()
-      response <- doPegaCall(pegaConnector.getCase(caseId, _, correlationId))
-    } yield toGetCaseResponse(response, correlationId)
+      pegaCorrelationId = correlationIdGenerator.nextCorrelationId()
+      response <- doPegaCall(pegaConnector.getCase(caseId, _, pegaCorrelationId))
+    } yield toGetCaseResponse(response, pegaCorrelationId)
   }
 
   private def doPegaCall[A](callAPI: String => Future[A])(implicit hc: HeaderCarrier): Future[A] = {
@@ -324,10 +325,10 @@ class PegaService @Inject() (
         .sum
     )
 
-  private def toStartCaseResponse(response: PegaStartCaseResponse): StartCaseResponse =
-    StartCaseResponse(PegaCaseId(response.ID))
+  private def toStartCaseResponse(response: PegaStartCaseResponse, pegaCorrelationId: String): StartCaseResponse =
+    StartCaseResponse(PegaCaseId(response.ID), pegaCorrelationId)
 
-  private def toGetCaseResponse(response: PegaGetCaseResponse, correlationId: String): GetCaseResponse = {
+  private def toGetCaseResponse(response: PegaGetCaseResponse, pegaCorrelationId: String): GetCaseResponse = {
     val paymentPlan =
       response.AA.paymentPlan
         .find(_.planSelected)
@@ -374,7 +375,7 @@ class PegaService @Inject() (
       ),
       expenditure,
       income,
-      correlationId
+      pegaCorrelationId
     )
   }
 

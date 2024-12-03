@@ -341,6 +341,6 @@ trait TdBase {
        |""".stripMargin
   }
 
-  val startCaseResponse = StartCaseResponse(pegaCaseId)
+  val startCaseResponse = StartCaseResponse(pegaCaseId, "pegaCorrelationId")
 
 }
