@@ -264,7 +264,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
 
             val result = controller.startCase(context.tdAll.journeyId, recalculationNeeded)(context.request)
             status(result) shouldBe CREATED
-            contentAsJson(result).as[StartCaseResponse] shouldBe StartCaseResponse(pegaCaseId, pegaCorrelationIdGenerator.fixedCorrelationId) //context.tdAll.startCaseResponse
+            contentAsJson(result).as[StartCaseResponse] shouldBe StartCaseResponse(pegaCaseId, pegaCorrelationIdGenerator.fixedCorrelationId)
 
             PegaStub.verifyOauthCalled("user", "pass")
             PegaStub.verifyStartCaseCalled(
