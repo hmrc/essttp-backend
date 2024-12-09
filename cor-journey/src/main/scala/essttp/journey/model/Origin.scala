@@ -48,7 +48,7 @@ object Origin {
       case _: Origins.Epaye => TaxRegime.Epaye
       case _: Origins.Vat   => TaxRegime.Vat
       case _: Origins.Sa    => TaxRegime.Sa
-      case _: Origins.Sia   => TaxRegime.Sia
+      case _: Origins.Simp  => TaxRegime.Simp
 
     }
   }
@@ -127,29 +127,29 @@ object Origins extends Enum[Origin] {
     override def values: immutable.IndexedSeq[Sa] = findValues
   }
 
-  sealed trait Sia extends Origin {
+  sealed trait Simp extends Origin {
     self: Origin =>
   }
 
-  object Sia extends Enum[Sia] {
-    implicit val format: Format[Sia] = EnumFormat(Sia)
+  object Simp extends Enum[Simp] {
+    implicit val format: Format[Simp] = EnumFormat(Simp)
 
-    case object Pta extends Origin with Sia with BetterName
+    case object Pta extends Origin with Simp with BetterName
 
-    case object Mobile extends Origin with Sia with BetterName
+    case object Mobile extends Origin with Simp with BetterName
 
-    case object GovUk extends Origin with Sia with BetterName
+    case object GovUk extends Origin with Simp with BetterName
 
     /**
      * This represents situation when user receives link to the application in whatsapp/email/etc and it's not clear
      * where the journey actually started from.
      */
-    case object DetachedUrl extends Origin with Sia with BetterName
+    case object DetachedUrl extends Origin with Simp with BetterName
 
-    override def values: immutable.IndexedSeq[Sia] = findValues
+    override def values: immutable.IndexedSeq[Simp] = findValues
   }
 
-  override def values: immutable.IndexedSeq[Origin] = Epaye.values ++ Vat.values ++ Sa.values ++ Sia.values
+  override def values: immutable.IndexedSeq[Origin] = Epaye.values ++ Vat.values ++ Sa.values ++ Simp.values
 }
 
 /**

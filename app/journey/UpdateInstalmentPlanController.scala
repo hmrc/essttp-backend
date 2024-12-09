@@ -74,8 +74,8 @@ class UpdateInstalmentPlanController @Inject() (
           .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
           .withFieldConst(_.selectedPaymentPlan, paymentPlan)
           .transform
-      case j: Journey.Sia.RetrievedAffordableQuotes =>
-        j.into[Journey.Sia.ChosenPaymentPlan]
+      case j: Journey.Simp.RetrievedAffordableQuotes =>
+        j.into[Journey.Simp.ChosenPaymentPlan]
           .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
           .withFieldConst(_.selectedPaymentPlan, paymentPlan)
           .transform
@@ -100,7 +100,7 @@ class UpdateInstalmentPlanController @Inject() (
               j.copy(selectedPaymentPlan = paymentPlan)
             case j: Journey.Sa.ChosenPaymentPlan =>
               j.copy(selectedPaymentPlan = paymentPlan)
-            case j: Journey.Sia.ChosenPaymentPlan =>
+            case j: Journey.Simp.ChosenPaymentPlan =>
               j.copy(selectedPaymentPlan = paymentPlan)
           }
         )
@@ -143,8 +143,8 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
-                case j: Journey.Sia.CheckedPaymentPlan =>
-                  j.into[Journey.Sia.ChosenPaymentPlan]
+                case j: Journey.Simp.CheckedPaymentPlan =>
+                  j.into[Journey.Simp.ChosenPaymentPlan]
                     .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
@@ -180,8 +180,8 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
-                case j: Journey.Sia.EnteredCanYouSetUpDirectDebit =>
-                  j.into[Journey.Sia.ChosenPaymentPlan]
+                case j: Journey.Simp.EnteredCanYouSetUpDirectDebit =>
+                  j.into[Journey.Simp.ChosenPaymentPlan]
                     .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
@@ -217,8 +217,8 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
-                case j: Journey.Sia.EnteredDirectDebitDetails =>
-                  j.into[Journey.Sia.ChosenPaymentPlan]
+                case j: Journey.Simp.EnteredDirectDebitDetails =>
+                  j.into[Journey.Simp.ChosenPaymentPlan]
                     .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
@@ -254,8 +254,8 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
-                case j: Journey.Sia.ConfirmedDirectDebitDetails =>
-                  j.into[Journey.Sia.ChosenPaymentPlan]
+                case j: Journey.Simp.ConfirmedDirectDebitDetails =>
+                  j.into[Journey.Simp.ChosenPaymentPlan]
                     .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
@@ -291,8 +291,8 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
-                case j: Journey.Sia.AgreedTermsAndConditions =>
-                  j.into[Journey.Sia.ChosenPaymentPlan]
+                case j: Journey.Simp.AgreedTermsAndConditions =>
+                  j.into[Journey.Simp.ChosenPaymentPlan]
                     .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
@@ -328,8 +328,8 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
-                case j: Journey.Sia.SelectedEmailToBeVerified =>
-                  j.into[Journey.Sia.ChosenPaymentPlan]
+                case j: Journey.Simp.SelectedEmailToBeVerified =>
+                  j.into[Journey.Simp.ChosenPaymentPlan]
                     .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
@@ -365,8 +365,8 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
-                case j: Journey.Sia.EmailVerificationComplete =>
-                  j.into[Journey.Sia.ChosenPaymentPlan]
+                case j: Journey.Simp.EmailVerificationComplete =>
+                  j.into[Journey.Simp.ChosenPaymentPlan]
                     .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)

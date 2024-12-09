@@ -175,44 +175,44 @@ class UpdateTaxIdControllerSpec extends ItSpec {
       }
     }
 
-    "Journey.Sia" - {
+    "Journey.Simp" - {
       "should throw Bad Request when passed an EmpRef in stage [Started]" in new JourneyItTest {
         stubCommonActions()
 
-        insertJourneyForTest(TdAll.SiaPta.journeyAfterStarted.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+        insertJourneyForTest(TdAll.SimpPta.journeyAfterStarted.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
         val result: Throwable = journeyConnector.updateTaxId(tdAll.journeyId, EmpRef("thisshouldfailthetest")).failed.futureValue
-        result.getMessage should include("""{"statusCode":400,"message":"Why is there a EmpRef, this is for Sia..."}""")
+        result.getMessage should include("""{"statusCode":400,"message":"Why is there a EmpRef, this is for Simp..."}""")
 
         verifyCommonActions(numberOfAuthCalls = 1)
       }
       "should throw Bad Request when passed an Vrn in stage [Started]" in new JourneyItTest {
         stubCommonActions()
 
-        insertJourneyForTest(TdAll.SiaPta.journeyAfterStarted.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+        insertJourneyForTest(TdAll.SimpPta.journeyAfterStarted.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
         val result: Throwable = journeyConnector.updateTaxId(tdAll.journeyId, Vrn("thisshouldfailthetest")).failed.futureValue
-        result.getMessage should include("""{"statusCode":400,"message":"Why is there a Vrn, this is for Sia..."}""")
+        result.getMessage should include("""{"statusCode":400,"message":"Why is there a Vrn, this is for Simp..."}""")
 
         verifyCommonActions(numberOfAuthCalls = 1)
       }
       "should throw Bad Request when passed an SaUtr in stage [Started]" in new JourneyItTest {
         stubCommonActions()
 
-        insertJourneyForTest(TdAll.SiaPta.journeyAfterStarted.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+        insertJourneyForTest(TdAll.SimpPta.journeyAfterStarted.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
         val result: Throwable = journeyConnector.updateTaxId(tdAll.journeyId, SaUtr("thisshouldfailthetest")).failed.futureValue
-        result.getMessage should include("""{"statusCode":400,"message":"Why is there a SaUtr, this is for Sia..."}""")
+        result.getMessage should include("""{"statusCode":400,"message":"Why is there a SaUtr, this is for Simp..."}""")
 
         verifyCommonActions(numberOfAuthCalls = 1)
       }
       "update a tax ID when given an Nino" in new JourneyItTest {
         stubCommonActions()
 
-        insertJourneyForTest(TdAll.SiaPta.journeyAfterStarted.copy(
+        insertJourneyForTest(TdAll.SimpPta.journeyAfterStarted.copy(
           _id           = tdAll.journeyId,
           correlationId = tdAll.correlationId
         ))
 
         val result = journeyConnector.updateTaxId(tdAll.journeyId, tdAll.nino).futureValue
-        result shouldBe TdAll.SiaPta.journeyAfterDetermineTaxIds.copy(
+        result shouldBe TdAll.SimpPta.journeyAfterDetermineTaxIds.copy(
           _id           = tdAll.journeyId,
           correlationId = tdAll.correlationId
         )

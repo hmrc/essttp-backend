@@ -18,7 +18,7 @@ package testsupport.testdata
 
 import testsupport.testdata.epaye._
 import testsupport.testdata.sa._
-import testsupport.testdata.sia.{TdJourneySiaDetachedUrl, TdJourneySiaGovUk, TdJourneySiaMobile, TdJourneySiaPta, TdSia}
+import testsupport.testdata.simp.{TdJourneySimpDetachedUrl, TdJourneySimpGovUk, TdJourneySimpMobile, TdJourneySimpPta, TdSimp}
 import testsupport.testdata.vat._
 
 /**
@@ -50,8 +50,8 @@ trait TdAll extends AnyRef
   with TdJourneySaMobile
   with TdJourneySaGovUk
   with TdJourneySaDetachedUrl
-  with TdSia
-  with TdJourneySiaPta
-  with TdJourneySiaMobile
-  with TdJourneySiaGovUk
-  with TdJourneySiaDetachedUrl
+  with TdSimp
+  with TdJourneySimpPta
+  with TdJourneySimpMobile
+  with TdJourneySimpGovUk
+  with TdJourneySimpDetachedUrl

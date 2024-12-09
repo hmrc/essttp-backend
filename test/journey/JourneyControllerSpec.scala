@@ -1514,7 +1514,7 @@ class JourneyControllerSpec extends ItSpec {
     }
   }
 
-  private val siaTestNameJourneyStages: String =
+  private val simpTestNameJourneyStages: String =
     "[StartJourney]" +
       "[UpdateTaxId]" +
       "[UpdateEligibilityCheck]" +
@@ -1533,403 +1533,403 @@ class JourneyControllerSpec extends ItSpec {
       "[UpdateConfirmedDirectDebitDetails]" +
       "[UpdateHasAgreedTermsAndConditions]"
 
-  "[Sia]" - {
-    s"[Pta]$siaTestNameJourneyStages" in {
+  "[Simp]" - {
+    s"[Pta]$simpTestNameJourneyStages" in {
       stubCommonActions()
       val tdAll = new TdAll {
         override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
       implicit val request: Request[_] = tdAll.request
-      val response: SjResponse = journeyConnector.Sia.startJourneyPta(tdAll.SiaPta.sjRequest).futureValue
+      val response: SjResponse = journeyConnector.Simp.startJourneyPta(tdAll.SimpPta.sjRequest).futureValue
 
       /** Start journey */
-      response shouldBe tdAll.SiaPta.sjResponse
-      journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterStarted
+      response shouldBe tdAll.SimpPta.sjResponse
+      journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterStarted
 
       /** Update tax id */
-      journeyConnector.updateTaxId(tdAll.journeyId, tdAll.SiaPta.updateTaxIdRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterDetermineTaxIds
+      journeyConnector.updateTaxId(tdAll.journeyId, tdAll.SimpPta.updateTaxIdRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterDetermineTaxIds
 
       /** Update eligibility result * */
-      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.SiaPta.updateEligibilityCheckRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterEligibilityCheckEligible
+      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.SimpPta.updateEligibilityCheckRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterEligibilityCheckEligible
 
       /** Update why cannot pay in full */
       journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterWhyCannotPayInFullNotRequired
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront */
-      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.SiaPta.updateCanPayUpfrontYesRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterCanPayUpfrontYes
+      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.SimpPta.updateCanPayUpfrontYesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterCanPayUpfrontYes
 
       /** Update UpfrontPaymentAmount */
-      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.SiaPta.updateUpfrontPaymentAmountRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterUpfrontPaymentAmount
+      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.SimpPta.updateUpfrontPaymentAmountRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterUpfrontPaymentAmount
 
       /** Update ExtremeDates */
-      journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.SiaPta.updateExtremeDatesRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterExtremeDates
+      journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.SimpPta.updateExtremeDatesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterExtremeDates
 
       /** Update AffordabilityResult */
-      journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.SiaPta.updateInstalmentAmountsRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterInstalmentAmounts
+      journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.SimpPta.updateInstalmentAmountsRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterInstalmentAmounts
 
       /** Update CanPayWithinSixMonths */
       journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterCanPayWithinSixMonths
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterCanPayWithinSixMonths
 
       /** Update MonthlyPaymentAmount */
-      journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.SiaPta.updateMonthlyPaymentAmountRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterMonthlyPaymentAmount
+      journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.SimpPta.updateMonthlyPaymentAmountRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterMonthlyPaymentAmount
 
       /** Update DayOfMonth */
-      journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.SiaPta.updateDayOfMonthRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterDayOfMonth
+      journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.SimpPta.updateDayOfMonthRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterDayOfMonth
 
       /** Update StartDates */
-      journeyConnector.updateStartDates(tdAll.journeyId, tdAll.SiaPta.updateStartDatesResponse()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterStartDatesResponse
+      journeyConnector.updateStartDates(tdAll.journeyId, tdAll.SimpPta.updateStartDatesResponse()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterStartDatesResponse
 
       /** Update AffordableQuotes */
-      journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.SiaPta.updateAffordableQuotesResponse()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterAffordableQuotesResponse
+      journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.SimpPta.updateAffordableQuotesResponse()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterAffordableQuotesResponse
 
       /** Update Chosen Instalment plan */
-      journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.SiaPta.updateSelectedPaymentPlanRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterSelectedPaymentPlan
+      journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.SimpPta.updateSelectedPaymentPlanRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
       journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SiaPta.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SimpPta.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
-      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SiaPta.updateDirectDebitDetailsRequest).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability()
+      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SimpPta.updateDirectDebitDetailsRequest).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterSelectedEmail
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterSelectedEmail
 
       /** Update Email Verification Status */
       journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Verified).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
 
       /** Update Arrangement (journey completed) */
-      journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SiaPta.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaPta.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
+      journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SimpPta.updateArrangementRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }
 
-    s"[Mobile]$siaTestNameJourneyStages" in {
+    s"[Mobile]$simpTestNameJourneyStages" in {
       stubCommonActions()
       val tdAll = new TdAll {
         override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
       implicit val request: Request[_] = tdAll.request
-      val response: SjResponse = journeyConnector.Sia.startJourneyMobile(tdAll.SiaMobile.sjRequest).futureValue
+      val response: SjResponse = journeyConnector.Simp.startJourneyMobile(tdAll.SimpMobile.sjRequest).futureValue
 
       /** Start journey */
-      response shouldBe tdAll.SiaMobile.sjResponse
-      journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterStarted
+      response shouldBe tdAll.SimpMobile.sjResponse
+      journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterStarted
 
       /** Update tax id */
-      journeyConnector.updateTaxId(tdAll.journeyId, tdAll.SiaMobile.updateTaxIdRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterDetermineTaxIds
+      journeyConnector.updateTaxId(tdAll.journeyId, tdAll.SimpMobile.updateTaxIdRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterDetermineTaxIds
 
       /** Update eligibility result * */
-      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.SiaMobile.updateEligibilityCheckRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterEligibilityCheckEligible
+      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.SimpMobile.updateEligibilityCheckRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterEligibilityCheckEligible
 
       /** Update why cannot pay in full */
       journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterWhyCannotPayInFullNotRequired
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront */
-      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.SiaMobile.updateCanPayUpfrontYesRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterCanPayUpfrontYes
+      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.SimpMobile.updateCanPayUpfrontYesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterCanPayUpfrontYes
 
       /** Update UpfrontPaymentAmount */
-      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.SiaMobile.updateUpfrontPaymentAmountRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterUpfrontPaymentAmount
+      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.SimpMobile.updateUpfrontPaymentAmountRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterUpfrontPaymentAmount
 
       /** Update ExtremeDates */
-      journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.SiaMobile.updateExtremeDatesRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterExtremeDates
+      journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.SimpMobile.updateExtremeDatesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterExtremeDates
 
       /** Update AffordabilityResult */
-      journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.SiaMobile.updateInstalmentAmountsRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterInstalmentAmounts
+      journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.SimpMobile.updateInstalmentAmountsRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterInstalmentAmounts
 
       /** Update CanPayWithinSixMonths */
       journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterCanPayWithinSixMonths
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterCanPayWithinSixMonths
 
       /** Update MonthlyPaymentAmount */
-      journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.SiaMobile.updateMonthlyPaymentAmountRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterMonthlyPaymentAmount
+      journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.SimpMobile.updateMonthlyPaymentAmountRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterMonthlyPaymentAmount
 
       /** Update DayOfMonth */
-      journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.SiaMobile.updateDayOfMonthRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterDayOfMonth
+      journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.SimpMobile.updateDayOfMonthRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterDayOfMonth
 
       /** Update StartDates */
-      journeyConnector.updateStartDates(tdAll.journeyId, tdAll.SiaMobile.updateStartDatesResponse()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterStartDatesResponse
+      journeyConnector.updateStartDates(tdAll.journeyId, tdAll.SimpMobile.updateStartDatesResponse()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterStartDatesResponse
 
       /** Update AffordableQuotes */
-      journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.SiaMobile.updateAffordableQuotesResponse()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterAffordableQuotesResponse
+      journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.SimpMobile.updateAffordableQuotesResponse()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterAffordableQuotesResponse
 
       /** Update Chosen Instalment plan */
-      journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.SiaMobile.updateSelectedPaymentPlanRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterSelectedPaymentPlan
+      journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.SimpMobile.updateSelectedPaymentPlanRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
       journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterCheckedPaymentPlanNonAffordability
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SiaMobile.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SimpMobile.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
-      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SiaMobile.updateDirectDebitDetailsRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterEnteredDirectDebitDetailsNoAffordability()
+      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SimpMobile.updateDirectDebitDetailsRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterConfirmedDirectDebitDetailsNoAffordability
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterSelectedEmail
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterSelectedEmail
 
       /** Update Email Verification Status */
       journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Verified).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
 
       /** Update Arrangement (journey completed) */
-      journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SiaMobile.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaMobile.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
+      journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SimpMobile.updateArrangementRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }
 
-    s"[GovUk]$siaTestNameJourneyStages" in {
+    s"[GovUk]$simpTestNameJourneyStages" in {
       stubCommonActions()
       val tdAll = new TdAll {
         override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
       implicit val request: Request[_] = tdAll.request
-      val response: SjResponse = journeyConnector.Sia.startJourneyGovUk(tdAll.SiaGovUk.sjRequest).futureValue
+      val response: SjResponse = journeyConnector.Simp.startJourneyGovUk(tdAll.SimpGovUk.sjRequest).futureValue
 
       /** Start journey */
-      response shouldBe tdAll.SiaGovUk.sjResponse
-      journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterStarted
+      response shouldBe tdAll.SimpGovUk.sjResponse
+      journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterStarted
 
       /** Update tax id */
-      journeyConnector.updateTaxId(tdAll.journeyId, tdAll.SiaGovUk.updateTaxIdRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterDetermineTaxIds
+      journeyConnector.updateTaxId(tdAll.journeyId, tdAll.SimpGovUk.updateTaxIdRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterDetermineTaxIds
 
       /** Update eligibility result * */
-      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.SiaGovUk.updateEligibilityCheckRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterEligibilityCheckEligible
+      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.SimpGovUk.updateEligibilityCheckRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterEligibilityCheckEligible
 
       /** Update why cannot pay in full */
       journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterWhyCannotPayInFullNotRequired
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront */
-      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.SiaGovUk.updateCanPayUpfrontYesRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterCanPayUpfrontYes
+      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.SimpGovUk.updateCanPayUpfrontYesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterCanPayUpfrontYes
 
       /** Update UpfrontPaymentAmount */
-      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.SiaGovUk.updateUpfrontPaymentAmountRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterUpfrontPaymentAmount
+      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.SimpGovUk.updateUpfrontPaymentAmountRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterUpfrontPaymentAmount
 
       /** Update ExtremeDates */
-      journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.SiaGovUk.updateExtremeDatesRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterExtremeDates
+      journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.SimpGovUk.updateExtremeDatesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterExtremeDates
 
       /** Update AffordabilityResult */
-      journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.SiaGovUk.updateInstalmentAmountsRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterInstalmentAmounts
+      journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.SimpGovUk.updateInstalmentAmountsRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterInstalmentAmounts
 
       /** Update CanPayWithinSixMonths */
       journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterCanPayWithinSixMonths
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterCanPayWithinSixMonths
 
       /** Update MonthlyPaymentAmount */
-      journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.SiaGovUk.updateMonthlyPaymentAmountRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterMonthlyPaymentAmount
+      journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.SimpGovUk.updateMonthlyPaymentAmountRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterMonthlyPaymentAmount
 
       /** Update DayOfMonth */
-      journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.SiaGovUk.updateDayOfMonthRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterDayOfMonth
+      journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.SimpGovUk.updateDayOfMonthRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterDayOfMonth
 
       /** Update StartDates */
-      journeyConnector.updateStartDates(tdAll.journeyId, tdAll.SiaGovUk.updateStartDatesResponse()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterStartDatesResponse
+      journeyConnector.updateStartDates(tdAll.journeyId, tdAll.SimpGovUk.updateStartDatesResponse()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterStartDatesResponse
 
       /** Update AffordableQuotes */
-      journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.SiaGovUk.updateAffordableQuotesResponse()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterAffordableQuotesResponse
+      journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.SimpGovUk.updateAffordableQuotesResponse()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterAffordableQuotesResponse
 
       /** Update Chosen Instalment plan */
-      journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.SiaGovUk.updateSelectedPaymentPlanRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterSelectedPaymentPlan
+      journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.SimpGovUk.updateSelectedPaymentPlanRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
       journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterCheckedPaymentPlanNonAffordability
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SiaGovUk.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SimpGovUk.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
-      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SiaGovUk.updateDirectDebitDetailsRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterEnteredDirectDebitDetailsNoAffordability()
+      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SimpGovUk.updateDirectDebitDetailsRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterConfirmedDirectDebitDetailsNoAffordability
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterSelectedEmail
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterSelectedEmail
 
       /** Update Email Verification Status */
       journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Verified).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
 
       /** Update Arrangement (journey completed) */
-      journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SiaGovUk.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaGovUk.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
+      journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SimpGovUk.updateArrangementRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }
 
-    s"[DetachedUrl]$siaTestNameJourneyStages" in {
+    s"[DetachedUrl]$simpTestNameJourneyStages" in {
       stubCommonActions()
       val tdAll = new TdAll {
         override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
       implicit val request: Request[_] = tdAll.request
-      val response: SjResponse = journeyConnector.Sia.startJourneyDetachedUrl(tdAll.SiaDetachedUrl.sjRequest).futureValue
+      val response: SjResponse = journeyConnector.Simp.startJourneyDetachedUrl(tdAll.SimpDetachedUrl.sjRequest).futureValue
 
       /** Start journey */
-      response shouldBe tdAll.SiaDetachedUrl.sjResponse
-      journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterStarted
+      response shouldBe tdAll.SimpDetachedUrl.sjResponse
+      journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterStarted
 
       /** Update tax id */
-      journeyConnector.updateTaxId(tdAll.journeyId, tdAll.SiaDetachedUrl.updateTaxIdRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterDetermineTaxIds
+      journeyConnector.updateTaxId(tdAll.journeyId, tdAll.SimpDetachedUrl.updateTaxIdRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterDetermineTaxIds
 
       /** Update eligibility result * */
-      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.SiaDetachedUrl.updateEligibilityCheckRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterEligibilityCheckEligible
+      journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.SimpDetachedUrl.updateEligibilityCheckRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterEligibilityCheckEligible
 
       /** Update why cannot pay in full */
       journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterWhyCannotPayInFullNotRequired
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterWhyCannotPayInFullNotRequired
 
       /** Update CanPayUpfront */
-      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.SiaDetachedUrl.updateCanPayUpfrontYesRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterCanPayUpfrontYes
+      journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.SimpDetachedUrl.updateCanPayUpfrontYesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterCanPayUpfrontYes
 
       /** Update UpfrontPaymentAmount */
-      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.SiaDetachedUrl.updateUpfrontPaymentAmountRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterUpfrontPaymentAmount
+      journeyConnector.updateUpfrontPaymentAmount(tdAll.journeyId, tdAll.SimpDetachedUrl.updateUpfrontPaymentAmountRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterUpfrontPaymentAmount
 
       /** Update ExtremeDates */
-      journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.SiaDetachedUrl.updateExtremeDatesRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterExtremeDates
+      journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.SimpDetachedUrl.updateExtremeDatesRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterExtremeDates
 
       /** Update AffordabilityResult */
-      journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.SiaDetachedUrl.updateInstalmentAmountsRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterInstalmentAmounts
+      journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.SimpDetachedUrl.updateInstalmentAmountsRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterInstalmentAmounts
 
       /** Update CanPayWithinSixMonths */
       journeyConnector.updateCanPayWithinSixMonthsAnswers(tdAll.journeyId, tdAll.canPayWithinSixMonthsNotRequired).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterCanPayWithinSixMonths
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterCanPayWithinSixMonths
 
       /** Update MonthlyPaymentAmount */
-      journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.SiaDetachedUrl.updateMonthlyPaymentAmountRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterMonthlyPaymentAmount
+      journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.SimpDetachedUrl.updateMonthlyPaymentAmountRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterMonthlyPaymentAmount
 
       /** Update DayOfMonth */
-      journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.SiaDetachedUrl.updateDayOfMonthRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterDayOfMonth
+      journeyConnector.updateDayOfMonth(tdAll.journeyId, tdAll.SimpDetachedUrl.updateDayOfMonthRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterDayOfMonth
 
       /** Update StartDates */
-      journeyConnector.updateStartDates(tdAll.journeyId, tdAll.SiaDetachedUrl.updateStartDatesResponse()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterStartDatesResponse
+      journeyConnector.updateStartDates(tdAll.journeyId, tdAll.SimpDetachedUrl.updateStartDatesResponse()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterStartDatesResponse
 
       /** Update AffordableQuotes */
-      journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.SiaDetachedUrl.updateAffordableQuotesResponse()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterAffordableQuotesResponse
+      journeyConnector.updateAffordableQuotes(tdAll.journeyId, tdAll.SimpDetachedUrl.updateAffordableQuotesResponse()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterAffordableQuotesResponse
 
       /** Update Chosen Instalment plan */
-      journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.SiaDetachedUrl.updateSelectedPaymentPlanRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterSelectedPaymentPlan
+      journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.SimpDetachedUrl.updateSelectedPaymentPlanRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterSelectedPaymentPlan
 
       /** Update Checked Instalment plan */
       journeyConnector.updateHasCheckedPaymentPlan(tdAll.journeyId, tdAll.paymentPlanAnswersNoAffordability).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterCheckedPaymentPlanNonAffordability
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterCheckedPaymentPlanNonAffordability
 
       /** Update Details about Bank Account */
-      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SiaDetachedUrl.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
+      journeyConnector.updateCanSetUpDirectDebit(tdAll.journeyId, tdAll.SimpDetachedUrl.updateCanSetUpDirectDebitRequest(isAccountHolder = true)).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
       /** Update Direct debit details */
-      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SiaDetachedUrl.updateDirectDebitDetailsRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterEnteredDirectDebitDetailsNoAffordability()
+      journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SimpDetachedUrl.updateDirectDebitDetailsRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterEnteredDirectDebitDetailsNoAffordability()
 
       /** Update Confirm Direct debit details */
       journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterConfirmedDirectDebitDetailsNoAffordability
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       /** Update Agreed terms and conditions */
       journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
 
       /** Update Email Address */
       journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.email).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterSelectedEmail
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterSelectedEmail
 
       /** Update Email Verification Status */
       journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Verified).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
 
       /** Update Arrangement (journey completed) */
-      journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SiaDetachedUrl.updateArrangementRequest()).futureValue
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SiaDetachedUrl.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
+      journeyConnector.updateArrangement(tdAll.journeyId, tdAll.SimpDetachedUrl.updateArrangementRequest()).futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl.journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
       verifyCommonActions(numberOfAuthCalls = 44)
     }

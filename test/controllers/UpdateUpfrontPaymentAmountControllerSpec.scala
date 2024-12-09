@@ -70,13 +70,13 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
           )(this)
       }
 
-      "Sia" in new JourneyItTest {
+      "Simp" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SiaPta.journeyAfterCanPayUpfrontYes,
-          TdAll.SiaPta.updateUpfrontPaymentAmountRequest()
+          tdAll.SimpPta.journeyAfterCanPayUpfrontYes,
+          TdAll.SimpPta.updateUpfrontPaymentAmountRequest()
         )(
             journeyConnector.updateUpfrontPaymentAmount,
-            tdAll.SiaPta.journeyAfterUpfrontPaymentAmount
+            tdAll.SimpPta.journeyAfterUpfrontPaymentAmount
           )(this)
       }
     }
@@ -365,96 +365,96 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
 
       }
 
-      "Sia when the current stage is" - {
+      "Simp when the current stage is" - {
 
         val differentUpfrontPaymentAmount = UpfrontPaymentAmount(AmountInPence(65482))
 
-          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => UpfrontPaymentAmount)(context: JourneyItTest): Unit =
+          def testSimpPta[J <: Journey](initialJourney: J)(existingValue: J => UpfrontPaymentAmount)(context: JourneyItTest): Unit =
             testUpdateWithExistingValue(initialJourney)(
               _.journeyId,
               existingValue(initialJourney)
             )(
                 differentUpfrontPaymentAmount,
                 journeyConnector.updateUpfrontPaymentAmount(_, _)(context.request),
-                context.tdAll.SiaPta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = differentUpfrontPaymentAmount)
+                context.tdAll.SimpPta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = differentUpfrontPaymentAmount)
               )(context)
 
-          def testSiaPtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => UpfrontPaymentAmount)(context: JourneyItTest): Unit =
+          def testSimpPtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => UpfrontPaymentAmount)(context: JourneyItTest): Unit =
             testUpdateWithExistingValue(initialJourney)(
               _.journeyId,
               existingValue(initialJourney)
             )(
                 differentUpfrontPaymentAmount,
                 journeyConnector.updateUpfrontPaymentAmount(_, _)(context.request),
-                context.tdAll.SiaPta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = differentUpfrontPaymentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
+                context.tdAll.SimpPta.journeyAfterUpfrontPaymentAmount.copy(upfrontPaymentAmount = differentUpfrontPaymentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
               )(context)
 
         "EnteredUpfrontPaymentAmount" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterUpfrontPaymentAmount)(_.upfrontPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterUpfrontPaymentAmount)(_.upfrontPaymentAmount)(this)
         }
 
         "RetrievedExtremeDates" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterExtremeDates)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterExtremeDates)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "RetrievedAffordabilityResult" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterInstalmentAmounts)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterInstalmentAmounts)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterCanPayWithinSixMonths)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterCanPayWithinSixMonths)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testSiaPtaWithCaseId(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSimpPtaWithCaseId(tdAll.SimpPta.journeyAfterStartedPegaCase)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterMonthlyPaymentAmount)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterMonthlyPaymentAmount)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "EnteredDayOfMonth" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterDayOfMonth)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterDayOfMonth)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "RetrievedStartDates" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterStartDatesResponse)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterStartDatesResponse)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "RetrievedAffordableQuotes" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterAffordableQuotesResponse)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAffordableQuotesResponse)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "ChosenPaymentPlan" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterSelectedPaymentPlan)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterSelectedPaymentPlan)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterSelectedEmail)(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.upfrontPaymentAnswers.upfrontPaymentAmount)(this)
         }
 
       }

@@ -72,7 +72,7 @@ object SaUtr {
 }
 
 /**
- * Simple Self Assessment Unique Tax Reference (Nino) Tax Id for Sia.
+ * Simple Self Assessment Unique Tax Reference (Nino) Tax Id for Simp.
  */
 final case class Nino(value: String) extends TaxId
 

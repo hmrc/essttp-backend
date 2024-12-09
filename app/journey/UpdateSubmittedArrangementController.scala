@@ -91,8 +91,8 @@ class UpdateSubmittedArrangementController @Inject() (
           .withFieldConst(_.emailVerificationAnswers, EmailVerificationAnswers.NoEmailJourney)
           .withFieldConst(_.arrangementResponse, arrangementResponse)
           .transform
-      case Left(j: Journey.Sia.AgreedTermsAndConditions) =>
-        j.into[Journey.Sia.SubmittedArrangement]
+      case Left(j: Journey.Simp.AgreedTermsAndConditions) =>
+        j.into[Journey.Simp.SubmittedArrangement]
           .withFieldConst(_.stage, Stage.AfterSubmittedArrangement.Submitted)
           .withFieldConst(_.emailVerificationAnswers, EmailVerificationAnswers.NoEmailJourney)
           .withFieldConst(_.arrangementResponse, arrangementResponse)
@@ -113,8 +113,8 @@ class UpdateSubmittedArrangementController @Inject() (
           .withFieldConst(_.stage, Stage.AfterSubmittedArrangement.Submitted)
           .withFieldConst(_.arrangementResponse, arrangementResponse)
           .transform
-      case Right(j: Journey.Sia.EmailVerificationComplete) =>
-        j.into[Journey.Sia.SubmittedArrangement]
+      case Right(j: Journey.Simp.EmailVerificationComplete) =>
+        j.into[Journey.Simp.SubmittedArrangement]
           .withFieldConst(_.stage, Stage.AfterSubmittedArrangement.Submitted)
           .withFieldConst(_.arrangementResponse, arrangementResponse)
           .transform

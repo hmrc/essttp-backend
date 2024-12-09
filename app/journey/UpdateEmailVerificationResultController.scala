@@ -21,7 +21,7 @@ import cats.syntax.eq._
 import com.google.inject.Inject
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import paymentsEmailVerification.models.EmailVerificationResult
-import essttp.journey.model.Journey.{Epaye, Sa, Sia, Stages, Vat}
+import essttp.journey.model.Journey.{Epaye, Sa, Simp, Stages, Vat}
 import essttp.journey.model.{EmailVerificationAnswers, Journey, JourneyId, Stage}
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformationOps
@@ -81,8 +81,8 @@ class UpdateEmailVerificationResultController @Inject() (
           .withFieldConst(_.emailVerificationAnswers, EmailVerificationAnswers.EmailVerified(j.emailToBeVerified, status))
           .withFieldConst(_.emailVerificationResult, status)
           .transform
-      case j: Sia.SelectedEmailToBeVerified =>
-        j.into[Sia.EmailVerificationComplete]
+      case j: Simp.SelectedEmailToBeVerified =>
+        j.into[Simp.EmailVerificationComplete]
           .withFieldConst(_.stage, determineStage(status))
           .withFieldConst(_.emailVerificationAnswers, EmailVerificationAnswers.EmailVerified(j.emailToBeVerified, status))
           .withFieldConst(_.emailVerificationResult, status)
@@ -122,7 +122,7 @@ class UpdateEmailVerificationResultController @Inject() (
             emailVerificationResult  = result,
             emailVerificationAnswers = EmailVerificationAnswers.EmailVerified(j.emailToBeVerified, result)
           )
-        case j: Sia.EmailVerificationComplete =>
+        case j: Simp.EmailVerificationComplete =>
           j.copy(
             stage                    = determineStage(result),
             emailVerificationResult  = result,

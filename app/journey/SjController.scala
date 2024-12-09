@@ -19,7 +19,7 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import config.JourneyConfig
-import essttp.journey.model.Origins.{Sa, Sia}
+import essttp.journey.model.Origins.{Sa, Simp}
 import essttp.journey.model._
 import essttp.utils.RequestSupport
 import play.api.libs.json.{Json, Reads}
@@ -87,17 +87,17 @@ class SjController @Inject() (
       doJourneyStart(originatedSjRequest)
     }
 
-  val startJourneySiaFromPta: Action[SjRequest.Sia.Simple] = startJourneySia[SjRequest.Sia.Simple](Origins.Sia.Pta)
+  val startJourneySimpFromPta: Action[SjRequest.Simp.Simple] = startJourneySimp[SjRequest.Simp.Simple](Origins.Simp.Pta)
 
-  val startJourneySiaFromMobile: Action[SjRequest.Sia.Simple] = startJourneySia[SjRequest.Sia.Simple](Origins.Sia.Mobile)
+  val startJourneySimpFromMobile: Action[SjRequest.Simp.Simple] = startJourneySimp[SjRequest.Simp.Simple](Origins.Simp.Mobile)
 
-  val startJourneySiaFromGovUk: Action[SjRequest.Sia.Empty] = startJourneySia[SjRequest.Sia.Empty](Origins.Sia.GovUk)
+  val startJourneySimpFromGovUk: Action[SjRequest.Simp.Empty] = startJourneySimp[SjRequest.Simp.Empty](Origins.Simp.GovUk)
 
-  val startJourneySiaFromDetachedUrl: Action[SjRequest.Sia.Empty] = startJourneySia[SjRequest.Sia.Empty](Origins.Sia.DetachedUrl)
+  val startJourneySimpFromDetachedUrl: Action[SjRequest.Simp.Empty] = startJourneySimp[SjRequest.Simp.Empty](Origins.Simp.DetachedUrl)
 
-  private def startJourneySia[StartRequest <: SjRequest.Sia: Reads](origin: Origins.Sia): Action[StartRequest] =
+  private def startJourneySimp[StartRequest <: SjRequest.Simp: Reads](origin: Origins.Simp): Action[StartRequest] =
     actions.authenticatedAction.async(parse.json[StartRequest]) { implicit request =>
-      val originatedSjRequest = OriginatedSjRequest.Sia(origin, request.body)
+      val originatedSjRequest = OriginatedSjRequest.Simp(origin, request.body)
       doJourneyStart(originatedSjRequest)
     }
 
@@ -137,11 +137,11 @@ class SjController @Inject() (
       case Sa.GovUk       => "Journey for Sa from GovUk"
       case Sa.DetachedUrl => "Journey for Sa from DetachedUrl"
     }
-    case o: Origins.Sia => o match {
-      case Sia.GovUk       => "Journey for Sia from GovUk"
-      case Sia.Pta         => "Journey for Sia from PTA"
-      case Sia.DetachedUrl => "Journey for Sia from DetachedUrl"
-      case Sia.Mobile      => "Journey for Sia from Mobile"
+    case o: Origins.Simp => o match {
+      case Simp.GovUk       => "Journey for Simp from GovUk"
+      case Simp.Pta         => "Journey for Simp from PTA"
+      case Simp.DetachedUrl => "Journey for Simp from DetachedUrl"
+      case Simp.Mobile      => "Journey for Simp from Mobile"
     }
   }
 
@@ -149,7 +149,7 @@ class SjController @Inject() (
     case _: Origins.Epaye => "/epaye-payment-plan"
     case _: Origins.Vat   => "/vat-payment-plan"
     case _: Origins.Sa    => "/sa-payment-plan"
-    case _: Origins.Sia   => "/sia-payment-plan"
+    case _: Origins.Simp  => "/simple-assessment-payment-plan"
   }
 
 }

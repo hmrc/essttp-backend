@@ -19,7 +19,7 @@ package services
 import cats.implicits.catsSyntaxEq
 import connectors.PegaConnector
 import essttp.enrolments.{EnrolmentDef, EnrolmentDefResult}
-import essttp.journey.model.Journey.{Epaye, Sa, Sia, Vat}
+import essttp.journey.model.Journey.{Epaye, Sa, Simp, Vat}
 import essttp.journey.model._
 import essttp.rootmodel._
 import essttp.rootmodel.epaye.{TaxOfficeNumber, TaxOfficeReference}
@@ -100,9 +100,9 @@ class PegaService @Inject() (
     val enrolmentResult: EnrolmentDefResult[TaxId] = taxRegime match {
       case TaxRegime.Epaye =>
         EnrolmentDef.Epaye.findEnrolmentValues(enrolments).map((toEmpRef _).tupled)
-      case TaxRegime.Vat => EnrolmentDef.Vat.findEnrolmentValues(enrolments)
-      case TaxRegime.Sa  => EnrolmentDef.Sa.findEnrolmentValues(enrolments)
-      case TaxRegime.Sia => sys.error("SIA should have never ended up here")
+      case TaxRegime.Vat  => EnrolmentDef.Vat.findEnrolmentValues(enrolments)
+      case TaxRegime.Sa   => EnrolmentDef.Sa.findEnrolmentValues(enrolments)
+      case TaxRegime.Simp => sys.error("SIMP should have never ended up here")
     }
 
     enrolmentResult match {
@@ -195,7 +195,7 @@ class PegaService @Inject() (
       case j: Sa.EmailVerificationComplete               => j.copy(sessionId = sessionId)
       case j: Sa.SubmittedArrangement                    => j.copy(sessionId = sessionId)
 
-      case _: Sia                                        => sys.error("No other regime should be found here")
+      case _: Simp                                       => sys.error("No other regime should be found here")
     }
   }
 
@@ -228,7 +228,7 @@ class PegaService @Inject() (
       case TaxRegime.Epaye => "PAYE"
       case TaxRegime.Vat   => "VAT"
       case TaxRegime.Sa    => "SA"
-      case TaxRegime.Sia   => "SIA"
+      case TaxRegime.Simp  => "SIMP"
     }
     val eligibilityCheckResult = journey match {
       case j: Journey.AfterEligibilityChecked => j.eligibilityCheckResult
