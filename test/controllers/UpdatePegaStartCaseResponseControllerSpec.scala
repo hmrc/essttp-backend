@@ -79,13 +79,13 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
           )(this)
       }
 
-      "Sia" in new JourneyItTest {
+      "Simp" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SiaPta.journeyAfterCanPayWithinSixMonths,
+          tdAll.SimpPta.journeyAfterCanPayWithinSixMonths,
           tdAll.startCaseResponse
         )(
             journeyConnector.updatePegaStartCaseResponse,
-            tdAll.SiaPta.journeyAfterStartedPegaCase
+            tdAll.SimpPta.journeyAfterStartedPegaCase
           )(this)
       }
     }
@@ -148,20 +148,20 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
 
       }
 
-      "Sia when the current stage is" - {
+      "Simp when the current stage is" - {
 
-          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => StartCaseResponse)(context: JourneyItTest): Unit =
+          def testSimpPta[J <: Journey](initialJourney: J)(existingValue: J => StartCaseResponse)(context: JourneyItTest): Unit =
             testUpdateWithExistingValue(initialJourney)(
               _.journeyId,
               existingValue(initialJourney)
             )(
                 differentResponse,
                 journeyConnector.updatePegaStartCaseResponse(_, _)(context.request),
-                context.tdAll.SiaPta.journeyAfterStartedPegaCase.copy(startCaseResponse = differentResponse)
+                context.tdAll.SimpPta.journeyAfterStartedPegaCase.copy(startCaseResponse = differentResponse)
               )(context)
 
         "StartedPegaCase" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.startCaseResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterStartedPegaCase)(_.startCaseResponse)(this)
         }
 
       }

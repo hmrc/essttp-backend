@@ -70,13 +70,13 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
           )(this)
       }
 
-      "Sia" in new JourneyItTest {
+      "Simp" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(true),
-          tdAll.SiaPta.updateSelectedEmailRequest()
+          tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(true),
+          tdAll.SimpPta.updateSelectedEmailRequest()
         )(
             journeyConnector.updateSelectedEmailToBeVerified,
-            tdAll.SiaPta.journeyAfterSelectedEmail.copy(emailToBeVerified = tdAll.SaBta.updateSelectedEmailRequest())
+            tdAll.SimpPta.journeyAfterSelectedEmail.copy(emailToBeVerified = tdAll.SaBta.updateSelectedEmailRequest())
           )(this)
       }
     }
@@ -229,13 +229,13 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
 
       }
 
-      "Sia when" - {
+      "Simp when" - {
 
-          def testSiaPta[J <: Journey](initialJourney: J)(value: J => Email)(context: JourneyItTest): Unit =
+          def testSimpPta[J <: Journey](initialJourney: J)(value: J => Email)(context: JourneyItTest): Unit =
             testUpdate(initialJourney, value(initialJourney))(
               _.journeyId,
               journeyConnector.updateSelectedEmailToBeVerified(_, _)(context.request),
-              context.tdAll.SiaPta.journeyAfterSelectedEmail.copy(emailToBeVerified = value(initialJourney))
+              context.tdAll.SimpPta.journeyAfterSelectedEmail.copy(emailToBeVerified = value(initialJourney))
             )(context)
 
         "the value is the same and" - {
@@ -243,11 +243,11 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
           "the current stage is" - {
 
             "SelectedEmailToBeVerified" in new JourneyItTest {
-              testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.emailToBeVerified)(this)
+              testSimpPta(tdAll.SimpPta.journeyAfterSelectedEmail)(_.emailToBeVerified)(this)
             }
 
             "EmailVerificationComplete" in new JourneyItTest {
-              testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.emailToBeVerified)(this)
+              testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.emailToBeVerified)(this)
             }
 
           }
@@ -258,11 +258,11 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
           "the current stage is" - {
 
             "SelectedEmailToBeVerified" in new JourneyItTest {
-              testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_ => differentEmail)(this)
+              testSimpPta(tdAll.SimpPta.journeyAfterSelectedEmail)(_ => differentEmail)(this)
             }
 
             "EmailVerificationComplete" in new JourneyItTest {
-              testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_ => differentEmail)(this)
+              testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_ => differentEmail)(this)
             }
 
           }

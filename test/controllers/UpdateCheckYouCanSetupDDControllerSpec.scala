@@ -69,13 +69,13 @@ class UpdateCheckYouCanSetupDDControllerSpec extends ItSpec with UpdateJourneyCo
           )(this)
       }
 
-      "Sia" in new JourneyItTest {
+      "Simp" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability,
-          TdAll.SiaPta.updateCanSetUpDirectDebitRequest(isAccountHolder = true)
+          tdAll.SimpPta.journeyAfterCheckedPaymentPlanNonAffordability,
+          TdAll.SimpPta.updateCanSetUpDirectDebitRequest(isAccountHolder = true)
         )(
             journeyConnector.updateCanSetUpDirectDebit,
-            tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
+            tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
           )(this)
       }
     }
@@ -198,40 +198,40 @@ class UpdateCheckYouCanSetupDDControllerSpec extends ItSpec with UpdateJourneyCo
 
       }
 
-      "Sia when the current stage is" - {
+      "Simp when the current stage is" - {
 
-          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => CanSetUpDirectDebit)(context: JourneyItTest): Unit =
+          def testSimpPta[J <: Journey](initialJourney: J)(existingValue: J => CanSetUpDirectDebit)(context: JourneyItTest): Unit =
             testUpdateWithExistingValue(initialJourney)(
               _.journeyId,
               existingValue(initialJourney)
             )(
                 differentAnswerToCanSetUpDirectDebit,
                 journeyConnector.updateCanSetUpDirectDebit(_, _)(context.request),
-                context.tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = false).copy(canSetUpDirectDebitAnswer = differentAnswerToCanSetUpDirectDebit)
+                context.tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = false).copy(canSetUpDirectDebitAnswer = differentAnswerToCanSetUpDirectDebit)
               )(context)
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.canSetUpDirectDebitAnswer)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.canSetUpDirectDebitAnswer)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.canSetUpDirectDebitAnswer)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.canSetUpDirectDebitAnswer)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.canSetUpDirectDebitAnswer)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterSelectedEmail)(_.canSetUpDirectDebitAnswer)(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.canSetUpDirectDebitAnswer)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.canSetUpDirectDebitAnswer)(this)
         }
 
       }

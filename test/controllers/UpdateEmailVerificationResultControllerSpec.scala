@@ -68,13 +68,13 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
           )(this)
       }
 
-      "Sia" in new JourneyItTest {
+      "Simp" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SiaPta.journeyAfterSelectedEmail,
+          tdAll.SimpPta.journeyAfterSelectedEmail,
           EmailVerificationResult.Verified
         )(
             journeyConnector.updateEmailVerificationResult,
-            tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+            tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
           )(this)
       }
     }
@@ -153,9 +153,9 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
 
       }
 
-      "Sia when the current stage is" - {
+      "Simp when the current stage is" - {
 
-          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => EmailVerificationResult)(context: JourneyItTest): Unit = {
+          def testSimpPta[J <: Journey](initialJourney: J)(existingValue: J => EmailVerificationResult)(context: JourneyItTest): Unit = {
             val differentVerificationResult: EmailVerificationResult = existingValue(initialJourney) match {
               case EmailVerificationResult.Verified => EmailVerificationResult.Locked
               case EmailVerificationResult.Locked   => EmailVerificationResult.Verified
@@ -167,12 +167,12 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
             )(
                 differentVerificationResult,
                 journeyConnector.updateEmailVerificationResult(_, _)(context.request),
-                context.tdAll.SiaPta.journeyAfterEmailVerificationResult(differentVerificationResult)
+                context.tdAll.SimpPta.journeyAfterEmailVerificationResult(differentVerificationResult)
               )(context)
           }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.emailVerificationResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.emailVerificationResult)(this)
         }
 
       }

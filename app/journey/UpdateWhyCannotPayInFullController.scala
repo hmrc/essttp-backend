@@ -21,7 +21,7 @@ import cats.Eq
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.{Epaye, Sa, Sia, Stages, Vat}
+import essttp.journey.model.Journey.{Epaye, Sa, Simp, Stages, Vat}
 import essttp.journey.model.{Journey, JourneyId, Stage, WhyCannotPayInFullAnswers}
 import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import essttp.utils.Errors
@@ -82,8 +82,8 @@ class UpdateWhyCannotPayInFullController @Inject() (
           .withFieldConst(_.stage, deriveStage(whyCannotPayInFullAnswers))
           .transform
 
-      case j: Journey.Sia.EligibilityChecked =>
-        j.into[Journey.Sia.ObtainedWhyCannotPayInFullAnswers]
+      case j: Journey.Simp.EligibilityChecked =>
+        j.into[Journey.Simp.ObtainedWhyCannotPayInFullAnswers]
           .withFieldConst(_.whyCannotPayInFullAnswers, whyCannotPayInFullAnswers)
           .withFieldConst(_.stage, deriveStage(whyCannotPayInFullAnswers))
           .transform
@@ -109,7 +109,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
         case j: Sa.ObtainedWhyCannotPayInFullAnswers =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
             .copy(stage = deriveStage(whyCannotPayInFullAnswers))
-        case j: Sia.ObtainedWhyCannotPayInFullAnswers =>
+        case j: Simp.ObtainedWhyCannotPayInFullAnswers =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
             .copy(stage = deriveStage(whyCannotPayInFullAnswers))
 
@@ -119,7 +119,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.AnsweredCanPayUpfront =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.AnsweredCanPayUpfront =>
+        case j: Simp.AnsweredCanPayUpfront =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.EnteredUpfrontPaymentAmount =>
@@ -128,7 +128,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.EnteredUpfrontPaymentAmount =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.EnteredUpfrontPaymentAmount =>
+        case j: Simp.EnteredUpfrontPaymentAmount =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.RetrievedExtremeDates =>
@@ -137,7 +137,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.RetrievedExtremeDates =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.RetrievedExtremeDates =>
+        case j: Simp.RetrievedExtremeDates =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.RetrievedAffordabilityResult =>
@@ -146,7 +146,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.RetrievedAffordabilityResult =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.RetrievedAffordabilityResult =>
+        case j: Simp.RetrievedAffordabilityResult =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.ObtainedCanPayWithinSixMonthsAnswers =>
@@ -155,7 +155,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.ObtainedCanPayWithinSixMonthsAnswers =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.ObtainedCanPayWithinSixMonthsAnswers =>
+        case j: Simp.ObtainedCanPayWithinSixMonthsAnswers =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.StartedPegaCase =>
@@ -164,7 +164,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.StartedPegaCase =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.StartedPegaCase =>
+        case j: Simp.StartedPegaCase =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.EnteredMonthlyPaymentAmount =>
@@ -173,7 +173,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.EnteredMonthlyPaymentAmount =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.EnteredMonthlyPaymentAmount =>
+        case j: Simp.EnteredMonthlyPaymentAmount =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.EnteredDayOfMonth =>
@@ -182,7 +182,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.EnteredDayOfMonth =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.EnteredDayOfMonth =>
+        case j: Simp.EnteredDayOfMonth =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.RetrievedStartDates =>
@@ -191,7 +191,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.RetrievedStartDates =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.RetrievedStartDates =>
+        case j: Simp.RetrievedStartDates =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.RetrievedAffordableQuotes =>
@@ -200,7 +200,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.RetrievedAffordableQuotes =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.RetrievedAffordableQuotes =>
+        case j: Simp.RetrievedAffordableQuotes =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.ChosenPaymentPlan =>
@@ -209,7 +209,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.ChosenPaymentPlan =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.ChosenPaymentPlan =>
+        case j: Simp.ChosenPaymentPlan =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.CheckedPaymentPlan =>
@@ -218,7 +218,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.CheckedPaymentPlan =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.CheckedPaymentPlan =>
+        case j: Simp.CheckedPaymentPlan =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.EnteredCanYouSetUpDirectDebit =>
@@ -227,7 +227,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.EnteredCanYouSetUpDirectDebit =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.EnteredCanYouSetUpDirectDebit =>
+        case j: Simp.EnteredCanYouSetUpDirectDebit =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.EnteredDirectDebitDetails =>
@@ -236,7 +236,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.EnteredDirectDebitDetails =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.EnteredDirectDebitDetails =>
+        case j: Simp.EnteredDirectDebitDetails =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.ConfirmedDirectDebitDetails =>
@@ -245,7 +245,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.ConfirmedDirectDebitDetails =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.ConfirmedDirectDebitDetails =>
+        case j: Simp.ConfirmedDirectDebitDetails =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.AgreedTermsAndConditions =>
@@ -254,7 +254,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.AgreedTermsAndConditions =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.AgreedTermsAndConditions =>
+        case j: Simp.AgreedTermsAndConditions =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.SelectedEmailToBeVerified =>
@@ -263,7 +263,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.SelectedEmailToBeVerified =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.SelectedEmailToBeVerified =>
+        case j: Simp.SelectedEmailToBeVerified =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case j: Epaye.EmailVerificationComplete =>
@@ -272,7 +272,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
         case j: Sa.EmailVerificationComplete =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sia.EmailVerificationComplete =>
+        case j: Simp.EmailVerificationComplete =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
         case _: Stages.SubmittedArrangement =>

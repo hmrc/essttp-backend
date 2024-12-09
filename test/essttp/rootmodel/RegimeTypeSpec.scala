@@ -29,7 +29,7 @@ class RegimeTypeSpec extends UnitSpec {
           case RegimeType.EPAYE => "PAYE"
           case RegimeType.VAT   => "VATC"
           case RegimeType.SA    => "SA"
-          case RegimeType.SIA   => "SIA"
+          case RegimeType.SIMP  => "SIMP"
         }
 
         val jsValue = Json.toJson(regimeType)
@@ -45,7 +45,7 @@ class RegimeTypeSpec extends UnitSpec {
           case TaxRegime.Epaye => RegimeType.EPAYE
           case TaxRegime.Vat   => RegimeType.VAT
           case TaxRegime.Sa    => RegimeType.SA
-          case TaxRegime.Sia   => RegimeType.SIA
+          case TaxRegime.Simp  => RegimeType.SIMP
         }
 
         RegimeType.fromTaxRegime(taxRegime) shouldBe expectedTaxRegime

@@ -74,8 +74,8 @@ class JourneyFactory @Inject() (
         pegaCaseId           = None
       )
 
-    case OriginatedSjRequest.Sia(origin, sjRequest) =>
-      Journey.Sia.Started(
+    case OriginatedSjRequest.Simp(origin, sjRequest) =>
+      Journey.Simp.Started(
         _id                  = journeyIdGenerator.nextJourneyId(),
         origin               = origin,
         sjRequest            = sjRequest,
@@ -83,7 +83,7 @@ class JourneyFactory @Inject() (
         sessionId            = sessionId,
         stage                = Stage.AfterStarted.Started,
         correlationId        = correlationIdGenerator.nextCorrelationId(),
-        affordabilityEnabled = Some(affordabilityEnablerService.affordabilityEnabled(TaxRegime.Sia)),
+        affordabilityEnabled = Some(affordabilityEnablerService.affordabilityEnabled(TaxRegime.Simp)),
         pegaCaseId           = None
       )
   }

@@ -2768,29 +2768,29 @@ object Journey {
       with Journey.Sa
   }
 
-  sealed trait Sia extends Journey {
-    override def taxRegime: TaxRegime.Sia.type = TaxRegime.Sia
+  sealed trait Simp extends Journey {
+    override def taxRegime: TaxRegime.Simp.type = TaxRegime.Simp
 
-    override def sjRequest: SjRequest.Sia
+    override def sjRequest: SjRequest.Simp
 
-    override def origin: Origins.Sia
+    override def origin: Origins.Simp
 
     override val (backUrl, returnUrl) = sjRequest match {
-      case r: SjRequest.Sia.Simple => (Some(r.backUrl), Some(r.returnUrl))
-      case _                       => (None, None)
+      case r: SjRequest.Simp.Simple => (Some(r.backUrl), Some(r.returnUrl))
+      case _                        => (None, None)
     }
   }
 
-  object Sia {
+  object Simp {
     /**
      * [[Journey]] after started
-     * Sia
+     * Simp
      */
     final case class Started(
         override val _id:                  JourneyId,
-        override val origin:               Origins.Sia,
+        override val origin:               Origins.Simp,
         override val createdOn:            Instant,
-        override val sjRequest:            SjRequest.Sia,
+        override val sjRequest:            SjRequest.Simp,
         override val sessionId:            SessionId,
         override val correlationId:        CorrelationId,
         override val stage:                Stage.AfterStarted,
@@ -2799,17 +2799,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.Started
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after computed TaxIds
-     * Sia
+     * Simp
      */
     final case class ComputedTaxId(
         override val _id:                  JourneyId,
-        override val origin:               Origins.Sia,
+        override val origin:               Origins.Simp,
         override val createdOn:            Instant,
-        override val sjRequest:            SjRequest.Sia,
+        override val sjRequest:            SjRequest.Simp,
         override val sessionId:            SessionId,
         override val correlationId:        CorrelationId,
         override val stage:                Stage.AfterComputedTaxId,
@@ -2819,17 +2819,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.ComputedTaxId
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after EligibilityCheck
-     * Sia
+     * Simp
      */
     final case class EligibilityChecked(
         override val _id:                    JourneyId,
-        override val origin:                 Origins.Sia,
+        override val origin:                 Origins.Simp,
         override val createdOn:              Instant,
-        override val sjRequest:              SjRequest.Sia,
+        override val sjRequest:              SjRequest.Simp,
         override val sessionId:              SessionId,
         override val correlationId:          CorrelationId,
         override val stage:                  Stage.AfterEligibilityCheck,
@@ -2840,17 +2840,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.EligibilityChecked
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after WhyCannotPayInFullAnswers
-     * Sia
+     * Simp
      */
     final case class ObtainedWhyCannotPayInFullAnswers(
         override val _id:                       JourneyId,
-        override val origin:                    Origins.Sia,
+        override val origin:                    Origins.Simp,
         override val createdOn:                 Instant,
-        override val sjRequest:                 SjRequest.Sia,
+        override val sjRequest:                 SjRequest.Simp,
         override val sessionId:                 SessionId,
         override val correlationId:             CorrelationId,
         override val stage:                     Stage.AfterWhyCannotPayInFullAnswers,
@@ -2862,17 +2862,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.ObtainedWhyCannotPayInFullAnswers
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after CanPayUpfront
-     * Sia
+     * Simp
      */
     final case class AnsweredCanPayUpfront(
         override val _id:                       JourneyId,
-        override val origin:                    Origins.Sia,
+        override val origin:                    Origins.Simp,
         override val createdOn:                 Instant,
-        override val sjRequest:                 SjRequest.Sia,
+        override val sjRequest:                 SjRequest.Simp,
         override val sessionId:                 SessionId,
         override val correlationId:             CorrelationId,
         override val stage:                     Stage.AfterCanPayUpfront,
@@ -2885,17 +2885,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.AnsweredCanPayUpfront
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after UpfrontPaymentAmount
-     * Sia
+     * Simp
      */
     final case class EnteredUpfrontPaymentAmount(
         override val _id:                       JourneyId,
-        override val origin:                    Origins.Sia,
+        override val origin:                    Origins.Simp,
         override val createdOn:                 Instant,
-        override val sjRequest:                 SjRequest.Sia,
+        override val sjRequest:                 SjRequest.Simp,
         override val sessionId:                 SessionId,
         override val correlationId:             CorrelationId,
         override val stage:                     Stage.AfterUpfrontPaymentAmount,
@@ -2909,17 +2909,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.EnteredUpfrontPaymentAmount
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after Extreme dates request to esstp-dates
-     * Sia
+     * Simp
      */
     final case class RetrievedExtremeDates(
         override val _id:                       JourneyId,
-        override val origin:                    Origins.Sia,
+        override val origin:                    Origins.Simp,
         override val createdOn:                 Instant,
-        override val sjRequest:                 SjRequest.Sia,
+        override val sjRequest:                 SjRequest.Simp,
         override val sessionId:                 SessionId,
         override val correlationId:             CorrelationId,
         override val stage:                     Stage.AfterExtremeDatesResponse,
@@ -2933,17 +2933,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.RetrievedExtremeDates
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after Affordability request to tpp
-     * Sia
+     * Simp
      */
     final case class RetrievedAffordabilityResult(
         override val _id:                       JourneyId,
-        override val origin:                    Origins.Sia,
+        override val origin:                    Origins.Simp,
         override val createdOn:                 Instant,
-        override val sjRequest:                 SjRequest.Sia,
+        override val sjRequest:                 SjRequest.Simp,
         override val sessionId:                 SessionId,
         override val correlationId:             CorrelationId,
         override val stage:                     Stage.AfterAffordabilityResult,
@@ -2958,17 +2958,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.RetrievedAffordabilityResult
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after answers to CanPayWithinSixMonths if needed
-     * Sia
+     * Simp
      */
     final case class ObtainedCanPayWithinSixMonthsAnswers(
         override val _id:                          JourneyId,
-        override val origin:                       Origins.Sia,
+        override val origin:                       Origins.Simp,
         override val createdOn:                    Instant,
-        override val sjRequest:                    SjRequest.Sia,
+        override val sjRequest:                    SjRequest.Simp,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
         override val stage:                        Stage.AfterCanPayWithinSixMonthsAnswers,
@@ -2984,17 +2984,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.ObtainedCanPayWithinSixMonthsAnswers
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after started a PEGA case
-     * Sia
+     * Simp
      */
     final case class StartedPegaCase(
         override val _id:                          JourneyId,
-        override val origin:                       Origins.Sia,
+        override val origin:                       Origins.Simp,
         override val createdOn:                    Instant,
-        override val sjRequest:                    SjRequest.Sia,
+        override val sjRequest:                    SjRequest.Simp,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
         override val stage:                        Stage.AfterStartedPegaCase,
@@ -3011,17 +3011,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.StartedPegaCase
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after MonthlyPaymentAmount
-     * Sia
+     * Simp
      */
     final case class EnteredMonthlyPaymentAmount(
         override val _id:                          JourneyId,
-        override val origin:                       Origins.Sia,
+        override val origin:                       Origins.Simp,
         override val createdOn:                    Instant,
-        override val sjRequest:                    SjRequest.Sia,
+        override val sjRequest:                    SjRequest.Simp,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
         override val stage:                        Stage.AfterMonthlyPaymentAmount,
@@ -3038,17 +3038,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.EnteredMonthlyPaymentAmount
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after Day of month
-     * Sia
+     * Simp
      */
     final case class EnteredDayOfMonth(
         override val _id:                          JourneyId,
-        override val origin:                       Origins.Sia,
+        override val origin:                       Origins.Simp,
         override val createdOn:                    Instant,
-        override val sjRequest:                    SjRequest.Sia,
+        override val sjRequest:                    SjRequest.Simp,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
         override val stage:                        Stage.AfterEnteredDayOfMonth,
@@ -3066,17 +3066,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.EnteredDayOfMonth
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after Start dates api call
-     * Sia
+     * Simp
      */
     final case class RetrievedStartDates(
         override val _id:                          JourneyId,
-        override val origin:                       Origins.Sia,
+        override val origin:                       Origins.Simp,
         override val createdOn:                    Instant,
-        override val sjRequest:                    SjRequest.Sia,
+        override val sjRequest:                    SjRequest.Simp,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
         override val stage:                        Stage.AfterStartDatesResponse,
@@ -3095,17 +3095,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.RetrievedStartDates
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after Affordable quotes call to ttp
-     * Sia
+     * Simp
      */
     final case class RetrievedAffordableQuotes(
         override val _id:                          JourneyId,
-        override val origin:                       Origins.Sia,
+        override val origin:                       Origins.Simp,
         override val createdOn:                    Instant,
-        override val sjRequest:                    SjRequest.Sia,
+        override val sjRequest:                    SjRequest.Simp,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
         override val stage:                        Stage.AfterAffordableQuotesResponse,
@@ -3125,17 +3125,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.RetrievedAffordableQuotes
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after Payment plan has been chosen
-     * Sia
+     * Simp
      */
     final case class ChosenPaymentPlan(
         override val _id:                          JourneyId,
-        override val origin:                       Origins.Sia,
+        override val origin:                       Origins.Simp,
         override val createdOn:                    Instant,
-        override val sjRequest:                    SjRequest.Sia,
+        override val sjRequest:                    SjRequest.Simp,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
         override val stage:                        Stage.AfterSelectedPlan,
@@ -3156,17 +3156,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.ChosenPaymentPlan
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after Payment plan has been checked
-     * Sia
+     * Simp
      */
     final case class CheckedPaymentPlan(
         override val _id:                          JourneyId,
-        override val origin:                       Origins.Sia,
+        override val origin:                       Origins.Simp,
         override val createdOn:                    Instant,
-        override val sjRequest:                    SjRequest.Sia,
+        override val sjRequest:                    SjRequest.Simp,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
         override val stage:                        Stage.AfterCheckedPlan,
@@ -3183,17 +3183,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.CheckedPaymentPlan
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after details about bank account
-     * Sia
+     * Simp
      */
     final case class EnteredCanYouSetUpDirectDebit(
         override val _id:                          JourneyId,
-        override val origin:                       Origins.Sia,
+        override val origin:                       Origins.Simp,
         override val createdOn:                    Instant,
-        override val sjRequest:                    SjRequest.Sia,
+        override val sjRequest:                    SjRequest.Simp,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
         override val stage:                        Stage.AfterEnteredCanYouSetUpDirectDebit,
@@ -3211,17 +3211,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.EnteredCanYouSetUpDirectDebit
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after bank details have been entered
-     * Sia
+     * Simp
      */
     final case class EnteredDirectDebitDetails(
         override val _id:                          JourneyId,
-        override val origin:                       Origins.Sia,
+        override val origin:                       Origins.Simp,
         override val createdOn:                    Instant,
-        override val sjRequest:                    SjRequest.Sia,
+        override val sjRequest:                    SjRequest.Simp,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
         override val stage:                        Stage.AfterEnteredDirectDebitDetails,
@@ -3240,17 +3240,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.EnteredDirectDebitDetails
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after bank details have been confirmed
-     * Sia
+     * Simp
      */
     final case class ConfirmedDirectDebitDetails(
         override val _id:                          JourneyId,
-        override val origin:                       Origins.Sia,
+        override val origin:                       Origins.Simp,
         override val createdOn:                    Instant,
-        override val sjRequest:                    SjRequest.Sia,
+        override val sjRequest:                    SjRequest.Simp,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
         override val stage:                        Stage.AfterConfirmedDirectDebitDetails,
@@ -3269,17 +3269,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.ConfirmedDirectDebitDetails
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after Agreeing terms and conditions
-     * Sia
+     * Simp
      */
     final case class AgreedTermsAndConditions(
         override val _id:                          JourneyId,
-        override val origin:                       Origins.Sia,
+        override val origin:                       Origins.Simp,
         override val createdOn:                    Instant,
-        override val sjRequest:                    SjRequest.Sia,
+        override val sjRequest:                    SjRequest.Simp,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
         override val stage:                        Stage.AfterAgreedTermsAndConditions,
@@ -3299,17 +3299,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.AgreedTermsAndConditions
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after Selecting email address to be verified
-     * Sia
+     * Simp
      */
     final case class SelectedEmailToBeVerified(
         override val _id:                          JourneyId,
-        override val origin:                       Origins.Sia,
+        override val origin:                       Origins.Simp,
         override val createdOn:                    Instant,
-        override val sjRequest:                    SjRequest.Sia,
+        override val sjRequest:                    SjRequest.Simp,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
         override val stage:                        Stage.AfterSelectedAnEmailToBeVerified,
@@ -3330,17 +3330,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.SelectedEmailToBeVerified
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after email verification status journey is complete
-     * Sia
+     * Simp
      */
     final case class EmailVerificationComplete(
         override val _id:                          JourneyId,
-        override val origin:                       Origins.Sia,
+        override val origin:                       Origins.Simp,
         override val createdOn:                    Instant,
-        override val sjRequest:                    SjRequest.Sia,
+        override val sjRequest:                    SjRequest.Simp,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
         override val stage:                        Stage.AfterEmailVerificationPhase,
@@ -3363,17 +3363,17 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.EmailVerificationComplete
-      with Journey.Sia
+      with Journey.Simp
 
     /**
      * [[Journey]] after Submission of their arrangement to the enact api
-     * Sia
+     * Simp
      */
     final case class SubmittedArrangement(
         override val _id:                          JourneyId,
-        override val origin:                       Origins.Sia,
+        override val origin:                       Origins.Simp,
         override val createdOn:                    Instant,
-        override val sjRequest:                    SjRequest.Sia,
+        override val sjRequest:                    SjRequest.Simp,
         override val sessionId:                    SessionId,
         override val correlationId:                CorrelationId,
         override val stage:                        Stage.AfterSubmittedArrangement,
@@ -3395,6 +3395,6 @@ object Journey {
     )
       extends Journey
       with Journey.Stages.SubmittedArrangement
-      with Journey.Sia
+      with Journey.Simp
   }
 }

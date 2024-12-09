@@ -83,13 +83,13 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
           )(this)
       }
 
-      "Sia" in new JourneyItTest {
+      "Simp" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SiaPta.journeyAfterInstalmentAmounts,
+          tdAll.SimpPta.journeyAfterInstalmentAmounts,
           TdAll.canPayWithinSixMonthsNotRequired
         )(
             journeyConnector.updateCanPayWithinSixMonthsAnswers,
-            tdAll.SiaPta.journeyAfterCanPayWithinSixMonths
+            tdAll.SimpPta.journeyAfterCanPayWithinSixMonths
           )(this)
       }
     }
@@ -336,82 +336,82 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
 
       }
 
-      "Sia when the current stage is" - {
+      "Simp when the current stage is" - {
 
-          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => CanPayWithinSixMonthsAnswers)(context: JourneyItTest): Unit =
+          def testSimpPta[J <: Journey](initialJourney: J)(existingValue: J => CanPayWithinSixMonthsAnswers)(context: JourneyItTest): Unit =
             testUpdateWithExistingValue(initialJourney)(
               _.journeyId,
               existingValue(initialJourney)
             )(
                 TdAll.canPayWithinSixMonthsNo,
                 journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
-                context.tdAll.SiaPta.journeyAfterCanPayWithinSixMonths.copy(canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo, stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired)
+                context.tdAll.SimpPta.journeyAfterCanPayWithinSixMonths.copy(canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo, stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired)
               )(context)
 
-          def testSiaPtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => CanPayWithinSixMonthsAnswers)(context: JourneyItTest): Unit =
+          def testSimpPtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => CanPayWithinSixMonthsAnswers)(context: JourneyItTest): Unit =
             testUpdateWithExistingValue(initialJourney)(
               _.journeyId,
               existingValue(initialJourney)
             )(
                 TdAll.canPayWithinSixMonthsNo,
                 journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
-                context.tdAll.SiaPta.journeyAfterCanPayWithinSixMonths.copy(canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo, stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired, pegaCaseId = Some(PegaCaseId("case-id")))
+                context.tdAll.SimpPta.journeyAfterCanPayWithinSixMonths.copy(canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo, stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired, pegaCaseId = Some(PegaCaseId("case-id")))
               )(context)
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterCanPayWithinSixMonths)(_.canPayWithinSixMonthsAnswers)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterCanPayWithinSixMonths)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testSiaPtaWithCaseId(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.canPayWithinSixMonthsAnswers)(this)
+          testSimpPtaWithCaseId(tdAll.SimpPta.journeyAfterStartedPegaCase)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterMonthlyPaymentAmount)(_.canPayWithinSixMonthsAnswers)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterMonthlyPaymentAmount)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "EnteredDayOfMonth" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterDayOfMonth)(_.canPayWithinSixMonthsAnswers)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterDayOfMonth)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "RetrievedStartDates" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterStartDatesResponse)(_.canPayWithinSixMonthsAnswers)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterStartDatesResponse)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "RetrievedAffordableQuotes" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterAffordableQuotesResponse)(_.canPayWithinSixMonthsAnswers)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAffordableQuotesResponse)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "ChosenPaymentPlan" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterSelectedPaymentPlan)(_.canPayWithinSixMonthsAnswers)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterSelectedPaymentPlan)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.canPayWithinSixMonthsAnswers)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.canPayWithinSixMonthsAnswers)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.canPayWithinSixMonthsAnswers)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.canPayWithinSixMonthsAnswers)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.canPayWithinSixMonthsAnswers)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.canPayWithinSixMonthsAnswers)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterSelectedEmail)(_.canPayWithinSixMonthsAnswers)(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.canPayWithinSixMonthsAnswers)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.canPayWithinSixMonthsAnswers)(this)
         }
 
       }

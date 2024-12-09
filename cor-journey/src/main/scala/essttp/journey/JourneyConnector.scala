@@ -279,29 +279,29 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: E
         .execute[SjResponse]
   }
 
-  object Sia {
+  object Simp {
 
-    def startJourneyPta(sjRequest: SjRequest.Sia.Simple)(implicit request: RequestHeader): Future[SjResponse] =
+    def startJourneyPta(sjRequest: SjRequest.Simp.Simple)(implicit request: RequestHeader): Future[SjResponse] =
       httpClient
-        .post(url"$baseUrl/essttp-backend/sia/pta/journey/start")
+        .post(url"$baseUrl/essttp-backend/simp/pta/journey/start")
         .withBody(Json.toJson(sjRequest))
         .execute[SjResponse]
 
-    def startJourneyMobile(sjRequest: SjRequest.Sia.Simple)(implicit request: RequestHeader): Future[SjResponse] =
+    def startJourneyMobile(sjRequest: SjRequest.Simp.Simple)(implicit request: RequestHeader): Future[SjResponse] =
       httpClient
-        .post(url"$baseUrl/essttp-backend/sia/mobile/journey/start")
+        .post(url"$baseUrl/essttp-backend/simp/mobile/journey/start")
         .withBody(Json.toJson(sjRequest))
         .execute[SjResponse]
 
-    def startJourneyDetachedUrl(sjRequest: SjRequest.Sia.Empty)(implicit request: RequestHeader): Future[SjResponse] =
+    def startJourneyDetachedUrl(sjRequest: SjRequest.Simp.Empty)(implicit request: RequestHeader): Future[SjResponse] =
       httpClient
-        .post(url"$baseUrl/essttp-backend/sia/detached-url/journey/start")
+        .post(url"$baseUrl/essttp-backend/simp/detached-url/journey/start")
         .withBody(Json.toJson(sjRequest: SjRequest))
         .execute[SjResponse]
 
-    def startJourneyGovUk(sjRequest: SjRequest.Sia.Empty)(implicit request: RequestHeader): Future[SjResponse] =
+    def startJourneyGovUk(sjRequest: SjRequest.Simp.Empty)(implicit request: RequestHeader): Future[SjResponse] =
       httpClient
-        .post(url"$baseUrl/essttp-backend/sia/gov-uk/journey/start")
+        .post(url"$baseUrl/essttp-backend/simp/gov-uk/journey/start")
         .withBody(Json.toJson(sjRequest: SjRequest))
         .execute[SjResponse]
   }

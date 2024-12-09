@@ -29,7 +29,7 @@ class AffordabilityEnablerServiceImplTest extends ItSpec {
     "affordability.pass-through-percentages.epaye" -> 100,
     "affordability.pass-through-percentages.vat" -> 0,
     "affordability.pass-through-percentages.sa" -> 50,
-    "affordability.pass-through-percentages.sia" -> 100
+    "affordability.pass-through-percentages.simp" -> 100
   )
 
   lazy val service = app.injector.instanceOf[AffordabilityEnablerService]
@@ -61,7 +61,7 @@ class AffordabilityEnablerServiceImplTest extends ItSpec {
     }
 
     "disable affordability for all requests if the tax regime is disabled" in {
-      val result = gatherResult(TaxRegime.Sia)
+      val result = gatherResult(TaxRegime.Simp)
       result.affordabilityDisabled shouldBe result.total
       result.affordabilityEnabled shouldBe 0
     }

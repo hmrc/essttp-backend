@@ -20,7 +20,7 @@ import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.{Epaye, Sa, Sia, Stages, Vat}
+import essttp.journey.model.Journey.{Epaye, Sa, Simp, Stages, Vat}
 import essttp.journey.model.{Journey, JourneyId, PaymentPlanAnswers, Stage}
 import essttp.rootmodel.DayOfMonth
 import essttp.utils.Errors
@@ -75,8 +75,8 @@ class UpdateDayOfMonthController @Inject() (
           .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
           .withFieldConst(_.dayOfMonth, dayOfMonth)
           .transform
-      case j: Sia.EnteredMonthlyPaymentAmount =>
-        j.into[Sia.EnteredDayOfMonth]
+      case j: Simp.EnteredMonthlyPaymentAmount =>
+        j.into[Simp.EnteredDayOfMonth]
           .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
           .withFieldConst(_.dayOfMonth, dayOfMonth)
           .transform
@@ -98,7 +98,7 @@ class UpdateDayOfMonthController @Inject() (
             case j: Epaye.EnteredDayOfMonth => j.copy(dayOfMonth = dayOfMonth)
             case j: Vat.EnteredDayOfMonth   => j.copy(dayOfMonth = dayOfMonth)
             case j: Sa.EnteredDayOfMonth    => j.copy(dayOfMonth = dayOfMonth)
-            case j: Sia.EnteredDayOfMonth   => j.copy(dayOfMonth = dayOfMonth)
+            case j: Simp.EnteredDayOfMonth  => j.copy(dayOfMonth = dayOfMonth)
 
             case j: Journey.Epaye.RetrievedStartDates =>
               j.into[Journey.Epaye.EnteredDayOfMonth]
@@ -115,8 +115,8 @@ class UpdateDayOfMonthController @Inject() (
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
                 .transform
-            case j: Journey.Sia.RetrievedStartDates =>
-              j.into[Journey.Sia.EnteredDayOfMonth]
+            case j: Journey.Simp.RetrievedStartDates =>
+              j.into[Journey.Simp.EnteredDayOfMonth]
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
                 .transform
@@ -136,8 +136,8 @@ class UpdateDayOfMonthController @Inject() (
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
                 .transform
-            case j: Journey.Sia.RetrievedAffordableQuotes =>
-              j.into[Journey.Sia.EnteredDayOfMonth]
+            case j: Journey.Simp.RetrievedAffordableQuotes =>
+              j.into[Journey.Simp.EnteredDayOfMonth]
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
                 .transform
@@ -157,8 +157,8 @@ class UpdateDayOfMonthController @Inject() (
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
                 .transform
-            case j: Journey.Sia.ChosenPaymentPlan =>
-              j.into[Journey.Sia.EnteredDayOfMonth]
+            case j: Journey.Simp.ChosenPaymentPlan =>
+              j.into[Journey.Simp.EnteredDayOfMonth]
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
                 .transform
@@ -194,8 +194,8 @@ class UpdateDayOfMonthController @Inject() (
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Sia.CheckedPaymentPlan =>
-                  j.into[Journey.Sia.EnteredDayOfMonth]
+                case j: Journey.Simp.CheckedPaymentPlan =>
+                  j.into[Journey.Simp.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
@@ -219,8 +219,8 @@ class UpdateDayOfMonthController @Inject() (
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Sia.EnteredCanYouSetUpDirectDebit =>
-                  j.into[Journey.Sia.EnteredDayOfMonth]
+                case j: Journey.Simp.EnteredCanYouSetUpDirectDebit =>
+                  j.into[Journey.Simp.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
@@ -244,8 +244,8 @@ class UpdateDayOfMonthController @Inject() (
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Sia.EnteredDirectDebitDetails =>
-                  j.into[Journey.Sia.EnteredDayOfMonth]
+                case j: Journey.Simp.EnteredDirectDebitDetails =>
+                  j.into[Journey.Simp.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
@@ -269,8 +269,8 @@ class UpdateDayOfMonthController @Inject() (
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Sia.ConfirmedDirectDebitDetails =>
-                  j.into[Journey.Sia.EnteredDayOfMonth]
+                case j: Journey.Simp.ConfirmedDirectDebitDetails =>
+                  j.into[Journey.Simp.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
@@ -294,8 +294,8 @@ class UpdateDayOfMonthController @Inject() (
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Sia.AgreedTermsAndConditions =>
-                  j.into[Journey.Sia.EnteredDayOfMonth]
+                case j: Journey.Simp.AgreedTermsAndConditions =>
+                  j.into[Journey.Simp.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
@@ -319,8 +319,8 @@ class UpdateDayOfMonthController @Inject() (
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Sia.SelectedEmailToBeVerified =>
-                  j.into[Journey.Sia.EnteredDayOfMonth]
+                case j: Journey.Simp.SelectedEmailToBeVerified =>
+                  j.into[Journey.Simp.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
@@ -344,8 +344,8 @@ class UpdateDayOfMonthController @Inject() (
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Sia.EmailVerificationComplete =>
-                  j.into[Journey.Sia.EnteredDayOfMonth]
+                case j: Journey.Simp.EmailVerificationComplete =>
+                  j.into[Journey.Simp.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)

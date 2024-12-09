@@ -109,25 +109,25 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
       }
 
-      "Sia when" - {
+      "Simp when" - {
 
         "the user has selected no upfront payment" in new JourneyItTest {
           testUpdateWithoutExistingValue(
-            tdAll.SiaPta.journeyAfterCanPayUpfrontNo,
-            TdAll.SiaPta.updateExtremeDatesRequest()
+            tdAll.SimpPta.journeyAfterCanPayUpfrontNo,
+            TdAll.SimpPta.updateExtremeDatesRequest()
           )(
               journeyConnector.updateExtremeDates,
-              tdAll.SiaPta.journeyAfterExtremeDates.copy(upfrontPaymentAnswers = UpfrontPaymentAnswers.NoUpfrontPayment)
+              tdAll.SimpPta.journeyAfterExtremeDates.copy(upfrontPaymentAnswers = UpfrontPaymentAnswers.NoUpfrontPayment)
             )(this)
         }
 
         "the user has selected an upfront payment" in new JourneyItTest {
           testUpdateWithoutExistingValue(
-            tdAll.SiaPta.journeyAfterUpfrontPaymentAmount,
-            TdAll.SiaPta.updateExtremeDatesRequest()
+            tdAll.SimpPta.journeyAfterUpfrontPaymentAmount,
+            TdAll.SimpPta.updateExtremeDatesRequest()
           )(
               journeyConnector.updateExtremeDates,
-              tdAll.SiaPta.journeyAfterExtremeDates
+              tdAll.SimpPta.journeyAfterExtremeDates
             )(this)
         }
       }
@@ -404,90 +404,90 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
 
       }
 
-      "Sia when the current stage is" - {
+      "Simp when the current stage is" - {
 
-          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
+          def testSimpPta[J <: Journey](initialJourney: J)(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
             testUpdateWithExistingValue(initialJourney)(
               _.journeyId,
               existingValue(initialJourney)
             )(
                 differentExtremeDates,
                 journeyConnector.updateExtremeDates(_, _)(context.request),
-                context.tdAll.SiaPta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
+                context.tdAll.SimpPta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
               )(context)
 
-          def testSiaPtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
+          def testSimpPtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
             testUpdateWithExistingValue(initialJourney)(
               _.journeyId,
               existingValue(initialJourney)
             )(
                 differentExtremeDates,
                 journeyConnector.updateExtremeDates(_, _)(context.request),
-                context.tdAll.SiaPta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
+                context.tdAll.SimpPta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
               )(context)
 
         "RetrievedExtremeDates" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterExtremeDates)(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterExtremeDates)(_.extremeDatesResponse)(this)
         }
 
         "RetrievedAffordabilityResult" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterInstalmentAmounts)(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterInstalmentAmounts)(_.extremeDatesResponse)(this)
         }
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterCanPayWithinSixMonths)(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterCanPayWithinSixMonths)(_.extremeDatesResponse)(this)
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testSiaPtaWithCaseId(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.extremeDatesResponse)(this)
+          testSimpPtaWithCaseId(tdAll.SimpPta.journeyAfterStartedPegaCase)(_.extremeDatesResponse)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterMonthlyPaymentAmount)(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterMonthlyPaymentAmount)(_.extremeDatesResponse)(this)
         }
 
         "EnteredDayOfMonth" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterDayOfMonth)(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterDayOfMonth)(_.extremeDatesResponse)(this)
         }
 
         "RetrievedStartDates" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterStartDatesResponse)(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterStartDatesResponse)(_.extremeDatesResponse)(this)
         }
 
         "RetrievedAffordableQuotes" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterAffordableQuotesResponse)(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAffordableQuotesResponse)(_.extremeDatesResponse)(this)
         }
 
         "ChosenPaymentPlan" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterSelectedPaymentPlan)(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterSelectedPaymentPlan)(_.extremeDatesResponse)(this)
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.extremeDatesResponse)(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.extremeDatesResponse)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.extremeDatesResponse)(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.extremeDatesResponse)(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.extremeDatesResponse)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterSelectedEmail)(_.extremeDatesResponse)(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.extremeDatesResponse)(this)
         }
 
       }
@@ -571,13 +571,13 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
           )(this)
       }
 
-      "Sia" in new JourneyItTest {
+      "Simp" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SiaPta.journeyAfterDayOfMonth,
-          TdAll.SiaPta.updateStartDatesResponse()
+          tdAll.SimpPta.journeyAfterDayOfMonth,
+          TdAll.SimpPta.updateStartDatesResponse()
         )(
             journeyConnector.updateStartDates,
-            tdAll.SiaPta.journeyAfterStartDatesResponse
+            tdAll.SimpPta.journeyAfterStartDatesResponse
           )(this)
       }
     }
@@ -767,56 +767,56 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
 
       }
 
-      "Sia when the current stage is" - {
+      "Simp when the current stage is" - {
 
-          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => StartDatesResponse)(context: JourneyItTest): Unit =
+          def testSimpPta[J <: Journey](initialJourney: J)(existingValue: J => StartDatesResponse)(context: JourneyItTest): Unit =
             testUpdateWithExistingValue(initialJourney)(
               _.journeyId,
               existingValue(initialJourney)
             )(
                 differentStartDates,
                 journeyConnector.updateStartDates(_, _)(context.request),
-                context.tdAll.SiaPta.journeyAfterStartDatesResponse.copy(startDatesResponse = differentStartDates)
+                context.tdAll.SimpPta.journeyAfterStartDatesResponse.copy(startDatesResponse = differentStartDates)
               )(context)
 
         "RetrievedStartDates" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterStartDatesResponse)(_.startDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterStartDatesResponse)(_.startDatesResponse)(this)
         }
 
         "RetrievedAffordableQuotes" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterAffordableQuotesResponse)(_.startDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAffordableQuotesResponse)(_.startDatesResponse)(this)
         }
 
         "ChosenPaymentPlan" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterSelectedPaymentPlan)(_.startDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterSelectedPaymentPlan)(_.startDatesResponse)(this)
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterSelectedEmail)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
         }
 
       }

@@ -89,13 +89,13 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyContro
           )(this)
       }
 
-      "Sia" in new JourneyItTest {
+      "Simp" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SiaPta.journeyAfterAffordableQuotesResponse,
-          TdAll.SiaPta.updateSelectedPaymentPlanRequest()
+          tdAll.SimpPta.journeyAfterAffordableQuotesResponse,
+          TdAll.SimpPta.updateSelectedPaymentPlanRequest()
         )(
             journeyConnector.updateChosenPaymentPlan,
-            tdAll.SiaPta.journeyAfterSelectedPaymentPlan
+            tdAll.SimpPta.journeyAfterSelectedPaymentPlan
           )(this)
       }
     }
@@ -242,48 +242,48 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyContro
 
       }
 
-      "Sia when the current stage is" - {
+      "Simp when the current stage is" - {
 
-          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => PaymentPlan)(context: JourneyItTest): Unit =
+          def testSimpPta[J <: Journey](initialJourney: J)(existingValue: J => PaymentPlan)(context: JourneyItTest): Unit =
             testUpdateWithExistingValue(initialJourney)(
               _.journeyId,
               existingValue(initialJourney)
             )(
                 differentPaymentPlan,
                 journeyConnector.updateChosenPaymentPlan(_, _)(context.request),
-                context.tdAll.SiaPta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = differentPaymentPlan)
+                context.tdAll.SimpPta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = differentPaymentPlan)
               )(context)
 
         "ChosenPaymentPlan" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterSelectedPaymentPlan)(_.selectedPaymentPlan)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterSelectedPaymentPlan)(_.selectedPaymentPlan)(this)
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterSelectedEmail)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
         }
 
       }

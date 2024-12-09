@@ -138,7 +138,7 @@ object SjRequest {
 
     /**
      * Start Journey (Sj) Request
-     * for Epaye (Employers' Pay as you earn)
+     * for Sa (self assessment)
      * used by [[Origin]]s which provide only back and return urls
      */
     final case class Simple(
@@ -155,7 +155,7 @@ object SjRequest {
 
     /**
      * Start Journey (Sj) Request
-     * for Epaye (Employers' Pay as you earn)
+     * for Sa (self assessment)
      * It is used by origins which doesn't provide any data
      */
     final case class Empty()
@@ -168,23 +168,23 @@ object SjRequest {
   }
 
   /**
-   * Marking trait aggregating all Sa [[SjRequest]]s
+   * Marking trait aggregating all Simp [[SjRequest]]s
    */
-  sealed trait Sia extends SjRequest {
+  sealed trait Simp extends SjRequest {
     self: SjRequest =>
   }
 
   /**
-   * SjRequest for Sia tax regime
+   * SjRequest for Simp tax regime
    */
-  object Sia {
+  object Simp {
 
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[SjRequest.Sia] = derived.oformat[SjRequest.Sia]()
+    implicit val format: OFormat[SjRequest.Simp] = derived.oformat[SjRequest.Simp]()
 
     /**
      * Start Journey (Sj) Request
-     * for Epaye (Employers' Pay as you earn)
+     * for Simp (simple assessment)
      * used by [[Origin]]s which provide only back and return urls
      */
     final case class Simple(
@@ -192,7 +192,7 @@ object SjRequest {
         backUrl:   BackUrl
     )
       extends SjRequest
-      with Sia
+      with Simp
 
     object Simple {
       @SuppressWarnings(Array("org.wartremover.warts.Any"))
@@ -201,12 +201,12 @@ object SjRequest {
 
     /**
      * Start Journey (Sj) Request
-     * for Epaye (Employers' Pay as you earn)
+     * for Simp (simple assessment)
      * It is used by origins which doesn't provide any data
      */
     final case class Empty()
       extends SjRequest
-      with Sia
+      with Simp
 
     object Empty {
       implicit val format: OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())

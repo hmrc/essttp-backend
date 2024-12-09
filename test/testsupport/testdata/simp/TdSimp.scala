@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package testsupport.testdata.sia
+package testsupport.testdata.simp
 
 import essttp.rootmodel.ttp._
 import essttp.rootmodel.ttp.affordablequotes.DueDate
@@ -26,12 +26,12 @@ import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
 import java.time.LocalDate
 
-trait TdSia {
+trait TdSimp {
   dependencies: TdBase =>
 
   val nino: Nino = Nino("testNino")
 
-  val eligibleEligibilityCheckResultSia: EligibilityCheckResult = eligibility.EligibilityCheckResult(
+  val eligibleEligibilityCheckResultSimp: EligibilityCheckResult = eligibility.EligibilityCheckResult(
     processingDateTime              = ProcessingDateTime(reusableDateAsString),
     identification                  = List(
       Identification(
@@ -112,11 +112,11 @@ trait TdSia {
     transitionToCDCS                = None
   )
 
-  def ineligibleEligibilityCheckResultSia: EligibilityCheckResult = eligibleEligibilityCheckResultSia.copy(
+  def ineligibleEligibilityCheckResultSimp: EligibilityCheckResult = eligibleEligibilityCheckResultSimp.copy(
     eligibilityStatus = EligibilityStatus(EligibilityPass(value = false)),
     eligibilityRules  = hasRlsAddressOn
   )
 
-  val arrangementResponseSia: ArrangementResponse = ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(nino.value))
+  val arrangementResponseSimp: ArrangementResponse = ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(nino.value))
 
 }

@@ -19,11 +19,11 @@ POST        /sa/mobile/journey/start                                       journ
 POST        /sa/gov-uk/journey/start                                       journey.SjController.startJourneySaFromGovUk
 POST        /sa/detached-url/journey/start                                 journey.SjController.startJourneySaFromDetachedUrl
 
-#SIA
-POST        /sia/pta/journey/start                                          journey.SjController.startJourneySiaFromPta
-POST        /sia/mobile/journey/start                                       journey.SjController.startJourneySiaFromMobile
-POST        /sia/gov-uk/journey/start                                       journey.SjController.startJourneySiaFromGovUk
-POST        /sia/detached-url/journey/start                                 journey.SjController.startJourneySiaFromDetachedUrl
+#SIMP
+POST        /simp/pta/journey/start                                          journey.SjController.startJourneySimpFromPta
+POST        /simp/mobile/journey/start                                       journey.SjController.startJourneySimpFromMobile
+POST        /simp/gov-uk/journey/start                                       journey.SjController.startJourneySimpFromGovUk
+POST        /simp/detached-url/journey/start                                 journey.SjController.startJourneySimpFromDetachedUrl
 
 
 POST        /bars/verify/status                                             bars.BarsVerifyStatusController.status

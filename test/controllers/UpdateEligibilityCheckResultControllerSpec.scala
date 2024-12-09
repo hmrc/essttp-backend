@@ -70,13 +70,13 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
           )(this)
       }
 
-      "Sia" in new JourneyItTest {
+      "Simp" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SiaPta.journeyAfterDetermineTaxIds,
-          TdAll.SiaPta.updateEligibilityCheckRequest()
+          tdAll.SimpPta.journeyAfterDetermineTaxIds,
+          TdAll.SimpPta.updateEligibilityCheckRequest()
         )(
             journeyConnector.updateEligibilityCheckResult,
-            tdAll.SiaPta.journeyAfterEligibilityCheckEligible
+            tdAll.SimpPta.journeyAfterEligibilityCheckEligible
           )(this)
       }
     }
@@ -404,109 +404,109 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
 
       }
 
-      "Sia when the current stage is" - {
+      "Simp when the current stage is" - {
 
         val differentEligibilityCheckResult =
           TdAll.eligibleEligibilityCheckResultSa.copy(processingDateTime = ProcessingDateTime(Instant.now().toString))
 
-          def testSiaPta[J <: Journey](initialJourney: J)(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          def testSimpPta[J <: Journey](initialJourney: J)(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
             testUpdateWithExistingValue(initialJourney)(
               _.journeyId,
               existingValue(initialJourney)
             )(
                 differentEligibilityCheckResult,
                 journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-                context.tdAll.SiaPta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult)
+                context.tdAll.SimpPta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult)
               )(context)
 
-          def testSiaPtaWithCaseid[J <: Journey](initialJourney: J)(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          def testSimpPtaWithCaseid[J <: Journey](initialJourney: J)(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
             testUpdateWithExistingValue(initialJourney)(
               _.journeyId,
               existingValue(initialJourney)
             )(
                 differentEligibilityCheckResult,
                 journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-                context.tdAll.SiaPta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult, pegaCaseId = Some(PegaCaseId("case-id")))
+                context.tdAll.SimpPta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult, pegaCaseId = Some(PegaCaseId("case-id")))
               )(context)
 
         "EligibilityChecked" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)
         }
 
         "ObtainedWhyCannotPayInFullAnswers" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterWhyCannotPayInFullNotRequired)(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterWhyCannotPayInFullNotRequired)(_.eligibilityCheckResult)(this)
         }
 
         "AnsweredCanPayUpfront" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterCanPayUpfrontNo)(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterCanPayUpfrontNo)(_.eligibilityCheckResult)(this)
         }
 
         "EnteredUpfrontPaymentAmount" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterUpfrontPaymentAmount)(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterUpfrontPaymentAmount)(_.eligibilityCheckResult)(this)
         }
 
         "RetrievedExtremeDates" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterExtremeDates)(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterExtremeDates)(_.eligibilityCheckResult)(this)
         }
 
         "RetrievedAffordabilityResult" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterInstalmentAmounts)(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterInstalmentAmounts)(_.eligibilityCheckResult)(this)
         }
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterCanPayWithinSixMonths)(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterCanPayWithinSixMonths)(_.eligibilityCheckResult)(this)
         }
 
         "StartedPegaCase" in new JourneyItTest {
-          testSiaPtaWithCaseid(tdAll.SiaPta.journeyAfterStartedPegaCase)(_.eligibilityCheckResult)(this)
+          testSimpPtaWithCaseid(tdAll.SimpPta.journeyAfterStartedPegaCase)(_.eligibilityCheckResult)(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterMonthlyPaymentAmount)(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterMonthlyPaymentAmount)(_.eligibilityCheckResult)(this)
         }
 
         "EnteredDayOfMonth" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterDayOfMonth)(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterDayOfMonth)(_.eligibilityCheckResult)(this)
         }
 
         "RetrievedStartDates" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterStartDatesResponse)(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterStartDatesResponse)(_.eligibilityCheckResult)(this)
         }
 
         "RetrievedAffordableQuotes" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterAffordableQuotesResponse)(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAffordableQuotesResponse)(_.eligibilityCheckResult)(this)
         }
 
         "ChosenPaymentPlan" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterSelectedPaymentPlan)(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterSelectedPaymentPlan)(_.eligibilityCheckResult)(this)
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.eligibilityCheckResult)(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.eligibilityCheckResult)(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.eligibilityCheckResult)(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.eligibilityCheckResult)(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.eligibilityCheckResult)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterSelectedEmail)(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterSelectedEmail)(_.eligibilityCheckResult)(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSiaPta(tdAll.SiaPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.eligibilityCheckResult)(this)
         }
 
       }

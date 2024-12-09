@@ -71,8 +71,8 @@ class UpdateCanPayUpfrontController @Inject() (
           .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
           .withFieldConst(_.canPayUpfront, canPayUpfront)
           .transform
-      case j: Journey.Sia.ObtainedWhyCannotPayInFullAnswers =>
-        j.into[Journey.Sia.AnsweredCanPayUpfront]
+      case j: Journey.Simp.ObtainedWhyCannotPayInFullAnswers =>
+        j.into[Journey.Simp.AnsweredCanPayUpfront]
           .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
           .withFieldConst(_.canPayUpfront, canPayUpfront)
           .transform
@@ -106,7 +106,7 @@ class UpdateCanPayUpfrontController @Inject() (
                 stage         = determineCanPayUpFrontEnum(canPayUpfront),
                 canPayUpfront = canPayUpfront
               )
-            case j1: Journey.Sia.AnsweredCanPayUpfront =>
+            case j1: Journey.Simp.AnsweredCanPayUpfront =>
               j1.copy(
                 stage         = determineCanPayUpFrontEnum(canPayUpfront),
                 canPayUpfront = canPayUpfront
@@ -127,8 +127,8 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
-            case j1: Journey.Sia.EnteredUpfrontPaymentAmount =>
-              j1.into[Journey.Sia.AnsweredCanPayUpfront]
+            case j1: Journey.Simp.EnteredUpfrontPaymentAmount =>
+              j1.into[Journey.Simp.AnsweredCanPayUpfront]
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
@@ -168,9 +168,9 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
-          case j1: Journey.Sia.EnteredMonthlyPaymentAmount =>
+          case j1: Journey.Simp.EnteredMonthlyPaymentAmount =>
             upsertIfChanged(
-              j1.into[Journey.Sia.AnsweredCanPayUpfront]
+              j1.into[Journey.Simp.AnsweredCanPayUpfront]
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
@@ -197,9 +197,9 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
-          case j1: Journey.Sia.RetrievedExtremeDates =>
+          case j1: Journey.Simp.RetrievedExtremeDates =>
             upsertIfChanged(
-              j1.into[Journey.Sia.AnsweredCanPayUpfront]
+              j1.into[Journey.Simp.AnsweredCanPayUpfront]
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
@@ -226,9 +226,9 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
-          case j1: Journey.Sia.RetrievedAffordabilityResult =>
+          case j1: Journey.Simp.RetrievedAffordabilityResult =>
             upsertIfChanged(
-              j1.into[Journey.Sia.AnsweredCanPayUpfront]
+              j1.into[Journey.Simp.AnsweredCanPayUpfront]
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
@@ -255,9 +255,9 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
-          case j1: Journey.Sia.ObtainedCanPayWithinSixMonthsAnswers =>
+          case j1: Journey.Simp.ObtainedCanPayWithinSixMonthsAnswers =>
             upsertIfChanged(
-              j1.into[Journey.Sia.AnsweredCanPayUpfront]
+              j1.into[Journey.Simp.AnsweredCanPayUpfront]
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
@@ -284,9 +284,9 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
-          case j1: Journey.Sia.StartedPegaCase =>
+          case j1: Journey.Simp.StartedPegaCase =>
             upsertIfChanged(
-              j1.into[Journey.Sia.AnsweredCanPayUpfront]
+              j1.into[Journey.Simp.AnsweredCanPayUpfront]
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
@@ -313,9 +313,9 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
-          case j1: Journey.Sia.EnteredDayOfMonth =>
+          case j1: Journey.Simp.EnteredDayOfMonth =>
             upsertIfChanged(
-              j1.into[Journey.Sia.AnsweredCanPayUpfront]
+              j1.into[Journey.Simp.AnsweredCanPayUpfront]
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
@@ -342,9 +342,9 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
-          case j1: Journey.Sia.RetrievedStartDates =>
+          case j1: Journey.Simp.RetrievedStartDates =>
             upsertIfChanged(
-              j1.into[Journey.Sia.AnsweredCanPayUpfront]
+              j1.into[Journey.Simp.AnsweredCanPayUpfront]
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
@@ -371,9 +371,9 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
-          case j1: Journey.Sia.RetrievedAffordableQuotes =>
+          case j1: Journey.Simp.RetrievedAffordableQuotes =>
             upsertIfChanged(
-              j1.into[Journey.Sia.AnsweredCanPayUpfront]
+              j1.into[Journey.Simp.AnsweredCanPayUpfront]
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
@@ -400,9 +400,9 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
-          case j1: Journey.Sia.ChosenPaymentPlan =>
+          case j1: Journey.Simp.ChosenPaymentPlan =>
             upsertIfChanged(
-              j1.into[Journey.Sia.AnsweredCanPayUpfront]
+              j1.into[Journey.Simp.AnsweredCanPayUpfront]
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
@@ -429,9 +429,9 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
-          case j1: Journey.Sia.CheckedPaymentPlan =>
+          case j1: Journey.Simp.CheckedPaymentPlan =>
             upsertIfChanged(
-              j1.into[Journey.Sia.AnsweredCanPayUpfront]
+              j1.into[Journey.Simp.AnsweredCanPayUpfront]
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
@@ -458,9 +458,9 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
-          case j1: Journey.Sia.EnteredCanYouSetUpDirectDebit =>
+          case j1: Journey.Simp.EnteredCanYouSetUpDirectDebit =>
             upsertIfChanged(
-              j1.into[Journey.Sia.AnsweredCanPayUpfront]
+              j1.into[Journey.Simp.AnsweredCanPayUpfront]
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
@@ -487,9 +487,9 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
-          case j1: Journey.Sia.EnteredDirectDebitDetails =>
+          case j1: Journey.Simp.EnteredDirectDebitDetails =>
             upsertIfChanged(
-              j1.into[Journey.Sia.AnsweredCanPayUpfront]
+              j1.into[Journey.Simp.AnsweredCanPayUpfront]
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
@@ -516,9 +516,9 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
-          case j1: Journey.Sia.ConfirmedDirectDebitDetails =>
+          case j1: Journey.Simp.ConfirmedDirectDebitDetails =>
             upsertIfChanged(
-              j1.into[Journey.Sia.AnsweredCanPayUpfront]
+              j1.into[Journey.Simp.AnsweredCanPayUpfront]
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
@@ -545,9 +545,9 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
-          case j1: Journey.Sia.AgreedTermsAndConditions =>
+          case j1: Journey.Simp.AgreedTermsAndConditions =>
             upsertIfChanged(
-              j1.into[Journey.Sia.AnsweredCanPayUpfront]
+              j1.into[Journey.Simp.AnsweredCanPayUpfront]
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
@@ -574,9 +574,9 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
-          case j1: Journey.Sia.SelectedEmailToBeVerified =>
+          case j1: Journey.Simp.SelectedEmailToBeVerified =>
             upsertIfChanged(
-              j1.into[Journey.Sia.AnsweredCanPayUpfront]
+              j1.into[Journey.Simp.AnsweredCanPayUpfront]
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
@@ -603,9 +603,9 @@ class UpdateCanPayUpfrontController @Inject() (
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
-          case j1: Journey.Sia.EmailVerificationComplete =>
+          case j1: Journey.Simp.EmailVerificationComplete =>
             upsertIfChanged(
-              j1.into[Journey.Sia.AnsweredCanPayUpfront]
+              j1.into[Journey.Simp.AnsweredCanPayUpfront]
                 .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform

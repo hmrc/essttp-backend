@@ -42,7 +42,7 @@ class AffordabilityEnablerServiceImpl @Inject() (config: Configuration) extends 
           case TaxRegime.Epaye => "affordability.pass-through-percentages.epaye"
           case TaxRegime.Vat   => "affordability.pass-through-percentages.vat"
           case TaxRegime.Sa    => "affordability.pass-through-percentages.sa"
-          case TaxRegime.Sia   => "affordability.pass-through-percentages.sia"
+          case TaxRegime.Simp  => "affordability.pass-through-percentages.simp"
         }
       }
       val percentage = config.get[Int](configKey)

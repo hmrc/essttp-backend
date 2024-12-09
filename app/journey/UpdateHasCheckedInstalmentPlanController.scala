@@ -75,7 +75,7 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
           .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
           .withFieldConst(_.paymentPlanAnswers, answers)
           .transform
-      case Left(j: Journey.Sia.StartedPegaCase) =>
+      case Left(j: Journey.Simp.StartedPegaCase) =>
         j.into[Journey.Sa.CheckedPaymentPlan]
           .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
           .withFieldConst(_.paymentPlanAnswers, answers)
@@ -96,8 +96,8 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
           .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
           .withFieldConst(_.paymentPlanAnswers, answers)
           .transform
-      case Right(j: Journey.Sia.ChosenPaymentPlan) =>
-        j.into[Journey.Sia.CheckedPaymentPlan]
+      case Right(j: Journey.Simp.ChosenPaymentPlan) =>
+        j.into[Journey.Simp.CheckedPaymentPlan]
           .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
           .withFieldConst(_.paymentPlanAnswers, answers)
           .transform
@@ -119,7 +119,7 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
           j.copy(paymentPlanAnswers = answers)
         case j: Journey.Sa.CheckedPaymentPlan =>
           j.copy(paymentPlanAnswers = answers)
-        case j: Journey.Sia.CheckedPaymentPlan =>
+        case j: Journey.Simp.CheckedPaymentPlan =>
           j.copy(paymentPlanAnswers = answers)
 
         case j: Journey.Epaye.EnteredCanYouSetUpDirectDebit =>
@@ -137,8 +137,8 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Sia.EnteredCanYouSetUpDirectDebit =>
-          j.into[Journey.Sia.CheckedPaymentPlan]
+        case j: Journey.Simp.EnteredCanYouSetUpDirectDebit =>
+          j.into[Journey.Simp.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
@@ -158,8 +158,8 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Sia.EnteredDirectDebitDetails =>
-          j.into[Journey.Sia.CheckedPaymentPlan]
+        case j: Journey.Simp.EnteredDirectDebitDetails =>
+          j.into[Journey.Simp.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
@@ -179,8 +179,8 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Sia.ConfirmedDirectDebitDetails =>
-          j.into[Journey.Sia.CheckedPaymentPlan]
+        case j: Journey.Simp.ConfirmedDirectDebitDetails =>
+          j.into[Journey.Simp.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
@@ -200,8 +200,8 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Sia.AgreedTermsAndConditions =>
-          j.into[Journey.Sia.CheckedPaymentPlan]
+        case j: Journey.Simp.AgreedTermsAndConditions =>
+          j.into[Journey.Simp.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
@@ -221,8 +221,8 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Sia.SelectedEmailToBeVerified =>
-          j.into[Journey.Sia.CheckedPaymentPlan]
+        case j: Journey.Simp.SelectedEmailToBeVerified =>
+          j.into[Journey.Simp.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
@@ -242,8 +242,8 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Sia.EmailVerificationComplete =>
-          j.into[Journey.Sia.CheckedPaymentPlan]
+        case j: Journey.Simp.EmailVerificationComplete =>
+          j.into[Journey.Simp.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform

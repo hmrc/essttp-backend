@@ -20,7 +20,7 @@ import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.{Epaye, Sa, Sia, Stages, Vat}
+import essttp.journey.model.Journey.{Epaye, Sa, Simp, Stages, Vat}
 import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey, JourneyId, Stage}
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.TransformationOps
@@ -68,8 +68,8 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
           .withFieldConst(_.stage, determineStage(answers))
           .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
           .transform
-      case j: Sia.RetrievedAffordabilityResult =>
-        j.into[Sia.ObtainedCanPayWithinSixMonthsAnswers]
+      case j: Simp.RetrievedAffordabilityResult =>
+        j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
           .withFieldConst(_.stage, determineStage(answers))
           .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
           .transform
@@ -91,7 +91,7 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
           j.copy(canPayWithinSixMonthsAnswers = answers, stage = determineStage(answers))
         case j: Sa.ObtainedCanPayWithinSixMonthsAnswers =>
           j.copy(canPayWithinSixMonthsAnswers = answers, stage = determineStage(answers))
-        case j: Sia.ObtainedCanPayWithinSixMonthsAnswers =>
+        case j: Simp.ObtainedCanPayWithinSixMonthsAnswers =>
           j.copy(canPayWithinSixMonthsAnswers = answers, stage = determineStage(answers))
 
         case j: Epaye.StartedPegaCase =>
@@ -109,8 +109,8 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sia.StartedPegaCase =>
-          j.into[Sia.ObtainedCanPayWithinSixMonthsAnswers]
+        case j: Simp.StartedPegaCase =>
+          j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
@@ -130,8 +130,8 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sia.EnteredMonthlyPaymentAmount =>
-          j.into[Sia.ObtainedCanPayWithinSixMonthsAnswers]
+        case j: Simp.EnteredMonthlyPaymentAmount =>
+          j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
@@ -151,8 +151,8 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sia.EnteredDayOfMonth =>
-          j.into[Sia.ObtainedCanPayWithinSixMonthsAnswers]
+        case j: Simp.EnteredDayOfMonth =>
+          j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
@@ -172,8 +172,8 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sia.RetrievedStartDates =>
-          j.into[Sia.ObtainedCanPayWithinSixMonthsAnswers]
+        case j: Simp.RetrievedStartDates =>
+          j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
@@ -193,8 +193,8 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sia.RetrievedAffordableQuotes =>
-          j.into[Sia.ObtainedCanPayWithinSixMonthsAnswers]
+        case j: Simp.RetrievedAffordableQuotes =>
+          j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
@@ -214,8 +214,8 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sia.ChosenPaymentPlan =>
-          j.into[Sia.ObtainedCanPayWithinSixMonthsAnswers]
+        case j: Simp.ChosenPaymentPlan =>
+          j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
@@ -235,8 +235,8 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sia.CheckedPaymentPlan =>
-          j.into[Sia.ObtainedCanPayWithinSixMonthsAnswers]
+        case j: Simp.CheckedPaymentPlan =>
+          j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
@@ -256,8 +256,8 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sia.EnteredCanYouSetUpDirectDebit =>
-          j.into[Sia.ObtainedCanPayWithinSixMonthsAnswers]
+        case j: Simp.EnteredCanYouSetUpDirectDebit =>
+          j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
@@ -277,8 +277,8 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sia.EnteredDirectDebitDetails =>
-          j.into[Sia.ObtainedCanPayWithinSixMonthsAnswers]
+        case j: Simp.EnteredDirectDebitDetails =>
+          j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
@@ -298,8 +298,8 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sia.ConfirmedDirectDebitDetails =>
-          j.into[Sia.ObtainedCanPayWithinSixMonthsAnswers]
+        case j: Simp.ConfirmedDirectDebitDetails =>
+          j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
@@ -319,8 +319,8 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sia.AgreedTermsAndConditions =>
-          j.into[Sia.ObtainedCanPayWithinSixMonthsAnswers]
+        case j: Simp.AgreedTermsAndConditions =>
+          j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
@@ -340,8 +340,8 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sia.SelectedEmailToBeVerified =>
-          j.into[Sia.ObtainedCanPayWithinSixMonthsAnswers]
+        case j: Simp.SelectedEmailToBeVerified =>
+          j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
@@ -361,8 +361,8 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sia.EmailVerificationComplete =>
-          j.into[Sia.ObtainedCanPayWithinSixMonthsAnswers]
+        case j: Simp.EmailVerificationComplete =>
+          j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform

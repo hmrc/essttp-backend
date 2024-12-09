@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package testsupport.testdata.sia
+package testsupport.testdata.simp
 
-import essttp.journey.model.SjRequest.Sia
+import essttp.journey.model.SjRequest.Simp
 import essttp.journey.model._
 import essttp.rootmodel._
 import essttp.rootmodel.bank.{BankDetails, CanSetUpDirectDebit}
@@ -30,26 +30,23 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import play.api.libs.json.JsNull
 import testsupport.testdata.{TdBase, TdJourneyStructure}
 
-trait TdJourneySiaMobile {
-  dependencies: TdBase with TdSia =>
+trait TdJourneySimpDetachedUrl {
+  dependencies: TdBase with TdSimp =>
 
-  object SiaMobile extends TdJourneyStructure {
+  object SimpDetachedUrl extends TdJourneyStructure {
 
-    def sjRequest: Sia.Simple = SjRequest.Sia.Simple(
-      dependencies.returnUrl,
-      dependencies.backUrl
-    )
+    def sjRequest: Simp.Empty = SjRequest.Simp.Empty()
 
     def sjResponse: SjResponse = SjResponse(
-      nextUrl   = NextUrl(s"http://localhost:9215/set-up-a-payment-plan/sia-payment-plan"),
+      nextUrl   = NextUrl(s"http://localhost:9215/set-up-a-payment-plan/simple-assessment-payment-plan"),
       journeyId = dependencies.journeyId
     )
 
-    def postPath: String = "/sia/mobile/journey/start"
+    def postPath: String = "/simp/detached-url/journey/start"
 
-    def journeyAfterStarted: Journey.Sia.Started = Journey.Sia.Started(
+    def journeyAfterStarted: Journey.Simp.Started = Journey.Simp.Started(
       _id                  = dependencies.journeyId,
-      origin               = Origins.Sia.Mobile,
+      origin               = Origins.Simp.DetachedUrl,
       createdOn            = dependencies.createdOn,
       sjRequest            = sjRequest,
       sessionId            = dependencies.sessionId,
@@ -61,9 +58,9 @@ trait TdJourneySiaMobile {
 
     def updateTaxIdRequest(): TaxId = nino
 
-    def journeyAfterDetermineTaxIds: Journey.Sia.ComputedTaxId = Journey.Sia.ComputedTaxId(
+    def journeyAfterDetermineTaxIds: Journey.Simp.ComputedTaxId = Journey.Simp.ComputedTaxId(
       _id                  = dependencies.journeyId,
-      origin               = Origins.Sia.Mobile,
+      origin               = Origins.Simp.DetachedUrl,
       createdOn            = dependencies.createdOn,
       sjRequest            = sjRequest,
       sessionId            = dependencies.sessionId,
@@ -74,11 +71,11 @@ trait TdJourneySiaMobile {
       pegaCaseId           = None
     )
 
-    def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResultSia
+    def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResultSimp
 
-    def journeyAfterEligibilityCheckEligible: Journey.Sia.EligibilityChecked = Journey.Sia.EligibilityChecked(
+    def journeyAfterEligibilityCheckEligible: Journey.Simp.EligibilityChecked = Journey.Simp.EligibilityChecked(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Sia.Mobile,
+      origin                 = Origins.Simp.DetachedUrl,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
@@ -86,13 +83,13 @@ trait TdJourneySiaMobile {
       affordabilityEnabled   = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = nino,
-      eligibilityCheckResult = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
       pegaCaseId             = None
     )
 
-    def journeyAfterEligibilityCheckNotEligible: Journey.Sia.EligibilityChecked = Journey.Sia.EligibilityChecked(
+    def journeyAfterEligibilityCheckNotEligible: Journey.Simp.EligibilityChecked = Journey.Simp.EligibilityChecked(
       _id                    = dependencies.journeyId,
-      origin                 = Origins.Sia.Mobile,
+      origin                 = Origins.Simp.DetachedUrl,
       createdOn              = dependencies.createdOn,
       sjRequest              = sjRequest,
       sessionId              = dependencies.sessionId,
@@ -100,13 +97,13 @@ trait TdJourneySiaMobile {
       affordabilityEnabled   = Some(false),
       correlationId          = dependencies.correlationId,
       taxId                  = nino,
-      eligibilityCheckResult = ineligibleEligibilityCheckResultSia,
+      eligibilityCheckResult = ineligibleEligibilityCheckResultSimp,
       pegaCaseId             = None
     )
 
-    def journeyAfterWhyCannotPayInFullNotRequired: Journey.Sia.ObtainedWhyCannotPayInFullAnswers = Journey.Sia.ObtainedWhyCannotPayInFullAnswers(
+    def journeyAfterWhyCannotPayInFullNotRequired: Journey.Simp.ObtainedWhyCannotPayInFullAnswers = Journey.Simp.ObtainedWhyCannotPayInFullAnswers(
       _id                       = dependencies.journeyId,
-      origin                    = Origins.Sia.Mobile,
+      origin                    = Origins.Simp.DetachedUrl,
       createdOn                 = dependencies.createdOn,
       sjRequest                 = sjRequest,
       sessionId                 = dependencies.sessionId,
@@ -114,7 +111,7 @@ trait TdJourneySiaMobile {
       affordabilityEnabled      = Some(false),
       correlationId             = dependencies.correlationId,
       taxId                     = nino,
-      eligibilityCheckResult    = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
       pegaCaseId                = None
     )
@@ -123,9 +120,9 @@ trait TdJourneySiaMobile {
 
     def updateCanPayUpfrontNoRequest(): CanPayUpfront = canPayUpfrontNo
 
-    def journeyAfterCanPayUpfrontYes: Journey.Sia.AnsweredCanPayUpfront = Journey.Sia.AnsweredCanPayUpfront(
+    def journeyAfterCanPayUpfrontYes: Journey.Simp.AnsweredCanPayUpfront = Journey.Simp.AnsweredCanPayUpfront(
       _id                       = dependencies.journeyId,
-      origin                    = Origins.Sia.Mobile,
+      origin                    = Origins.Simp.DetachedUrl,
       createdOn                 = dependencies.createdOn,
       sjRequest                 = sjRequest,
       sessionId                 = dependencies.sessionId,
@@ -133,15 +130,15 @@ trait TdJourneySiaMobile {
       affordabilityEnabled      = Some(false),
       correlationId             = dependencies.correlationId,
       taxId                     = nino,
-      eligibilityCheckResult    = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
       canPayUpfront             = canPayUpfrontYes,
       pegaCaseId                = None
     )
 
-    def journeyAfterCanPayUpfrontNo: Journey.Sia.AnsweredCanPayUpfront = Journey.Sia.AnsweredCanPayUpfront(
+    def journeyAfterCanPayUpfrontNo: Journey.Simp.AnsweredCanPayUpfront = Journey.Simp.AnsweredCanPayUpfront(
       _id                       = dependencies.journeyId,
-      origin                    = Origins.Sia.Mobile,
+      origin                    = Origins.Simp.DetachedUrl,
       createdOn                 = dependencies.createdOn,
       sjRequest                 = sjRequest,
       sessionId                 = dependencies.sessionId,
@@ -149,7 +146,7 @@ trait TdJourneySiaMobile {
       affordabilityEnabled      = Some(false),
       correlationId             = dependencies.correlationId,
       taxId                     = nino,
-      eligibilityCheckResult    = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
       canPayUpfront             = canPayUpfrontNo,
       pegaCaseId                = None
@@ -157,9 +154,9 @@ trait TdJourneySiaMobile {
 
     def updateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.upfrontPaymentAmount
 
-    def journeyAfterUpfrontPaymentAmount: Journey.Sia.EnteredUpfrontPaymentAmount = Journey.Sia.EnteredUpfrontPaymentAmount(
+    def journeyAfterUpfrontPaymentAmount: Journey.Simp.EnteredUpfrontPaymentAmount = Journey.Simp.EnteredUpfrontPaymentAmount(
       _id                       = dependencies.journeyId,
-      origin                    = Origins.Sia.Mobile,
+      origin                    = Origins.Simp.DetachedUrl,
       createdOn                 = dependencies.createdOn,
       sjRequest                 = sjRequest,
       sessionId                 = dependencies.sessionId,
@@ -167,7 +164,7 @@ trait TdJourneySiaMobile {
       affordabilityEnabled      = Some(false),
       correlationId             = dependencies.correlationId,
       taxId                     = nino,
-      eligibilityCheckResult    = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
       canPayUpfront             = canPayUpfrontYes,
       upfrontPaymentAmount      = dependencies.upfrontPaymentAmount,
@@ -176,9 +173,9 @@ trait TdJourneySiaMobile {
 
     def updateExtremeDatesRequest(): ExtremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment
 
-    def journeyAfterExtremeDates: Journey.Sia.RetrievedExtremeDates = Journey.Sia.RetrievedExtremeDates(
+    def journeyAfterExtremeDates: Journey.Simp.RetrievedExtremeDates = Journey.Simp.RetrievedExtremeDates(
       _id                       = dependencies.journeyId,
-      origin                    = Origins.Sia.Mobile,
+      origin                    = Origins.Simp.DetachedUrl,
       createdOn                 = dependencies.createdOn,
       sjRequest                 = sjRequest,
       sessionId                 = dependencies.sessionId,
@@ -186,7 +183,7 @@ trait TdJourneySiaMobile {
       affordabilityEnabled      = Some(false),
       correlationId             = dependencies.correlationId,
       taxId                     = nino,
-      eligibilityCheckResult    = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
       upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
@@ -195,9 +192,9 @@ trait TdJourneySiaMobile {
 
     def updateInstalmentAmountsRequest(): InstalmentAmounts = dependencies.instalmentAmounts
 
-    def journeyAfterInstalmentAmounts: Journey.Sia.RetrievedAffordabilityResult = Journey.Sia.RetrievedAffordabilityResult(
+    def journeyAfterInstalmentAmounts: Journey.Simp.RetrievedAffordabilityResult = Journey.Simp.RetrievedAffordabilityResult(
       _id                       = dependencies.journeyId,
-      origin                    = Origins.Sia.Mobile,
+      origin                    = Origins.Simp.DetachedUrl,
       createdOn                 = dependencies.createdOn,
       sjRequest                 = sjRequest,
       sessionId                 = dependencies.sessionId,
@@ -205,7 +202,7 @@ trait TdJourneySiaMobile {
       affordabilityEnabled      = Some(false),
       correlationId             = dependencies.correlationId,
       taxId                     = nino,
-      eligibilityCheckResult    = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult    = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
       upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
@@ -213,11 +210,30 @@ trait TdJourneySiaMobile {
       pegaCaseId                = None
     )
 
+    def journeyAfterCanPayWithinSixMonths: Journey.Simp.ObtainedCanPayWithinSixMonthsAnswers = Journey.Simp.ObtainedCanPayWithinSixMonthsAnswers(
+      _id                          = dependencies.journeyId,
+      origin                       = Origins.Simp.DetachedUrl,
+      createdOn                    = dependencies.createdOn,
+      sjRequest                    = sjRequest,
+      sessionId                    = dependencies.sessionId,
+      stage                        = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerNotRequired,
+      affordabilityEnabled         = Some(false),
+      correlationId                = dependencies.correlationId,
+      taxId                        = nino,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
+      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts            = dependencies.instalmentAmounts,
+      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+      pegaCaseId                   = None
+    )
+
     def updateMonthlyPaymentAmountRequest(): MonthlyPaymentAmount = dependencies.monthlyPaymentAmount
 
-    def journeyAfterMonthlyPaymentAmount: Journey.Sia.EnteredMonthlyPaymentAmount = Journey.Sia.EnteredMonthlyPaymentAmount(
+    def journeyAfterMonthlyPaymentAmount: Journey.Simp.EnteredMonthlyPaymentAmount = Journey.Simp.EnteredMonthlyPaymentAmount(
       _id                          = dependencies.journeyId,
-      origin                       = Origins.Sia.Mobile,
+      origin                       = Origins.Simp.DetachedUrl,
       createdOn                    = dependencies.createdOn,
       sjRequest                    = sjRequest,
       sessionId                    = dependencies.sessionId,
@@ -225,7 +241,7 @@ trait TdJourneySiaMobile {
       affordabilityEnabled         = Some(false),
       correlationId                = dependencies.correlationId,
       taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
       upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
@@ -235,30 +251,11 @@ trait TdJourneySiaMobile {
       pegaCaseId                   = None
     )
 
-    def journeyAfterCanPayWithinSixMonths: Journey.Sia.ObtainedCanPayWithinSixMonthsAnswers = Journey.Sia.ObtainedCanPayWithinSixMonthsAnswers(
-      _id                          = dependencies.journeyId,
-      origin                       = Origins.Sia.Mobile,
-      createdOn                    = dependencies.createdOn,
-      sjRequest                    = sjRequest,
-      sessionId                    = dependencies.sessionId,
-      stage                        = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerNotRequired,
-      affordabilityEnabled         = Some(false),
-      correlationId                = dependencies.correlationId,
-      taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSia,
-      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts            = dependencies.instalmentAmounts,
-      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      pegaCaseId                   = None
-    )
-
     def updateDayOfMonthRequest(): DayOfMonth = dependencies.dayOfMonth
 
-    def journeyAfterDayOfMonth: Journey.Sia.EnteredDayOfMonth = Journey.Sia.EnteredDayOfMonth(
+    def journeyAfterDayOfMonth: Journey.Simp.EnteredDayOfMonth = Journey.Simp.EnteredDayOfMonth(
       _id                          = dependencies.journeyId,
-      origin                       = Origins.Sia.Mobile,
+      origin                       = Origins.Simp.DetachedUrl,
       createdOn                    = dependencies.createdOn,
       sjRequest                    = sjRequest,
       sessionId                    = dependencies.sessionId,
@@ -266,7 +263,7 @@ trait TdJourneySiaMobile {
       affordabilityEnabled         = Some(false),
       correlationId                = dependencies.correlationId,
       taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
       upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
@@ -279,9 +276,9 @@ trait TdJourneySiaMobile {
 
     def updateStartDatesResponse(): StartDatesResponse = dependencies.startDatesResponseWithInitialPayment
 
-    def journeyAfterStartDatesResponse: Journey.AfterStartDatesResponse = Journey.Sia.RetrievedStartDates(
+    def journeyAfterStartDatesResponse: Journey.AfterStartDatesResponse = Journey.Simp.RetrievedStartDates(
       _id                          = dependencies.journeyId,
-      origin                       = Origins.Sia.Mobile,
+      origin                       = Origins.Simp.DetachedUrl,
       createdOn                    = dependencies.createdOn,
       sjRequest                    = sjRequest,
       sessionId                    = dependencies.sessionId,
@@ -289,7 +286,7 @@ trait TdJourneySiaMobile {
       affordabilityEnabled         = Some(false),
       correlationId                = dependencies.correlationId,
       taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
       upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
@@ -303,9 +300,9 @@ trait TdJourneySiaMobile {
 
     def updateAffordableQuotesResponse(): AffordableQuotesResponse = dependencies.affordableQuotesResponse
 
-    def journeyAfterAffordableQuotesResponse: Journey.AfterAffordableQuotesResponse = Journey.Sia.RetrievedAffordableQuotes(
+    def journeyAfterAffordableQuotesResponse: Journey.AfterAffordableQuotesResponse = Journey.Simp.RetrievedAffordableQuotes(
       _id                          = dependencies.journeyId,
-      origin                       = Origins.Sia.Mobile,
+      origin                       = Origins.Simp.DetachedUrl,
       createdOn                    = dependencies.createdOn,
       sjRequest                    = sjRequest,
       sessionId                    = dependencies.sessionId,
@@ -313,7 +310,7 @@ trait TdJourneySiaMobile {
       affordabilityEnabled         = Some(false),
       correlationId                = dependencies.correlationId,
       taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
       upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
@@ -328,9 +325,9 @@ trait TdJourneySiaMobile {
 
     def updateSelectedPaymentPlanRequest(): PaymentPlan = dependencies.paymentPlan(1)
 
-    def journeyAfterSelectedPaymentPlan: Journey.AfterSelectedPaymentPlan = Journey.Sia.ChosenPaymentPlan(
+    def journeyAfterSelectedPaymentPlan: Journey.AfterSelectedPaymentPlan = Journey.Simp.ChosenPaymentPlan(
       _id                          = dependencies.journeyId,
-      origin                       = Origins.Sia.Mobile,
+      origin                       = Origins.Simp.DetachedUrl,
       createdOn                    = dependencies.createdOn,
       sjRequest                    = sjRequest,
       sessionId                    = dependencies.sessionId,
@@ -338,7 +335,7 @@ trait TdJourneySiaMobile {
       affordabilityEnabled         = Some(false),
       correlationId                = dependencies.correlationId,
       taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
       upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
@@ -354,9 +351,9 @@ trait TdJourneySiaMobile {
 
     def updateCheckedPaymentPlanRequest(): JsNull.type = JsNull
 
-    def journeyAfterCheckedPaymentPlanNonAffordability: Journey.AfterCheckedPaymentPlan = Journey.Sia.CheckedPaymentPlan(
+    def journeyAfterCheckedPaymentPlanNonAffordability: Journey.AfterCheckedPaymentPlan = Journey.Simp.CheckedPaymentPlan(
       _id                          = dependencies.journeyId,
-      origin                       = Origins.Sia.Mobile,
+      origin                       = Origins.Simp.DetachedUrl,
       createdOn                    = dependencies.createdOn,
       sjRequest                    = sjRequest,
       sessionId                    = dependencies.sessionId,
@@ -364,7 +361,7 @@ trait TdJourneySiaMobile {
       affordabilityEnabled         = Some(false),
       correlationId                = dependencies.correlationId,
       taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
       upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
@@ -377,9 +374,9 @@ trait TdJourneySiaMobile {
     def updateCanSetUpDirectDebitRequest(isAccountHolder: Boolean): CanSetUpDirectDebit =
       CanSetUpDirectDebit(isAccountHolder)
 
-    def journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder: Boolean): Journey.AfterEnteredCanYouSetUpDirectDebit = Journey.Sia.EnteredCanYouSetUpDirectDebit(
+    def journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder: Boolean): Journey.AfterEnteredCanYouSetUpDirectDebit = Journey.Simp.EnteredCanYouSetUpDirectDebit(
       _id                          = dependencies.journeyId,
-      origin                       = Origins.Sia.Mobile,
+      origin                       = Origins.Simp.DetachedUrl,
       createdOn                    = dependencies.createdOn,
       sjRequest                    = sjRequest,
       sessionId                    = dependencies.sessionId,
@@ -387,7 +384,7 @@ trait TdJourneySiaMobile {
       affordabilityEnabled         = Some(false),
       correlationId                = dependencies.correlationId,
       taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
       upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
@@ -400,9 +397,9 @@ trait TdJourneySiaMobile {
 
     def updateDirectDebitDetailsRequest(): BankDetails = dependencies.directDebitDetails
 
-    def journeyAfterEnteredDirectDebitDetailsNoAffordability(): Journey.AfterEnteredDirectDebitDetails = Journey.Sia.EnteredDirectDebitDetails(
+    def journeyAfterEnteredDirectDebitDetailsNoAffordability(): Journey.AfterEnteredDirectDebitDetails = Journey.Simp.EnteredDirectDebitDetails(
       _id                          = dependencies.journeyId,
-      origin                       = Origins.Sia.Mobile,
+      origin                       = Origins.Simp.DetachedUrl,
       createdOn                    = dependencies.createdOn,
       sjRequest                    = sjRequest,
       sessionId                    = dependencies.sessionId,
@@ -410,7 +407,7 @@ trait TdJourneySiaMobile {
       affordabilityEnabled         = Some(false),
       correlationId                = dependencies.correlationId,
       taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
       upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
@@ -424,9 +421,9 @@ trait TdJourneySiaMobile {
 
     def updateConfirmedDirectDebitDetailsRequest(): JsNull.type = JsNull
 
-    def journeyAfterConfirmedDirectDebitDetailsNoAffordability: Journey.AfterConfirmedDirectDebitDetails = Journey.Sia.ConfirmedDirectDebitDetails(
+    def journeyAfterConfirmedDirectDebitDetailsNoAffordability: Journey.AfterConfirmedDirectDebitDetails = Journey.Simp.ConfirmedDirectDebitDetails(
       _id                          = dependencies.journeyId,
-      origin                       = Origins.Sia.Mobile,
+      origin                       = Origins.Simp.DetachedUrl,
       createdOn                    = dependencies.createdOn,
       sjRequest                    = sjRequest,
       sessionId                    = dependencies.sessionId,
@@ -434,7 +431,7 @@ trait TdJourneySiaMobile {
       affordabilityEnabled         = Some(false),
       correlationId                = dependencies.correlationId,
       taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
       upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
@@ -453,9 +450,9 @@ trait TdJourneySiaMobile {
         if (isEmailAddressRequired) Stage.AfterAgreedTermsAndConditions.EmailAddressRequired
         else Stage.AfterAgreedTermsAndConditions.EmailAddressNotRequired
 
-      Journey.Sia.AgreedTermsAndConditions(
+      Journey.Simp.AgreedTermsAndConditions(
         _id                          = dependencies.journeyId,
-        origin                       = Origins.Sia.Mobile,
+        origin                       = Origins.Simp.DetachedUrl,
         createdOn                    = dependencies.createdOn,
         sjRequest                    = sjRequest,
         sessionId                    = dependencies.sessionId,
@@ -463,7 +460,7 @@ trait TdJourneySiaMobile {
         affordabilityEnabled         = Some(false),
         correlationId                = dependencies.correlationId,
         taxId                        = nino,
-        eligibilityCheckResult       = eligibleEligibilityCheckResultSia,
+        eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
         whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
         upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
         extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
@@ -479,9 +476,9 @@ trait TdJourneySiaMobile {
 
     def updateSelectedEmailRequest(): Email = dependencies.email
 
-    def journeyAfterSelectedEmail: Journey.Sia.SelectedEmailToBeVerified = Journey.Sia.SelectedEmailToBeVerified(
+    def journeyAfterSelectedEmail: Journey.Simp.SelectedEmailToBeVerified = Journey.Simp.SelectedEmailToBeVerified(
       _id                          = dependencies.journeyId,
-      origin                       = Origins.Sia.Mobile,
+      origin                       = Origins.Simp.DetachedUrl,
       createdOn                    = dependencies.createdOn,
       sjRequest                    = sjRequest,
       sessionId                    = dependencies.sessionId,
@@ -489,7 +486,7 @@ trait TdJourneySiaMobile {
       affordabilityEnabled         = Some(false),
       correlationId                = dependencies.correlationId,
       taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
       upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
@@ -503,9 +500,9 @@ trait TdJourneySiaMobile {
       pegaCaseId                   = None
     )
 
-    def journeyAfterEmailVerificationResult(result: EmailVerificationResult): Journey.Sia.EmailVerificationComplete = Journey.Sia.EmailVerificationComplete(
+    def journeyAfterEmailVerificationResult(result: EmailVerificationResult): Journey.Simp.EmailVerificationComplete = Journey.Simp.EmailVerificationComplete(
       _id                          = dependencies.journeyId,
-      origin                       = Origins.Sia.Mobile,
+      origin                       = Origins.Simp.DetachedUrl,
       createdOn                    = dependencies.createdOn,
       sjRequest                    = sjRequest,
       sessionId                    = dependencies.sessionId,
@@ -516,7 +513,7 @@ trait TdJourneySiaMobile {
       affordabilityEnabled         = Some(false),
       correlationId                = dependencies.correlationId,
       taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
       upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
@@ -532,11 +529,11 @@ trait TdJourneySiaMobile {
       pegaCaseId                   = None
     )
 
-    def updateArrangementRequest(): ArrangementResponse = dependencies.arrangementResponseSia
+    def updateArrangementRequest(): ArrangementResponse = dependencies.arrangementResponseSimp
 
-    def journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired: Boolean): Journey.AfterArrangementSubmitted = Journey.Sia.SubmittedArrangement(
+    def journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired: Boolean): Journey.AfterArrangementSubmitted = Journey.Simp.SubmittedArrangement(
       _id                          = dependencies.journeyId,
-      origin                       = Origins.Sia.Mobile,
+      origin                       = Origins.Simp.DetachedUrl,
       createdOn                    = dependencies.createdOn,
       sjRequest                    = sjRequest,
       sessionId                    = dependencies.sessionId,
@@ -544,7 +541,7 @@ trait TdJourneySiaMobile {
       affordabilityEnabled         = Some(false),
       correlationId                = dependencies.correlationId,
       taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSia,
+      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
       upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
       extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
@@ -559,7 +556,7 @@ trait TdJourneySiaMobile {
       } else {
         EmailVerificationAnswers.NoEmailJourney
       },
-      arrangementResponse          = dependencies.arrangementResponseSia,
+      arrangementResponse          = dependencies.arrangementResponseSimp,
       pegaCaseId                   = None
     )
 

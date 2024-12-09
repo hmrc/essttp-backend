@@ -68,13 +68,13 @@ class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec with Update
           )(this)
       }
 
-      "Sia" in new JourneyItTest {
+      "Simp" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SiaPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability,
+          tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability,
           IsEmailAddressRequired(value = true)
         )(
             journeyConnector.updateHasAgreedTermsAndConditions,
-            tdAll.SiaPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
+            tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
           )(this)
       }
     }

@@ -69,8 +69,8 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
           .withFieldConst(_.stage, toStage(isEmailAddressRequired))
           .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired)
           .transform
-      case j: Journey.Sia.ConfirmedDirectDebitDetails =>
-        j.into[Journey.Sia.AgreedTermsAndConditions]
+      case j: Journey.Simp.ConfirmedDirectDebitDetails =>
+        j.into[Journey.Simp.AgreedTermsAndConditions]
           .withFieldConst(_.stage, toStage(isEmailAddressRequired))
           .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired)
           .transform
@@ -104,7 +104,7 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
             isEmailAddressRequired = isEmailAddressRequired,
             stage                  = toStage(isEmailAddressRequired)
           ))
-      case j: Journey.Sia.AgreedTermsAndConditions =>
+      case j: Journey.Simp.AgreedTermsAndConditions =>
         upsertIfChanged(j, isEmailAddressRequired,
                         j.copy(
             isEmailAddressRequired = isEmailAddressRequired,
@@ -126,9 +126,9 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
                         j.into[Journey.Sa.AgreedTermsAndConditions]
             .withFieldConst(_.stage, toStage(isEmailAddressRequired))
             .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
-      case j: Journey.Sia.SelectedEmailToBeVerified =>
+      case j: Journey.Simp.SelectedEmailToBeVerified =>
         upsertIfChanged(j, isEmailAddressRequired,
-                        j.into[Journey.Sia.AgreedTermsAndConditions]
+                        j.into[Journey.Simp.AgreedTermsAndConditions]
             .withFieldConst(_.stage, toStage(isEmailAddressRequired))
             .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
 
@@ -147,9 +147,9 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
                         j.into[Journey.Sa.AgreedTermsAndConditions]
             .withFieldConst(_.stage, toStage(isEmailAddressRequired))
             .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
-      case j: Journey.Sia.EmailVerificationComplete =>
+      case j: Journey.Simp.EmailVerificationComplete =>
         upsertIfChanged(j, isEmailAddressRequired,
-                        j.into[Journey.Sia.AgreedTermsAndConditions]
+                        j.into[Journey.Simp.AgreedTermsAndConditions]
             .withFieldConst(_.stage, toStage(isEmailAddressRequired))
             .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
     }

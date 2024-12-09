@@ -30,13 +30,13 @@ object RegimeType extends Enum[RegimeType] {
 
   case object SA extends RegimeType
 
-  case object SIA extends RegimeType
+  case object SIMP extends RegimeType
 
   def fromTaxRegime(taxRegime: TaxRegime): RegimeType = taxRegime match {
     case TaxRegime.Epaye => EPAYE
     case TaxRegime.Vat   => VAT
     case TaxRegime.Sa    => SA
-    case TaxRegime.Sia   => SIA
+    case TaxRegime.Simp  => SIMP
   }
 
   implicit val format: Format[RegimeType] = Format(
@@ -44,7 +44,7 @@ object RegimeType extends Enum[RegimeType] {
       case JsString("PAYE") => JsSuccess(EPAYE)
       case JsString("VATC") => JsSuccess(VAT)
       case JsString("SA")   => JsSuccess(SA)
-      case JsString("SIA")  => JsSuccess(SIA)
+      case JsString("SIMP") => JsSuccess(SIMP)
       case JsString(other)  => JsError(s"Unknown tax regime type '$other'")
       case other            => JsError(s"Expected JsString but got ${other.getClass.getSimpleName}")
     },
@@ -52,7 +52,7 @@ object RegimeType extends Enum[RegimeType] {
       case EPAYE => JsString("PAYE")
       case VAT   => JsString("VATC")
       case SA    => JsString("SA")
-      case SIA   => JsString("SIA")
+      case SIMP  => JsString("SIMP")
     }
   )
 
