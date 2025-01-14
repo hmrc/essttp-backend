@@ -18,6 +18,7 @@ POST        /sa/pta/journey/start                                          journ
 POST        /sa/mobile/journey/start                                       journey.SjController.startJourneySaFromMobile
 POST        /sa/gov-uk/journey/start                                       journey.SjController.startJourneySaFromGovUk
 POST        /sa/detached-url/journey/start                                 journey.SjController.startJourneySaFromDetachedUrl
+POST        /sa/itsa/journey/start                                         journey.SjController.startJourneySaFromItsaViewAndChange
 
 #SIMP
 POST        /simp/pta/journey/start                                          journey.SjController.startJourneySimpFromPta
