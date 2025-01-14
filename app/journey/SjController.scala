@@ -81,6 +81,8 @@ class SjController @Inject() (
 
   val startJourneySaFromDetachedUrl: Action[SjRequest.Sa.Empty] = startJourneySa[SjRequest.Sa.Empty](Origins.Sa.DetachedUrl)
 
+  val startJourneySaFromItsaViewAndChange: Action[SjRequest.Sa.Simple] = startJourneySa[SjRequest.Sa.Simple](Origins.Sa.ItsaViewAndChange)
+
   private def startJourneySa[StartRequest <: SjRequest.Sa: Reads](origin: Origins.Sa): Action[StartRequest] =
     actions.authenticatedAction.async(parse.json[StartRequest]) { implicit request =>
       val originatedSjRequest = OriginatedSjRequest.Sa(origin, request.body)
@@ -131,11 +133,12 @@ class SjController @Inject() (
       case Origins.Vat.VatPenalties => "Journey for Vat from VAT Penalties"
     }
     case o: Origins.Sa => o match {
-      case Sa.Bta         => "Journey for Sa from BTA"
-      case Sa.Pta         => "Journey for Sa from PTA"
-      case Sa.Mobile      => "Journey for Sa from Mobile"
-      case Sa.GovUk       => "Journey for Sa from GovUk"
-      case Sa.DetachedUrl => "Journey for Sa from DetachedUrl"
+      case Sa.Bta               => "Journey for Sa from BTA"
+      case Sa.Pta               => "Journey for Sa from PTA"
+      case Sa.Mobile            => "Journey for Sa from Mobile"
+      case Sa.GovUk             => "Journey for Sa from GovUk"
+      case Sa.DetachedUrl       => "Journey for Sa from DetachedUrl"
+      case Sa.ItsaViewAndChange => "Journey for Sa from ITSA View & Change"
     }
     case o: Origins.Simp => o match {
       case Simp.GovUk       => "Journey for Simp from GovUk"

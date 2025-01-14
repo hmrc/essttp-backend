@@ -118,6 +118,8 @@ object Origins extends Enum[Origin] {
 
     case object GovUk extends Origin with Sa with BetterName
 
+    case object ItsaViewAndChange extends Origin with Sa with BetterName
+
     /**
      * This represents situation when user receives link to the application in whatsapp/email/etc and it's not clear
      * where the journey actually started from.

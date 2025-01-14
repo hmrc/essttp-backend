@@ -277,6 +277,12 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: E
         .post(url"$baseUrl/essttp-backend/sa/gov-uk/journey/start")
         .withBody(Json.toJson(sjRequest: SjRequest))
         .execute[SjResponse]
+
+    def startJourneyItsaViewAndChange(sjRequest: SjRequest.Sa.Simple)(implicit request: RequestHeader): Future[SjResponse] =
+      httpClient
+        .post(url"$baseUrl/essttp-backend/sa/itsa/journey/start")
+        .withBody(Json.toJson(sjRequest))
+        .execute[SjResponse]
   }
 
   object Simp {

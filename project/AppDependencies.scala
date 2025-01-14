@@ -3,9 +3,9 @@ import sbt.*
 
 object AppDependencies {
 
-  val bootstrapVersion = "9.5.0"
-  val hmrcMongoVersion = "2.3.0"
-  val chimneyVersion = "1.5.0"
+  val bootstrapVersion = "9.6.0"
+  val hmrcMongoVersion = "2.4.0"
+  val chimneyVersion = "1.6.0"
   val catsVersion = "2.12.0"
   val playJsonDerivedCodesVersion = "10.1.0"
   val enumeratumVersion = "1.7.0" // breaks with later version

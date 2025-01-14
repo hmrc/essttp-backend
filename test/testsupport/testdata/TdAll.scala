@@ -50,6 +50,7 @@ trait TdAll extends AnyRef
   with TdJourneySaMobile
   with TdJourneySaGovUk
   with TdJourneySaDetachedUrl
+  with TdJourneySaItsaViewAndChange
   with TdSimp
   with TdJourneySimpPta
   with TdJourneySimpMobile
