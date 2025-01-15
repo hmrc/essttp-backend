@@ -63,7 +63,7 @@ object EligibilityCheckResult {
       val emailFromAddresses = emailFromCustomerDetails.orElse {
         e.addresses.flatMap { addresses =>
           addresses
-            .flatMap(_.contactDetails.getOrElse(List.empty))
+            .flatMap(_.contactDetails)
             .collectFirst {
               case ContactDetail(_, _, _, Some(emailAddress), _, _) => emailAddress
             }

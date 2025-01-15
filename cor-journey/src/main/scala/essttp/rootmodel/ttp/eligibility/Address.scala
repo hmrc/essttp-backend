@@ -27,7 +27,7 @@ final case class Address(
     addressLine3:    Option[AddressLine],
     addressLine4:    Option[AddressLine],
     rls:             Option[IsReturnedLetterService],
-    contactDetails:  Option[List[ContactDetail]],
+    contactDetails:  Option[ContactDetail],
     postcode:        Option[Postcode],
     country:         Option[Country],
     postcodeHistory: Option[List[PostcodeHistory]]
