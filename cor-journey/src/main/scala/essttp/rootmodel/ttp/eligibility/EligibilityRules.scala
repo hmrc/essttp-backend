@@ -16,7 +16,7 @@
 
 package essttp.rootmodel.ttp.eligibility
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{JsObject, JsResult, JsValue, Json, OFormat}
 
 final case class EligibilityRulesPart1(
     hasRlsOnAddress:                       Boolean,
@@ -110,10 +110,24 @@ final case class EligibilityRules(
 }
 
 object EligibilityRules {
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val part1Format: OFormat[EligibilityRulesPart1] = Json.format[EligibilityRulesPart1]
-  implicit val part2Format: OFormat[EligibilityRulesPart2] = Json.format[EligibilityRulesPart2]
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[EligibilityRules] = Json.format[EligibilityRules]
+  implicit val part1Format: OFormat[EligibilityRulesPart1] = Json.format[EligibilityRulesPart1]
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  implicit val part2Format: OFormat[EligibilityRulesPart2] = Json.format[EligibilityRulesPart2]
+
+  implicit val customFormat: OFormat[EligibilityRules] = new OFormat[EligibilityRules] {
+
+    override def reads(json: JsValue): JsResult[EligibilityRules] = {
+      for {
+        part1 <- part1Format.reads(json)
+        part2 <- part2Format.reads(json)
+      } yield EligibilityRules(part1, part2)
+    }
+
+    override def writes(rules: EligibilityRules): JsObject = {
+      part1Format.writes(rules.part1).deepMerge(part2Format.writes(rules.part2))
+    }
+  }
 }
+

@@ -17,6 +17,7 @@
 package essttp.journey.model.ttp
 
 import essttp.rootmodel.ttp.eligibility.{EligibilityRules, EligibilityRulesPart1, EligibilityRulesPart2}
+import play.api.libs.json.Json
 import testsupport.UnitSpec
 
 class EligibilityRulesSpec extends UnitSpec {
@@ -88,4 +89,72 @@ class EligibilityRulesSpec extends UnitSpec {
     }
 
   }
+
+  "EligibilityRules JSON serialization" - {
+
+    "should serialize and deserialize to/from a flat JSON structure correctly" in {
+      val eligibilityRules = EligibilityRules(
+        EligibilityRulesPart1(
+          hasRlsOnAddress                       = true,
+          markedAsInsolvent                     = true,
+          isLessThanMinDebtAllowance            = false,
+          isMoreThanMaxDebtAllowance            = true,
+          disallowedChargeLockTypes             = false,
+          existingTTP                           = false,
+          chargesOverMaxDebtAge                 = Some(true),
+          ineligibleChargeTypes                 = false,
+          missingFiledReturns                   = true,
+          hasInvalidInterestSignals             = Some(false),
+          dmSpecialOfficeProcessingRequired     = Some(true),
+          noDueDatesReached                     = false,
+          cannotFindLockReason                  = Some(false),
+          creditsNotAllowed                     = Some(false),
+          isMoreThanMaxPaymentReference         = Some(true),
+          chargesBeforeMaxAccountingDate        = Some(true),
+          hasInvalidInterestSignalsCESA         = Some(false),
+          hasDisguisedRemuneration              = Some(true),
+          hasCapacitor                          = Some(false),
+          dmSpecialOfficeProcessingRequiredCDCS = Some(true),
+          isAnMtdCustomer                       = Some(false),
+          dmSpecialOfficeProcessingRequiredCESA = Some(true)
+        ),
+        EligibilityRulesPart2(
+          noMtditsaEnrollment = Some(false)
+        )
+      )
+
+      val expectedJson = Json.obj(
+        "hasRlsOnAddress" -> true,
+        "markedAsInsolvent" -> true,
+        "isLessThanMinDebtAllowance" -> false,
+        "isMoreThanMaxDebtAllowance" -> true,
+        "disallowedChargeLockTypes" -> false,
+        "existingTTP" -> false,
+        "chargesOverMaxDebtAge" -> true,
+        "ineligibleChargeTypes" -> false,
+        "missingFiledReturns" -> true,
+        "hasInvalidInterestSignals" -> false,
+        "dmSpecialOfficeProcessingRequired" -> true,
+        "noDueDatesReached" -> false,
+        "cannotFindLockReason" -> false,
+        "creditsNotAllowed" -> false,
+        "isMoreThanMaxPaymentReference" -> true,
+        "chargesBeforeMaxAccountingDate" -> true,
+        "hasInvalidInterestSignalsCESA" -> false,
+        "hasDisguisedRemuneration" -> true,
+        "hasCapacitor" -> false,
+        "dmSpecialOfficeProcessingRequiredCDCS" -> true,
+        "isAnMtdCustomer" -> false,
+        "dmSpecialOfficeProcessingRequiredCESA" -> true,
+        "noMtditsaEnrollment" -> false
+      )
+
+      val json = Json.toJson(eligibilityRules)
+      json shouldBe expectedJson
+
+      val deserialized = json.as[EligibilityRules]
+      deserialized shouldBe eligibilityRules
+    }
+  }
+
 }
