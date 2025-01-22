@@ -18,7 +18,7 @@ package essttp.rootmodel.ttp.eligibility
 
 import play.api.libs.json.{Json, OFormat}
 
-final case class EligibilityRules(
+final case class EligibilityRulesPart1(
     hasRlsOnAddress:                       Boolean,
     markedAsInsolvent:                     Boolean,
     isLessThanMinDebtAllowance:            Boolean,
@@ -41,65 +41,79 @@ final case class EligibilityRules(
     dmSpecialOfficeProcessingRequiredCDCS: Option[Boolean],
     isAnMtdCustomer:                       Option[Boolean],
     dmSpecialOfficeProcessingRequiredCESA: Option[Boolean]
-) {
+)
 
+final case class EligibilityRulesPart2(
+    noMtditsaEnrollment: Option[Boolean]
+)
+
+// TODO after scala 3 upgrade, merge back into one case class
+final case class EligibilityRules(
+    part1: EligibilityRulesPart1,
+    part2: EligibilityRulesPart2
+) {
   val moreThanOneReasonForIneligibility: Boolean = {
-    List(
-      hasRlsOnAddress,
-      markedAsInsolvent,
-      isLessThanMinDebtAllowance,
-      isMoreThanMaxDebtAllowance,
-      disallowedChargeLockTypes,
-      existingTTP,
-      chargesOverMaxDebtAge.getOrElse(false),
-      ineligibleChargeTypes,
-      missingFiledReturns,
-      hasInvalidInterestSignals.getOrElse(false),
-      dmSpecialOfficeProcessingRequired.getOrElse(false),
-      noDueDatesReached,
-      cannotFindLockReason.getOrElse(false),
-      creditsNotAllowed.getOrElse(false),
-      isMoreThanMaxPaymentReference.getOrElse(false),
-      chargesBeforeMaxAccountingDate.getOrElse(false),
-      hasInvalidInterestSignalsCESA.getOrElse(false),
-      hasDisguisedRemuneration.getOrElse(false),
-      hasCapacitor.getOrElse(false),
-      dmSpecialOfficeProcessingRequiredCDCS.getOrElse(false),
-      isAnMtdCustomer.getOrElse(false),
-      dmSpecialOfficeProcessingRequiredCESA.getOrElse(false)
-    ).map{ if (_) 1 else 0 }.sum > 1
+    (List(
+      part1.hasRlsOnAddress,
+      part1.markedAsInsolvent,
+      part1.isLessThanMinDebtAllowance,
+      part1.isMoreThanMaxDebtAllowance,
+      part1.disallowedChargeLockTypes,
+      part1.existingTTP,
+      part1.chargesOverMaxDebtAge.getOrElse(false),
+      part1.ineligibleChargeTypes,
+      part1.missingFiledReturns,
+      part1.hasInvalidInterestSignals.getOrElse(false),
+      part1.dmSpecialOfficeProcessingRequired.getOrElse(false),
+      part1.noDueDatesReached,
+      part1.cannotFindLockReason.getOrElse(false),
+      part1.creditsNotAllowed.getOrElse(false),
+      part1.isMoreThanMaxPaymentReference.getOrElse(false),
+      part1.chargesBeforeMaxAccountingDate.getOrElse(false),
+      part1.hasInvalidInterestSignalsCESA.getOrElse(false),
+      part1.hasDisguisedRemuneration.getOrElse(false),
+      part1.hasCapacitor.getOrElse(false),
+      part1.dmSpecialOfficeProcessingRequiredCDCS.getOrElse(false),
+      part1.isAnMtdCustomer.getOrElse(false),
+      part1.dmSpecialOfficeProcessingRequiredCESA.getOrElse(false),
+      part2.noMtditsaEnrollment.getOrElse(false)
+    ).map(if (_) 1 else 0).sum > 1)
   }
 
   val isEligible: Boolean = {
-    List(
-      hasRlsOnAddress,
-      markedAsInsolvent,
-      isLessThanMinDebtAllowance,
-      isMoreThanMaxDebtAllowance,
-      disallowedChargeLockTypes,
-      existingTTP,
-      chargesOverMaxDebtAge.getOrElse(false),
-      ineligibleChargeTypes,
-      missingFiledReturns,
-      hasInvalidInterestSignals.getOrElse(false),
-      dmSpecialOfficeProcessingRequired.getOrElse(false),
-      noDueDatesReached,
-      cannotFindLockReason.getOrElse(false),
-      creditsNotAllowed.getOrElse(false),
-      isMoreThanMaxPaymentReference.getOrElse(false),
-      chargesBeforeMaxAccountingDate.getOrElse(false),
-      hasInvalidInterestSignalsCESA.getOrElse(false),
-      hasDisguisedRemuneration.getOrElse(false),
-      hasCapacitor.getOrElse(false),
-      dmSpecialOfficeProcessingRequiredCDCS.getOrElse(false),
-      isAnMtdCustomer.getOrElse(false),
-      dmSpecialOfficeProcessingRequiredCESA.getOrElse(false)
-    ).forall(flag => !flag) //if all flags are false then isEligible is true
+    (List(
+      part1.hasRlsOnAddress,
+      part1.markedAsInsolvent,
+      part1.isLessThanMinDebtAllowance,
+      part1.isMoreThanMaxDebtAllowance,
+      part1.disallowedChargeLockTypes,
+      part1.existingTTP,
+      part1.chargesOverMaxDebtAge.getOrElse(false),
+      part1.ineligibleChargeTypes,
+      part1.missingFiledReturns,
+      part1.hasInvalidInterestSignals.getOrElse(false),
+      part1.dmSpecialOfficeProcessingRequired.getOrElse(false),
+      part1.noDueDatesReached,
+      part1.cannotFindLockReason.getOrElse(false),
+      part1.creditsNotAllowed.getOrElse(false),
+      part1.isMoreThanMaxPaymentReference.getOrElse(false),
+      part1.chargesBeforeMaxAccountingDate.getOrElse(false),
+      part1.hasInvalidInterestSignalsCESA.getOrElse(false),
+      part1.hasDisguisedRemuneration.getOrElse(false),
+      part1.hasCapacitor.getOrElse(false),
+      part1.dmSpecialOfficeProcessingRequiredCDCS.getOrElse(false),
+      part1.isAnMtdCustomer.getOrElse(false),
+      part1.dmSpecialOfficeProcessingRequiredCESA.getOrElse(false),
+      part2.noMtditsaEnrollment.getOrElse(false)
+    ).forall(flag => !flag)) // if all flags are false then isEligible is true
   }
 }
 
 object EligibilityRules {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  implicit val part1Format: OFormat[EligibilityRulesPart1] = Json.format[EligibilityRulesPart1]
+  implicit val part2Format: OFormat[EligibilityRulesPart2] = Json.format[EligibilityRulesPart2]
+
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[EligibilityRules] = Json.format[EligibilityRules]
 }
-
