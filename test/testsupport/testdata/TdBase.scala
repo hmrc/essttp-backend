@@ -25,7 +25,7 @@ import essttp.rootmodel.dates.startdates.{InstalmentStartDate, StartDatesRespons
 import essttp.rootmodel.pega.{PegaCaseId, StartCaseResponse}
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes._
-import essttp.rootmodel.ttp.eligibility.{ChargeReference, EligibilityCheckResult, EligibilityPass, EligibilityRules, EligibilityStatus}
+import essttp.rootmodel.ttp.eligibility.{ChargeReference, EligibilityCheckResult, EligibilityPass, EligibilityRules, EligibilityRulesPart1, EligibilityRulesPart2, EligibilityStatus}
 import models.pega.{PegaOauthToken, PegaStartCaseResponse}
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.TdSupport.FakeRequestOps
@@ -57,28 +57,33 @@ trait TdBase {
   val reusableDate: LocalDate = LocalDate.parse(reusableDateAsString)
 
   val eligibleEligibilityRules: EligibilityRules = EligibilityRules(
-    hasRlsOnAddress                       = false,
-    markedAsInsolvent                     = false,
-    isLessThanMinDebtAllowance            = false,
-    isMoreThanMaxDebtAllowance            = false,
-    disallowedChargeLockTypes             = false,
-    existingTTP                           = false,
-    chargesOverMaxDebtAge                 = None,
-    ineligibleChargeTypes                 = false,
-    missingFiledReturns                   = false,
-    hasInvalidInterestSignals             = None,
-    dmSpecialOfficeProcessingRequired     = None,
-    noDueDatesReached                     = false,
-    cannotFindLockReason                  = None,
-    creditsNotAllowed                     = None,
-    isMoreThanMaxPaymentReference         = None,
-    chargesBeforeMaxAccountingDate        = None,
-    hasInvalidInterestSignalsCESA         = None,
-    hasDisguisedRemuneration              = None,
-    hasCapacitor                          = None,
-    dmSpecialOfficeProcessingRequiredCDCS = None,
-    isAnMtdCustomer                       = None,
-    dmSpecialOfficeProcessingRequiredCESA = None
+    EligibilityRulesPart1(
+      hasRlsOnAddress                       = false,
+      markedAsInsolvent                     = false,
+      isLessThanMinDebtAllowance            = false,
+      isMoreThanMaxDebtAllowance            = false,
+      disallowedChargeLockTypes             = false,
+      existingTTP                           = false,
+      chargesOverMaxDebtAge                 = None,
+      ineligibleChargeTypes                 = false,
+      missingFiledReturns                   = false,
+      hasInvalidInterestSignals             = None,
+      dmSpecialOfficeProcessingRequired     = None,
+      noDueDatesReached                     = false,
+      cannotFindLockReason                  = None,
+      creditsNotAllowed                     = None,
+      isMoreThanMaxPaymentReference         = None,
+      chargesBeforeMaxAccountingDate        = None,
+      hasInvalidInterestSignalsCESA         = None,
+      hasDisguisedRemuneration              = None,
+      hasCapacitor                          = None,
+      dmSpecialOfficeProcessingRequiredCDCS = None,
+      isAnMtdCustomer                       = None,
+      dmSpecialOfficeProcessingRequiredCESA = None
+    ),
+    EligibilityRulesPart2(
+      noMtditsaEnrollment = None
+    )
   )
 
   def ineligibleEligibilityCheckResult(eligibleEligibilityCheckResult: EligibilityCheckResult): EligibilityCheckResult =
@@ -87,7 +92,7 @@ trait TdBase {
       eligibilityRules  = hasRlsAddressOn
     )
 
-  val hasRlsAddressOn: EligibilityRules = eligibleEligibilityRules.copy(hasRlsOnAddress = true)
+  val hasRlsAddressOn: EligibilityRules = eligibleEligibilityRules.copy(part1 = eligibleEligibilityRules.part1.copy(hasRlsOnAddress = true))
 
   val whyCannotPayInFullNotRequired: WhyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired
 

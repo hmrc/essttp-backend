@@ -16,9 +16,9 @@
 
 package essttp.rootmodel.ttp.eligibility
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{JsObject, JsResult, JsValue, Json, OFormat}
 
-final case class EligibilityRules(
+final case class EligibilityRulesPart1(
     hasRlsOnAddress:                       Boolean,
     markedAsInsolvent:                     Boolean,
     isLessThanMinDebtAllowance:            Boolean,
@@ -41,65 +41,56 @@ final case class EligibilityRules(
     dmSpecialOfficeProcessingRequiredCDCS: Option[Boolean],
     isAnMtdCustomer:                       Option[Boolean],
     dmSpecialOfficeProcessingRequiredCESA: Option[Boolean]
+)
+
+final case class EligibilityRulesPart2(
+    noMtditsaEnrollment: Option[Boolean]
+)
+
+// TODO after scala 3 upgrade, merge back into one case class
+final case class EligibilityRules(
+    part1: EligibilityRulesPart1,
+    part2: EligibilityRulesPart2
 ) {
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  private def extractErrors(obj: Product): List[String] = {
+    val fieldNames = obj.getClass.getDeclaredFields.map(_.getName).toList
+    val fieldValues = obj.productIterator.toList
 
-  val moreThanOneReasonForIneligibility: Boolean = {
-    List(
-      hasRlsOnAddress,
-      markedAsInsolvent,
-      isLessThanMinDebtAllowance,
-      isMoreThanMaxDebtAllowance,
-      disallowedChargeLockTypes,
-      existingTTP,
-      chargesOverMaxDebtAge.getOrElse(false),
-      ineligibleChargeTypes,
-      missingFiledReturns,
-      hasInvalidInterestSignals.getOrElse(false),
-      dmSpecialOfficeProcessingRequired.getOrElse(false),
-      noDueDatesReached,
-      cannotFindLockReason.getOrElse(false),
-      creditsNotAllowed.getOrElse(false),
-      isMoreThanMaxPaymentReference.getOrElse(false),
-      chargesBeforeMaxAccountingDate.getOrElse(false),
-      hasInvalidInterestSignalsCESA.getOrElse(false),
-      hasDisguisedRemuneration.getOrElse(false),
-      hasCapacitor.getOrElse(false),
-      dmSpecialOfficeProcessingRequiredCDCS.getOrElse(false),
-      isAnMtdCustomer.getOrElse(false),
-      dmSpecialOfficeProcessingRequiredCESA.getOrElse(false)
-    ).map{ if (_) 1 else 0 }.sum > 1
+    fieldNames.zip(fieldValues).collect {
+      case (rule, true)       => rule
+      case (rule, Some(true)) => rule
+    }
   }
 
-  val isEligible: Boolean = {
-    List(
-      hasRlsOnAddress,
-      markedAsInsolvent,
-      isLessThanMinDebtAllowance,
-      isMoreThanMaxDebtAllowance,
-      disallowedChargeLockTypes,
-      existingTTP,
-      chargesOverMaxDebtAge.getOrElse(false),
-      ineligibleChargeTypes,
-      missingFiledReturns,
-      hasInvalidInterestSignals.getOrElse(false),
-      dmSpecialOfficeProcessingRequired.getOrElse(false),
-      noDueDatesReached,
-      cannotFindLockReason.getOrElse(false),
-      creditsNotAllowed.getOrElse(false),
-      isMoreThanMaxPaymentReference.getOrElse(false),
-      chargesBeforeMaxAccountingDate.getOrElse(false),
-      hasInvalidInterestSignalsCESA.getOrElse(false),
-      hasDisguisedRemuneration.getOrElse(false),
-      hasCapacitor.getOrElse(false),
-      dmSpecialOfficeProcessingRequiredCDCS.getOrElse(false),
-      isAnMtdCustomer.getOrElse(false),
-      dmSpecialOfficeProcessingRequiredCESA.getOrElse(false)
-    ).forall(flag => !flag) //if all flags are false then isEligible is true
-  }
+  private val allEligibilityErrors: Seq[String] =
+    extractErrors(part1) ++ extractErrors(part2)
+
+  val moreThanOneReasonForIneligibility: Boolean = allEligibilityErrors.sizeIs > 1
+
+  val isEligible: Boolean = allEligibilityErrors.isEmpty // If all rules are false, then isEligible is true
+
 }
 
 object EligibilityRules {
+
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[EligibilityRules] = Json.format[EligibilityRules]
+  implicit val part1Format: OFormat[EligibilityRulesPart1] = Json.format[EligibilityRulesPart1]
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  implicit val part2Format: OFormat[EligibilityRulesPart2] = Json.format[EligibilityRulesPart2]
+
+  implicit val customFormat: OFormat[EligibilityRules] = new OFormat[EligibilityRules] {
+
+    override def reads(json: JsValue): JsResult[EligibilityRules] = {
+      for {
+        part1 <- part1Format.reads(json)
+        part2 <- part2Format.reads(json)
+      } yield EligibilityRules(part1, part2)
+    }
+
+    override def writes(rules: EligibilityRules): JsObject = {
+      part1Format.writes(rules.part1).deepMerge(part2Format.writes(rules.part2))
+    }
+  }
 }
 

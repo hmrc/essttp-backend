@@ -18,8 +18,8 @@ package essttp.rootmodel.ttp.eligibility
 
 import play.api.libs.json.{Format, Json}
 
-final case class isAnMtdCustomer(value: Boolean) extends AnyVal
+final case class NoMtditsaEnrollment(value: Boolean) extends AnyVal
 
-object isAnMtdCustomer {
-  implicit val format: Format[isAnMtdCustomer] = Json.valueFormat
+object NoMtditsaEnrollment {
+  implicit val format: Format[NoMtditsaEnrollment] = Json.valueFormat
 }
