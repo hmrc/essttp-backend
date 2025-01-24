@@ -52,61 +52,35 @@ final case class EligibilityRules(
     part1: EligibilityRulesPart1,
     part2: EligibilityRulesPart2
 ) {
-  val moreThanOneReasonForIneligibility: Boolean = {
-    (List(
-      part1.hasRlsOnAddress,
-      part1.markedAsInsolvent,
-      part1.isLessThanMinDebtAllowance,
-      part1.isMoreThanMaxDebtAllowance,
-      part1.disallowedChargeLockTypes,
-      part1.existingTTP,
-      part1.chargesOverMaxDebtAge.getOrElse(false),
-      part1.ineligibleChargeTypes,
-      part1.missingFiledReturns,
-      part1.hasInvalidInterestSignals.getOrElse(false),
-      part1.dmSpecialOfficeProcessingRequired.getOrElse(false),
-      part1.noDueDatesReached,
-      part1.cannotFindLockReason.getOrElse(false),
-      part1.creditsNotAllowed.getOrElse(false),
-      part1.isMoreThanMaxPaymentReference.getOrElse(false),
-      part1.chargesBeforeMaxAccountingDate.getOrElse(false),
-      part1.hasInvalidInterestSignalsCESA.getOrElse(false),
-      part1.hasDisguisedRemuneration.getOrElse(false),
-      part1.hasCapacitor.getOrElse(false),
-      part1.dmSpecialOfficeProcessingRequiredCDCS.getOrElse(false),
-      part1.isAnMtdCustomer.getOrElse(false),
-      part1.dmSpecialOfficeProcessingRequiredCESA.getOrElse(false),
-      part2.noMtditsaEnrollment.getOrElse(false)
-    ).map(if (_) 1 else 0).sum > 1)
-  }
+  val allEligibilityErrors: Seq[Boolean] = List(
+    part1.hasRlsOnAddress,
+    part1.markedAsInsolvent,
+    part1.isLessThanMinDebtAllowance,
+    part1.isMoreThanMaxDebtAllowance,
+    part1.disallowedChargeLockTypes,
+    part1.existingTTP,
+    part1.chargesOverMaxDebtAge.getOrElse(false),
+    part1.ineligibleChargeTypes,
+    part1.missingFiledReturns,
+    part1.hasInvalidInterestSignals.getOrElse(false),
+    part1.dmSpecialOfficeProcessingRequired.getOrElse(false),
+    part1.noDueDatesReached,
+    part1.cannotFindLockReason.getOrElse(false),
+    part1.creditsNotAllowed.getOrElse(false),
+    part1.isMoreThanMaxPaymentReference.getOrElse(false),
+    part1.chargesBeforeMaxAccountingDate.getOrElse(false),
+    part1.hasInvalidInterestSignalsCESA.getOrElse(false),
+    part1.hasDisguisedRemuneration.getOrElse(false),
+    part1.hasCapacitor.getOrElse(false),
+    part1.dmSpecialOfficeProcessingRequiredCDCS.getOrElse(false),
+    part1.isAnMtdCustomer.getOrElse(false),
+    part1.dmSpecialOfficeProcessingRequiredCESA.getOrElse(false),
+    part2.noMtditsaEnrollment.getOrElse(false)
+  )
 
-  val isEligible: Boolean = {
-    (List(
-      part1.hasRlsOnAddress,
-      part1.markedAsInsolvent,
-      part1.isLessThanMinDebtAllowance,
-      part1.isMoreThanMaxDebtAllowance,
-      part1.disallowedChargeLockTypes,
-      part1.existingTTP,
-      part1.chargesOverMaxDebtAge.getOrElse(false),
-      part1.ineligibleChargeTypes,
-      part1.missingFiledReturns,
-      part1.hasInvalidInterestSignals.getOrElse(false),
-      part1.dmSpecialOfficeProcessingRequired.getOrElse(false),
-      part1.noDueDatesReached,
-      part1.cannotFindLockReason.getOrElse(false),
-      part1.creditsNotAllowed.getOrElse(false),
-      part1.isMoreThanMaxPaymentReference.getOrElse(false),
-      part1.chargesBeforeMaxAccountingDate.getOrElse(false),
-      part1.hasInvalidInterestSignalsCESA.getOrElse(false),
-      part1.hasDisguisedRemuneration.getOrElse(false),
-      part1.hasCapacitor.getOrElse(false),
-      part1.dmSpecialOfficeProcessingRequiredCDCS.getOrElse(false),
-      part1.isAnMtdCustomer.getOrElse(false),
-      part1.dmSpecialOfficeProcessingRequiredCESA.getOrElse(false),
-      part2.noMtditsaEnrollment.getOrElse(false)
-    ).forall(flag => !flag)) // if all flags are false then isEligible is true
-  }
+  val moreThanOneReasonForIneligibility: Boolean = allEligibilityErrors.map{ if (_) 1 else 0 }.sum > 1
+
+  val isEligible: Boolean = allEligibilityErrors.forall(flag => !flag) // if all flags are false then isEligible is true
 }
 
 object EligibilityRules {
