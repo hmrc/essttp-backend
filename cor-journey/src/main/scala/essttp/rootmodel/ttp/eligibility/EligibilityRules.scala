@@ -52,7 +52,7 @@ final case class EligibilityRules(
     part1: EligibilityRulesPart1,
     part2: EligibilityRulesPart2
 ) {
-  val allEligibilityErrors: Seq[Boolean] = List(
+  private val allEligibilityErrors: Seq[Boolean] = List(
     part1.hasRlsOnAddress,
     part1.markedAsInsolvent,
     part1.isLessThanMinDebtAllowance,
