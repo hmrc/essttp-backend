@@ -21,7 +21,9 @@ import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.pega.StartCaseResponse
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.{DayOfMonth, MonthlyPaymentAmount}
-import julienrf.json.derived
+import essttp.utils.DerivedJson
+import essttp.utils.DerivedJson.Circe.formatToCodec
+import io.circe.generic.semiauto.deriveCodec
 import play.api.libs.json.OFormat
 
 sealed trait PaymentPlanAnswers
@@ -31,17 +33,17 @@ object PaymentPlanAnswers {
   implicit val eq: Eq[PaymentPlanAnswers] = Eq.fromUniversalEquals
 
   final case class PaymentPlanNoAffordability(
-      monthlyPaymentAmount:     MonthlyPaymentAmount,
-      dayOfMonth:               DayOfMonth,
-      startDatesResponse:       StartDatesResponse,
-      affordableQuotesResponse: AffordableQuotesResponse,
-      selectedPaymentPlan:      PaymentPlan
+    monthlyPaymentAmount:     MonthlyPaymentAmount,
+    dayOfMonth:               DayOfMonth,
+    startDatesResponse:       StartDatesResponse,
+    affordableQuotesResponse: AffordableQuotesResponse,
+    selectedPaymentPlan:      PaymentPlan
   ) extends PaymentPlanAnswers
 
   final case class PaymentPlanAfterAffordability(
-      startCaseResponse:   StartCaseResponse,
-      dayOfMonth:          DayOfMonth,
-      selectedPaymentPlan: PaymentPlan
+    startCaseResponse:   StartCaseResponse,
+    dayOfMonth:          DayOfMonth,
+    selectedPaymentPlan: PaymentPlan
   ) extends PaymentPlanAnswers
 
   implicit class PaymentPlanAnswersOps(val answers: PaymentPlanAnswers) extends AnyVal {
@@ -59,6 +61,7 @@ object PaymentPlanAnswers {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[PaymentPlanAnswers] = derived.oformat[PaymentPlanAnswers]()
+  implicit val format: OFormat[PaymentPlanAnswers] =
+    DerivedJson.Circe.format(deriveCodec[PaymentPlanAnswers])
 
 }

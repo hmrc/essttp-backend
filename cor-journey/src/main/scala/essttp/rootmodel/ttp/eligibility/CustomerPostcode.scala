@@ -20,8 +20,8 @@ import essttp.crypto.CryptoFormat
 import play.api.libs.json.{Json, OFormat}
 
 final case class CustomerPostcode(
-    addressPostcode: Postcode,
-    postcodeDate:    PostcodeDate
+  addressPostcode: Postcode,
+  postcodeDate:    PostcodeDate
 )
 
 object CustomerPostcode {

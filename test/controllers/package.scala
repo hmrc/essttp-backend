@@ -21,14 +21,14 @@ package object controllers {
   implicit class PaymentPlanAnswersOps(val p: PaymentPlanAnswers) extends AnyVal {
 
     def affordabilityAnswers = p match {
-      case p: PaymentPlanAnswers.PaymentPlanNoAffordability =>
+      case p: PaymentPlanAnswers.PaymentPlanNoAffordability    =>
         sys.error(s"Expected affordability answers but got non affordability answers ${p.toString}")
       case p: PaymentPlanAnswers.PaymentPlanAfterAffordability =>
         p
     }
 
     def nonAffordabilityAnswers = p match {
-      case p: PaymentPlanAnswers.PaymentPlanNoAffordability =>
+      case p: PaymentPlanAnswers.PaymentPlanNoAffordability    =>
         p
       case p: PaymentPlanAnswers.PaymentPlanAfterAffordability =>
         sys.error(s"Expected non-affordability answers but got affordability answers ${p.toString}")

@@ -16,7 +16,7 @@
 
 package essttp.rootmodel.ttp
 
-import play.api.libs.json.{Json, Format}
+import play.api.libs.json.{Format, Json}
 
 final case class PaymentPlanMinLength(value: Int) extends AnyVal
 

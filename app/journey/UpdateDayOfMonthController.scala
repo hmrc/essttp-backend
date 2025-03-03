@@ -33,31 +33,43 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateDayOfMonthController @Inject() (
-    actions:        Actions,
-    journeyService: JourneyService,
-    cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
+  actions:        Actions,
+  journeyService: JourneyService,
+  cc:             ControllerComponents
+)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+    extends BackendController(cc) {
 
-  def updateDayOfMonth(journeyId: JourneyId): Action[DayOfMonth] = actions.authenticatedAction.async(parse.json[DayOfMonth]) { implicit request =>
-    for {
-      journey <- journeyService.get(journeyId)
-      newJourney <- journey match {
-        case j: Journey.BeforeEnteredMonthlyPaymentAmount  => Errors.throwBadRequestExceptionF(s"UpdateDayOfMonth update is not possible in that state: [${j.stage.toString}]")
-        case j: Journey.Stages.EnteredMonthlyPaymentAmount => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterEnteredDayOfMonth             => updateJourneyWithExistingValue(Left(j), request.body)
-        case j: Journey.AfterCheckedPaymentPlan =>
-          j match {
-            case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(Right(j), request.body)
-            case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update DayOfMonth when journey is in completed state")
-          }
-        case _: Journey.AfterStartedPegaCase => Errors.throwBadRequestExceptionF("Not expecting to update DayOfMonth after starting PEGA case")
-      }
-    } yield Ok(newJourney.json)
-  }
+  def updateDayOfMonth(journeyId: JourneyId): Action[DayOfMonth] =
+    actions.authenticatedAction.async(parse.json[DayOfMonth]) { implicit request =>
+      for {
+        journey    <- journeyService.get(journeyId)
+        newJourney <- journey match {
+                        case j: Journey.BeforeEnteredMonthlyPaymentAmount  =>
+                          Errors.throwBadRequestExceptionF(
+                            s"UpdateDayOfMonth update is not possible in that state: [${j.stage.toString}]"
+                          )
+                        case j: Journey.Stages.EnteredMonthlyPaymentAmount => updateJourneyWithNewValue(j, request.body)
+                        case j: Journey.AfterEnteredDayOfMonth             => updateJourneyWithExistingValue(Left(j), request.body)
+                        case j: Journey.AfterCheckedPaymentPlan            =>
+                          j match {
+                            case _: Journey.BeforeArrangementSubmitted =>
+                              updateJourneyWithExistingValue(Right(j), request.body)
+                            case _: Journey.AfterArrangementSubmitted  =>
+                              Errors.throwBadRequestExceptionF(
+                                "Cannot update DayOfMonth when journey is in completed state"
+                              )
+                          }
+                        case _: Journey.AfterStartedPegaCase               =>
+                          Errors.throwBadRequestExceptionF(
+                            "Not expecting to update DayOfMonth after starting PEGA case"
+                          )
+                      }
+      } yield Ok(newJourney.json)
+    }
 
   private def updateJourneyWithNewValue(
-      journey:    Stages.EnteredMonthlyPaymentAmount,
-      dayOfMonth: DayOfMonth
+    journey:    Stages.EnteredMonthlyPaymentAmount,
+    dayOfMonth: DayOfMonth
   )(implicit request: Request[_]): Future[Journey] = {
     val newJourney: Journey.AfterEnteredDayOfMonth = journey match {
       case j: Epaye.EnteredMonthlyPaymentAmount =>
@@ -65,17 +77,17 @@ class UpdateDayOfMonthController @Inject() (
           .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
           .withFieldConst(_.dayOfMonth, dayOfMonth)
           .transform
-      case j: Vat.EnteredMonthlyPaymentAmount =>
+      case j: Vat.EnteredMonthlyPaymentAmount   =>
         j.into[Vat.EnteredDayOfMonth]
           .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
           .withFieldConst(_.dayOfMonth, dayOfMonth)
           .transform
-      case j: Sa.EnteredMonthlyPaymentAmount =>
+      case j: Sa.EnteredMonthlyPaymentAmount    =>
         j.into[Sa.EnteredDayOfMonth]
           .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
           .withFieldConst(_.dayOfMonth, dayOfMonth)
           .transform
-      case j: Simp.EnteredMonthlyPaymentAmount =>
+      case j: Simp.EnteredMonthlyPaymentAmount  =>
         j.into[Simp.EnteredDayOfMonth]
           .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
           .withFieldConst(_.dayOfMonth, dayOfMonth)
@@ -85,8 +97,8 @@ class UpdateDayOfMonthController @Inject() (
   }
 
   private def updateJourneyWithExistingValue(
-      journey:    Either[Journey.AfterEnteredDayOfMonth, Journey.AfterCheckedPaymentPlan],
-      dayOfMonth: DayOfMonth
+    journey:    Either[Journey.AfterEnteredDayOfMonth, Journey.AfterCheckedPaymentPlan],
+    dayOfMonth: DayOfMonth
   )(implicit request: Request[_]): Future[Journey] =
     journey match {
       case Left(afterEnteredDayOfMonth) =>
@@ -105,17 +117,17 @@ class UpdateDayOfMonthController @Inject() (
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
                 .transform
-            case j: Journey.Vat.RetrievedStartDates =>
+            case j: Journey.Vat.RetrievedStartDates   =>
               j.into[Journey.Vat.EnteredDayOfMonth]
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
                 .transform
-            case j: Journey.Sa.RetrievedStartDates =>
+            case j: Journey.Sa.RetrievedStartDates    =>
               j.into[Journey.Sa.EnteredDayOfMonth]
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
                 .transform
-            case j: Journey.Simp.RetrievedStartDates =>
+            case j: Journey.Simp.RetrievedStartDates  =>
               j.into[Journey.Simp.EnteredDayOfMonth]
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
@@ -126,17 +138,17 @@ class UpdateDayOfMonthController @Inject() (
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
                 .transform
-            case j: Journey.Vat.RetrievedAffordableQuotes =>
+            case j: Journey.Vat.RetrievedAffordableQuotes   =>
               j.into[Journey.Vat.EnteredDayOfMonth]
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
                 .transform
-            case j: Journey.Sa.RetrievedAffordableQuotes =>
+            case j: Journey.Sa.RetrievedAffordableQuotes    =>
               j.into[Journey.Sa.EnteredDayOfMonth]
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
                 .transform
-            case j: Journey.Simp.RetrievedAffordableQuotes =>
+            case j: Journey.Simp.RetrievedAffordableQuotes  =>
               j.into[Journey.Simp.EnteredDayOfMonth]
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
@@ -147,17 +159,17 @@ class UpdateDayOfMonthController @Inject() (
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
                 .transform
-            case j: Journey.Vat.ChosenPaymentPlan =>
+            case j: Journey.Vat.ChosenPaymentPlan   =>
               j.into[Journey.Vat.EnteredDayOfMonth]
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
                 .transform
-            case j: Journey.Sa.ChosenPaymentPlan =>
+            case j: Journey.Sa.ChosenPaymentPlan    =>
               j.into[Journey.Sa.EnteredDayOfMonth]
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
                 .transform
-            case j: Journey.Simp.ChosenPaymentPlan =>
+            case j: Journey.Simp.ChosenPaymentPlan  =>
               j.into[Journey.Simp.EnteredDayOfMonth]
                 .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                 .withFieldConst(_.dayOfMonth, dayOfMonth)
@@ -182,19 +194,19 @@ class UpdateDayOfMonthController @Inject() (
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Vat.CheckedPaymentPlan =>
+                case j: Journey.Vat.CheckedPaymentPlan   =>
                   j.into[Journey.Vat.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Sa.CheckedPaymentPlan =>
+                case j: Journey.Sa.CheckedPaymentPlan    =>
                   j.into[Journey.Sa.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Simp.CheckedPaymentPlan =>
+                case j: Journey.Simp.CheckedPaymentPlan  =>
                   j.into[Journey.Simp.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -207,19 +219,19 @@ class UpdateDayOfMonthController @Inject() (
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Vat.EnteredCanYouSetUpDirectDebit =>
+                case j: Journey.Vat.EnteredCanYouSetUpDirectDebit   =>
                   j.into[Journey.Vat.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Sa.EnteredCanYouSetUpDirectDebit =>
+                case j: Journey.Sa.EnteredCanYouSetUpDirectDebit    =>
                   j.into[Journey.Sa.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Simp.EnteredCanYouSetUpDirectDebit =>
+                case j: Journey.Simp.EnteredCanYouSetUpDirectDebit  =>
                   j.into[Journey.Simp.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -232,19 +244,19 @@ class UpdateDayOfMonthController @Inject() (
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Vat.EnteredDirectDebitDetails =>
+                case j: Journey.Vat.EnteredDirectDebitDetails   =>
                   j.into[Journey.Vat.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Sa.EnteredDirectDebitDetails =>
+                case j: Journey.Sa.EnteredDirectDebitDetails    =>
                   j.into[Journey.Sa.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Simp.EnteredDirectDebitDetails =>
+                case j: Journey.Simp.EnteredDirectDebitDetails  =>
                   j.into[Journey.Simp.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -257,19 +269,19 @@ class UpdateDayOfMonthController @Inject() (
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Vat.ConfirmedDirectDebitDetails =>
+                case j: Journey.Vat.ConfirmedDirectDebitDetails   =>
                   j.into[Journey.Vat.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Sa.ConfirmedDirectDebitDetails =>
+                case j: Journey.Sa.ConfirmedDirectDebitDetails    =>
                   j.into[Journey.Sa.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Simp.ConfirmedDirectDebitDetails =>
+                case j: Journey.Simp.ConfirmedDirectDebitDetails  =>
                   j.into[Journey.Simp.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -282,19 +294,19 @@ class UpdateDayOfMonthController @Inject() (
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Vat.AgreedTermsAndConditions =>
+                case j: Journey.Vat.AgreedTermsAndConditions   =>
                   j.into[Journey.Vat.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Sa.AgreedTermsAndConditions =>
+                case j: Journey.Sa.AgreedTermsAndConditions    =>
                   j.into[Journey.Sa.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Simp.AgreedTermsAndConditions =>
+                case j: Journey.Simp.AgreedTermsAndConditions  =>
                   j.into[Journey.Simp.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -307,19 +319,19 @@ class UpdateDayOfMonthController @Inject() (
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Vat.SelectedEmailToBeVerified =>
+                case j: Journey.Vat.SelectedEmailToBeVerified   =>
                   j.into[Journey.Vat.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Sa.SelectedEmailToBeVerified =>
+                case j: Journey.Sa.SelectedEmailToBeVerified    =>
                   j.into[Journey.Sa.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Simp.SelectedEmailToBeVerified =>
+                case j: Journey.Simp.SelectedEmailToBeVerified  =>
                   j.into[Journey.Simp.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -332,19 +344,19 @@ class UpdateDayOfMonthController @Inject() (
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Vat.EmailVerificationComplete =>
+                case j: Journey.Vat.EmailVerificationComplete   =>
                   j.into[Journey.Vat.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Sa.EmailVerificationComplete =>
+                case j: Journey.Sa.EmailVerificationComplete    =>
                   j.into[Journey.Sa.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
-                case j: Journey.Simp.EmailVerificationComplete =>
+                case j: Journey.Simp.EmailVerificationComplete  =>
                   j.into[Journey.Simp.EnteredDayOfMonth]
                     .withFieldConst(_.stage, Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -360,10 +372,10 @@ class UpdateDayOfMonthController @Inject() (
     }
 
   private def updateJourneyWithExistingValue(
-      existingValue:   DayOfMonth,
-      existingJourney: Journey,
-      newValue:        DayOfMonth,
-      newJourney:      Journey
+    existingValue:   DayOfMonth,
+    existingJourney: Journey,
+    newValue:        DayOfMonth,
+    newJourney:      Journey
   )(implicit request: Request[_]): Future[Journey] =
     if (existingValue === newValue) {
       JourneyLogger.info("Nothing to update, DayOfMonth is the same as the existing one in journey.")

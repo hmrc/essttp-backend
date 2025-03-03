@@ -41,9 +41,11 @@ object DateCalculatorStub {
     )
 
   def stubAddWorkingDays(result: LocalDate): StubMapping =
-    stubAddWorkingDays(Right(
-      Json.parse(s"""{"result": "${result.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))}" }""")
-    ))
+    stubAddWorkingDays(
+      Right(
+        Json.parse(s"""{"result": "${result.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))}" }""")
+      )
+    )
 
   def verifyAddWorkingDaysCalled(date: LocalDate, numberOfWorkingDays: Int): Unit =
     verify(
@@ -62,6 +64,7 @@ object DateCalculatorStub {
         )
     )
 
-  def verifyAddWorkingDaysNotCalled(): Unit = verify(exactly(0), postRequestedFor(urlPathEqualTo(addWorkingsDaysUrlPath)))
+  def verifyAddWorkingDaysNotCalled(): Unit =
+    verify(exactly(0), postRequestedFor(urlPathEqualTo(addWorkingsDaysUrlPath)))
 
 }

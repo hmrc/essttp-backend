@@ -21,8 +21,8 @@ import essttp.rootmodel.AmountInPence
 import play.api.libs.json.{Json, OFormat}
 
 final case class InstalmentAmounts(
-    minimumInstalmentAmount: AmountInPence,
-    maximumInstalmentAmount: AmountInPence
+  minimumInstalmentAmount: AmountInPence,
+  maximumInstalmentAmount: AmountInPence
 )
 
 object InstalmentAmounts {

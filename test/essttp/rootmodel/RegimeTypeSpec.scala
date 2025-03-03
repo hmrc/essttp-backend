@@ -24,7 +24,7 @@ class RegimeTypeSpec extends UnitSpec {
 
   "RegimeType should" - {
     "survive round trip de/serialisation" in {
-      RegimeType.values.foreach{ regimeType =>
+      RegimeType.values.foreach { regimeType =>
         val expectedJsonString = regimeType match {
           case RegimeType.EPAYE => "PAYE"
           case RegimeType.VAT   => "VATC"
@@ -40,7 +40,7 @@ class RegimeTypeSpec extends UnitSpec {
     }
 
     "have a method which converts from TaxRegime" in {
-      TaxRegime.values.foreach{ taxRegime =>
+      TaxRegime.values.foreach { taxRegime =>
         val expectedTaxRegime = taxRegime match {
           case TaxRegime.Epaye => RegimeType.EPAYE
           case TaxRegime.Vat   => RegimeType.VAT

@@ -19,15 +19,16 @@ package testsupport
 import java.time._
 import java.time.format.DateTimeFormatter
 
-/**
- * A time machine which allows to travel back and forth in time.
- */
+/** A time machine which allows to travel back and forth in time.
+  */
 
 object FrozenTime {
 
-  def fixedClockUTC(fixedAtDate: LocalDate): Clock = Clock.fixed(fixedAtDate.atStartOfDay().toInstant(ZoneOffset.UTC), ZoneId.of("Z"))
+  def fixedClockUTC(fixedAtDate: LocalDate): Clock =
+    Clock.fixed(fixedAtDate.atStartOfDay().toInstant(ZoneOffset.UTC), ZoneId.of("Z"))
 
-  def fixedClockUTC(fixedAtDateTime: LocalDateTime): Clock = Clock.fixed(fixedAtDateTime.toInstant(ZoneOffset.UTC), ZoneId.of("Z"))
+  def fixedClockUTC(fixedAtDateTime: LocalDateTime): Clock =
+    Clock.fixed(fixedAtDateTime.toInstant(ZoneOffset.UTC), ZoneId.of("Z"))
 
   def setTime(fixedAtDate: LocalDate): Unit = {
     val clock = fixedClockUTC(fixedAtDate)
@@ -57,13 +58,13 @@ object FrozenTime {
 
   private val initialLocalDate = {
     val formatter = DateTimeFormatter.ISO_DATE_TIME
-    //the frozen time has to be in future otherwise the journeys will disappear from mongodb because of expiry index
+    // the frozen time has to be in future otherwise the journeys will disappear from mongodb because of expiry index
     LocalDateTime.parse("2057-11-02T16:28:55.185", formatter)
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Var"))
   private var currentClock: Clock = fixedClockUTC(initialLocalDate)
-  private val testClock: Clock = new Clock {
+  private val testClock: Clock    = new Clock {
     override def getZone: ZoneId = currentClock.getZone
 
     override def withZone(zoneId: ZoneId): Clock = currentClock.withZone(zoneId)

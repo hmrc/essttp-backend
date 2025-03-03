@@ -25,25 +25,24 @@ import java.util.Locale
 final case class AmountInPence(value: Long) {
   def formatInPounds: String = NumberFormat.getCurrencyInstance(Locale.UK).format(inPounds)
 
-  //removes trailing decimal and zeros, i.e. if £x.00
+  // removes trailing decimal and zeros, i.e. if £x.00
   def gdsFormatInPounds: String = formatInPounds.replace(".00", "")
 
   def formatInDecimal: String = "%,1.2f".format(inPounds)
 
   def inPounds: BigDecimal = AmountInPence.toPounds(this)
 
-  def >(other: AmountInPence): Boolean = value > other.value
+  def >(other: AmountInPence): Boolean       = value > other.value
   def +(other: AmountInPence): AmountInPence = AmountInPence(value + other.value)
   def -(other: AmountInPence): AmountInPence = AmountInPence(value - other.value)
 }
 
 object AmountInPence {
-  def apply(str: String): AmountInPence = {
+  def apply(str: String): AmountInPence =
     str match {
       case s if s.isEmpty => AmountInPence(0)
       case s              => AmountInPence((BigDecimal(s) * 100).toLongExact)
     }
-  }
   def apply(bigDecimal: BigDecimal): AmountInPence = AmountInPence((bigDecimal * 100).toLongExact)
 
   val zero: AmountInPence = AmountInPence(0)
@@ -51,7 +50,7 @@ object AmountInPence {
   implicit val eq: Eq[AmountInPence] = Eq.fromUniversalEquals
 
   implicit val format: Format[AmountInPence] = Format(
-    Reads{
+    Reads {
       case JsNumber(n) if n.isWhole => JsSuccess(AmountInPence(n.toLong))
       case JsNumber(_)              => JsError("Expected positive integer but got non-integral number")
       case other                    => JsError(s"Expected positive integer but got type ${other.getClass.getSimpleName}")

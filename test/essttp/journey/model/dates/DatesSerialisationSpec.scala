@@ -62,7 +62,9 @@ class DatesSerialisationSpec extends UnitSpec {
 
   "StartDatesRequest should" - {
     "serialise from StartDatesRequest" in {
-      Json.toJson[StartDatesRequest](DatesTdAll.startDatesRequestWithUpfrontPayment) shouldBe DatesTdAll.startDatesRequestJson
+      Json.toJson[StartDatesRequest](
+        DatesTdAll.startDatesRequestWithUpfrontPayment
+      ) shouldBe DatesTdAll.startDatesRequestJson
     }
     "de-serialise as StartDatesRequest" in {
       DatesTdAll.startDatesRequestJson.as[StartDatesRequest] shouldBe DatesTdAll.startDatesRequestWithUpfrontPayment
@@ -71,16 +73,22 @@ class DatesSerialisationSpec extends UnitSpec {
 
   "StartDatesResponse should" - {
     "serialise from StartDatesResponse - None for initialPaymentDate" in {
-      Json.toJson[StartDatesResponse](DatesTdAll.`startDatesResponse-NoInitialPaymentDate`) shouldBe DatesTdAll.`startDatesResponseJson-NoInitialPaymentDate`
+      Json.toJson[StartDatesResponse](
+        DatesTdAll.`startDatesResponse-NoInitialPaymentDate`
+      ) shouldBe DatesTdAll.`startDatesResponseJson-NoInitialPaymentDate`
     }
     "de-serialise as StartDatesResponse - None for initialPaymentDate" in {
-      DatesTdAll.`startDatesResponseJson-NoInitialPaymentDate`.as[StartDatesResponse] shouldBe DatesTdAll.`startDatesResponse-NoInitialPaymentDate`
+      DatesTdAll.`startDatesResponseJson-NoInitialPaymentDate`
+        .as[StartDatesResponse] shouldBe DatesTdAll.`startDatesResponse-NoInitialPaymentDate`
     }
     "serialise from StartDatesResponse - Some for initialPaymentDate" in {
-      Json.toJson[StartDatesResponse](DatesTdAll.`startDatesResponse-WithInitialPaymentDate`) shouldBe DatesTdAll.`startDatesResponseJson-WithInitialPaymentDate`
+      Json.toJson[StartDatesResponse](
+        DatesTdAll.`startDatesResponse-WithInitialPaymentDate`
+      ) shouldBe DatesTdAll.`startDatesResponseJson-WithInitialPaymentDate`
     }
     "de-serialise as StartDatesResponse - Some for initialPaymentDate" in {
-      DatesTdAll.`startDatesResponseJson-WithInitialPaymentDate`.as[StartDatesResponse] shouldBe DatesTdAll.`startDatesResponse-WithInitialPaymentDate`
+      DatesTdAll.`startDatesResponseJson-WithInitialPaymentDate`
+        .as[StartDatesResponse] shouldBe DatesTdAll.`startDatesResponse-WithInitialPaymentDate`
     }
   }
 
@@ -96,11 +104,14 @@ class DatesSerialisationSpec extends UnitSpec {
   "ExtremeDatesResponse should" - {
     "serialise from ExtremeDatesResponse" in {
       Json.toJson[ExtremeDatesResponse](DatesTdAll.extremeDatesResponse) shouldBe DatesTdAll.extremeDatesResponseJson
-      Json.toJson[ExtremeDatesResponse](DatesTdAll.extremeDatesNoUpfrontPaymentResponse) shouldBe DatesTdAll.extremeDatesNoUpfrontPaymentResponseJson
+      Json.toJson[ExtremeDatesResponse](
+        DatesTdAll.extremeDatesNoUpfrontPaymentResponse
+      ) shouldBe DatesTdAll.extremeDatesNoUpfrontPaymentResponseJson
     }
     "de-serialise as ExtremeDatesResponse" in {
       DatesTdAll.extremeDatesResponseJson.as[ExtremeDatesResponse] shouldBe DatesTdAll.extremeDatesResponse
-      DatesTdAll.extremeDatesNoUpfrontPaymentResponseJson.as[ExtremeDatesResponse] shouldBe DatesTdAll.extremeDatesNoUpfrontPaymentResponse
+      DatesTdAll.extremeDatesNoUpfrontPaymentResponseJson
+        .as[ExtremeDatesResponse] shouldBe DatesTdAll.extremeDatesNoUpfrontPaymentResponse
     }
   }
 }

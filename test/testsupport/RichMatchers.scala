@@ -27,17 +27,17 @@ import scala.jdk.CollectionConverters._
 import scala.concurrent.ExecutionContext
 
 trait RichMatchers
-  extends Matchers
-  with TryValues
-  with EitherValues
-  with OptionValues
-  with AppendedClues
-  with ScalaFutures
-  with StreamlinedXml
-  with Inside
-  with Eventually
-  with IntegrationPatience
-  with JsonSyntax {
+    extends Matchers
+    with TryValues
+    with EitherValues
+    with OptionValues
+    with AppendedClues
+    with ScalaFutures
+    with StreamlinedXml
+    with Inside
+    with Eventually
+    with IntegrationPatience
+    with JsonSyntax {
 
   implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
@@ -46,11 +46,9 @@ trait RichMatchers
     def getBodyAsJson: JsValue = Json.parse(lr.getBodyAsString)
   }
 
-  /**
-   * Returns recorded by WireMock request.
-   * Asserts there was only one request made to wire mock.
-   * Use it in Connector unit tests.
-   */
+  /** Returns recorded by WireMock request. Asserts there was only one request made to wire mock. Use it in Connector
+    * unit tests.
+    */
   def getRecordedRequest(): LoggedRequest = {
     val allRecordedRequests = WireMock.getAllServeEvents().asScala.map(_.getRequest)
     allRecordedRequests.toList match {

@@ -31,18 +31,27 @@ class UpdateHasConfirmedDirectDebitDetailsControllerSpec extends ItSpec {
 
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
       val result: Throwable = journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"UpdateHasConfirmedDirectDebitDetails is not possible in that state: [Started]"}""")
+      result.getMessage should include(
+        """{"statusCode":400,"message":"UpdateHasConfirmedDirectDebitDetails is not possible in that state: [Started]"}"""
+      )
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }
     "should return an unchanged journey when Direct debit details have already been confirmed" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+      insertJourneyForTest(
+        TdAll.EpayeBta
+          .journeyAfterEnteredDirectDebitDetailsNoAffordability()
+          .copy(_id = tdAll.journeyId)
+          .copy(correlationId = tdAll.correlationId)
+      )
 
       val result1: Journey = journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
       result1 shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability
+      journeyConnector
+        .getJourney(tdAll.journeyId)
+        .futureValue shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability
 
       val result2: Journey = journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).futureValue
       result2 shouldBe tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability
@@ -52,9 +61,16 @@ class UpdateHasConfirmedDirectDebitDetailsControllerSpec extends ItSpec {
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+      insertJourneyForTest(
+        TdAll.EpayeBta
+          .journeyAfterSubmittedArrangementNoAffordability()
+          .copy(_id = tdAll.journeyId)
+          .copy(correlationId = tdAll.correlationId)
+      )
       val result: Throwable = journeyConnector.updateHasConfirmedDirectDebitDetails(tdAll.journeyId).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"Cannot update ConfirmedDirectDebitDetails when journey is in completed state"}""")
+      result.getMessage should include(
+        """{"statusCode":400,"message":"Cannot update ConfirmedDirectDebitDetails when journey is in completed state"}"""
+      )
 
       verifyCommonActions(numberOfAuthCalls = 1)
     }

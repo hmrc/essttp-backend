@@ -16,17 +16,8 @@
 
 package essttp.rootmodel.epaye
 
-import julienrf.json.derived
-import play.api.libs.json.OFormat
-
-/**
- * Accounts Office Reference (Aor)
- *
- * Another Epaye identifier which can be obtained based on the EmpRef from master data API from EPAYE Hod.
- */
+/** Accounts Office Reference (Aor)
+  *
+  * Another Epaye identifier which can be obtained based on the EmpRef from master data API from EPAYE Hod.
+  */
 final case class Aor(value: String)
-
-object Aor {
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[Aor] = derived.oformat[Aor]()
-}

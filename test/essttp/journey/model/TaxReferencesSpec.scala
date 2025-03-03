@@ -30,7 +30,7 @@ class TaxReferencesSpec extends UnitSpec {
   }
 
   "Aor round trip de/serialisation" in {
-    val aor = Aor("1234")
+    val aor  = Aor("1234")
     val json = """{"value":"1234"}"""
     Json.toJson(aor) shouldBe Json.parse(json)
     Json.parse(json).as[Aor] shouldBe aor

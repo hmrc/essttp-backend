@@ -20,6 +20,7 @@ import essttp.bars.model.{BarsUpdateVerifyStatusParams, BarsVerifyStatusResponse
 import essttp.rootmodel.TaxId
 import essttp.utils.RequestSupport._
 import play.api.libs.json.Json
+import play.api.libs.ws.writeableOf_JsValue
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.StringContextOps

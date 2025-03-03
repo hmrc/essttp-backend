@@ -31,26 +31,32 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateCanPayWithinSixMonthsController @Inject() (
-    actions:        Actions,
-    journeyService: JourneyService,
-    cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
+  actions:        Actions,
+  journeyService: JourneyService,
+  cc:             ControllerComponents
+)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+    extends BackendController(cc) {
 
   def updateCanPayWithinSixMonthsAnswers(journeyId: JourneyId): Action[CanPayWithinSixMonthsAnswers] =
     actions.authenticatedAction.async(parse.json[CanPayWithinSixMonthsAnswers]) { implicit request =>
       for {
-        journey <- journeyService.get(journeyId)
+        journey    <- journeyService.get(journeyId)
         newJourney <- journey match {
-          case j: Journey.BeforeRetrievedAffordabilityResult  => Errors.throwBadRequestExceptionF(s"UpdateCanPayWithinSixMonthsAnswers update is not possible in that state: [${j.stage.toString}]")
-          case j: Journey.Stages.RetrievedAffordabilityResult => updateJourneyWithNewValue(j, request.body)
-          case j: Journey.AfterCanPayWithinSixMonthsAnswers   => updateJourneyWithExistingValue(j, request.body)
-        }
+                        case j: Journey.BeforeRetrievedAffordabilityResult  =>
+                          Errors.throwBadRequestExceptionF(
+                            s"UpdateCanPayWithinSixMonthsAnswers update is not possible in that state: [${j.stage.toString}]"
+                          )
+                        case j: Journey.Stages.RetrievedAffordabilityResult =>
+                          updateJourneyWithNewValue(j, request.body)
+                        case j: Journey.AfterCanPayWithinSixMonthsAnswers   =>
+                          updateJourneyWithExistingValue(j, request.body)
+                      }
       } yield Ok(newJourney.json)
     }
 
   private def updateJourneyWithNewValue(
-      journey: Stages.RetrievedAffordabilityResult,
-      answers: CanPayWithinSixMonthsAnswers
+    journey: Stages.RetrievedAffordabilityResult,
+    answers: CanPayWithinSixMonthsAnswers
   )(implicit request: Request[_]): Future[Journey] = {
     val newJourney: Journey.AfterCanPayWithinSixMonthsAnswers = journey match {
       case j: Epaye.RetrievedAffordabilityResult =>
@@ -58,17 +64,17 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
           .withFieldConst(_.stage, determineStage(answers))
           .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
           .transform
-      case j: Vat.RetrievedAffordabilityResult =>
+      case j: Vat.RetrievedAffordabilityResult   =>
         j.into[Vat.ObtainedCanPayWithinSixMonthsAnswers]
           .withFieldConst(_.stage, determineStage(answers))
           .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
           .transform
-      case j: Sa.RetrievedAffordabilityResult =>
+      case j: Sa.RetrievedAffordabilityResult    =>
         j.into[Sa.ObtainedCanPayWithinSixMonthsAnswers]
           .withFieldConst(_.stage, determineStage(answers))
           .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
           .transform
-      case j: Simp.RetrievedAffordabilityResult =>
+      case j: Simp.RetrievedAffordabilityResult  =>
         j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
           .withFieldConst(_.stage, determineStage(answers))
           .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
@@ -78,8 +84,8 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
   }
 
   private def updateJourneyWithExistingValue(
-      journey: Journey.AfterCanPayWithinSixMonthsAnswers,
-      answers: CanPayWithinSixMonthsAnswers
+    journey: Journey.AfterCanPayWithinSixMonthsAnswers,
+    answers: CanPayWithinSixMonthsAnswers
   )(implicit request: Request[_]): Future[Journey] =
     if (journey.canPayWithinSixMonthsAnswers === answers) {
       Future.successful(journey)
@@ -87,11 +93,11 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
       val newJourney: Journey = journey match {
         case j: Epaye.ObtainedCanPayWithinSixMonthsAnswers =>
           j.copy(canPayWithinSixMonthsAnswers = answers, stage = determineStage(answers))
-        case j: Vat.ObtainedCanPayWithinSixMonthsAnswers =>
+        case j: Vat.ObtainedCanPayWithinSixMonthsAnswers   =>
           j.copy(canPayWithinSixMonthsAnswers = answers, stage = determineStage(answers))
-        case j: Sa.ObtainedCanPayWithinSixMonthsAnswers =>
+        case j: Sa.ObtainedCanPayWithinSixMonthsAnswers    =>
           j.copy(canPayWithinSixMonthsAnswers = answers, stage = determineStage(answers))
-        case j: Simp.ObtainedCanPayWithinSixMonthsAnswers =>
+        case j: Simp.ObtainedCanPayWithinSixMonthsAnswers  =>
           j.copy(canPayWithinSixMonthsAnswers = answers, stage = determineStage(answers))
 
         case j: Epaye.StartedPegaCase =>
@@ -99,17 +105,17 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Vat.StartedPegaCase =>
+        case j: Vat.StartedPegaCase   =>
           j.into[Vat.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sa.StartedPegaCase =>
+        case j: Sa.StartedPegaCase    =>
           j.into[Sa.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Simp.StartedPegaCase =>
+        case j: Simp.StartedPegaCase  =>
           j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
@@ -120,17 +126,17 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Vat.EnteredMonthlyPaymentAmount =>
+        case j: Vat.EnteredMonthlyPaymentAmount   =>
           j.into[Vat.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sa.EnteredMonthlyPaymentAmount =>
+        case j: Sa.EnteredMonthlyPaymentAmount    =>
           j.into[Sa.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Simp.EnteredMonthlyPaymentAmount =>
+        case j: Simp.EnteredMonthlyPaymentAmount  =>
           j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
@@ -141,17 +147,17 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Vat.EnteredDayOfMonth =>
+        case j: Vat.EnteredDayOfMonth   =>
           j.into[Vat.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sa.EnteredDayOfMonth =>
+        case j: Sa.EnteredDayOfMonth    =>
           j.into[Sa.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Simp.EnteredDayOfMonth =>
+        case j: Simp.EnteredDayOfMonth  =>
           j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
@@ -162,17 +168,17 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Vat.RetrievedStartDates =>
+        case j: Vat.RetrievedStartDates   =>
           j.into[Vat.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sa.RetrievedStartDates =>
+        case j: Sa.RetrievedStartDates    =>
           j.into[Sa.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Simp.RetrievedStartDates =>
+        case j: Simp.RetrievedStartDates  =>
           j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
@@ -183,17 +189,17 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Vat.RetrievedAffordableQuotes =>
+        case j: Vat.RetrievedAffordableQuotes   =>
           j.into[Vat.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sa.RetrievedAffordableQuotes =>
+        case j: Sa.RetrievedAffordableQuotes    =>
           j.into[Sa.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Simp.RetrievedAffordableQuotes =>
+        case j: Simp.RetrievedAffordableQuotes  =>
           j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
@@ -204,17 +210,17 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Vat.ChosenPaymentPlan =>
+        case j: Vat.ChosenPaymentPlan   =>
           j.into[Vat.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sa.ChosenPaymentPlan =>
+        case j: Sa.ChosenPaymentPlan    =>
           j.into[Sa.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Simp.ChosenPaymentPlan =>
+        case j: Simp.ChosenPaymentPlan  =>
           j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
@@ -225,17 +231,17 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Vat.CheckedPaymentPlan =>
+        case j: Vat.CheckedPaymentPlan   =>
           j.into[Vat.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sa.CheckedPaymentPlan =>
+        case j: Sa.CheckedPaymentPlan    =>
           j.into[Sa.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Simp.CheckedPaymentPlan =>
+        case j: Simp.CheckedPaymentPlan  =>
           j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
@@ -246,17 +252,17 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Vat.EnteredCanYouSetUpDirectDebit =>
+        case j: Vat.EnteredCanYouSetUpDirectDebit   =>
           j.into[Vat.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sa.EnteredCanYouSetUpDirectDebit =>
+        case j: Sa.EnteredCanYouSetUpDirectDebit    =>
           j.into[Sa.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Simp.EnteredCanYouSetUpDirectDebit =>
+        case j: Simp.EnteredCanYouSetUpDirectDebit  =>
           j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
@@ -267,17 +273,17 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Vat.EnteredDirectDebitDetails =>
+        case j: Vat.EnteredDirectDebitDetails   =>
           j.into[Vat.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sa.EnteredDirectDebitDetails =>
+        case j: Sa.EnteredDirectDebitDetails    =>
           j.into[Sa.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Simp.EnteredDirectDebitDetails =>
+        case j: Simp.EnteredDirectDebitDetails  =>
           j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
@@ -288,17 +294,17 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Vat.ConfirmedDirectDebitDetails =>
+        case j: Vat.ConfirmedDirectDebitDetails   =>
           j.into[Vat.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sa.ConfirmedDirectDebitDetails =>
+        case j: Sa.ConfirmedDirectDebitDetails    =>
           j.into[Sa.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Simp.ConfirmedDirectDebitDetails =>
+        case j: Simp.ConfirmedDirectDebitDetails  =>
           j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
@@ -309,17 +315,17 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Vat.AgreedTermsAndConditions =>
+        case j: Vat.AgreedTermsAndConditions   =>
           j.into[Vat.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sa.AgreedTermsAndConditions =>
+        case j: Sa.AgreedTermsAndConditions    =>
           j.into[Sa.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Simp.AgreedTermsAndConditions =>
+        case j: Simp.AgreedTermsAndConditions  =>
           j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
@@ -330,17 +336,17 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Vat.SelectedEmailToBeVerified =>
+        case j: Vat.SelectedEmailToBeVerified   =>
           j.into[Vat.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sa.SelectedEmailToBeVerified =>
+        case j: Sa.SelectedEmailToBeVerified    =>
           j.into[Sa.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Simp.SelectedEmailToBeVerified =>
+        case j: Simp.SelectedEmailToBeVerified  =>
           j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
@@ -351,33 +357,38 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Vat.EmailVerificationComplete =>
+        case j: Vat.EmailVerificationComplete   =>
           j.into[Vat.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Sa.EmailVerificationComplete =>
+        case j: Sa.EmailVerificationComplete    =>
           j.into[Sa.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
-        case j: Simp.EmailVerificationComplete =>
+        case j: Simp.EmailVerificationComplete  =>
           j.into[Simp.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.stage, determineStage(answers))
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
 
         case _: Stages.SubmittedArrangement =>
-          Errors.throwBadRequestException("Cannot update CanPayWithinSixMonthsAnswers when journey is in completed state")
+          Errors.throwBadRequestException(
+            "Cannot update CanPayWithinSixMonthsAnswers when journey is in completed state"
+          )
       }
 
       journeyService.upsert(newJourney)
     }
 
-  private def determineStage(canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers): Stage.AfterCanPayWithinSixMonthsAnswers =
+  private def determineStage(
+    canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers
+  ): Stage.AfterCanPayWithinSixMonthsAnswers =
     canPayWithinSixMonthsAnswers match {
       case CanPayWithinSixMonthsAnswers.AnswerNotRequired        => Stage.AfterCanPayWithinSixMonthsAnswers.AnswerNotRequired
-      case _: CanPayWithinSixMonthsAnswers.CanPayWithinSixMonths => Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired
+      case _: CanPayWithinSixMonthsAnswers.CanPayWithinSixMonths =>
+        Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired
     }
 
 }

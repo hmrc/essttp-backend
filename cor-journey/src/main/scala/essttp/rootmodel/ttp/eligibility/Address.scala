@@ -21,16 +21,16 @@ import play.api.libs.json.{Format, Json}
 
 //TODO OPS-12584 - Clean this up when TTP has implemented the changes to the Eligibility API. addressType will be required
 final case class Address(
-    addressType:     Option[AddressType],
-    addressLine1:    Option[AddressLine],
-    addressLine2:    Option[AddressLine],
-    addressLine3:    Option[AddressLine],
-    addressLine4:    Option[AddressLine],
-    rls:             Option[IsReturnedLetterService],
-    contactDetails:  Option[ContactDetail],
-    postCode:        Option[Postcode],
-    country:         Option[Country],
-    postcodeHistory: Option[List[PostcodeHistory]]
+  addressType:     Option[AddressType],
+  addressLine1:    Option[AddressLine],
+  addressLine2:    Option[AddressLine],
+  addressLine3:    Option[AddressLine],
+  addressLine4:    Option[AddressLine],
+  rls:             Option[IsReturnedLetterService],
+  contactDetails:  Option[ContactDetail],
+  postCode:        Option[Postcode],
+  country:         Option[Country],
+  postcodeHistory: Option[List[PostcodeHistory]]
 )
 
 object Address {

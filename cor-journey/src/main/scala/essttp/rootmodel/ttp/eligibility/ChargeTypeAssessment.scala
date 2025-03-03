@@ -19,11 +19,11 @@ package essttp.rootmodel.ttp.eligibility
 import play.api.libs.json.{Json, OFormat}
 
 final case class ChargeTypeAssessment(
-    taxPeriodFrom:   TaxPeriodFrom,
-    taxPeriodTo:     TaxPeriodTo,
-    debtTotalAmount: DebtTotalAmount,
-    chargeReference: ChargeReference,
-    charges:         List[Charges]
+  taxPeriodFrom:   TaxPeriodFrom,
+  taxPeriodTo:     TaxPeriodTo,
+  debtTotalAmount: DebtTotalAmount,
+  chargeReference: ChargeReference,
+  charges:         List[Charges]
 )
 
 object ChargeTypeAssessment {

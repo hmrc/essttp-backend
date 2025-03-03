@@ -19,9 +19,9 @@ package essttp.rootmodel.ttp.eligibility
 import play.api.libs.json.{Json, OFormat}
 
 final case class Lock(
-    lockType:                 LockType,
-    lockReason:               LockReason,
-    disallowedChargeLockType: DisallowedChargeLockType
+  lockType:                 LockType,
+  lockReason:               LockReason,
+  disallowedChargeLockType: DisallowedChargeLockType
 )
 
 object Lock {

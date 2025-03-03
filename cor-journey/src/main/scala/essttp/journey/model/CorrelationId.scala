@@ -20,9 +20,8 @@ import play.api.libs.json.{Format, Json}
 
 import java.util.UUID
 
-/**
- * Used in the audit events to allow people making reports to link up journey with ttp audit events.
- */
+/** Used in the audit events to allow people making reports to link up journey with ttp audit events.
+  */
 
 final case class CorrelationId(value: UUID) extends AnyVal
 

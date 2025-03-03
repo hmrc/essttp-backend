@@ -22,8 +22,8 @@ import play.api.libs.json.{Format, Json}
 
 //TODO OPS-12584 - Clean this up when TTP has implemented the changes to the Eligibility API. Check this does not affect ArrangementRequest!
 final case class CustomerDetail(
-    emailAddress: Option[Email],
-    emailSource:  Option[EmailSource]
+  emailAddress: Option[Email],
+  emailSource:  Option[EmailSource]
 )
 
 object CustomerDetail {

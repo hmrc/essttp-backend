@@ -23,5 +23,5 @@ final case class AffordableQuotesResponse(paymentPlans: List[PaymentPlan])
 
 object AffordableQuotesResponse {
   implicit val format: OFormat[AffordableQuotesResponse] = Json.format[AffordableQuotesResponse]
-  implicit val eq: Eq[AffordableQuotesResponse] = Eq.fromUniversalEquals
+  implicit val eq: Eq[AffordableQuotesResponse]          = Eq.fromUniversalEquals
 }

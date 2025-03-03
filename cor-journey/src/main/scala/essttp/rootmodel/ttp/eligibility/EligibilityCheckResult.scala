@@ -21,31 +21,30 @@ import essttp.rootmodel.Email
 import essttp.rootmodel.ttp._
 import play.api.libs.json.{Json, OFormat}
 
-/**
- * This represents response from the Eligibylity API
- * https://confluence.tools.tax.service.gov.uk/pages/viewpage.action?spaceKey=DTDT&title=Eligibility+API
- */
+/** This represents response from the Eligibylity API
+  * https://confluence.tools.tax.service.gov.uk/pages/viewpage.action?spaceKey=DTDT&title=Eligibility+API
+  */
 final case class EligibilityCheckResult(
-    processingDateTime:              ProcessingDateTime,
-    identification:                  List[Identification],
-    customerPostcodes:               Option[List[CustomerPostcode]],
-    regimePaymentFrequency:          PaymentPlanFrequency,
-    paymentPlanFrequency:            PaymentPlanFrequency,
-    paymentPlanMinLength:            PaymentPlanMinLength,
-    paymentPlanMaxLength:            PaymentPlanMaxLength,
-    eligibilityStatus:               EligibilityStatus,
-    eligibilityRules:                EligibilityRules,
-    chargeTypeAssessment:            List[ChargeTypeAssessment],
-    customerDetails:                 Option[List[CustomerDetail]],
-    individualDetails:               Option[IndividualDetails],
-    addresses:                       Option[List[Address]],
-    regimeDigitalCorrespondence:     Option[RegimeDigitalCorrespondence],
-    chargeTypesExcluded:             Option[Boolean],
-    futureChargeLiabilitiesExcluded: Boolean,
-    invalidSignals:                  Option[List[InvalidSignals]],
-    //TODO OPS-12584 - Clean this up when TTP has implemented the changes to the Eligibility API - customerType and transitionToCDCS have moved in customerDetails/individualDetails
-    customerType:     Option[CustomerType],
-    transitionToCDCS: Option[TransitionToCDCS]
+  processingDateTime:              ProcessingDateTime,
+  identification:                  List[Identification],
+  customerPostcodes:               Option[List[CustomerPostcode]],
+  regimePaymentFrequency:          PaymentPlanFrequency,
+  paymentPlanFrequency:            PaymentPlanFrequency,
+  paymentPlanMinLength:            PaymentPlanMinLength,
+  paymentPlanMaxLength:            PaymentPlanMaxLength,
+  eligibilityStatus:               EligibilityStatus,
+  eligibilityRules:                EligibilityRules,
+  chargeTypeAssessment:            List[ChargeTypeAssessment],
+  customerDetails:                 Option[List[CustomerDetail]],
+  individualDetails:               Option[IndividualDetails],
+  addresses:                       Option[List[Address]],
+  regimeDigitalCorrespondence:     Option[RegimeDigitalCorrespondence],
+  chargeTypesExcluded:             Option[Boolean],
+  futureChargeLiabilitiesExcluded: Boolean,
+  invalidSignals:                  Option[List[InvalidSignals]],
+  // TODO OPS-12584 - Clean this up when TTP has implemented the changes to the Eligibility API - customerType and transitionToCDCS have moved in customerDetails/individualDetails
+  customerType:                    Option[CustomerType],
+  transitionToCDCS:                Option[TransitionToCDCS]
 )
 
 object EligibilityCheckResult {
@@ -54,18 +53,20 @@ object EligibilityCheckResult {
 
     def isEligible: Boolean = e.eligibilityStatus.eligibilityPass.value
 
-    //TODO OPS-12584 - Clean this up when TTP has implemented the changes to the Eligibility API. The email address will be coming from the addresses field only
+    // TODO OPS-12584 - Clean this up when TTP has implemented the changes to the Eligibility API. The email address will be coming from the addresses field only
     def email: Option[Email] = {
       // Check for email in customerDetails
-      val emailFromCustomerDetails = e.customerDetails.flatMap(_.collectFirst{ case CustomerDetail(Some(email), _) => email })
+      val emailFromCustomerDetails = e.customerDetails.flatMap(_.collectFirst { case CustomerDetail(Some(email), _) =>
+        email
+      })
 
       // If not found in customerDetails, check in addresses' contactDetails
       val emailFromAddresses = emailFromCustomerDetails.orElse {
         e.addresses.flatMap { addresses =>
           addresses
             .flatMap(_.contactDetails)
-            .collectFirst {
-              case ContactDetail(_, _, _, Some(emailAddress), _, _) => emailAddress
+            .collectFirst { case ContactDetail(_, _, _, Some(emailAddress), _, _) =>
+              emailAddress
             }
         }
       }
@@ -75,6 +76,7 @@ object EligibilityCheckResult {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[EligibilityCheckResult] = Json.format[EligibilityCheckResult]
+  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[EligibilityCheckResult] =
+    Json.format[EligibilityCheckResult]
 
 }

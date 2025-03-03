@@ -27,7 +27,7 @@ sealed trait TypeOfBankAccount extends EnumEntry
 
 object TypeOfBankAccount {
   implicit val format: Format[TypeOfBankAccount] = EnumFormat(TypesOfBankAccount)
-  implicit val eq: Eq[TypeOfBankAccount] = Eq.fromUniversalEquals
+  implicit val eq: Eq[TypeOfBankAccount]         = Eq.fromUniversalEquals
 }
 
 object TypesOfBankAccount extends Enum[TypeOfBankAccount] {

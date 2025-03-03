@@ -39,89 +39,91 @@ trait TdEpaye {
   val aor: Aor = Aor("123PA44545546")
 
   val eligibleEligibilityCheckResultEpaye: EligibilityCheckResult = eligibility.EligibilityCheckResult(
-    processingDateTime              = ProcessingDateTime(reusableDateAsString),
-    identification                  = List(
+    processingDateTime = ProcessingDateTime(reusableDateAsString),
+    identification = List(
       Identification(
-        idType  = IdType("EMPREF"),
+        idType = IdType("EMPREF"),
         idValue = IdValue(empRef.value)
       ),
       eligibility.Identification(
-        idType  = IdType("BROCS"),
+        idType = IdType("BROCS"),
         idValue = IdValue("123PA44545546")
       )
     ),
-    invalidSignals                  = None,
-    customerPostcodes               = Some(List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate(LocalDate.of(2020, 1, 1))))),
-    customerDetails                 = None,
-    individualDetails               = None,
-    addresses                       = None,
-    customerType                    = None,
-    regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
-    paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
-    paymentPlanMinLength            = PaymentPlanMinLength(1),
-    paymentPlanMaxLength            = PaymentPlanMaxLength(6),
-    eligibilityStatus               = EligibilityStatus(EligibilityPass(value = true)),
-    eligibilityRules                = eligibleEligibilityRules,
-    chargeTypeAssessment            = List(
+    invalidSignals = None,
+    customerPostcodes =
+      Some(List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate(LocalDate.of(2020, 1, 1))))),
+    customerDetails = None,
+    individualDetails = None,
+    addresses = None,
+    customerType = None,
+    regimePaymentFrequency = PaymentPlanFrequencies.Monthly,
+    paymentPlanFrequency = PaymentPlanFrequencies.Monthly,
+    paymentPlanMinLength = PaymentPlanMinLength(1),
+    paymentPlanMaxLength = PaymentPlanMaxLength(6),
+    eligibilityStatus = EligibilityStatus(EligibilityPass(value = true)),
+    eligibilityRules = eligibleEligibilityRules,
+    chargeTypeAssessment = List(
       ChargeTypeAssessment(
-        taxPeriodFrom   = TaxPeriodFrom("2020-08-13"),
-        taxPeriodTo     = TaxPeriodTo("2020-08-14"),
+        taxPeriodFrom = TaxPeriodFrom("2020-08-13"),
+        taxPeriodTo = TaxPeriodTo("2020-08-14"),
         debtTotalAmount = DebtTotalAmount(AmountInPence(300000)),
         chargeReference = ChargeReference("A00000000001"),
-        charges         = List(
+        charges = List(
           Charges(
             Charges1(
-              chargeType              = ChargeType("InYearRTICharge-Tax"),
-              mainType                = MainType("InYearRTICharge(FPS)"),
-              mainTrans               = MainTrans("mainTrans"),
-              subTrans                = SubTrans("subTrans"),
-              outstandingAmount       = OutstandingAmount(AmountInPence(100000)),
-              dueDate                 = DueDate(reusableDate),
-              interestStartDate       = Some(InterestStartDate(reusableDate)),
-              accruedInterest         = AccruedInterest(AmountInPence(1597)),
-              ineligibleChargeType    = IneligibleChargeType(value = false),
-              chargeOverMaxDebtAge    = Some(ChargeOverMaxDebtAge(value = false)),
-              locks                   = Some(
+              chargeType = ChargeType("InYearRTICharge-Tax"),
+              mainType = MainType("InYearRTICharge(FPS)"),
+              mainTrans = MainTrans("mainTrans"),
+              subTrans = SubTrans("subTrans"),
+              outstandingAmount = OutstandingAmount(AmountInPence(100000)),
+              dueDate = DueDate(reusableDate),
+              interestStartDate = Some(InterestStartDate(reusableDate)),
+              accruedInterest = AccruedInterest(AmountInPence(1597)),
+              ineligibleChargeType = IneligibleChargeType(value = false),
+              chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
+              locks = Some(
                 List(
                   Lock(
-                    lockType                 = LockType("Payment"),
-                    lockReason               = LockReason("Risk/Fraud"),
+                    lockType = LockType("Payment"),
+                    lockReason = LockReason("Risk/Fraud"),
                     disallowedChargeLockType = DisallowedChargeLockType(value = false)
                   )
                 )
               ),
-              dueDateNotReached       = false,
+              dueDateNotReached = false,
               isInterestBearingCharge = None
             ),
             Charges2(
-              useChargeReference            = None,
+              useChargeReference = None,
               chargeBeforeMaxAccountingDate = None,
-              ddInProgress                  = Some(DdInProgress(value = false)),
-              chargeSource                  = None,
-              parentChargeReference         = None,
-              parentMainTrans               = None,
-              originalCreationDate          = None,
-              tieBreaker                    = None,
-              originalTieBreaker            = None,
-              saTaxYearEnd                  = None,
-              creationDate                  = None,
-              originalChargeType            = None
+              ddInProgress = Some(DdInProgress(value = false)),
+              chargeSource = None,
+              parentChargeReference = None,
+              parentMainTrans = None,
+              originalCreationDate = None,
+              tieBreaker = None,
+              originalTieBreaker = None,
+              saTaxYearEnd = None,
+              creationDate = None,
+              originalChargeType = None
             )
           )
         )
       )
     ),
-    regimeDigitalCorrespondence     = None,
+    regimeDigitalCorrespondence = None,
     futureChargeLiabilitiesExcluded = false,
-    chargeTypesExcluded             = None,
-    transitionToCDCS                = None
+    chargeTypesExcluded = None,
+    transitionToCDCS = None
   )
 
   def ineligibleEligibilityCheckResultEpaye: EligibilityCheckResult = eligibleEligibilityCheckResultEpaye.copy(
     eligibilityStatus = EligibilityStatus(EligibilityPass(value = false)),
-    eligibilityRules  = hasRlsAddressOn
+    eligibilityRules = hasRlsAddressOn
   )
 
-  val arrangementResponseEpaye: ArrangementResponse = ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(aor.value))
+  val arrangementResponseEpaye: ArrangementResponse =
+    ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(aor.value))
 
 }

@@ -25,28 +25,30 @@ import scala.util.Random
 class AffordabilityEnablerServiceImplTest extends ItSpec {
 
   override val overrideConfig: Map[String, Any] = Map(
-    "affordability.tax-regimes" -> Seq("epaye", "vat", "sa"),
+    "affordability.tax-regimes"                    -> Seq("epaye", "vat", "sa"),
     "affordability.pass-through-percentages.epaye" -> 100,
-    "affordability.pass-through-percentages.vat" -> 0,
-    "affordability.pass-through-percentages.sa" -> 50,
-    "affordability.pass-through-percentages.simp" -> 100
+    "affordability.pass-through-percentages.vat"   -> 0,
+    "affordability.pass-through-percentages.sa"    -> 50,
+    "affordability.pass-through-percentages.simp"  -> 100
   )
 
   lazy val service = app.injector.instanceOf[AffordabilityEnablerService]
 
   "AffordabilityEnablerServiceImpl must" - {
 
-      @SuppressWarnings(Array("org.wartremover.warts.ThreadSleep"))
-      def gatherResult(taxRegime: TaxRegime): Result = {
-        val (enabled, disabled) = List.fill(1000){
+    @SuppressWarnings(Array("org.wartremover.warts.ThreadSleep"))
+    def gatherResult(taxRegime: TaxRegime): Result = {
+      val (enabled, disabled) = List
+        .fill(1000) {
           Thread.sleep(Random.nextLong(3L))
           service.affordabilityEnabled(taxRegime)
-        }.partition(identity)
-        Result(enabled.size, disabled.size, enabled.size + disabled.size)
-      }
+        }
+        .partition(identity)
+      Result(enabled.size, disabled.size, enabled.size + disabled.size)
+    }
 
-      def percentage(i: Int, total: Int): Double =
-        100.0 * i.toDouble / total.toDouble
+    def percentage(i: Int, total: Int): Double =
+      100.0 * i.toDouble / total.toDouble
 
     "enable affordability for all requests if the tax regime is enabled and the pass-through percentage is 100" in {
       val result = gatherResult(TaxRegime.Epaye)

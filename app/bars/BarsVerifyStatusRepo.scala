@@ -31,26 +31,25 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 final class BarsVerifyStatusRepo @Inject() (
-    mongoComponent: MongoComponent,
-    config:         AppConfig
+  mongoComponent: MongoComponent,
+  config:         AppConfig
 )(implicit ec: ExecutionContext)
-  extends Repo[TaxIdIndex, BarsVerifyStatus](
-    collectionName = "bars",
-    mongoComponent = mongoComponent,
-    indexes        = BarsVerifyStatusRepo.indexes(config.barsVerifyRepoTtl.toSeconds),
-    extraCodecs    = Codecs.playFormatCodecsBuilder(BarsVerifyStatus.format).build,
-    replaceIndexes = true
-  )
+    extends Repo[TaxIdIndex, BarsVerifyStatus](
+      collectionName = "bars",
+      mongoComponent = mongoComponent,
+      indexes = BarsVerifyStatusRepo.indexes(config.barsVerifyRepoTtl.toSeconds),
+      extraCodecs = Codecs.playFormatCodecsBuilder(BarsVerifyStatus.format).build,
+      replaceIndexes = true
+    )
 
 object BarsVerifyStatusRepo {
-  implicit val taxId: Id[TaxIdIndex] = (i: TaxIdIndex) => i.value
+  implicit val taxId: Id[TaxIdIndex]                                     = (i: TaxIdIndex) => i.value
   implicit val taxIdExtractor: IdExtractor[BarsVerifyStatus, TaxIdIndex] = (b: BarsVerifyStatus) => b._id
 
   def indexes(cacheTtlInSeconds: Long): Seq[IndexModel] = Seq(
     IndexModel(
-      keys         = Indexes.ascending("lastUpdated"),
+      keys = Indexes.ascending("lastUpdated"),
       indexOptions = IndexOptions().expireAfter(cacheTtlInSeconds, TimeUnit.SECONDS).name("lastUpdatedIdx")
     )
   )
 }
-

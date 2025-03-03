@@ -16,7 +16,7 @@
 
 package essttp.rootmodel.ttp.affordablequotes
 
-import play.api.libs.json.{OFormat, Json}
+import play.api.libs.json.{Json, OFormat}
 
 final case class RegularCollection(dueDate: DueDate, amountDue: AmountDue)
 

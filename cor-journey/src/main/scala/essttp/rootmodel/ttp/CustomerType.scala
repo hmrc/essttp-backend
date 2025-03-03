@@ -47,4 +47,3 @@ object CustomerTypes extends Enum[CustomerType] {
 
   override val values: immutable.IndexedSeq[CustomerType] = findValues
 }
-

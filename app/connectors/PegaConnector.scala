@@ -34,9 +34,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class PegaConnector @Inject() (
-    httpClient: HttpClientV2,
-    config:     ServicesConfig
-)(implicit ec: ExecutionContext) extends Logging {
+  httpClient: HttpClientV2,
+  config:     ServicesConfig
+)(implicit ec: ExecutionContext)
+    extends Logging {
 
   private val startCaseUrl: URL = url"${config.baseUrl("pega")}/prweb/api/payments/v1/aa/createorupdatecase"
 
@@ -47,8 +48,8 @@ class PegaConnector @Inject() (
   private val oauthAuthorizationHeaderValue: String = {
     val oauthUserName: String = config.getString("pega.oauth.username")
     val oauthPassword: String = config.getString("pega.oauth.password")
-    val toEncode = s"$oauthUserName:$oauthPassword"
-    val encoded = Base64.getEncoder.encodeToString(toEncode.getBytes("UTF-8"))
+    val toEncode              = s"$oauthUserName:$oauthPassword"
+    val encoded               = Base64.getEncoder.encodeToString(toEncode.getBytes("UTF-8"))
 
     s"Basic $encoded"
   }
@@ -68,7 +69,9 @@ class PegaConnector @Inject() (
       .execute[Either[UpstreamErrorResponse, PegaOauthToken]]
       .map(_.leftMap(throw _).merge)
 
-  def startCase(startCaseRequest: PegaStartCaseRequest, pegaToken: String, pegaCorrelationId: String)(implicit hc: HeaderCarrier): Future[PegaStartCaseResponse] = {
+  def startCase(startCaseRequest: PegaStartCaseRequest, pegaToken: String, pegaCorrelationId: String)(implicit
+    hc: HeaderCarrier
+  ): Future[PegaStartCaseResponse] = {
     logger.info(s"Calling PEGA start case with correlation id $pegaCorrelationId")
 
     httpClient
@@ -81,7 +84,9 @@ class PegaConnector @Inject() (
       .map(_.leftMap(throw _).merge)
   }
 
-  def getCase(caseId: PegaCaseId, pegaToken: String, pegaCorrelationId: String)(implicit hc: HeaderCarrier): Future[PegaGetCaseResponse] = {
+  def getCase(caseId: PegaCaseId, pegaToken: String, pegaCorrelationId: String)(implicit
+    hc: HeaderCarrier
+  ): Future[PegaGetCaseResponse] = {
     logger.info(s"Calling PEGA get case with correlation id $pegaCorrelationId")
 
     httpClient

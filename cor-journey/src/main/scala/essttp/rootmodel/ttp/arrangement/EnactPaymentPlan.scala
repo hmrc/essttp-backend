@@ -21,15 +21,15 @@ import essttp.rootmodel.ttp.affordablequotes._
 import play.api.libs.json.{Json, OFormat}
 
 final case class EnactPaymentPlan(
-    planDuration:         PlanDuration,
-    paymentPlanFrequency: PaymentPlanFrequency,
-    numberOfInstalments:  NumberOfInstalments,
-    totalDebt:            TotalDebt,
-    totalDebtIncInt:      TotalDebtIncludingInterest,
-    planInterest:         PlanInterest,
-    collections:          Collection,
-    instalments:          List[Instalment],
-    debtItemCharges:      List[DebtItemCharges]
+  planDuration:         PlanDuration,
+  paymentPlanFrequency: PaymentPlanFrequency,
+  numberOfInstalments:  NumberOfInstalments,
+  totalDebt:            TotalDebt,
+  totalDebtIncInt:      TotalDebtIncludingInterest,
+  planInterest:         PlanInterest,
+  collections:          Collection,
+  instalments:          List[Instalment],
+  debtItemCharges:      List[DebtItemCharges]
 )
 
 object EnactPaymentPlan {

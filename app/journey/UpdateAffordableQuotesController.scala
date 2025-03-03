@@ -32,31 +32,44 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateAffordableQuotesController @Inject() (
-    actions:        Actions,
-    journeyService: JourneyService,
-    cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
+  actions:        Actions,
+  journeyService: JourneyService,
+  cc:             ControllerComponents
+)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+    extends BackendController(cc) {
 
-  def updateAffordableQuotes(journeyId: JourneyId): Action[AffordableQuotesResponse] = actions.authenticatedAction.async(parse.json[AffordableQuotesResponse]) { implicit request =>
-    for {
-      journey <- journeyService.get(journeyId)
-      newJourney <- journey match {
-        case j: Journey.BeforeStartDatesResponse      => Errors.throwBadRequestExceptionF(s"UpdateAffordableQuotes is not possible in that state: [${j.stage.toString}]")
-        case j: Journey.Stages.RetrievedStartDates    => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterAffordableQuotesResponse => updateJourneyWithExistingValue(Left(j), request.body)
-        case j: Journey.AfterCheckedPaymentPlan =>
-          j match {
-            case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(Right(j), request.body)
-            case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update AffordableQuotes when journey is in completed state")
-          }
-        case _: Journey.AfterStartedPegaCase => Errors.throwBadRequestExceptionF("Not expecting to update AffordableQuotes after starting PEGA case")
-      }
-    } yield Ok(newJourney.json)
-  }
+  def updateAffordableQuotes(journeyId: JourneyId): Action[AffordableQuotesResponse] =
+    actions.authenticatedAction.async(parse.json[AffordableQuotesResponse]) { implicit request =>
+      for {
+        journey    <- journeyService.get(journeyId)
+        newJourney <- journey match {
+                        case j: Journey.BeforeStartDatesResponse      =>
+                          Errors.throwBadRequestExceptionF(
+                            s"UpdateAffordableQuotes is not possible in that state: [${j.stage.toString}]"
+                          )
+                        case j: Journey.Stages.RetrievedStartDates    => updateJourneyWithNewValue(j, request.body)
+                        case j: Journey.AfterAffordableQuotesResponse =>
+                          updateJourneyWithExistingValue(Left(j), request.body)
+                        case j: Journey.AfterCheckedPaymentPlan       =>
+                          j match {
+                            case _: Journey.BeforeArrangementSubmitted =>
+                              updateJourneyWithExistingValue(Right(j), request.body)
+                            case _: Journey.AfterArrangementSubmitted  =>
+                              Errors.throwBadRequestExceptionF(
+                                "Cannot update AffordableQuotes when journey is in completed state"
+                              )
+                          }
+                        case _: Journey.AfterStartedPegaCase          =>
+                          Errors.throwBadRequestExceptionF(
+                            "Not expecting to update AffordableQuotes after starting PEGA case"
+                          )
+                      }
+      } yield Ok(newJourney.json)
+    }
 
   private def updateJourneyWithNewValue(
-      journey:                  Journey.Stages.RetrievedStartDates,
-      affordableQuotesResponse: AffordableQuotesResponse
+    journey:                  Journey.Stages.RetrievedStartDates,
+    affordableQuotesResponse: AffordableQuotesResponse
   )(implicit request: Request[_]): Future[Journey] = {
     val newJourney: Journey.AfterAffordableQuotesResponse = journey match {
       case j: Journey.Epaye.RetrievedStartDates =>
@@ -64,17 +77,17 @@ class UpdateAffordableQuotesController @Inject() (
           .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
           .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
           .transform
-      case j: Journey.Vat.RetrievedStartDates =>
+      case j: Journey.Vat.RetrievedStartDates   =>
         j.into[Journey.Vat.RetrievedAffordableQuotes]
           .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
           .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
           .transform
-      case j: Journey.Sa.RetrievedStartDates =>
+      case j: Journey.Sa.RetrievedStartDates    =>
         j.into[Journey.Sa.RetrievedAffordableQuotes]
           .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
           .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
           .transform
-      case j: Journey.Simp.RetrievedStartDates =>
+      case j: Journey.Simp.RetrievedStartDates  =>
         j.into[Journey.Simp.RetrievedAffordableQuotes]
           .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
           .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
@@ -84,8 +97,8 @@ class UpdateAffordableQuotesController @Inject() (
   }
 
   private def updateJourneyWithExistingValue(
-      journey:                  Either[Journey.AfterAffordableQuotesResponse, Journey.AfterCheckedPaymentPlan],
-      affordableQuotesResponse: AffordableQuotesResponse
+    journey:                  Either[Journey.AfterAffordableQuotesResponse, Journey.AfterCheckedPaymentPlan],
+    affordableQuotesResponse: AffordableQuotesResponse
   )(implicit request: Request[_]): Future[Journey] = journey match {
     case Left(afterAffordableQuotesResponse) =>
       updateJourneyWithExistingValue(
@@ -95,11 +108,11 @@ class UpdateAffordableQuotesController @Inject() (
         afterAffordableQuotesResponse match {
           case j: Journey.Epaye.RetrievedAffordableQuotes =>
             j.copy(affordableQuotesResponse = affordableQuotesResponse)
-          case j: Journey.Vat.RetrievedAffordableQuotes =>
+          case j: Journey.Vat.RetrievedAffordableQuotes   =>
             j.copy(affordableQuotesResponse = affordableQuotesResponse)
-          case j: Journey.Sa.RetrievedAffordableQuotes =>
+          case j: Journey.Sa.RetrievedAffordableQuotes    =>
             j.copy(affordableQuotesResponse = affordableQuotesResponse)
-          case j: Journey.Simp.RetrievedAffordableQuotes =>
+          case j: Journey.Simp.RetrievedAffordableQuotes  =>
             j.copy(affordableQuotesResponse = affordableQuotesResponse)
 
           case j: Journey.Epaye.ChosenPaymentPlan =>
@@ -107,17 +120,17 @@ class UpdateAffordableQuotesController @Inject() (
               .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
               .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
               .transform
-          case j: Journey.Vat.ChosenPaymentPlan =>
+          case j: Journey.Vat.ChosenPaymentPlan   =>
             j.into[Journey.Vat.RetrievedAffordableQuotes]
               .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
               .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
               .transform
-          case j: Journey.Sa.ChosenPaymentPlan =>
+          case j: Journey.Sa.ChosenPaymentPlan    =>
             j.into[Journey.Sa.RetrievedAffordableQuotes]
               .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
               .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
               .transform
-          case j: Journey.Simp.ChosenPaymentPlan =>
+          case j: Journey.Simp.ChosenPaymentPlan  =>
             j.into[Journey.Simp.RetrievedAffordableQuotes]
               .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
               .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
@@ -144,7 +157,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Vat.CheckedPaymentPlan =>
+              case j: Journey.Vat.CheckedPaymentPlan   =>
                 j.into[Journey.Vat.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -152,7 +165,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Sa.CheckedPaymentPlan =>
+              case j: Journey.Sa.CheckedPaymentPlan    =>
                 j.into[Journey.Sa.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -160,7 +173,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Simp.CheckedPaymentPlan =>
+              case j: Journey.Simp.CheckedPaymentPlan  =>
                 j.into[Journey.Simp.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -177,7 +190,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Vat.EnteredCanYouSetUpDirectDebit =>
+              case j: Journey.Vat.EnteredCanYouSetUpDirectDebit   =>
                 j.into[Journey.Vat.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -185,7 +198,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Sa.EnteredCanYouSetUpDirectDebit =>
+              case j: Journey.Sa.EnteredCanYouSetUpDirectDebit    =>
                 j.into[Journey.Sa.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -193,7 +206,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Simp.EnteredCanYouSetUpDirectDebit =>
+              case j: Journey.Simp.EnteredCanYouSetUpDirectDebit  =>
                 j.into[Journey.Simp.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -210,7 +223,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Vat.EnteredDirectDebitDetails =>
+              case j: Journey.Vat.EnteredDirectDebitDetails   =>
                 j.into[Journey.Vat.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -218,7 +231,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Sa.EnteredDirectDebitDetails =>
+              case j: Journey.Sa.EnteredDirectDebitDetails    =>
                 j.into[Journey.Sa.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -226,7 +239,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Simp.EnteredDirectDebitDetails =>
+              case j: Journey.Simp.EnteredDirectDebitDetails  =>
                 j.into[Journey.Simp.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -243,7 +256,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Vat.ConfirmedDirectDebitDetails =>
+              case j: Journey.Vat.ConfirmedDirectDebitDetails   =>
                 j.into[Journey.Vat.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -251,7 +264,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Sa.ConfirmedDirectDebitDetails =>
+              case j: Journey.Sa.ConfirmedDirectDebitDetails    =>
                 j.into[Journey.Sa.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -259,7 +272,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Simp.ConfirmedDirectDebitDetails =>
+              case j: Journey.Simp.ConfirmedDirectDebitDetails  =>
                 j.into[Journey.Simp.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -276,7 +289,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Vat.AgreedTermsAndConditions =>
+              case j: Journey.Vat.AgreedTermsAndConditions   =>
                 j.into[Journey.Vat.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -284,7 +297,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Sa.AgreedTermsAndConditions =>
+              case j: Journey.Sa.AgreedTermsAndConditions    =>
                 j.into[Journey.Sa.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -292,7 +305,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Simp.AgreedTermsAndConditions =>
+              case j: Journey.Simp.AgreedTermsAndConditions  =>
                 j.into[Journey.Simp.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -309,7 +322,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Vat.SelectedEmailToBeVerified =>
+              case j: Journey.Vat.SelectedEmailToBeVerified   =>
                 j.into[Journey.Vat.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -317,7 +330,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Sa.SelectedEmailToBeVerified =>
+              case j: Journey.Sa.SelectedEmailToBeVerified    =>
                 j.into[Journey.Sa.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -325,7 +338,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Simp.SelectedEmailToBeVerified =>
+              case j: Journey.Simp.SelectedEmailToBeVerified  =>
                 j.into[Journey.Simp.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -342,7 +355,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Vat.EmailVerificationComplete =>
+              case j: Journey.Vat.EmailVerificationComplete   =>
                 j.into[Journey.Vat.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -350,7 +363,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Sa.EmailVerificationComplete =>
+              case j: Journey.Sa.EmailVerificationComplete    =>
                 j.into[Journey.Sa.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -358,7 +371,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.startDatesResponse, p.startDatesResponse)
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
-              case j: Journey.Simp.EmailVerificationComplete =>
+              case j: Journey.Simp.EmailVerificationComplete  =>
                 j.into[Journey.Simp.RetrievedAffordableQuotes]
                   .withFieldConst(_.stage, Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved)
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -376,10 +389,10 @@ class UpdateAffordableQuotesController @Inject() (
   }
 
   private def updateJourneyWithExistingValue(
-      existingValue:   AffordableQuotesResponse,
-      existingJourney: Journey,
-      newValue:        AffordableQuotesResponse,
-      newJourney:      Journey
+    existingValue:   AffordableQuotesResponse,
+    existingJourney: Journey,
+    newValue:        AffordableQuotesResponse,
+    newJourney:      Journey
   )(implicit request: Request[_]): Future[Journey] =
     if (existingValue === newValue) {
       JourneyLogger.info("Nothing to update, AffordableQuotesResponse is the same as the existing one in journey.")

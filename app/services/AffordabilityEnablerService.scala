@@ -36,26 +36,29 @@ class AffordabilityEnablerServiceImpl @Inject() (config: Configuration) extends 
     config.get[Seq[String]]("affordability.tax-regimes").filter(_.nonEmpty).map(TaxRegime.withNameInsensitive)
 
   private val passThroughPercentages: Map[TaxRegime, Int] =
-    TaxRegime.values.map{ regime =>
-      val configKey = {
+    TaxRegime.values.map { regime =>
+      val configKey  =
         regime match {
           case TaxRegime.Epaye => "affordability.pass-through-percentages.epaye"
           case TaxRegime.Vat   => "affordability.pass-through-percentages.vat"
           case TaxRegime.Sa    => "affordability.pass-through-percentages.sa"
           case TaxRegime.Simp  => "affordability.pass-through-percentages.simp"
         }
-      }
       val percentage = config.get[Int](configKey)
 
       if (percentage < 0)
-        throw new IllegalArgumentException(s"Affordability pass-through percentage for ${regime.toString} should not be less than zero")
+        throw new IllegalArgumentException(
+          s"Affordability pass-through percentage for ${regime.toString} should not be less than zero"
+        )
       else if (percentage > 100)
-        throw new IllegalArgumentException(s"Affordability pass-through percentage for ${regime.toString} should not be more than 100")
+        throw new IllegalArgumentException(
+          s"Affordability pass-through percentage for ${regime.toString} should not be more than 100"
+        )
       else
         regime -> percentage
     }.toMap
 
-  def affordabilityEnabled(taxRegime: TaxRegime): Boolean = {
+  def affordabilityEnabled(taxRegime: TaxRegime): Boolean =
     if (affordabilityEnabledFor.contains(taxRegime)) {
       val percentage = passThroughPercentages(taxRegime)
 
@@ -71,6 +74,5 @@ class AffordabilityEnablerServiceImpl @Inject() (config: Configuration) extends 
       }
     } else
       false
-  }
 
 }

@@ -31,12 +31,12 @@ final case class PegaStartCaseRequest(caseTypeID: String, content: Content)
 object PegaStartCaseRequest {
 
   final case class Content(
-      uniqueIdentifier:     String,
-      uniqueIdentifierType: String,
-      regime:               String,
-      caseID:               Option[PegaCaseId],
-      recalculationNeeded:  Option[Boolean],
-      `AA`:                 AA
+    uniqueIdentifier:     String,
+    uniqueIdentifierType: String,
+    regime:               String,
+    caseID:               Option[PegaCaseId],
+    recalculationNeeded:  Option[Boolean],
+    `AA`:                 AA
   )
 
   object Content {
@@ -44,10 +44,10 @@ object PegaStartCaseRequest {
   }
 
   final case class AA(
-      debtAmount:          AmountInPence,
-      makeUpFrontPayment:  Boolean,
-      unableToPayReasons:  Set[UnableToPayReason],
-      mdtpPropertyMapping: MDTPropertyMapping
+    debtAmount:          AmountInPence,
+    makeUpFrontPayment:  Boolean,
+    unableToPayReasons:  Set[UnableToPayReason],
+    mdtpPropertyMapping: MDTPropertyMapping
   )
 
   object AA {
@@ -61,13 +61,13 @@ object PegaStartCaseRequest {
   }
 
   final case class MDTPropertyMapping(
-      customerPostcodes:    Option[List[CustomerPostcode]],
-      initialPaymentDate:   Option[InitialPaymentDate],
-      channelIdentifier:    ChannelIdentifier,
-      debtItemCharges:      List[DebtItemCharge],
-      accruedDebtInterest:  AccruedDebtInterest,
-      initialPaymentAmount: Option[UpfrontPaymentAmount],
-      paymentPlanFrequency: PaymentPlanFrequency
+    customerPostcodes:    Option[List[CustomerPostcode]],
+    initialPaymentDate:   Option[InitialPaymentDate],
+    channelIdentifier:    ChannelIdentifier,
+    debtItemCharges:      List[DebtItemCharge],
+    accruedDebtInterest:  AccruedDebtInterest,
+    initialPaymentAmount: Option[UpfrontPaymentAmount],
+    paymentPlanFrequency: PaymentPlanFrequency
   )
 
   object MDTPropertyMapping {

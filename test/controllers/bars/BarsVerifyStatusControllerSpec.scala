@@ -30,18 +30,17 @@ class BarsVerifyStatusControllerSpec extends ItSpec {
   abstract class Setup(numberUpdates: Int) extends BarsVerifyStatusItTest {
     stubCommonActions()
 
-    private val empRef = "123XYZ456"
+    private val empRef         = "123XYZ456"
     private val expectedExpiry = FrozenTime.getClock.instant().plus(24, ChronoUnit.HOURS)
 
-    for (_ <- 1 to numberUpdates) {
+    for (_ <- 1 to numberUpdates)
       connector.update(EmpRef(empRef)).futureValue
-    }
 
     def assertBarsVerifyStatusResponse(): Unit = {
       val result = connector.status(EmpRef(empRef)).futureValue
       if (numberUpdates < 3) {
         result shouldBe BarsVerifyStatusResponse(
-          attempts              = NumberOfBarsVerifyAttempts(numberUpdates),
+          attempts = NumberOfBarsVerifyAttempts(numberUpdates),
           lockoutExpiryDateTime = None
         )
       } else {

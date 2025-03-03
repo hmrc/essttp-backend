@@ -18,7 +18,9 @@ package essttp.journey.model
 
 import cats.Eq
 import essttp.rootmodel.CannotPayReason
-import julienrf.json.derived
+import essttp.utils.DerivedJson
+import essttp.utils.DerivedJson.Circe.formatToCodec
+import io.circe.generic.semiauto.deriveCodec
 import play.api.libs.json.OFormat
 
 sealed trait WhyCannotPayInFullAnswers
@@ -30,7 +32,8 @@ object WhyCannotPayInFullAnswers {
   final case class WhyCannotPayInFull(reasons: Set[CannotPayReason]) extends WhyCannotPayInFullAnswers
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[WhyCannotPayInFullAnswers] = derived.oformat[WhyCannotPayInFullAnswers]()
+  implicit val format: OFormat[WhyCannotPayInFullAnswers] =
+    DerivedJson.Circe.format(deriveCodec[WhyCannotPayInFullAnswers])
 
   implicit val eq: Eq[WhyCannotPayInFullAnswers] = Eq.fromUniversalEquals
 

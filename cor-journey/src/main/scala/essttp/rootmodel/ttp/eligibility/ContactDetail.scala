@@ -21,12 +21,12 @@ import essttp.rootmodel.Email
 import play.api.libs.json.{Format, Json}
 
 final case class ContactDetail(
-    telephoneNumber: Option[TelNumber],
-    fax:             Option[FaxNumber],
-    mobile:          Option[TelNumber],
-    emailAddress:    Option[Email],
-    emailSource:     Option[EmailSource],
-    altFormat:       Option[AltLetterFormat]
+  telephoneNumber: Option[TelNumber],
+  fax:             Option[FaxNumber],
+  mobile:          Option[TelNumber],
+  emailAddress:    Option[Email],
+  emailSource:     Option[EmailSource],
+  altFormat:       Option[AltLetterFormat]
 )
 
 object ContactDetail {

@@ -18,8 +18,9 @@ package essttp.rootmodel
 
 import cats.Eq
 import essttp.rootmodel.epaye.{TaxOfficeNumber, TaxOfficeReference}
-import julienrf.json.derived
-import play.api.libs.json.OFormat
+import essttp.utils.DerivedJson
+import io.circe.generic.semiauto.deriveCodec
+import play.api.libs.json.{Json, OFormat}
 
 sealed trait TaxId {
   val value: String
@@ -27,7 +28,7 @@ sealed trait TaxId {
 
 object TaxId {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[TaxId] = derived.oformat[TaxId]()
+  implicit val format: OFormat[TaxId] = DerivedJson.Circe.format(deriveCodec[TaxId])
 
   implicit val eq: Eq[TaxId] = Eq.fromUniversalEquals
 
@@ -35,48 +36,41 @@ object TaxId {
 
 final case class EmpRef(value: String) extends TaxId
 
-/**
- * Employer Reference
- * Tax Id for Epaye.
- */
+/** Employer Reference Tax Id for Epaye.
+  */
 object EmpRef {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[EmpRef] = derived.oformat[EmpRef]()
+  implicit val format: OFormat[EmpRef] = Json.format
 
   def makeEmpRef(taxOfficeNumber: TaxOfficeNumber, taxOfficeReference: TaxOfficeReference): EmpRef = EmpRef(
     s"${taxOfficeNumber.value}${taxOfficeReference.value}"
   )
 }
 
-/**
- * Vat Reference Number (Vrn)
- * Tax Id for Vat.
- * Regex https://github.com/hmrc/service-enrolment-config/blob/master/conf/SEC1_with_enrolment_rules_json/prod/HMRC-MTD-VAT.json
- */
+/** Vat Reference Number (Vrn) Tax Id for Vat. Regex
+  * https://github.com/hmrc/service-enrolment-config/blob/master/conf/SEC1_with_enrolment_rules_json/prod/HMRC-MTD-VAT.json
+  */
 final case class Vrn(value: String) extends TaxId
 
 object Vrn {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[Vrn] = derived.oformat[Vrn]()
+  implicit val format: OFormat[Vrn] = Json.format
 }
 
-/**
- * Self Assessment Unique Tax Reference (SaUtr)
- * Tax Id for Sa.
- */
+/** Self Assessment Unique Tax Reference (SaUtr) Tax Id for Sa.
+  */
 final case class SaUtr(value: String) extends TaxId
 
 object SaUtr {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[SaUtr] = derived.oformat[SaUtr]()
+  implicit val format: OFormat[SaUtr] = Json.format
 }
 
-/**
- * Simple Self Assessment Unique Tax Reference (Nino) Tax Id for Simp.
- */
+/** Simple Self Assessment Unique Tax Reference (Nino) Tax Id for Simp.
+  */
 final case class Nino(value: String) extends TaxId
 
 object Nino {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[Nino] = derived.oformat[Nino]()
+  implicit val format: OFormat[Nino] = Json.format
 }

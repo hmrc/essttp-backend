@@ -20,7 +20,12 @@ import cats.Eq
 import essttp.crypto.CryptoFormat
 import play.api.libs.json.{Json, OFormat}
 
-final case class BankDetails(typeOfBankAccount: TypeOfBankAccount, name: AccountName, sortCode: SortCode, accountNumber: AccountNumber)
+final case class BankDetails(
+  typeOfBankAccount: TypeOfBankAccount,
+  name:              AccountName,
+  sortCode:          SortCode,
+  accountNumber:     AccountNumber
+)
 
 object BankDetails {
 

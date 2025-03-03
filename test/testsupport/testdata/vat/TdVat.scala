@@ -31,81 +31,84 @@ trait TdVat {
 
   val vrn: Vrn = Vrn("101747001")
 
-  def eligibleEligibilityCheckResultVat(taxId: TaxId = vrn): EligibilityCheckResult = eligibility.EligibilityCheckResult(
-    processingDateTime              = ProcessingDateTime(reusableDateAsString),
-    identification                  = List(
-      eligibility.Identification(
-        idType  = IdType("VRN"),
-        idValue = IdValue(taxId.value)
-      )
-    ),
-    invalidSignals                  = None,
-    customerPostcodes               = Some(List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate(LocalDate.of(2020, 1, 1))))),
-    customerDetails                 = None,
-    individualDetails               = None,
-    addresses                       = None,
-    customerType                    = None,
-    regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
-    paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
-    paymentPlanMinLength            = PaymentPlanMinLength(1),
-    paymentPlanMaxLength            = PaymentPlanMaxLength(6),
-    eligibilityStatus               = EligibilityStatus(EligibilityPass(value = true)),
-    eligibilityRules                = eligibleEligibilityRules,
-    chargeTypeAssessment            = List(
-      ChargeTypeAssessment(
-        taxPeriodFrom   = TaxPeriodFrom("2020-08-13"),
-        taxPeriodTo     = TaxPeriodTo("2020-08-14"),
-        debtTotalAmount = DebtTotalAmount(AmountInPence(300000)),
-        chargeReference = ChargeReference("A00000000001"),
-        charges         = List(
-          Charges(
-            Charges1(
-              chargeType              = ChargeType("InYearRTICharge-Tax"),
-              mainType                = MainType("InYearRTICharge(FPS)"),
-              mainTrans               = MainTrans("mainTrans"),
-              subTrans                = SubTrans("subTrans"),
-              outstandingAmount       = OutstandingAmount(AmountInPence(100000)),
-              dueDate                 = DueDate(reusableDate),
-              interestStartDate       = Some(InterestStartDate(reusableDate)),
-              accruedInterest         = AccruedInterest(AmountInPence(1597)),
-              ineligibleChargeType    = IneligibleChargeType(value = false),
-              chargeOverMaxDebtAge    = Some(ChargeOverMaxDebtAge(value = false)),
-              locks                   = Some(
-                List(
-                  Lock(
-                    lockType                 = LockType("Payment"),
-                    lockReason               = LockReason("Risk/Fraud"),
-                    disallowedChargeLockType = DisallowedChargeLockType(value = false)
+  def eligibleEligibilityCheckResultVat(taxId: TaxId = vrn): EligibilityCheckResult =
+    eligibility.EligibilityCheckResult(
+      processingDateTime = ProcessingDateTime(reusableDateAsString),
+      identification = List(
+        eligibility.Identification(
+          idType = IdType("VRN"),
+          idValue = IdValue(taxId.value)
+        )
+      ),
+      invalidSignals = None,
+      customerPostcodes =
+        Some(List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate(LocalDate.of(2020, 1, 1))))),
+      customerDetails = None,
+      individualDetails = None,
+      addresses = None,
+      customerType = None,
+      regimePaymentFrequency = PaymentPlanFrequencies.Monthly,
+      paymentPlanFrequency = PaymentPlanFrequencies.Monthly,
+      paymentPlanMinLength = PaymentPlanMinLength(1),
+      paymentPlanMaxLength = PaymentPlanMaxLength(6),
+      eligibilityStatus = EligibilityStatus(EligibilityPass(value = true)),
+      eligibilityRules = eligibleEligibilityRules,
+      chargeTypeAssessment = List(
+        ChargeTypeAssessment(
+          taxPeriodFrom = TaxPeriodFrom("2020-08-13"),
+          taxPeriodTo = TaxPeriodTo("2020-08-14"),
+          debtTotalAmount = DebtTotalAmount(AmountInPence(300000)),
+          chargeReference = ChargeReference("A00000000001"),
+          charges = List(
+            Charges(
+              Charges1(
+                chargeType = ChargeType("InYearRTICharge-Tax"),
+                mainType = MainType("InYearRTICharge(FPS)"),
+                mainTrans = MainTrans("mainTrans"),
+                subTrans = SubTrans("subTrans"),
+                outstandingAmount = OutstandingAmount(AmountInPence(100000)),
+                dueDate = DueDate(reusableDate),
+                interestStartDate = Some(InterestStartDate(reusableDate)),
+                accruedInterest = AccruedInterest(AmountInPence(1597)),
+                ineligibleChargeType = IneligibleChargeType(value = false),
+                chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
+                locks = Some(
+                  List(
+                    Lock(
+                      lockType = LockType("Payment"),
+                      lockReason = LockReason("Risk/Fraud"),
+                      disallowedChargeLockType = DisallowedChargeLockType(value = false)
+                    )
                   )
-                )
+                ),
+                dueDateNotReached = false,
+                isInterestBearingCharge = None
               ),
-              dueDateNotReached       = false,
-              isInterestBearingCharge = None
-            ),
-            Charges2(
-              useChargeReference            = None,
-              chargeBeforeMaxAccountingDate = None,
-              ddInProgress                  = Some(DdInProgress(value = false)),
-              chargeSource                  = None,
-              parentChargeReference         = None,
-              parentMainTrans               = None,
-              originalCreationDate          = None,
-              tieBreaker                    = None,
-              originalTieBreaker            = None,
-              saTaxYearEnd                  = None,
-              creationDate                  = None,
-              originalChargeType            = None
+              Charges2(
+                useChargeReference = None,
+                chargeBeforeMaxAccountingDate = None,
+                ddInProgress = Some(DdInProgress(value = false)),
+                chargeSource = None,
+                parentChargeReference = None,
+                parentMainTrans = None,
+                originalCreationDate = None,
+                tieBreaker = None,
+                originalTieBreaker = None,
+                saTaxYearEnd = None,
+                creationDate = None,
+                originalChargeType = None
+              )
             )
           )
         )
-      )
-    ),
-    regimeDigitalCorrespondence     = None,
-    futureChargeLiabilitiesExcluded = false,
-    chargeTypesExcluded             = None,
-    transitionToCDCS                = None
-  )
+      ),
+      regimeDigitalCorrespondence = None,
+      futureChargeLiabilitiesExcluded = false,
+      chargeTypesExcluded = None,
+      transitionToCDCS = None
+    )
 
-  val arrangementResponseVat: ArrangementResponse = ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(vrn.value))
+  val arrangementResponseVat: ArrangementResponse =
+    ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(vrn.value))
 
 }

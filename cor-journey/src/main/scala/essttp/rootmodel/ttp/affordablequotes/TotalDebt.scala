@@ -17,7 +17,7 @@
 package essttp.rootmodel.ttp.affordablequotes
 
 import essttp.rootmodel.AmountInPence
-import play.api.libs.json.{Json, Format}
+import play.api.libs.json.{Format, Json}
 
 final case class TotalDebt(value: AmountInPence) extends AnyVal
 

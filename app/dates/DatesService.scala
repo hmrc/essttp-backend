@@ -26,13 +26,15 @@ import java.time.{Clock, LocalDate}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DatesService @Inject() (clock: Clock, dateCalculatorConnector: DateCalculatorConnector)(implicit ec: ExecutionContext) {
+class DatesService @Inject() (clock: Clock, dateCalculatorConnector: DateCalculatorConnector)(implicit
+  ec: ExecutionContext
+) {
 
   private def today(): LocalDate = LocalDate.now(clock)
 
   def todayPlusCalendarDays(numberOfDays: Int): LocalDate = today().plusDays(numberOfDays)
 
-  def todayPlusWorkingDays(numberOfDaysToAdd: Int)(implicit hc: HeaderCarrier): Future[LocalDate] = {
+  def todayPlusWorkingDays(numberOfDaysToAdd: Int)(implicit hc: HeaderCarrier): Future[LocalDate] =
     dateCalculatorConnector
       .addWorkingDays(AddWorkingDaysRequest(today(), numberOfDaysToAdd, Set(Region.EnglandAndWales)))
       .map { response =>
@@ -42,9 +44,10 @@ class DatesService @Inject() (clock: Clock, dateCalculatorConnector: DateCalcula
             case JsError(_)           => throw new Exception("Could not parse date calculator response")
           }
         } else {
-          throw new Exception(s"Call to date-calculator came back with unexpected http status ${response.status.toString}")
+          throw new Exception(
+            s"Call to date-calculator came back with unexpected http status ${response.status.toString}"
+          )
         }
       }
-  }
 
 }

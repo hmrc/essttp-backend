@@ -24,10 +24,11 @@ object TdSupport {
 
   implicit class FakeRequestOps[T](r: FakeRequest[T]) {
 
-    def withAuthToken(authToken: String = TdAll.authToken): FakeRequest[T] = r.withSession((SessionKeys.authToken, authToken))
+    def withAuthToken(authToken: String = TdAll.authToken): FakeRequest[T] =
+      r.withSession((SessionKeys.authToken, authToken))
 
     def withAkamaiReputationHeader(
-        akamaiReputatinoValue: String = TdAll.akamaiReputationValue
+      akamaiReputatinoValue: String = TdAll.akamaiReputationValue
     ): FakeRequest[T] = r.withHeaders(
       HeaderNames.akamaiReputation -> akamaiReputatinoValue
     )

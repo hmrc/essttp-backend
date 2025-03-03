@@ -32,32 +32,44 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateHasCheckedInstalmentPlanController @Inject() (
-    actions:        Actions,
-    journeyService: JourneyService,
-    cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
+  actions:        Actions,
+  journeyService: JourneyService,
+  cc:             ControllerComponents
+)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+    extends BackendController(cc) {
 
   def updateHasCheckedInstalmentPlan(journeyId: JourneyId): Action[PaymentPlanAnswers] =
     actions.authenticatedAction(parse.json[PaymentPlanAnswers]).async { implicit request =>
       for {
-        journey <- journeyService.get(journeyId)
+        journey    <- journeyService.get(journeyId)
         newJourney <- journey match {
-          case j: Journey.BeforeSelectedPaymentPlan => Errors.throwBadRequestExceptionF(s"UpdateHasCheckedInstalmentPlan is not possible in that state: [${j.stage.toString}]")
-          case j: Journey.BeforeStartedPegaCase     => Errors.throwBadRequestExceptionF(s"UpdateHasCheckedInstalmentPlan is not possible in that state: [${j.stage.toString}]")
-          case j: Journey.Stages.ChosenPaymentPlan  => updateJourneyWithNewValue(Right(j), request.body)
-          case j: Journey.Stages.StartedPegaCase    => updateJourneyWithNewValue(Left(j), request.body)
-          case j: Journey.AfterCheckedPaymentPlan => j match {
-            case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(j, request.body)
-            case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update HasCheckedPaymentPlan when journey is in completed state")
-          }
+                        case j: Journey.BeforeSelectedPaymentPlan =>
+                          Errors.throwBadRequestExceptionF(
+                            s"UpdateHasCheckedInstalmentPlan is not possible in that state: [${j.stage.toString}]"
+                          )
+                        case j: Journey.BeforeStartedPegaCase     =>
+                          Errors.throwBadRequestExceptionF(
+                            s"UpdateHasCheckedInstalmentPlan is not possible in that state: [${j.stage.toString}]"
+                          )
+                        case j: Journey.Stages.ChosenPaymentPlan  => updateJourneyWithNewValue(Right(j), request.body)
+                        case j: Journey.Stages.StartedPegaCase    => updateJourneyWithNewValue(Left(j), request.body)
+                        case j: Journey.AfterCheckedPaymentPlan   =>
+                          j match {
+                            case _: Journey.BeforeArrangementSubmitted =>
+                              updateJourneyWithExistingValue(j, request.body)
+                            case _: Journey.AfterArrangementSubmitted  =>
+                              Errors.throwBadRequestExceptionF(
+                                "Cannot update HasCheckedPaymentPlan when journey is in completed state"
+                              )
+                          }
 
-        }
+                      }
       } yield Ok(newJourney.json)
     }
 
   private def updateJourneyWithNewValue(
-      journey: Either[Journey.Stages.StartedPegaCase, Journey.Stages.ChosenPaymentPlan],
-      answers: PaymentPlanAnswers
+    journey: Either[Journey.Stages.StartedPegaCase, Journey.Stages.ChosenPaymentPlan],
+    answers: PaymentPlanAnswers
   )(implicit request: Request[_]): Future[Journey] = {
     val newJourney: Journey.AfterCheckedPaymentPlan = journey match {
       case Left(j: Journey.Epaye.StartedPegaCase) =>
@@ -65,17 +77,17 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
           .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
           .withFieldConst(_.paymentPlanAnswers, answers)
           .transform
-      case Left(j: Journey.Vat.StartedPegaCase) =>
+      case Left(j: Journey.Vat.StartedPegaCase)   =>
         j.into[Journey.Vat.CheckedPaymentPlan]
           .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
           .withFieldConst(_.paymentPlanAnswers, answers)
           .transform
-      case Left(j: Journey.Sa.StartedPegaCase) =>
+      case Left(j: Journey.Sa.StartedPegaCase)    =>
         j.into[Journey.Sa.CheckedPaymentPlan]
           .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
           .withFieldConst(_.paymentPlanAnswers, answers)
           .transform
-      case Left(j: Journey.Simp.StartedPegaCase) =>
+      case Left(j: Journey.Simp.StartedPegaCase)  =>
         j.into[Journey.Sa.CheckedPaymentPlan]
           .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
           .withFieldConst(_.paymentPlanAnswers, answers)
@@ -86,17 +98,17 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
           .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
           .withFieldConst(_.paymentPlanAnswers, answers)
           .transform
-      case Right(j: Journey.Vat.ChosenPaymentPlan) =>
+      case Right(j: Journey.Vat.ChosenPaymentPlan)   =>
         j.into[Journey.Vat.CheckedPaymentPlan]
           .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
           .withFieldConst(_.paymentPlanAnswers, answers)
           .transform
-      case Right(j: Journey.Sa.ChosenPaymentPlan) =>
+      case Right(j: Journey.Sa.ChosenPaymentPlan)    =>
         j.into[Journey.Sa.CheckedPaymentPlan]
           .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
           .withFieldConst(_.paymentPlanAnswers, answers)
           .transform
-      case Right(j: Journey.Simp.ChosenPaymentPlan) =>
+      case Right(j: Journey.Simp.ChosenPaymentPlan)  =>
         j.into[Journey.Simp.CheckedPaymentPlan]
           .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
           .withFieldConst(_.paymentPlanAnswers, answers)
@@ -106,8 +118,8 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
   }
 
   private def updateJourneyWithExistingValue(
-      journey: Journey.AfterCheckedPaymentPlan,
-      answers: PaymentPlanAnswers
+    journey: Journey.AfterCheckedPaymentPlan,
+    answers: PaymentPlanAnswers
   )(implicit request: Request[_]): Future[Journey] =
     if (journey.paymentPlanAnswers === answers)
       Future.successful(journey)
@@ -115,11 +127,11 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
       val updatedJourney: Journey = journey match {
         case j: Journey.Epaye.CheckedPaymentPlan =>
           j.copy(paymentPlanAnswers = answers)
-        case j: Journey.Vat.CheckedPaymentPlan =>
+        case j: Journey.Vat.CheckedPaymentPlan   =>
           j.copy(paymentPlanAnswers = answers)
-        case j: Journey.Sa.CheckedPaymentPlan =>
+        case j: Journey.Sa.CheckedPaymentPlan    =>
           j.copy(paymentPlanAnswers = answers)
-        case j: Journey.Simp.CheckedPaymentPlan =>
+        case j: Journey.Simp.CheckedPaymentPlan  =>
           j.copy(paymentPlanAnswers = answers)
 
         case j: Journey.Epaye.EnteredCanYouSetUpDirectDebit =>
@@ -127,17 +139,17 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Vat.EnteredCanYouSetUpDirectDebit =>
+        case j: Journey.Vat.EnteredCanYouSetUpDirectDebit   =>
           j.into[Journey.Vat.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Sa.EnteredCanYouSetUpDirectDebit =>
+        case j: Journey.Sa.EnteredCanYouSetUpDirectDebit    =>
           j.into[Journey.Sa.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Simp.EnteredCanYouSetUpDirectDebit =>
+        case j: Journey.Simp.EnteredCanYouSetUpDirectDebit  =>
           j.into[Journey.Simp.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
@@ -148,17 +160,17 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Vat.EnteredDirectDebitDetails =>
+        case j: Journey.Vat.EnteredDirectDebitDetails   =>
           j.into[Journey.Vat.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Sa.EnteredDirectDebitDetails =>
+        case j: Journey.Sa.EnteredDirectDebitDetails    =>
           j.into[Journey.Sa.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Simp.EnteredDirectDebitDetails =>
+        case j: Journey.Simp.EnteredDirectDebitDetails  =>
           j.into[Journey.Simp.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
@@ -169,17 +181,17 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Vat.ConfirmedDirectDebitDetails =>
+        case j: Journey.Vat.ConfirmedDirectDebitDetails   =>
           j.into[Journey.Vat.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Sa.ConfirmedDirectDebitDetails =>
+        case j: Journey.Sa.ConfirmedDirectDebitDetails    =>
           j.into[Journey.Sa.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Simp.ConfirmedDirectDebitDetails =>
+        case j: Journey.Simp.ConfirmedDirectDebitDetails  =>
           j.into[Journey.Simp.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
@@ -190,17 +202,17 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Vat.AgreedTermsAndConditions =>
+        case j: Journey.Vat.AgreedTermsAndConditions   =>
           j.into[Journey.Vat.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Sa.AgreedTermsAndConditions =>
+        case j: Journey.Sa.AgreedTermsAndConditions    =>
           j.into[Journey.Sa.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Simp.AgreedTermsAndConditions =>
+        case j: Journey.Simp.AgreedTermsAndConditions  =>
           j.into[Journey.Simp.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
@@ -211,17 +223,17 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Vat.SelectedEmailToBeVerified =>
+        case j: Journey.Vat.SelectedEmailToBeVerified   =>
           j.into[Journey.Vat.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Sa.SelectedEmailToBeVerified =>
+        case j: Journey.Sa.SelectedEmailToBeVerified    =>
           j.into[Journey.Sa.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Simp.SelectedEmailToBeVerified =>
+        case j: Journey.Simp.SelectedEmailToBeVerified  =>
           j.into[Journey.Simp.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
@@ -232,24 +244,26 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Vat.EmailVerificationComplete =>
+        case j: Journey.Vat.EmailVerificationComplete   =>
           j.into[Journey.Vat.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Sa.EmailVerificationComplete =>
+        case j: Journey.Sa.EmailVerificationComplete    =>
           j.into[Journey.Sa.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
-        case j: Journey.Simp.EmailVerificationComplete =>
+        case j: Journey.Simp.EmailVerificationComplete  =>
           j.into[Journey.Simp.CheckedPaymentPlan]
             .withFieldConst(_.stage, Stage.AfterCheckedPlan.AcceptedPlan)
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
 
         case _: Stages.SubmittedArrangement =>
-          Errors.throwBadRequestException("Cannot update UpdateHasCheckedInstalmentPlan when journey is in completed state")
+          Errors.throwBadRequestException(
+            "Cannot update UpdateHasCheckedInstalmentPlan when journey is in completed state"
+          )
 
       }
       journeyService.upsert(updatedJourney)

@@ -35,79 +35,99 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateDatesController @Inject() (
-    actions:        Actions,
-    journeyService: JourneyService,
-    cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
+  actions:        Actions,
+  journeyService: JourneyService,
+  cc:             ControllerComponents
+)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+    extends BackendController(cc) {
 
-  def updateExtremeDates(journeyId: JourneyId): Action[ExtremeDatesResponse] = actions.authenticatedAction.async(parse.json[ExtremeDatesResponse]) { implicit request =>
-    for {
-      journey <- journeyService.get(journeyId)
-      newJourney <- journey match {
-        case j: Journey.Stages.EnteredUpfrontPaymentAmount => updateJourneyWithNewExtremeDatesValue(Right(j), request.body)
-        case j: Journey.Stages.AnsweredCanPayUpfront       => updateJourneyWithNewExtremeDatesValue(Left(j), request.body)
-        case j: Journey.AfterExtremeDatesResponse => j match {
-          case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingExtremeDatesValue (j, request.body)
-          case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update ExtremeDates when journey is in completed state")
-        }
-        case j: Journey.BeforeUpfrontPaymentAnswers => Errors.throwBadRequestExceptionF(s"UpdateExtremeDatesResponse update is not possible in that state: [${j.stage.toString}]")
-      }
-    } yield Ok(newJourney.json)
-  }
+  def updateExtremeDates(journeyId: JourneyId): Action[ExtremeDatesResponse] =
+    actions.authenticatedAction.async(parse.json[ExtremeDatesResponse]) { implicit request =>
+      for {
+        journey    <- journeyService.get(journeyId)
+        newJourney <- journey match {
+                        case j: Journey.Stages.EnteredUpfrontPaymentAmount =>
+                          updateJourneyWithNewExtremeDatesValue(Right(j), request.body)
+                        case j: Journey.Stages.AnsweredCanPayUpfront       =>
+                          updateJourneyWithNewExtremeDatesValue(Left(j), request.body)
+                        case j: Journey.AfterExtremeDatesResponse          =>
+                          j match {
+                            case _: Journey.BeforeArrangementSubmitted =>
+                              updateJourneyWithExistingExtremeDatesValue(j, request.body)
+                            case _: Journey.AfterArrangementSubmitted  =>
+                              Errors.throwBadRequestExceptionF(
+                                "Cannot update ExtremeDates when journey is in completed state"
+                              )
+                          }
+                        case j: Journey.BeforeUpfrontPaymentAnswers        =>
+                          Errors.throwBadRequestExceptionF(
+                            s"UpdateExtremeDatesResponse update is not possible in that state: [${j.stage.toString}]"
+                          )
+                      }
+      } yield Ok(newJourney.json)
+    }
 
   private def updateJourneyWithNewExtremeDatesValue(
-      journey:              Either[AnsweredCanPayUpfront, EnteredUpfrontPaymentAmount],
-      extremeDatesResponse: ExtremeDatesResponse
+    journey:              Either[AnsweredCanPayUpfront, EnteredUpfrontPaymentAmount],
+    extremeDatesResponse: ExtremeDatesResponse
   )(implicit request: Request[_]): Future[Journey] = {
     val newJourney: Journey.Stages.RetrievedExtremeDates = journey match {
-      case Left(j: Epaye.AnsweredCanPayUpfront) => j.into[Journey.Epaye.RetrievedExtremeDates]
-        .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
-        .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.NoUpfrontPayment)
-        .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
-        .transform
-      case Left(j: Vat.AnsweredCanPayUpfront) => j.into[Journey.Vat.RetrievedExtremeDates]
-        .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
-        .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.NoUpfrontPayment)
-        .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
-        .transform
-      case Left(j: Sa.AnsweredCanPayUpfront) => j.into[Journey.Sa.RetrievedExtremeDates]
-        .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
-        .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.NoUpfrontPayment)
-        .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
-        .transform
-      case Left(j: Simp.AnsweredCanPayUpfront) => j.into[Journey.Simp.RetrievedExtremeDates]
-        .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
-        .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.NoUpfrontPayment)
-        .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
-        .transform
+      case Left(j: Epaye.AnsweredCanPayUpfront) =>
+        j.into[Journey.Epaye.RetrievedExtremeDates]
+          .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+          .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.NoUpfrontPayment)
+          .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+          .transform
+      case Left(j: Vat.AnsweredCanPayUpfront)   =>
+        j.into[Journey.Vat.RetrievedExtremeDates]
+          .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+          .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.NoUpfrontPayment)
+          .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+          .transform
+      case Left(j: Sa.AnsweredCanPayUpfront)    =>
+        j.into[Journey.Sa.RetrievedExtremeDates]
+          .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+          .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.NoUpfrontPayment)
+          .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+          .transform
+      case Left(j: Simp.AnsweredCanPayUpfront)  =>
+        j.into[Journey.Simp.RetrievedExtremeDates]
+          .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+          .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.NoUpfrontPayment)
+          .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+          .transform
 
-      case Right(j: Epaye.EnteredUpfrontPaymentAmount) => j.into[Journey.Epaye.RetrievedExtremeDates]
-        .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
-        .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.DeclaredUpfrontPayment(j.upfrontPaymentAmount))
-        .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
-        .transform
-      case Right(j: Vat.EnteredUpfrontPaymentAmount) => j.into[Journey.Vat.RetrievedExtremeDates]
-        .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
-        .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.DeclaredUpfrontPayment(j.upfrontPaymentAmount))
-        .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
-        .transform
-      case Right(j: Sa.EnteredUpfrontPaymentAmount) => j.into[Journey.Sa.RetrievedExtremeDates]
-        .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
-        .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.DeclaredUpfrontPayment(j.upfrontPaymentAmount))
-        .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
-        .transform
-      case Right(j: Simp.EnteredUpfrontPaymentAmount) => j.into[Journey.Simp.RetrievedExtremeDates]
-        .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
-        .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.DeclaredUpfrontPayment(j.upfrontPaymentAmount))
-        .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
-        .transform
+      case Right(j: Epaye.EnteredUpfrontPaymentAmount) =>
+        j.into[Journey.Epaye.RetrievedExtremeDates]
+          .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+          .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.DeclaredUpfrontPayment(j.upfrontPaymentAmount))
+          .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+          .transform
+      case Right(j: Vat.EnteredUpfrontPaymentAmount)   =>
+        j.into[Journey.Vat.RetrievedExtremeDates]
+          .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+          .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.DeclaredUpfrontPayment(j.upfrontPaymentAmount))
+          .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+          .transform
+      case Right(j: Sa.EnteredUpfrontPaymentAmount)    =>
+        j.into[Journey.Sa.RetrievedExtremeDates]
+          .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+          .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.DeclaredUpfrontPayment(j.upfrontPaymentAmount))
+          .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+          .transform
+      case Right(j: Simp.EnteredUpfrontPaymentAmount)  =>
+        j.into[Journey.Simp.RetrievedExtremeDates]
+          .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
+          .withFieldConst(_.upfrontPaymentAnswers, UpfrontPaymentAnswers.DeclaredUpfrontPayment(j.upfrontPaymentAmount))
+          .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+          .transform
     }
     journeyService.upsert(newJourney)
   }
 
   private def updateJourneyWithExistingExtremeDatesValue(
-      journey:              Journey.AfterExtremeDatesResponse,
-      extremeDatesResponse: ExtremeDatesResponse
+    journey:              Journey.AfterExtremeDatesResponse,
+    extremeDatesResponse: ExtremeDatesResponse
   )(implicit request: Request[_]): Future[Journey] = {
 
     if (journey.extremeDatesResponse === extremeDatesResponse) {
@@ -126,17 +146,17 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Vat.RetrievedAffordabilityResult =>
+        case j: Journey.Vat.RetrievedAffordabilityResult   =>
           j.into[Journey.Vat.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Sa.RetrievedAffordabilityResult =>
+        case j: Journey.Sa.RetrievedAffordabilityResult    =>
           j.into[Journey.Sa.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Simp.RetrievedAffordabilityResult =>
+        case j: Journey.Simp.RetrievedAffordabilityResult  =>
           j.into[Journey.Simp.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -147,17 +167,17 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Vat.ObtainedCanPayWithinSixMonthsAnswers =>
+        case j: Journey.Vat.ObtainedCanPayWithinSixMonthsAnswers   =>
           j.into[Journey.Vat.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Sa.ObtainedCanPayWithinSixMonthsAnswers =>
+        case j: Journey.Sa.ObtainedCanPayWithinSixMonthsAnswers    =>
           j.into[Journey.Sa.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Simp.ObtainedCanPayWithinSixMonthsAnswers =>
+        case j: Journey.Simp.ObtainedCanPayWithinSixMonthsAnswers  =>
           j.into[Journey.Simp.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -168,17 +188,17 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Vat.StartedPegaCase =>
+        case j: Journey.Vat.StartedPegaCase   =>
           j.into[Journey.Vat.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Sa.StartedPegaCase =>
+        case j: Journey.Sa.StartedPegaCase    =>
           j.into[Journey.Sa.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Simp.StartedPegaCase =>
+        case j: Journey.Simp.StartedPegaCase  =>
           j.into[Journey.Simp.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -189,17 +209,17 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Vat.EnteredMonthlyPaymentAmount =>
+        case j: Journey.Vat.EnteredMonthlyPaymentAmount   =>
           j.into[Journey.Vat.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Sa.EnteredMonthlyPaymentAmount =>
+        case j: Journey.Sa.EnteredMonthlyPaymentAmount    =>
           j.into[Journey.Sa.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Simp.EnteredMonthlyPaymentAmount =>
+        case j: Journey.Simp.EnteredMonthlyPaymentAmount  =>
           j.into[Journey.Simp.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -210,17 +230,17 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Vat.EnteredDayOfMonth =>
+        case j: Journey.Vat.EnteredDayOfMonth   =>
           j.into[Journey.Vat.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Sa.EnteredDayOfMonth =>
+        case j: Journey.Sa.EnteredDayOfMonth    =>
           j.into[Journey.Sa.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Simp.EnteredDayOfMonth =>
+        case j: Journey.Simp.EnteredDayOfMonth  =>
           j.into[Journey.Simp.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -231,17 +251,17 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Vat.RetrievedStartDates =>
+        case j: Journey.Vat.RetrievedStartDates   =>
           j.into[Journey.Vat.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Sa.RetrievedStartDates =>
+        case j: Journey.Sa.RetrievedStartDates    =>
           j.into[Journey.Sa.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Simp.RetrievedStartDates =>
+        case j: Journey.Simp.RetrievedStartDates  =>
           j.into[Journey.Simp.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -252,17 +272,17 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Vat.RetrievedAffordableQuotes =>
+        case j: Journey.Vat.RetrievedAffordableQuotes   =>
           j.into[Journey.Vat.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Sa.RetrievedAffordableQuotes =>
+        case j: Journey.Sa.RetrievedAffordableQuotes    =>
           j.into[Journey.Sa.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Simp.RetrievedAffordableQuotes =>
+        case j: Journey.Simp.RetrievedAffordableQuotes  =>
           j.into[Journey.Simp.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -273,17 +293,17 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Vat.ChosenPaymentPlan =>
+        case j: Journey.Vat.ChosenPaymentPlan   =>
           j.into[Journey.Vat.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Sa.ChosenPaymentPlan =>
+        case j: Journey.Sa.ChosenPaymentPlan    =>
           j.into[Journey.Sa.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Simp.ChosenPaymentPlan =>
+        case j: Journey.Simp.ChosenPaymentPlan  =>
           j.into[Journey.Simp.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -294,17 +314,17 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Vat.CheckedPaymentPlan =>
+        case j: Journey.Vat.CheckedPaymentPlan   =>
           j.into[Journey.Vat.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Sa.CheckedPaymentPlan =>
+        case j: Journey.Sa.CheckedPaymentPlan    =>
           j.into[Journey.Sa.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Simp.CheckedPaymentPlan =>
+        case j: Journey.Simp.CheckedPaymentPlan  =>
           j.into[Journey.Simp.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -315,17 +335,17 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Vat.EnteredCanYouSetUpDirectDebit =>
+        case j: Journey.Vat.EnteredCanYouSetUpDirectDebit   =>
           j.into[Journey.Vat.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Sa.EnteredCanYouSetUpDirectDebit =>
+        case j: Journey.Sa.EnteredCanYouSetUpDirectDebit    =>
           j.into[Journey.Sa.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Simp.EnteredCanYouSetUpDirectDebit =>
+        case j: Journey.Simp.EnteredCanYouSetUpDirectDebit  =>
           j.into[Journey.Simp.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -336,17 +356,17 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Vat.EnteredDirectDebitDetails =>
+        case j: Journey.Vat.EnteredDirectDebitDetails   =>
           j.into[Journey.Vat.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Sa.EnteredDirectDebitDetails =>
+        case j: Journey.Sa.EnteredDirectDebitDetails    =>
           j.into[Journey.Sa.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Simp.EnteredDirectDebitDetails =>
+        case j: Journey.Simp.EnteredDirectDebitDetails  =>
           j.into[Journey.Simp.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -357,17 +377,17 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Vat.ConfirmedDirectDebitDetails =>
+        case j: Journey.Vat.ConfirmedDirectDebitDetails   =>
           j.into[Journey.Vat.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Sa.ConfirmedDirectDebitDetails =>
+        case j: Journey.Sa.ConfirmedDirectDebitDetails    =>
           j.into[Journey.Sa.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Simp.ConfirmedDirectDebitDetails =>
+        case j: Journey.Simp.ConfirmedDirectDebitDetails  =>
           j.into[Journey.Simp.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -378,17 +398,17 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Vat.AgreedTermsAndConditions =>
+        case j: Journey.Vat.AgreedTermsAndConditions   =>
           j.into[Journey.Vat.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Sa.AgreedTermsAndConditions =>
+        case j: Journey.Sa.AgreedTermsAndConditions    =>
           j.into[Journey.Sa.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Simp.AgreedTermsAndConditions =>
+        case j: Journey.Simp.AgreedTermsAndConditions  =>
           j.into[Journey.Simp.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -399,17 +419,17 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Vat.SelectedEmailToBeVerified =>
+        case j: Journey.Vat.SelectedEmailToBeVerified   =>
           j.into[Journey.Vat.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Sa.SelectedEmailToBeVerified =>
+        case j: Journey.Sa.SelectedEmailToBeVerified    =>
           j.into[Journey.Sa.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Simp.SelectedEmailToBeVerified =>
+        case j: Journey.Simp.SelectedEmailToBeVerified  =>
           j.into[Journey.Simp.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -420,17 +440,17 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Vat.EmailVerificationComplete =>
+        case j: Journey.Vat.EmailVerificationComplete   =>
           j.into[Journey.Vat.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Sa.EmailVerificationComplete =>
+        case j: Journey.Sa.EmailVerificationComplete    =>
           j.into[Journey.Sa.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
-        case j: Journey.Simp.EmailVerificationComplete =>
+        case j: Journey.Simp.EmailVerificationComplete  =>
           j.into[Journey.Simp.RetrievedExtremeDates]
             .withFieldConst(_.stage, Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved)
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -443,26 +463,38 @@ class UpdateDatesController @Inject() (
     }
   }
 
-  def updateStartDates(journeyId: JourneyId): Action[StartDatesResponse] = actions.authenticatedAction.async(parse.json[StartDatesResponse]) { implicit request =>
-    for {
-      journey <- journeyService.get(journeyId)
-      newJourney <- journey match {
-        case j: Journey.BeforeEnteredDayOfMonth  => Errors.throwBadRequestExceptionF(s"UpdateStartDates is not possible when we don't have a chosen day of month, stage: [ ${j.stage.toString} ]")
-        case j: Journey.Stages.EnteredDayOfMonth => updateJourneyWithNewStartDatesValue(j, request.body)
-        case j: Journey.AfterStartDatesResponse  => updateJourneyWithExistingStartDatesValue(Left(j), request.body)
-        case j: Journey.AfterCheckedPaymentPlan =>
-          j match {
-            case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingStartDatesValue(Right(j), request.body)
-            case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update StartDates when journey is in completed state")
-          }
-        case _: Journey.AfterStartedPegaCase => Errors.throwBadRequestExceptionF("Not expecting to update ExtremeDates after starting PEGA case")
-      }
-    } yield Ok(newJourney.json)
-  }
+  def updateStartDates(journeyId: JourneyId): Action[StartDatesResponse] =
+    actions.authenticatedAction.async(parse.json[StartDatesResponse]) { implicit request =>
+      for {
+        journey    <- journeyService.get(journeyId)
+        newJourney <- journey match {
+                        case j: Journey.BeforeEnteredDayOfMonth  =>
+                          Errors.throwBadRequestExceptionF(
+                            s"UpdateStartDates is not possible when we don't have a chosen day of month, stage: [ ${j.stage.toString} ]"
+                          )
+                        case j: Journey.Stages.EnteredDayOfMonth => updateJourneyWithNewStartDatesValue(j, request.body)
+                        case j: Journey.AfterStartDatesResponse  =>
+                          updateJourneyWithExistingStartDatesValue(Left(j), request.body)
+                        case j: Journey.AfterCheckedPaymentPlan  =>
+                          j match {
+                            case _: Journey.BeforeArrangementSubmitted =>
+                              updateJourneyWithExistingStartDatesValue(Right(j), request.body)
+                            case _: Journey.AfterArrangementSubmitted  =>
+                              Errors.throwBadRequestExceptionF(
+                                "Cannot update StartDates when journey is in completed state"
+                              )
+                          }
+                        case _: Journey.AfterStartedPegaCase     =>
+                          Errors.throwBadRequestExceptionF(
+                            "Not expecting to update ExtremeDates after starting PEGA case"
+                          )
+                      }
+      } yield Ok(newJourney.json)
+    }
 
   private def updateJourneyWithNewStartDatesValue(
-      journey:            Journey.Stages.EnteredDayOfMonth,
-      startDatesResponse: StartDatesResponse
+    journey:            Journey.Stages.EnteredDayOfMonth,
+    startDatesResponse: StartDatesResponse
   )(implicit request: Request[_]): Future[Journey] = {
     val newJourney: Journey.AfterStartDatesResponse = journey match {
       case j: Epaye.EnteredDayOfMonth =>
@@ -470,17 +502,17 @@ class UpdateDatesController @Inject() (
           .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
           .withFieldConst(_.startDatesResponse, startDatesResponse)
           .transform
-      case j: Vat.EnteredDayOfMonth =>
+      case j: Vat.EnteredDayOfMonth   =>
         j.into[Journey.Vat.RetrievedStartDates]
           .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
           .withFieldConst(_.startDatesResponse, startDatesResponse)
           .transform
-      case j: Sa.EnteredDayOfMonth =>
+      case j: Sa.EnteredDayOfMonth    =>
         j.into[Journey.Sa.RetrievedStartDates]
           .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
           .withFieldConst(_.startDatesResponse, startDatesResponse)
           .transform
-      case j: Simp.EnteredDayOfMonth =>
+      case j: Simp.EnteredDayOfMonth  =>
         j.into[Journey.Simp.RetrievedStartDates]
           .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
           .withFieldConst(_.startDatesResponse, startDatesResponse)
@@ -490,8 +522,8 @@ class UpdateDatesController @Inject() (
   }
 
   private def updateJourneyWithExistingStartDatesValue(
-      journey:            Either[Journey.AfterStartDatesResponse, Journey.AfterCheckedPaymentPlan],
-      startDatesResponse: StartDatesResponse
+    journey:            Either[Journey.AfterStartDatesResponse, Journey.AfterCheckedPaymentPlan],
+    startDatesResponse: StartDatesResponse
   )(implicit request: Request[_]): Future[Journey] =
     journey match {
       case Left(afterStartDatesResponse) =>
@@ -510,17 +542,17 @@ class UpdateDatesController @Inject() (
                 .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                 .withFieldConst(_.startDatesResponse, startDatesResponse)
                 .transform
-            case j: Journey.Vat.RetrievedAffordableQuotes =>
+            case j: Journey.Vat.RetrievedAffordableQuotes   =>
               j.into[Journey.Vat.RetrievedStartDates]
                 .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                 .withFieldConst(_.startDatesResponse, startDatesResponse)
                 .transform
-            case j: Journey.Sa.RetrievedAffordableQuotes =>
+            case j: Journey.Sa.RetrievedAffordableQuotes    =>
               j.into[Journey.Sa.RetrievedStartDates]
                 .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                 .withFieldConst(_.startDatesResponse, startDatesResponse)
                 .transform
-            case j: Journey.Simp.RetrievedAffordableQuotes =>
+            case j: Journey.Simp.RetrievedAffordableQuotes  =>
               j.into[Journey.Simp.RetrievedStartDates]
                 .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                 .withFieldConst(_.startDatesResponse, startDatesResponse)
@@ -531,17 +563,17 @@ class UpdateDatesController @Inject() (
                 .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                 .withFieldConst(_.startDatesResponse, startDatesResponse)
                 .transform
-            case j: Journey.Vat.ChosenPaymentPlan =>
+            case j: Journey.Vat.ChosenPaymentPlan   =>
               j.into[Journey.Vat.RetrievedStartDates]
                 .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                 .withFieldConst(_.startDatesResponse, startDatesResponse)
                 .transform
-            case j: Journey.Sa.ChosenPaymentPlan =>
+            case j: Journey.Sa.ChosenPaymentPlan    =>
               j.into[Journey.Sa.RetrievedStartDates]
                 .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                 .withFieldConst(_.startDatesResponse, startDatesResponse)
                 .transform
-            case j: Journey.Simp.ChosenPaymentPlan =>
+            case j: Journey.Simp.ChosenPaymentPlan  =>
               j.into[Journey.Simp.RetrievedStartDates]
                 .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                 .withFieldConst(_.startDatesResponse, startDatesResponse)
@@ -567,21 +599,21 @@ class UpdateDatesController @Inject() (
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Vat.CheckedPaymentPlan =>
+                case j: Journey.Vat.CheckedPaymentPlan   =>
                   j.into[Journey.Vat.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Sa.CheckedPaymentPlan =>
+                case j: Journey.Sa.CheckedPaymentPlan    =>
                   j.into[Journey.Sa.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Simp.CheckedPaymentPlan =>
+                case j: Journey.Simp.CheckedPaymentPlan  =>
                   j.into[Journey.Simp.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -596,21 +628,21 @@ class UpdateDatesController @Inject() (
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Vat.EnteredCanYouSetUpDirectDebit =>
+                case j: Journey.Vat.EnteredCanYouSetUpDirectDebit   =>
                   j.into[Journey.Vat.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Sa.EnteredCanYouSetUpDirectDebit =>
+                case j: Journey.Sa.EnteredCanYouSetUpDirectDebit    =>
                   j.into[Journey.Sa.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Simp.EnteredCanYouSetUpDirectDebit =>
+                case j: Journey.Simp.EnteredCanYouSetUpDirectDebit  =>
                   j.into[Journey.Simp.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -625,21 +657,21 @@ class UpdateDatesController @Inject() (
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Vat.EnteredDirectDebitDetails =>
+                case j: Journey.Vat.EnteredDirectDebitDetails   =>
                   j.into[Journey.Vat.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Sa.EnteredDirectDebitDetails =>
+                case j: Journey.Sa.EnteredDirectDebitDetails    =>
                   j.into[Journey.Sa.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Simp.EnteredDirectDebitDetails =>
+                case j: Journey.Simp.EnteredDirectDebitDetails  =>
                   j.into[Journey.Simp.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -654,21 +686,21 @@ class UpdateDatesController @Inject() (
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Vat.ConfirmedDirectDebitDetails =>
+                case j: Journey.Vat.ConfirmedDirectDebitDetails   =>
                   j.into[Journey.Vat.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Sa.ConfirmedDirectDebitDetails =>
+                case j: Journey.Sa.ConfirmedDirectDebitDetails    =>
                   j.into[Journey.Sa.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Simp.ConfirmedDirectDebitDetails =>
+                case j: Journey.Simp.ConfirmedDirectDebitDetails  =>
                   j.into[Journey.Simp.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -683,21 +715,21 @@ class UpdateDatesController @Inject() (
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Vat.AgreedTermsAndConditions =>
+                case j: Journey.Vat.AgreedTermsAndConditions   =>
                   j.into[Journey.Vat.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Sa.AgreedTermsAndConditions =>
+                case j: Journey.Sa.AgreedTermsAndConditions    =>
                   j.into[Journey.Sa.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Simp.AgreedTermsAndConditions =>
+                case j: Journey.Simp.AgreedTermsAndConditions  =>
                   j.into[Journey.Simp.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -712,21 +744,21 @@ class UpdateDatesController @Inject() (
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Vat.SelectedEmailToBeVerified =>
+                case j: Journey.Vat.SelectedEmailToBeVerified   =>
                   j.into[Journey.Vat.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Sa.SelectedEmailToBeVerified =>
+                case j: Journey.Sa.SelectedEmailToBeVerified    =>
                   j.into[Journey.Sa.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Simp.SelectedEmailToBeVerified =>
+                case j: Journey.Simp.SelectedEmailToBeVerified  =>
                   j.into[Journey.Simp.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -741,21 +773,21 @@ class UpdateDatesController @Inject() (
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Vat.EmailVerificationComplete =>
+                case j: Journey.Vat.EmailVerificationComplete   =>
                   j.into[Journey.Vat.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Sa.EmailVerificationComplete =>
+                case j: Journey.Sa.EmailVerificationComplete    =>
                   j.into[Journey.Sa.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
-                case j: Journey.Simp.EmailVerificationComplete =>
+                case j: Journey.Simp.EmailVerificationComplete  =>
                   j.into[Journey.Simp.RetrievedStartDates]
                     .withFieldConst(_.stage, Stage.AfterStartDatesResponse.StartDatesResponseRetrieved)
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
@@ -771,10 +803,10 @@ class UpdateDatesController @Inject() (
     }
 
   private def updateJourneyWithExistingValue(
-      existingValue:   StartDatesResponse,
-      existingJourney: Journey,
-      newValue:        StartDatesResponse,
-      newJourney:      Journey
+    existingValue:   StartDatesResponse,
+    existingJourney: Journey,
+    newValue:        StartDatesResponse,
+    newJourney:      Journey
   )(implicit request: Request[_]): Future[Journey] =
     if (existingValue === newValue) {
       JourneyLogger.info("Nothing to update, StartDatesResponse is the same as the existing one in journey.")

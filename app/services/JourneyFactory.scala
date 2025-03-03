@@ -24,67 +24,67 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton
 class JourneyFactory @Inject() (
-    journeyIdGenerator:          JourneyIdGenerator,
-    correlationIdGenerator:      CorrelationIdGenerator,
-    clock:                       Clock,
-    affordabilityEnablerService: AffordabilityEnablerService
+  journeyIdGenerator:          JourneyIdGenerator,
+  correlationIdGenerator:      CorrelationIdGenerator,
+  clock:                       Clock,
+  affordabilityEnablerService: AffordabilityEnablerService
 ) {
 
   def makeJourney(
-      originatedSjRequest: OriginatedSjRequest,
-      sessionId:           SessionId
+    originatedSjRequest: OriginatedSjRequest,
+    sessionId:           SessionId
   ): Journey = originatedSjRequest match {
 
     case OriginatedSjRequest.Epaye(origin, sjRequest) =>
       Journey.Epaye.Started(
-        _id                  = journeyIdGenerator.nextJourneyId(),
-        origin               = origin,
-        sjRequest            = sjRequest,
-        createdOn            = Instant.now(clock),
-        sessionId            = sessionId,
-        stage                = Stage.AfterStarted.Started,
-        correlationId        = correlationIdGenerator.nextCorrelationId(),
+        _id = journeyIdGenerator.nextJourneyId(),
+        origin = origin,
+        sjRequest = sjRequest,
+        createdOn = Instant.now(clock),
+        sessionId = sessionId,
+        stage = Stage.AfterStarted.Started,
+        correlationId = correlationIdGenerator.nextCorrelationId(),
         affordabilityEnabled = Some(affordabilityEnablerService.affordabilityEnabled(TaxRegime.Epaye)),
-        pegaCaseId           = None
+        pegaCaseId = None
       )
 
     case OriginatedSjRequest.Vat(origin, sjRequest) =>
       Journey.Vat.Started(
-        _id                  = journeyIdGenerator.nextJourneyId(),
-        origin               = origin,
-        sjRequest            = sjRequest,
-        createdOn            = Instant.now(clock),
-        sessionId            = sessionId,
-        stage                = Stage.AfterStarted.Started,
-        correlationId        = correlationIdGenerator.nextCorrelationId(),
+        _id = journeyIdGenerator.nextJourneyId(),
+        origin = origin,
+        sjRequest = sjRequest,
+        createdOn = Instant.now(clock),
+        sessionId = sessionId,
+        stage = Stage.AfterStarted.Started,
+        correlationId = correlationIdGenerator.nextCorrelationId(),
         affordabilityEnabled = Some(affordabilityEnablerService.affordabilityEnabled(TaxRegime.Vat)),
-        pegaCaseId           = None
+        pegaCaseId = None
       )
 
     case OriginatedSjRequest.Sa(origin, sjRequest) =>
       Journey.Sa.Started(
-        _id                  = journeyIdGenerator.nextJourneyId(),
-        origin               = origin,
-        sjRequest            = sjRequest,
-        createdOn            = Instant.now(clock),
-        sessionId            = sessionId,
-        stage                = Stage.AfterStarted.Started,
-        correlationId        = correlationIdGenerator.nextCorrelationId(),
+        _id = journeyIdGenerator.nextJourneyId(),
+        origin = origin,
+        sjRequest = sjRequest,
+        createdOn = Instant.now(clock),
+        sessionId = sessionId,
+        stage = Stage.AfterStarted.Started,
+        correlationId = correlationIdGenerator.nextCorrelationId(),
         affordabilityEnabled = Some(affordabilityEnablerService.affordabilityEnabled(TaxRegime.Sa)),
-        pegaCaseId           = None
+        pegaCaseId = None
       )
 
     case OriginatedSjRequest.Simp(origin, sjRequest) =>
       Journey.Simp.Started(
-        _id                  = journeyIdGenerator.nextJourneyId(),
-        origin               = origin,
-        sjRequest            = sjRequest,
-        createdOn            = Instant.now(clock),
-        sessionId            = sessionId,
-        stage                = Stage.AfterStarted.Started,
-        correlationId        = correlationIdGenerator.nextCorrelationId(),
+        _id = journeyIdGenerator.nextJourneyId(),
+        origin = origin,
+        sjRequest = sjRequest,
+        createdOn = Instant.now(clock),
+        sessionId = sessionId,
+        stage = Stage.AfterStarted.Started,
+        correlationId = correlationIdGenerator.nextCorrelationId(),
         affordabilityEnabled = Some(affordabilityEnablerService.affordabilityEnabled(TaxRegime.Simp)),
-        pegaCaseId           = None
+        pegaCaseId = None
       )
   }
 }

@@ -20,13 +20,13 @@ import essttp.rootmodel.ttp.eligibility.ChargeReference
 import play.api.libs.json.{Json, OFormat}
 
 final case class Instalment(
-    instalmentNumber:          InstalmentNumber,
-    dueDate:                   DueDate,
-    instalmentInterestAccrued: InterestAccrued,
-    instalmentBalance:         InstalmentBalance,
-    debtItemChargeId:          ChargeReference,
-    amountDue:                 AmountDue,
-    debtItemOriginalDueDate:   DebtItemOriginalDueDate
+  instalmentNumber:          InstalmentNumber,
+  dueDate:                   DueDate,
+  instalmentInterestAccrued: InterestAccrued,
+  instalmentBalance:         InstalmentBalance,
+  debtItemChargeId:          ChargeReference,
+  amountDue:                 AmountDue,
+  debtItemOriginalDueDate:   DebtItemOriginalDueDate
 )
 
 object Instalment {

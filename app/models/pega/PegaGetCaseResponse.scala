@@ -27,10 +27,10 @@ final case class PegaGetCaseResponse(`AA`: AA)
 object PegaGetCaseResponse {
 
   final case class AA(
-      paymentDay:  Int,
-      paymentPlan: Seq[PegaPaymentPlan],
-      expenditure: Seq[ExpenditureItem],
-      income:      Seq[IncomeItem]
+    paymentDay:  Int,
+    paymentPlan: Seq[PegaPaymentPlan],
+    expenditure: Seq[ExpenditureItem],
+    income:      Seq[IncomeItem]
   )
 
   object AA {
@@ -38,21 +38,25 @@ object PegaGetCaseResponse {
     implicit val reads: Reads[AA] =
       Reads(json =>
         for {
-          paymentDay <- (json \ "paymentDay").validate[String].flatMap(s =>
-            JsResult.fromTry(
-              Try(s.toInt),
-              e => JsError(s"Could not read paymentDay: ${e.getMessage}")
-            ))
+          paymentDay  <- (json \ "paymentDay")
+                           .validate[String]
+                           .flatMap(s =>
+                             JsResult.fromTry(
+                               Try(s.toInt),
+                               e => JsError(s"Could not read paymentDay: ${e.getMessage}")
+                             )
+                           )
           paymentPlan <- (json \ "paymentPlan").validate[Seq[PegaPaymentPlan]]
           expenditure <- (json \ "expenditure").validate[Seq[ExpenditureItem]]
-          income <- (json \ "income").validate[Seq[IncomeItem]]
-        } yield AA(paymentDay, paymentPlan, expenditure, income))
+          income      <- (json \ "income").validate[Seq[IncomeItem]]
+        } yield AA(paymentDay, paymentPlan, expenditure, income)
+      )
 
   }
 
   final case class ExpenditureItem(
-      amountValue: String,
-      pyLabel:     String
+    amountValue: String,
+    pyLabel:     String
   )
 
   object ExpenditureItem {
@@ -61,8 +65,8 @@ object PegaGetCaseResponse {
   }
 
   final case class IncomeItem(
-      amountValue: String,
-      pyLabel:     String
+    amountValue: String,
+    pyLabel:     String
   )
 
   object IncomeItem {
@@ -71,14 +75,14 @@ object PegaGetCaseResponse {
   }
 
   final case class PegaPaymentPlan(
-      numberOfInstalments: Int,
-      planDuration:        Int,
-      totalDebt:           Long,
-      totalDebtIncInt:     Long,
-      planInterest:        Long,
-      collections:         PegaCollections,
-      instalments:         List[PegaInstalment],
-      planSelected:        Boolean
+    numberOfInstalments: Int,
+    planDuration:        Int,
+    totalDebt:           Long,
+    totalDebtIncInt:     Long,
+    planInterest:        Long,
+    collections:         PegaCollections,
+    instalments:         List[PegaInstalment],
+    planSelected:        Boolean
   )
 
   object PegaPaymentPlan {
@@ -87,8 +91,8 @@ object PegaGetCaseResponse {
   }
 
   final case class PegaCollections(
-      initialCollection:  Option[PegaCollection],
-      regularCollections: List[PegaCollection]
+    initialCollection:  Option[PegaCollection],
+    regularCollections: List[PegaCollection]
   )
 
   object PegaCollections {
@@ -104,13 +108,13 @@ object PegaGetCaseResponse {
   }
 
   final case class PegaInstalment(
-      instalmentNumber:          Int,
-      dueDate:                   LocalDate,
-      instalmentInterestAccrued: Long,
-      instalmentBalance:         Long,
-      debtItemChargeId:          String,
-      amountDue:                 Long,
-      debtItemOriginalDueDate:   LocalDate
+    instalmentNumber:          Int,
+    dueDate:                   LocalDate,
+    instalmentInterestAccrued: Long,
+    instalmentBalance:         Long,
+    debtItemChargeId:          String,
+    amountDue:                 Long,
+    debtItemOriginalDueDate:   LocalDate
   )
 
   object PegaInstalment {

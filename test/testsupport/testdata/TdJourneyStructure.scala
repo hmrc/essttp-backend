@@ -28,9 +28,9 @@ import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import play.api.libs.json.JsNull
 
 trait TdJourneyStructure {
-  /**
-   * Defining all td requirements for each journey
-   */
+
+  /** Defining all td requirements for each journey
+    */
   def sjRequest: SjRequest
 
   def sjResponse: SjResponse
@@ -95,7 +95,9 @@ trait TdJourneyStructure {
 
   def updateCanSetUpDirectDebitRequest(isAccountHolder: Boolean): CanSetUpDirectDebit
 
-  def journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder: Boolean): Journey.AfterEnteredCanYouSetUpDirectDebit
+  def journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(
+    isAccountHolder: Boolean
+  ): Journey.AfterEnteredCanYouSetUpDirectDebit
 
   def updateDirectDebitDetailsRequest(): BankDetails
 
@@ -107,10 +109,14 @@ trait TdJourneyStructure {
 
   def updateAgreedTermsAndConditionsRequest(isEmailAddressRequired: Boolean): IsEmailAddressRequired
 
-  def journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired: Boolean): Journey.AfterAgreedTermsAndConditions
+  def journeyAfterAgreedTermsAndConditionsNoAffordability(
+    isEmailAddressRequired: Boolean
+  ): Journey.AfterAgreedTermsAndConditions
 
   def updateArrangementRequest(): ArrangementResponse
 
-  def journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired: Boolean = false): Journey.AfterArrangementSubmitted
+  def journeyAfterSubmittedArrangementNoAffordability(
+    isEmailAddressRequired: Boolean = false
+  ): Journey.AfterArrangementSubmitted
 
 }

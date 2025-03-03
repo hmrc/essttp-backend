@@ -16,18 +16,16 @@
 
 package essttp.journey.model
 
-import enumeratum._
-import julienrf.json.derived
+import enumeratum.*
+import essttp.utils.DerivedJson
+import io.circe.generic.semiauto.deriveCodec
 import play.api.libs.json.OFormat
 
 import scala.collection.immutable
 
-/**
- * Journey Stage
- * It defines how journey propagates through stages.
- * Each stage defines what data are available in journey at this stage.
- * Each enum value defines what states journey can be in within this stage.
- */
+/** Journey Stage It defines how journey propagates through stages. Each stage defines what data are available in
+  * journey at this stage. Each enum value defines what states journey can be in within this stage.
+  */
 sealed trait Stage extends Product with Serializable
 
 object Stage {
@@ -36,14 +34,14 @@ object Stage {
 
   object AfterStarted extends Enum[AfterStarted] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterStarted] = derived.oformat[AfterStarted]()
+    implicit val format: OFormat[AfterStarted] =
+      DerivedJson.Circe.format(deriveCodec[AfterStarted])
+
     val values: immutable.IndexedSeq[AfterStarted] = findValues
 
-    /**
-     * Journey has been just started.
-     * It's new bare bone journey having nothing but origin,
-     * tax regime and [[SjRequest]] which caused it.
-     */
+    /** Journey has been just started. It's new bare bone journey having nothing but origin, tax regime and
+      * [[SjRequest]] which caused it.
+      */
     case object Started extends AfterStarted
   }
 
@@ -51,23 +49,25 @@ object Stage {
 
   object AfterComputedTaxId extends Enum[AfterComputedTaxId] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterComputedTaxId] = derived.oformat[AfterComputedTaxId]()
+    implicit val format: OFormat[AfterComputedTaxId] =
+      DerivedJson.Circe.format(deriveCodec[AfterComputedTaxId])
+
     val values: immutable.IndexedSeq[AfterComputedTaxId] = findValues
 
-    /**
-     * [[Journey]] has been orchestrated with tax identifiers from Enrolments.
-     */
+    /** [[Journey]] has been orchestrated with tax identifiers from Enrolments.
+      */
     case object ComputedTaxId extends AfterComputedTaxId
   }
 
   sealed trait AfterEligibilityCheck extends Stage with EnumEntry
 
-  /**
-   * [[Journey]] has been orchestrated with eligibility check result.
-   */
+  /** [[Journey]] has been orchestrated with eligibility check result.
+    */
   object AfterEligibilityCheck extends Enum[AfterEligibilityCheck] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterEligibilityCheck] = derived.oformat[AfterEligibilityCheck]()
+    implicit val format: OFormat[AfterEligibilityCheck] =
+      DerivedJson.Circe.format(deriveCodec[AfterEligibilityCheck])
+
     val values: immutable.IndexedSeq[AfterEligibilityCheck] = findValues
 
     case object Eligible extends AfterEligibilityCheck
@@ -77,12 +77,13 @@ object Stage {
 
   sealed trait AfterWhyCannotPayInFullAnswers extends Stage with EnumEntry
 
-  /**
-   * [[Journey]] has been orchestrated with reasons why user cannot pay in ful (if needed)
-   */
+  /** [[Journey]] has been orchestrated with reasons why user cannot pay in ful (if needed)
+    */
   object AfterWhyCannotPayInFullAnswers extends Enum[AfterWhyCannotPayInFullAnswers] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterWhyCannotPayInFullAnswers] = derived.oformat[AfterWhyCannotPayInFullAnswers]()
+    implicit val format: OFormat[AfterWhyCannotPayInFullAnswers] =
+      DerivedJson.Circe.format(deriveCodec[AfterWhyCannotPayInFullAnswers])
+
     val values: immutable.IndexedSeq[AfterWhyCannotPayInFullAnswers] = findValues
 
     case object AnswerRequired extends AfterWhyCannotPayInFullAnswers
@@ -92,12 +93,13 @@ object Stage {
 
   sealed trait AfterCanPayUpfront extends Stage with EnumEntry
 
-  /**
-   * [[Journey]] has been orchestrated with can user make an upfront payment.
-   */
+  /** [[Journey]] has been orchestrated with can user make an upfront payment.
+    */
   object AfterCanPayUpfront extends Enum[AfterCanPayUpfront] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterCanPayUpfront] = derived.oformat[AfterCanPayUpfront]()
+    implicit val format: OFormat[AfterCanPayUpfront] =
+      DerivedJson.Circe.format(deriveCodec[AfterCanPayUpfront])
+
     val values: immutable.IndexedSeq[AfterCanPayUpfront] = findValues
 
     case object Yes extends AfterCanPayUpfront
@@ -109,12 +111,13 @@ object Stage {
 
   object AfterUpfrontPaymentAmount extends Enum[AfterUpfrontPaymentAmount] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterUpfrontPaymentAmount] = derived.oformat[AfterUpfrontPaymentAmount]()
+    implicit val format: OFormat[AfterUpfrontPaymentAmount] =
+      DerivedJson.Circe.format(deriveCodec[AfterUpfrontPaymentAmount])
+
     val values: immutable.IndexedSeq[AfterUpfrontPaymentAmount] = findValues
 
-    /**
-     * [[Journey]] has been orchestrated with Upfront payment amount.
-     */
+    /** [[Journey]] has been orchestrated with Upfront payment amount.
+      */
     case object EnteredUpfrontPaymentAmount extends AfterUpfrontPaymentAmount
   }
 
@@ -122,12 +125,13 @@ object Stage {
 
   object AfterUpfrontPaymentAnswers extends Enum[AfterUpfrontPaymentAnswers] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterUpfrontPaymentAnswers] = derived.oformat[AfterUpfrontPaymentAnswers]()
+    implicit val format: OFormat[AfterUpfrontPaymentAnswers] =
+      DerivedJson.Circe.format(deriveCodec[AfterUpfrontPaymentAnswers])
+
     val values: immutable.IndexedSeq[AfterUpfrontPaymentAnswers] = findValues
 
-    /**
-     * [[Journey]] has been orchestrated with Upfront payment answers.
-     */
+    /** [[Journey]] has been orchestrated with Upfront payment answers.
+      */
     case object SubmittedUpfrontPaymentAnswers extends AfterUpfrontPaymentAnswers
   }
 
@@ -135,12 +139,13 @@ object Stage {
 
   object AfterExtremeDatesResponse extends Enum[AfterExtremeDatesResponse] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterExtremeDatesResponse] = derived.oformat[AfterExtremeDatesResponse]()
+    implicit val format: OFormat[AfterExtremeDatesResponse] =
+      DerivedJson.Circe.format(deriveCodec[AfterExtremeDatesResponse])
+
     val values: immutable.IndexedSeq[AfterExtremeDatesResponse] = findValues
 
-    /**
-     * [[Journey]] has been orchestrated with Extreme dates response.
-     */
+    /** [[Journey]] has been orchestrated with Extreme dates response.
+      */
     case object ExtremeDatesResponseRetrieved extends AfterExtremeDatesResponse
   }
 
@@ -148,12 +153,13 @@ object Stage {
 
   object AfterAffordabilityResult extends Enum[AfterAffordabilityResult] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterAffordabilityResult] = derived.oformat[AfterAffordabilityResult]()
+    implicit val format: OFormat[AfterAffordabilityResult] =
+      DerivedJson.Circe.format(deriveCodec[AfterAffordabilityResult])
+
     val values: immutable.IndexedSeq[AfterAffordabilityResult] = findValues
 
-    /**
-     * [[Journey]] has been orchestrated with Affordability result.
-     */
+    /** [[Journey]] has been orchestrated with Affordability result.
+      */
     case object RetrievedAffordabilityResult extends AfterAffordabilityResult
   }
 
@@ -161,7 +167,9 @@ object Stage {
 
   object AfterCanPayWithinSixMonthsAnswers extends Enum[AfterCanPayWithinSixMonthsAnswers] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterCanPayWithinSixMonthsAnswers] = derived.oformat[AfterCanPayWithinSixMonthsAnswers]()
+    implicit val format: OFormat[AfterCanPayWithinSixMonthsAnswers] =
+      DerivedJson.Circe.format(deriveCodec[AfterCanPayWithinSixMonthsAnswers])
+
     val values: immutable.IndexedSeq[AfterCanPayWithinSixMonthsAnswers] = findValues
 
     case object AnswerRequired extends AfterCanPayWithinSixMonthsAnswers
@@ -173,7 +181,9 @@ object Stage {
 
   object AfterStartedPegaCase extends Enum[AfterStartedPegaCase] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterStartedPegaCase] = derived.oformat[AfterStartedPegaCase]()
+    implicit val format: OFormat[AfterStartedPegaCase] =
+      DerivedJson.Circe.format(deriveCodec[AfterStartedPegaCase])
+
     val values: immutable.IndexedSeq[AfterStartedPegaCase] = findValues
 
     case object StartedPegaCase extends AfterStartedPegaCase
@@ -184,23 +194,25 @@ object Stage {
 
   object AfterMonthlyPaymentAmount extends Enum[AfterMonthlyPaymentAmount] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterMonthlyPaymentAmount] = derived.oformat[AfterMonthlyPaymentAmount]()
+    implicit val format: OFormat[AfterMonthlyPaymentAmount] =
+      DerivedJson.Circe.format(deriveCodec[AfterMonthlyPaymentAmount])
+
     val values: immutable.IndexedSeq[AfterMonthlyPaymentAmount] = findValues
 
-    /**
-     * [[Journey]] has been orchestrated with Monthly payment amount.
-     */
+    /** [[Journey]] has been orchestrated with Monthly payment amount.
+      */
     case object EnteredMonthlyPaymentAmount extends AfterMonthlyPaymentAmount
   }
 
   sealed trait AfterEnteredDayOfMonth extends Stage with EnumEntry
 
-  /**
-   * [[Journey]] has been orchestrated with day of month
-   */
+  /** [[Journey]] has been orchestrated with day of month
+    */
   object AfterEnteredDayOfMonth extends Enum[AfterEnteredDayOfMonth] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterEnteredDayOfMonth] = derived.oformat[AfterEnteredDayOfMonth]()
+    implicit val format: OFormat[AfterEnteredDayOfMonth] =
+      DerivedJson.Circe.format(deriveCodec[AfterEnteredDayOfMonth])
+
     val values: immutable.IndexedSeq[AfterEnteredDayOfMonth] = findValues
 
     case object EnteredDayOfMonth extends AfterEnteredDayOfMonth
@@ -208,12 +220,13 @@ object Stage {
 
   sealed trait AfterStartDatesResponse extends Stage with EnumEntry
 
-  /**
-   * [[Journey]] has been orchestrated with start dates api call
-   */
+  /** [[Journey]] has been orchestrated with start dates api call
+    */
   object AfterStartDatesResponse extends Enum[AfterStartDatesResponse] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterStartDatesResponse] = derived.oformat[AfterStartDatesResponse]()
+    implicit val format: OFormat[AfterStartDatesResponse] =
+      DerivedJson.Circe.format(deriveCodec[AfterStartDatesResponse])
+
     val values: immutable.IndexedSeq[AfterStartDatesResponse] = findValues
 
     case object StartDatesResponseRetrieved extends AfterStartDatesResponse
@@ -221,12 +234,13 @@ object Stage {
 
   sealed trait AfterAffordableQuotesResponse extends Stage with EnumEntry
 
-  /**
-   * [[Journey]] has been orchestrated with affordable quotes api call from ttp
-   */
+  /** [[Journey]] has been orchestrated with affordable quotes api call from ttp
+    */
   object AfterAffordableQuotesResponse extends Enum[AfterAffordableQuotesResponse] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterAffordableQuotesResponse] = derived.oformat[AfterAffordableQuotesResponse]()
+    implicit val format: OFormat[AfterAffordableQuotesResponse] =
+      DerivedJson.Circe.format(deriveCodec[AfterAffordableQuotesResponse])
+
     val values: immutable.IndexedSeq[AfterAffordableQuotesResponse] = findValues
 
     case object AffordableQuotesRetrieved extends AfterAffordableQuotesResponse
@@ -234,12 +248,11 @@ object Stage {
 
   sealed trait AfterSelectedPlan extends Stage with EnumEntry
 
-  /**
-   * [[Journey]] has been orchestrated with selected instalment plan
-   */
+  /** [[Journey]] has been orchestrated with selected instalment plan
+    */
   object AfterSelectedPlan extends Enum[AfterSelectedPlan] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterSelectedPlan] = derived.oformat[AfterSelectedPlan]()
+    implicit val format: OFormat[AfterSelectedPlan]     = DerivedJson.Circe.format(deriveCodec[AfterSelectedPlan])
     val values: immutable.IndexedSeq[AfterSelectedPlan] = findValues
 
     case object SelectedPlan extends AfterSelectedPlan
@@ -247,12 +260,13 @@ object Stage {
 
   sealed trait AfterCheckedPlan extends Stage with EnumEntry
 
-  /**
-   * [[Journey]] has been orchestrated to indicate the user has checked and accepted the a payment plan
-   */
+  /** [[Journey]] has been orchestrated to indicate the user has checked and accepted the a payment plan
+    */
   object AfterCheckedPlan extends Enum[AfterCheckedPlan] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterCheckedPlan] = derived.oformat[AfterCheckedPlan]()
+    implicit val format: OFormat[AfterCheckedPlan] =
+      DerivedJson.Circe.format(deriveCodec[AfterCheckedPlan])
+
     val values: immutable.IndexedSeq[AfterCheckedPlan] = findValues
 
     case object AcceptedPlan extends AfterCheckedPlan
@@ -260,26 +274,27 @@ object Stage {
 
   sealed trait AfterEnteredCanYouSetUpDirectDebit extends Stage with EnumEntry
 
-  /**
-   * [[Journey]] has been orchestrated with details about the user's bank account
-   */
+  /** [[Journey]] has been orchestrated with details about the user's bank account
+    */
   object AfterEnteredCanYouSetUpDirectDebit extends Enum[AfterEnteredCanYouSetUpDirectDebit] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterEnteredCanYouSetUpDirectDebit] = derived.oformat[AfterEnteredCanYouSetUpDirectDebit]()
+    implicit val format: OFormat[AfterEnteredCanYouSetUpDirectDebit] =
+      DerivedJson.Circe.format(deriveCodec[AfterEnteredCanYouSetUpDirectDebit])
+
     val values: immutable.IndexedSeq[AfterEnteredCanYouSetUpDirectDebit] = findValues
 
     case object CannotSetUpDirectDebit extends AfterEnteredCanYouSetUpDirectDebit
-    case object CanSetUpDirectDebit extends AfterEnteredCanYouSetUpDirectDebit
+    case object CanSetUpDirectDebit    extends AfterEnteredCanYouSetUpDirectDebit
   }
 
   sealed trait AfterEnteredDirectDebitDetails extends Stage with EnumEntry
 
-  /**
-   * [[Journey]] has been orchestrated to indicate the user has checked and accepted the a payment plan
-   */
+  /** [[Journey]] has been orchestrated to indicate the user has checked and accepted the a payment plan
+    */
   object AfterEnteredDirectDebitDetails extends Enum[AfterEnteredDirectDebitDetails] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterEnteredDirectDebitDetails] = derived.oformat[AfterEnteredDirectDebitDetails]()
+    implicit val format: OFormat[AfterEnteredDirectDebitDetails]     =
+      DerivedJson.Circe.format(deriveCodec[AfterEnteredDirectDebitDetails])
     val values: immutable.IndexedSeq[AfterEnteredDirectDebitDetails] = findValues
 
     case object EnteredDirectDebitDetails extends AfterEnteredDirectDebitDetails
@@ -288,12 +303,13 @@ object Stage {
 
   sealed trait AfterConfirmedDirectDebitDetails extends Stage with EnumEntry
 
-  /**
-   * [[Journey]] has been orchestrated to indicate the user has checked and confirmed their direct debit details
-   */
+  /** [[Journey]] has been orchestrated to indicate the user has checked and confirmed their direct debit details
+    */
   object AfterConfirmedDirectDebitDetails extends Enum[AfterConfirmedDirectDebitDetails] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterConfirmedDirectDebitDetails] = derived.oformat[AfterConfirmedDirectDebitDetails]()
+    implicit val format: OFormat[AfterConfirmedDirectDebitDetails] =
+      DerivedJson.Circe.format(deriveCodec[AfterConfirmedDirectDebitDetails])
+
     val values: immutable.IndexedSeq[AfterConfirmedDirectDebitDetails] = findValues
 
     case object ConfirmedDetails extends AfterConfirmedDirectDebitDetails
@@ -301,12 +317,13 @@ object Stage {
 
   sealed trait AfterAgreedTermsAndConditions extends Stage with EnumEntry
 
-  /**
-   * [[Journey]] has been orchestrated to indicate the user has agreed to terms and conditions
-   */
+  /** [[Journey]] has been orchestrated to indicate the user has agreed to terms and conditions
+    */
   object AfterAgreedTermsAndConditions extends Enum[AfterAgreedTermsAndConditions] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterAgreedTermsAndConditions] = derived.oformat[AfterAgreedTermsAndConditions]()
+    implicit val format: OFormat[AfterAgreedTermsAndConditions] =
+      DerivedJson.Circe.format(deriveCodec[AfterAgreedTermsAndConditions])
+
     val values: immutable.IndexedSeq[AfterAgreedTermsAndConditions] = findValues
 
     case object EmailAddressRequired extends AfterAgreedTermsAndConditions
@@ -317,12 +334,13 @@ object Stage {
 
   sealed trait AfterSelectedAnEmailToBeVerified extends Stage with EnumEntry
 
-  /**
-   * [[Journey]] has been orchestrated to indicate the user has selected an email to verify
-   */
+  /** [[Journey]] has been orchestrated to indicate the user has selected an email to verify
+    */
   object AfterSelectedAnEmailToBeVerified extends Enum[AfterSelectedAnEmailToBeVerified] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterSelectedAnEmailToBeVerified] = derived.oformat[AfterSelectedAnEmailToBeVerified]()
+    implicit val format: OFormat[AfterSelectedAnEmailToBeVerified] =
+      DerivedJson.Circe.format(deriveCodec[AfterSelectedAnEmailToBeVerified])
+
     val values: immutable.IndexedSeq[AfterSelectedAnEmailToBeVerified] = findValues
 
     case object EmailChosen extends AfterSelectedAnEmailToBeVerified
@@ -330,12 +348,13 @@ object Stage {
 
   sealed trait AfterEmailVerificationPhase extends Stage with EnumEntry
 
-  /**
-   * [[Journey]] has been orchestrated to indicate the user has gone through email verification
-   */
+  /** [[Journey]] has been orchestrated to indicate the user has gone through email verification
+    */
   object AfterEmailVerificationPhase extends Enum[AfterEmailVerificationPhase] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterEmailVerificationPhase] = derived.oformat[AfterEmailVerificationPhase]()
+    implicit val format: OFormat[AfterEmailVerificationPhase] =
+      DerivedJson.Circe.format(deriveCodec[AfterEmailVerificationPhase])
+
     val values: immutable.IndexedSeq[AfterEmailVerificationPhase] = findValues
 
     case object VerificationSuccess extends AfterEmailVerificationPhase
@@ -345,12 +364,13 @@ object Stage {
 
   sealed trait AfterSubmittedArrangement extends Stage with EnumEntry
 
-  /**
-   * [[Journey]] has been orchestrated to indicate the user has submitted their arrangement to ttp api
-   */
+  /** [[Journey]] has been orchestrated to indicate the user has submitted their arrangement to ttp api
+    */
   object AfterSubmittedArrangement extends Enum[AfterSubmittedArrangement] {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[AfterSubmittedArrangement] = derived.oformat[AfterSubmittedArrangement]()
+    implicit val format: OFormat[AfterSubmittedArrangement] =
+      DerivedJson.Circe.format(deriveCodec[AfterSubmittedArrangement])
+
     val values: immutable.IndexedSeq[AfterSubmittedArrangement] = findValues
 
     case object Submitted extends AfterSubmittedArrangement

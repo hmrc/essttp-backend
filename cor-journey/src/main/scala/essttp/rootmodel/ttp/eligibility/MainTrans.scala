@@ -26,5 +26,5 @@ object MainTrans {
   final case class UnknownMainTransException(mTrans: MainTrans) extends Exception
 
   implicit val eqMainTrans: Eq[MainTrans] = Eq.fromUniversalEquals
-  implicit val format: Format[MainTrans] = Json.valueFormat
+  implicit val format: Format[MainTrans]  = Json.valueFormat
 }

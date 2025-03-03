@@ -22,24 +22,24 @@ import essttp.rootmodel.ttp.eligibility.{AccruedInterest, ChargeReference, Charg
 import play.api.libs.json.{Format, Json}
 
 final case class DebtItemCharges(
-    outstandingDebtAmount:   OutstandingDebtAmount,
-    debtItemChargeId:        ChargeReference,
-    debtItemOriginalDueDate: DebtItemOriginalDueDate,
-    accruedInterest:         AccruedInterest,
-    isInterestBearingCharge: Option[IsInterestBearingCharge],
-    useChargeReference:      Option[UseChargeReference],
-    mainTrans:               Option[MainTrans],
-    subTrans:                Option[SubTrans],
-    parentChargeReference:   Option[ParentChargeReference],
-    parentMainTrans:         Option[ParentMainTrans],
-    creationDate:            Option[CreationDate],
-    originalCreationDate:    Option[OriginalCreationDate],
-    saTaxYearEnd:            Option[SaTaxYearEnd],
-    tieBreaker:              Option[TieBreaker],
-    originalTieBreaker:      Option[OriginalTieBreaker],
-    chargeType:              Option[ChargeType],
-    originalChargeType:      Option[OriginalChargeType],
-    chargeSource:            Option[ChargeSource]
+  outstandingDebtAmount:   OutstandingDebtAmount,
+  debtItemChargeId:        ChargeReference,
+  debtItemOriginalDueDate: DebtItemOriginalDueDate,
+  accruedInterest:         AccruedInterest,
+  isInterestBearingCharge: Option[IsInterestBearingCharge],
+  useChargeReference:      Option[UseChargeReference],
+  mainTrans:               Option[MainTrans],
+  subTrans:                Option[SubTrans],
+  parentChargeReference:   Option[ParentChargeReference],
+  parentMainTrans:         Option[ParentMainTrans],
+  creationDate:            Option[CreationDate],
+  originalCreationDate:    Option[OriginalCreationDate],
+  saTaxYearEnd:            Option[SaTaxYearEnd],
+  tieBreaker:              Option[TieBreaker],
+  originalTieBreaker:      Option[OriginalTieBreaker],
+  chargeType:              Option[ChargeType],
+  originalChargeType:      Option[OriginalChargeType],
+  chargeSource:            Option[ChargeSource]
 )
 
 object DebtItemCharges {

@@ -35,23 +35,20 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
 
-/**
- * Journeys to be stored for slightly longer than a session. Facilitates recreating
- * session data when coming back from PEGA
- */
+/** Journeys to be stored for slightly longer than a session. Facilitates recreating session data when coming back from
+  * PEGA
+  */
 class JourneyByTaxIdRepo @Inject() (
-    mongoComponent: MongoComponent,
-    config:         AppConfig
+  mongoComponent: MongoComponent,
+  config:         AppConfig
 )(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
-  extends Repo[TaxId, JourneyWithTaxId](
-    collectionName = "journeyByTaxId",
-    mongoComponent = mongoComponent,
-    indexes        = JourneyByTaxIdRepo.indexes(config.journeyByTaxIdRepoTtl),
-    extraCodecs    = Codecs.playFormatSumCodecs(Journey.format),
-    replaceIndexes = true
-  ) {
-
-}
+    extends Repo[TaxId, JourneyWithTaxId](
+      collectionName = "journeyByTaxId",
+      mongoComponent = mongoComponent,
+      indexes = JourneyByTaxIdRepo.indexes(config.journeyByTaxIdRepoTtl),
+      extraCodecs = Codecs.playFormatSumCodecs(Journey.format),
+      replaceIndexes = true
+    ) {}
 
 object JourneyByTaxIdRepo {
 
@@ -74,7 +71,7 @@ object JourneyByTaxIdRepo {
 
   def indexes(cacheTtl: FiniteDuration): Seq[IndexModel] = Seq(
     IndexModel(
-      keys         = Indexes.ascending("lastUpdated"),
+      keys = Indexes.ascending("lastUpdated"),
       indexOptions = IndexOptions().expireAfter(cacheTtl.toSeconds, TimeUnit.SECONDS).name("lastUpdatedIdx")
     ),
     IndexModel(

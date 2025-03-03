@@ -25,12 +25,11 @@ import scala.collection.immutable
 
 sealed trait Origin extends EnumEntry with Product with Serializable {
 
-  /**
-   * Better toString which shows portion of a package
-   */
+  /** Better toString which shows portion of a package
+    */
   override def toString: String = {
     val packageName: String = this.getClass.getPackage.getName
-    val className: String = this.getClass.getName
+    val className: String   = this.getClass.getName
     className
       .replaceFirst(packageName + ".", "")
       .replaceAll("\\$", ".")
@@ -57,52 +56,47 @@ object Origin {
 
 object Origins extends Enum[Origin] {
 
-  /**
-   * Marking trait aggregating all Epaye [[Origin]]s
-   */
+  /** Marking trait aggregating all Epaye [[Origin]]s
+    */
   sealed trait Epaye extends Origin { self: Origin => }
 
   object Epaye extends Enum[Epaye] {
     implicit val format: Format[Epaye] = EnumFormat(Epaye)
 
-    case object Bta extends Origin with Epaye with BetterName
+    case object Bta          extends Origin with Epaye with BetterName
     case object EpayeService extends Origin with Epaye with BetterName
-    case object GovUk extends Origin with Epaye with BetterName
+    case object GovUk        extends Origin with Epaye with BetterName
 
-    /**
-     * This represents situation when user receives link to the application in whatsapp/email/etc and it's not clear
-     * where the journey actually started from.
-     */
+    /** This represents situation when user receives link to the application in whatsapp/email/etc and it's not clear
+      * where the journey actually started from.
+      */
     case object DetachedUrl extends Origin with Epaye with BetterName
 
     override def values: immutable.IndexedSeq[Epaye] = findValues
   }
 
-  /**
-   * Marking trait aggregating all Vat [[Origin]]s
-   */
+  /** Marking trait aggregating all Vat [[Origin]]s
+    */
   sealed trait Vat extends Origin { self: Origin => }
 
   object Vat extends Enum[Vat] {
     implicit val format: Format[Vat] = EnumFormat(Vat)
 
-    case object Bta extends Origin with Vat with BetterName
-    case object VatService extends Origin with Vat with BetterName
-    case object GovUk extends Origin with Vat with BetterName
+    case object Bta          extends Origin with Vat with BetterName
+    case object VatService   extends Origin with Vat with BetterName
+    case object GovUk        extends Origin with Vat with BetterName
     case object VatPenalties extends Origin with Vat with BetterName
 
-    /**
-     * This represents situation when user receives link to the application in whatsapp/email/etc and it's not clear
-     * where the journey actually started from.
-     */
+    /** This represents situation when user receives link to the application in whatsapp/email/etc and it's not clear
+      * where the journey actually started from.
+      */
     case object DetachedUrl extends Origin with Vat with BetterName
 
     override def values: immutable.IndexedSeq[Vat] = findValues
   }
 
-  /**
-   * Marking trait aggregating all Sa [[Origin]]s
-   */
+  /** Marking trait aggregating all Sa [[Origin]]s
+    */
   sealed trait Sa extends Origin {
     self: Origin =>
   }
@@ -120,10 +114,9 @@ object Origins extends Enum[Origin] {
 
     case object ItsaViewAndChange extends Origin with Sa with BetterName
 
-    /**
-     * This represents situation when user receives link to the application in whatsapp/email/etc and it's not clear
-     * where the journey actually started from.
-     */
+    /** This represents situation when user receives link to the application in whatsapp/email/etc and it's not clear
+      * where the journey actually started from.
+      */
     case object DetachedUrl extends Origin with Sa with BetterName
 
     override def values: immutable.IndexedSeq[Sa] = findValues
@@ -142,10 +135,9 @@ object Origins extends Enum[Origin] {
 
     case object GovUk extends Origin with Simp with BetterName
 
-    /**
-     * This represents situation when user receives link to the application in whatsapp/email/etc and it's not clear
-     * where the journey actually started from.
-     */
+    /** This represents situation when user receives link to the application in whatsapp/email/etc and it's not clear
+      * where the journey actually started from.
+      */
     case object DetachedUrl extends Origin with Simp with BetterName
 
     override def values: immutable.IndexedSeq[Simp] = findValues
@@ -154,10 +146,9 @@ object Origins extends Enum[Origin] {
   override def values: immutable.IndexedSeq[Origin] = Epaye.values ++ Vat.values ++ Sa.values ++ Simp.values
 }
 
-/**
- * Mixin to provide a better name for origins
- */
+/** Mixin to provide a better name for origins
+  */
 trait BetterName extends EnumEntry { self: Origin =>
-  override def entryName: String = stableEntryName
+  override def entryName: String                 = stableEntryName
   private[this] lazy val stableEntryName: String = self.toString
 }

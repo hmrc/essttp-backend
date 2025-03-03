@@ -29,6 +29,7 @@ import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
 import essttp.rootmodel.{CanPayUpfront, DayOfMonth, Email, IsEmailAddressRequired, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
+import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
@@ -40,19 +41,21 @@ import play.api.libs.json.{JsNull, Json}
 import uk.gov.hmrc.http.client.HttpClientV2
 
 @Singleton
-class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) {
+class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit
+  ec:           ExecutionContext,
+  cryptoFormat: OperationalCryptoFormat
+) {
 
   def getJourney(journeyId: JourneyId)(implicit request: RequestHeader): Future[Journey] =
-    httpClient.
-      get(url"$baseUrl/essttp-backend/journey/${journeyId.value}")
+    httpClient
+      .get(url"$baseUrl/essttp-backend/journey/${journeyId.value}")
       .execute[Journey]
 
-  def findLatestJourneyBySessionId()(implicit hc: HeaderCarrier): Future[Option[Journey]] = {
+  def findLatestJourneyBySessionId()(implicit hc: HeaderCarrier): Future[Option[Journey]] =
     for {
-      _ <- Future(require(hc.sessionId.isDefined, "Missing required 'SessionId'"))
+      _      <- Future(require(hc.sessionId.isDefined, "Missing required 'SessionId'"))
       result <- httpClient.get(url"$baseUrl/essttp-backend/journey/find-latest-by-session-id").execute[Option[Journey]]
     } yield result
-  }
 
   def updateTaxId(journeyId: JourneyId, taxId: TaxId)(implicit request: RequestHeader): Future[Journey] =
     httpClient
@@ -60,55 +63,73 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: E
       .withBody(Json.toJson(taxId))
       .execute[Journey]
 
-  def updateEligibilityCheckResult(journeyId: JourneyId, eligibilityCheckResult: EligibilityCheckResult)(implicit request: RequestHeader): Future[Journey] =
+  def updateEligibilityCheckResult(journeyId: JourneyId, eligibilityCheckResult: EligibilityCheckResult)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-eligibility-result")
       .withBody(Json.toJson(eligibilityCheckResult))
       .execute[Journey]
 
-  def updateWhyCannotPayInFullAnswers(journeyId: JourneyId, answers: WhyCannotPayInFullAnswers)(implicit request: RequestHeader): Future[Journey] =
+  def updateWhyCannotPayInFullAnswers(journeyId: JourneyId, answers: WhyCannotPayInFullAnswers)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-why-cannot-pay-in-full")
       .withBody(Json.toJson(answers))
       .execute[Journey]
 
-  def updateCanPayUpfront(journeyId: JourneyId, canPayUpfront: CanPayUpfront)(implicit request: RequestHeader): Future[Journey] =
+  def updateCanPayUpfront(journeyId: JourneyId, canPayUpfront: CanPayUpfront)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-can-pay-upfront")
       .withBody(Json.toJson(canPayUpfront))
       .execute[Journey]
 
-  def updateUpfrontPaymentAmount(journeyId: JourneyId, upfrontPaymentAmount: UpfrontPaymentAmount)(implicit request: RequestHeader): Future[Journey] =
+  def updateUpfrontPaymentAmount(journeyId: JourneyId, upfrontPaymentAmount: UpfrontPaymentAmount)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-upfront-payment-amount")
       .withBody(Json.toJson(upfrontPaymentAmount))
       .execute[Journey]
 
-  def updateExtremeDates(journeyId: JourneyId, extremeDatesResponse: ExtremeDatesResponse)(implicit request: RequestHeader): Future[Journey] =
+  def updateExtremeDates(journeyId: JourneyId, extremeDatesResponse: ExtremeDatesResponse)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-extreme-dates")
       .withBody(Json.toJson(extremeDatesResponse))
       .execute[Journey]
 
-  def updateAffordabilityResult(journeyId: JourneyId, instalmentAmounts: InstalmentAmounts)(implicit request: RequestHeader): Future[Journey] =
+  def updateAffordabilityResult(journeyId: JourneyId, instalmentAmounts: InstalmentAmounts)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-affordability-result")
       .withBody(Json.toJson(instalmentAmounts))
       .execute[Journey]
 
-  def updateCanPayWithinSixMonthsAnswers(journeyId: JourneyId, answers: CanPayWithinSixMonthsAnswers)(implicit request: RequestHeader): Future[Journey] =
+  def updateCanPayWithinSixMonthsAnswers(journeyId: JourneyId, answers: CanPayWithinSixMonthsAnswers)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-can-pay-within-six-months")
       .withBody(Json.toJson(answers))
       .execute[Journey]
 
-  def updatePegaStartCaseResponse(journeyId: JourneyId, response: StartCaseResponse)(implicit request: RequestHeader): Future[Journey] =
+  def updatePegaStartCaseResponse(journeyId: JourneyId, response: StartCaseResponse)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-pega-start-case-response")
       .withBody(Json.toJson(response))
       .execute[Journey]
 
-  def updateMonthlyPaymentAmount(journeyId: JourneyId, monthlyPaymentAmount: MonthlyPaymentAmount)(implicit request: RequestHeader): Future[Journey] =
+  def updateMonthlyPaymentAmount(journeyId: JourneyId, monthlyPaymentAmount: MonthlyPaymentAmount)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-monthly-payment-amount")
       .withBody(Json.toJson(monthlyPaymentAmount))
@@ -120,36 +141,49 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: E
       .withBody(Json.toJson(dayOfMonth))
       .execute[Journey]
 
-  def updateStartDates(journeyId: JourneyId, startDatesResponse: StartDatesResponse)(implicit request: RequestHeader): Future[Journey] =
+  def updateStartDates(journeyId: JourneyId, startDatesResponse: StartDatesResponse)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-start-dates")
       .withBody(Json.toJson(startDatesResponse))
       .execute[Journey]
 
-  def updateAffordableQuotes(journeyId: JourneyId, affordableQuotesResponse: AffordableQuotesResponse)(implicit request: RequestHeader): Future[Journey] =
+  def updateAffordableQuotes(journeyId: JourneyId, affordableQuotesResponse: AffordableQuotesResponse)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-affordable-quotes")
-      .withBody(Json.toJson(affordableQuotesResponse)).execute[Journey]
+      .withBody(Json.toJson(affordableQuotesResponse))
+      .execute[Journey]
 
-  def updateChosenPaymentPlan(journeyId: JourneyId, paymentPlan: PaymentPlan)(implicit request: RequestHeader): Future[Journey] =
+  def updateChosenPaymentPlan(journeyId: JourneyId, paymentPlan: PaymentPlan)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-selected-plan")
       .withBody(Json.toJson(paymentPlan))
       .execute[Journey]
 
-  def updateHasCheckedPaymentPlan(journeyId: JourneyId, paymentPlanAnswers: PaymentPlanAnswers)(implicit request: RequestHeader): Future[Journey] =
+  def updateHasCheckedPaymentPlan(journeyId: JourneyId, paymentPlanAnswers: PaymentPlanAnswers)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-has-checked-plan")
       .withBody(Json.toJson(paymentPlanAnswers))
       .execute[Journey]
 
-  def updateCanSetUpDirectDebit(journeyId: JourneyId, canSetUpDirectDebit: CanSetUpDirectDebit)(implicit request: RequestHeader): Future[Journey] =
+  def updateCanSetUpDirectDebit(journeyId: JourneyId, canSetUpDirectDebit: CanSetUpDirectDebit)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-can-set-up-direct-debit")
       .withBody(Json.toJson(canSetUpDirectDebit))
       .execute[Journey]
 
-  def updateDirectDebitDetails(journeyId: JourneyId, directDebitDetails: BankDetails)(implicit request: RequestHeader): Future[Journey] =
+  def updateDirectDebitDetails(journeyId: JourneyId, directDebitDetails: BankDetails)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-direct-debit-details")
       .withBody(Json.toJson(directDebitDetails))
@@ -161,25 +195,33 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: E
       .withBody(Json.toJson(JsNull))
       .execute[Journey]
 
-  def updateHasAgreedTermsAndConditions(journeyId: JourneyId, emailAddressRequired: IsEmailAddressRequired)(implicit request: RequestHeader): Future[Journey] =
+  def updateHasAgreedTermsAndConditions(journeyId: JourneyId, emailAddressRequired: IsEmailAddressRequired)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-has-agreed-terms-and-conditions")
       .withBody(Json.toJson(emailAddressRequired))
       .execute[Journey]
 
-  def updateSelectedEmailToBeVerified(journeyId: JourneyId, email: Email)(implicit request: RequestHeader): Future[Journey] =
+  def updateSelectedEmailToBeVerified(journeyId: JourneyId, email: Email)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-chosen-email")
       .withBody(Json.toJson(email))
       .execute[Journey]
 
-  def updateEmailVerificationResult(journeyId: JourneyId, status: EmailVerificationResult)(implicit request: RequestHeader): Future[Journey] =
+  def updateEmailVerificationResult(journeyId: JourneyId, status: EmailVerificationResult)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-email-verification-status")
       .withBody(Json.toJson(status))
       .execute[Journey]
 
-  def updateArrangement(journeyId: JourneyId, arrangementResponse: ArrangementResponse)(implicit request: RequestHeader): Future[Journey] =
+  def updateArrangement(journeyId: JourneyId, arrangementResponse: ArrangementResponse)(implicit
+    request: RequestHeader
+  ): Future[Journey] =
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-arrangement")
       .withBody(Json.toJson(arrangementResponse))
@@ -193,7 +235,9 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: E
         .withBody(Json.toJson(sjRequest))
         .execute[SjResponse]
 
-    def startJourneyEpayeService(sjRequest: SjRequest.Epaye.Simple)(implicit request: RequestHeader): Future[SjResponse] =
+    def startJourneyEpayeService(
+      sjRequest: SjRequest.Epaye.Simple
+    )(implicit request: RequestHeader): Future[SjResponse] =
       httpClient
         .post(url"$baseUrl/essttp-backend/epaye/epaye-service/journey/start")
         .withBody(Json.toJson(sjRequest))
@@ -278,7 +322,9 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: E
         .withBody(Json.toJson(sjRequest: SjRequest))
         .execute[SjResponse]
 
-    def startJourneyItsaViewAndChange(sjRequest: SjRequest.Sa.Simple)(implicit request: RequestHeader): Future[SjResponse] =
+    def startJourneyItsaViewAndChange(
+      sjRequest: SjRequest.Sa.Simple
+    )(implicit request: RequestHeader): Future[SjResponse] =
       httpClient
         .post(url"$baseUrl/essttp-backend/sa/itsa/journey/start")
         .withBody(Json.toJson(sjRequest))
@@ -313,7 +359,10 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit ec: E
   }
 
   @Inject()
-  def this(httpClient: HttpClientV2, servicesConfig: ServicesConfig)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) = this(
+  def this(httpClient: HttpClientV2, servicesConfig: ServicesConfig)(implicit
+    ec: ExecutionContext,
+    cryptoFormat: OperationalCryptoFormat
+  ) = this(
     httpClient,
     servicesConfig.baseUrl("essttp-backend")
   )

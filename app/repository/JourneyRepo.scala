@@ -34,20 +34,19 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 final class JourneyRepo @Inject() (
-    mongoComponent: MongoComponent,
-    config:         AppConfig
+  mongoComponent: MongoComponent,
+  config:         AppConfig
 )(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
-  extends Repo[JourneyId, Journey](
-    collectionName = "journey",
-    mongoComponent = mongoComponent,
-    indexes        = JourneyRepo.indexes(config.journeyRepoTtl),
-    extraCodecs    = Codecs.playFormatSumCodecs(Journey.format),
-    replaceIndexes = true
-  ) {
+    extends Repo[JourneyId, Journey](
+      collectionName = "journey",
+      mongoComponent = mongoComponent,
+      indexes = JourneyRepo.indexes(config.journeyRepoTtl),
+      extraCodecs = Codecs.playFormatSumCodecs(Journey.format),
+      replaceIndexes = true
+    ) {
 
-  /**
-   * Find the latest journey for given sessionId.
-   */
+  /** Find the latest journey for given sessionId.
+    */
   def findLatestJourney(sessionId: SessionId): Future[Option[Journey]] =
     collection
       .find(filter = Filters.eq("sessionId", sessionId.value))
@@ -68,7 +67,7 @@ object JourneyRepo {
 
   def indexes(cacheTtl: FiniteDuration): Seq[IndexModel] = Seq(
     IndexModel(
-      keys         = Indexes.ascending("lastUpdated"),
+      keys = Indexes.ascending("lastUpdated"),
       indexOptions = IndexOptions().expireAfter(cacheTtl.toSeconds, TimeUnit.SECONDS).name("lastUpdatedIdx")
     ),
     IndexModel(

@@ -20,14 +20,16 @@ import cats.Eq
 import play.api.libs.json._
 import essttp.utils.Errors
 
-final case class DayOfMonth(value: Int) {
-  Errors.require(DayOfMonth.isValid(value), "Day of month has to be between 1 and 28")
-}
+final case class DayOfMonth private (value: Int) extends AnyVal
 
 object DayOfMonth {
   implicit val format: Format[DayOfMonth] = Json.valueFormat
-  implicit val eq: Eq[DayOfMonth] = Eq.fromUniversalEquals
+  implicit val eq: Eq[DayOfMonth]         = Eq.fromUniversalEquals
 
-  def isValid(dayOfMonth: Int): Boolean = dayOfMonth >= 1 && dayOfMonth <= 28
+  private def isValid(dayOfMonth: Int): Boolean = dayOfMonth >= 1 && dayOfMonth <= 28
+
+  def apply(value: Int): DayOfMonth = {
+    Errors.require(DayOfMonth.isValid(value), "Day of month has to be between 1 and 28")
+    new DayOfMonth(value)
+  }
 }
-

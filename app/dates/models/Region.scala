@@ -24,8 +24,8 @@ object Region {
 
   case object EnglandAndWales extends Region
 
-  implicit val writes: Writes[Region] = Writes {
-    case EnglandAndWales => JsString("EW")
+  implicit val writes: Writes[Region] = Writes { case EnglandAndWales =>
+    JsString("EW")
   }
 
 }
