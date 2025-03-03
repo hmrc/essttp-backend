@@ -17,16 +17,14 @@
 package journey
 
 import action.Actions
-import cats.instances.boolean._
-import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.Stages
-import essttp.journey.model.{Journey, JourneyId, Stage, UpfrontPaymentAnswers}
+import essttp.journey.model
+import essttp.journey.model.{Journey, JourneyId, JourneyStage, UpfrontPaymentAnswers}
 import essttp.rootmodel.CanPayUpfront
 import essttp.utils.Errors
-import io.scalaland.chimney.dsl.TransformationOps
-import play.api.mvc._
+import io.scalaland.chimney.dsl.*
+import play.api.mvc.*
 import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
@@ -34,592 +32,195 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateCanPayUpfrontController @Inject() (
-    actions:        Actions,
-    journeyService: JourneyService,
-    cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
+  actions:        Actions,
+  journeyService: JourneyService,
+  cc:             ControllerComponents
+)(using ExecutionContext, OperationalCryptoFormat)
+    extends BackendController(cc) {
 
-  def updateCanPayUpfront(journeyId: JourneyId): Action[CanPayUpfront] = actions.authenticatedAction.async(parse.json[CanPayUpfront]) { implicit request =>
-    for {
-      journey <- journeyService.get(journeyId)
-      newJourney <- journey match {
-        case _: Journey.BeforeWhyCannotPayInFullAnswers          => Errors.throwBadRequestExceptionF("UpdateCanPayUpfront is not possible in that state.")
-        case j: Journey.Stages.ObtainedWhyCannotPayInFullAnswers => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterAnsweredCanPayUpfront               => updateJourneyWithExistingValue(Left(j), request.body)
-        case j: Journey.AfterUpfrontPaymentAnswers               => updateJourneyWithExistingValue(Right(j), request.body)
-      }
-    } yield Ok(newJourney.json)
-  }
+  def updateCanPayUpfront(journeyId: JourneyId): Action[CanPayUpfront] =
+    actions.authenticatedAction.async(parse.json[CanPayUpfront]) { implicit request =>
+      for {
+        journey    <- journeyService.get(journeyId)
+        newJourney <- journey match {
+                        case _: JourneyStage.BeforeWhyCannotPayInFullAnswers    =>
+                          Errors.throwBadRequestExceptionF("UpdateCanPayUpfront is not possible in that state.")
+                        case j: model.Journey.ObtainedWhyCannotPayInFullAnswers =>
+                          updateJourneyWithNewValue(j, request.body)
+                        case j: JourneyStage.AfterAnsweredCanPayUpfront         =>
+                          updateJourneyWithExistingValue(Left(j), request.body)
+                        case j: JourneyStage.AfterUpfrontPaymentAnswers         =>
+                          updateJourneyWithExistingValue(Right(j), request.body)
+                      }
+      } yield Ok(newJourney.json)
+    }
 
   private def updateJourneyWithNewValue(
-      journey:       Stages.ObtainedWhyCannotPayInFullAnswers,
-      canPayUpfront: CanPayUpfront
-  )(implicit request: Request[_]): Future[Journey] = {
-    val updatedJourney: Stages.AnsweredCanPayUpfront = journey match {
-      case j: Journey.Epaye.ObtainedWhyCannotPayInFullAnswers =>
-        j.into[Journey.Epaye.AnsweredCanPayUpfront]
-          .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-          .withFieldConst(_.canPayUpfront, canPayUpfront)
-          .transform
-      case j: Journey.Vat.ObtainedWhyCannotPayInFullAnswers =>
-        j.into[Journey.Vat.AnsweredCanPayUpfront]
-          .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-          .withFieldConst(_.canPayUpfront, canPayUpfront)
-          .transform
-      case j: Journey.Sa.ObtainedWhyCannotPayInFullAnswers =>
-        j.into[Journey.Sa.AnsweredCanPayUpfront]
-          .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-          .withFieldConst(_.canPayUpfront, canPayUpfront)
-          .transform
-      case j: Journey.Simp.ObtainedWhyCannotPayInFullAnswers =>
-        j.into[Journey.Simp.AnsweredCanPayUpfront]
-          .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-          .withFieldConst(_.canPayUpfront, canPayUpfront)
-          .transform
-    }
+    journey:       Journey.ObtainedWhyCannotPayInFullAnswers,
+    canPayUpfront: CanPayUpfront
+  )(using Request[_]): Future[Journey] = {
+    val updatedJourney: Journey =
+      journey
+        .into[Journey.AnsweredCanPayUpfront]
+        .withFieldConst(_.canPayUpfront, canPayUpfront)
+        .transform
+
     journeyService.upsert(updatedJourney)
   }
 
   private def updateJourneyWithExistingValue(
-      journey:       Either[Journey.AfterAnsweredCanPayUpfront, Journey.AfterUpfrontPaymentAnswers],
-      canPayUpfront: CanPayUpfront
-  )(implicit request: Request[_]): Future[Journey] = {
+    journey:       Either[
+      JourneyStage.AfterAnsweredCanPayUpfront & Journey,
+      JourneyStage.AfterUpfrontPaymentAnswers & Journey
+    ],
+    canPayUpfront: CanPayUpfront
+  )(using Request[_]): Future[Journey] = {
     journey match {
-      case Left(j: Journey.AfterAnsweredCanPayUpfront) =>
-        if (j.canPayUpfront.value === canPayUpfront.value) {
+      case Left(j)  =>
+        if (j.canPayUpfront.value == canPayUpfront.value) {
           JourneyLogger.info("Nothing to update, CanPayUpfront is the same as the existing one in journey.")
           Future.successful(j)
         } else {
           val updatedJourney: Journey = j match {
-            case j1: Journey.Epaye.AnsweredCanPayUpfront =>
-              j1.copy(
-                stage         = determineCanPayUpFrontEnum(canPayUpfront),
-                canPayUpfront = canPayUpfront
-              )
-            case j1: Journey.Vat.AnsweredCanPayUpfront =>
-              j1.copy(
-                stage         = determineCanPayUpFrontEnum(canPayUpfront),
-                canPayUpfront = canPayUpfront
-              )
-            case j1: Journey.Sa.AnsweredCanPayUpfront =>
-              j1.copy(
-                stage         = determineCanPayUpFrontEnum(canPayUpfront),
-                canPayUpfront = canPayUpfront
-              )
-            case j1: Journey.Simp.AnsweredCanPayUpfront =>
-              j1.copy(
-                stage         = determineCanPayUpFrontEnum(canPayUpfront),
-                canPayUpfront = canPayUpfront
-              )
+            case j1: Journey.AnsweredCanPayUpfront =>
+              j1.copy(canPayUpfront = canPayUpfront)
 
-            case j1: Journey.Epaye.EnteredUpfrontPaymentAmount =>
-              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            case j1: Journey.Vat.EnteredUpfrontPaymentAmount =>
-              j1.into[Journey.Vat.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            case j1: Journey.Sa.EnteredUpfrontPaymentAmount =>
-              j1.into[Journey.Sa.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            case j1: Journey.Simp.EnteredUpfrontPaymentAmount =>
-              j1.into[Journey.Simp.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+            case j1: Journey.EnteredUpfrontPaymentAmount =>
+              j1.into[Journey.AnsweredCanPayUpfront]
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
           }
           journeyService.upsert(updatedJourney)
         }
-      case Right(j: Journey.AfterUpfrontPaymentAnswers) =>
-        val existingCanPayUpfront = j.upfrontPaymentAnswers match {
-          case UpfrontPaymentAnswers.NoUpfrontPayment          => CanPayUpfront(value = false)
-          case _: UpfrontPaymentAnswers.DeclaredUpfrontPayment => CanPayUpfront(value = true)
-        }
-          def upsertIfChanged(updatedJourney: => Journey): Future[Journey] =
-            if (canPayUpfront.value === existingCanPayUpfront.value) {
-              JourneyLogger.info("Nothing to update, CanPayUpfront is the same as the existing one in journey.")
-              Future.successful(j)
-            } else journeyService.upsert(updatedJourney)
+      case Right(j) =>
+        val existingCanPayUpfront                                        =
+          j.upfrontPaymentAnswers match {
+            case UpfrontPaymentAnswers.NoUpfrontPayment          => CanPayUpfront(value = false)
+            case _: UpfrontPaymentAnswers.DeclaredUpfrontPayment => CanPayUpfront(value = true)
+          }
+        def upsertIfChanged(updatedJourney: => Journey): Future[Journey] =
+          if (canPayUpfront.value == existingCanPayUpfront.value) {
+            JourneyLogger.info("Nothing to update, CanPayUpfront is the same as the existing one in journey.")
+            Future.successful(j)
+          } else journeyService.upsert(updatedJourney)
 
         j match {
-          case j1: Journey.Epaye.EnteredMonthlyPaymentAmount =>
+          case j1: Journey.EnteredMonthlyPaymentAmount =>
             upsertIfChanged(
-              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Vat.EnteredMonthlyPaymentAmount =>
-            upsertIfChanged(
-              j1.into[Journey.Vat.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Sa.EnteredMonthlyPaymentAmount =>
-            upsertIfChanged(
-              j1.into[Journey.Sa.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Simp.EnteredMonthlyPaymentAmount =>
-            upsertIfChanged(
-              j1.into[Journey.Simp.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              j1.into[Journey.AnsweredCanPayUpfront]
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
 
-          case j1: Journey.Epaye.RetrievedExtremeDates =>
+          case j1: Journey.RetrievedExtremeDates =>
             upsertIfChanged(
-              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Vat.RetrievedExtremeDates =>
-            upsertIfChanged(
-              j1.into[Journey.Vat.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Sa.RetrievedExtremeDates =>
-            upsertIfChanged(
-              j1.into[Journey.Sa.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Simp.RetrievedExtremeDates =>
-            upsertIfChanged(
-              j1.into[Journey.Simp.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              j1.into[Journey.AnsweredCanPayUpfront]
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
 
-          case j1: Journey.Epaye.RetrievedAffordabilityResult =>
+          case j1: Journey.RetrievedAffordabilityResult =>
             upsertIfChanged(
-              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Vat.RetrievedAffordabilityResult =>
-            upsertIfChanged(
-              j1.into[Journey.Vat.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Sa.RetrievedAffordabilityResult =>
-            upsertIfChanged(
-              j1.into[Journey.Sa.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Simp.RetrievedAffordabilityResult =>
-            upsertIfChanged(
-              j1.into[Journey.Simp.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              j1.into[Journey.AnsweredCanPayUpfront]
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
 
-          case j1: Journey.Epaye.ObtainedCanPayWithinSixMonthsAnswers =>
+          case j1: Journey.ObtainedCanPayWithinSixMonthsAnswers =>
             upsertIfChanged(
-              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Vat.ObtainedCanPayWithinSixMonthsAnswers =>
-            upsertIfChanged(
-              j1.into[Journey.Vat.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Sa.ObtainedCanPayWithinSixMonthsAnswers =>
-            upsertIfChanged(
-              j1.into[Journey.Sa.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Simp.ObtainedCanPayWithinSixMonthsAnswers =>
-            upsertIfChanged(
-              j1.into[Journey.Simp.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              j1.into[Journey.AnsweredCanPayUpfront]
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
 
-          case j1: Journey.Epaye.StartedPegaCase =>
+          case j1: Journey.StartedPegaCase =>
             upsertIfChanged(
-              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Vat.StartedPegaCase =>
-            upsertIfChanged(
-              j1.into[Journey.Vat.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Sa.StartedPegaCase =>
-            upsertIfChanged(
-              j1.into[Journey.Sa.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Simp.StartedPegaCase =>
-            upsertIfChanged(
-              j1.into[Journey.Simp.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              j1.into[Journey.AnsweredCanPayUpfront]
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
 
-          case j1: Journey.Epaye.EnteredDayOfMonth =>
+          case j1: Journey.EnteredDayOfMonth =>
             upsertIfChanged(
-              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Vat.EnteredDayOfMonth =>
-            upsertIfChanged(
-              j1.into[Journey.Vat.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Sa.EnteredDayOfMonth =>
-            upsertIfChanged(
-              j1.into[Journey.Sa.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Simp.EnteredDayOfMonth =>
-            upsertIfChanged(
-              j1.into[Journey.Simp.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              j1.into[Journey.AnsweredCanPayUpfront]
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
 
-          case j1: Journey.Epaye.RetrievedStartDates =>
+          case j1: Journey.RetrievedStartDates =>
             upsertIfChanged(
-              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Vat.RetrievedStartDates =>
-            upsertIfChanged(
-              j1.into[Journey.Vat.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Sa.RetrievedStartDates =>
-            upsertIfChanged(
-              j1.into[Journey.Sa.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Simp.RetrievedStartDates =>
-            upsertIfChanged(
-              j1.into[Journey.Simp.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              j1.into[Journey.AnsweredCanPayUpfront]
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
 
-          case j1: Journey.Epaye.RetrievedAffordableQuotes =>
+          case j1: Journey.RetrievedAffordableQuotes =>
             upsertIfChanged(
-              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Vat.RetrievedAffordableQuotes =>
-            upsertIfChanged(
-              j1.into[Journey.Vat.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Sa.RetrievedAffordableQuotes =>
-            upsertIfChanged(
-              j1.into[Journey.Sa.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Simp.RetrievedAffordableQuotes =>
-            upsertIfChanged(
-              j1.into[Journey.Simp.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              j1.into[Journey.AnsweredCanPayUpfront]
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
 
-          case j1: Journey.Epaye.ChosenPaymentPlan =>
+          case j1: Journey.ChosenPaymentPlan =>
             upsertIfChanged(
-              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Vat.ChosenPaymentPlan =>
-            upsertIfChanged(
-              j1.into[Journey.Vat.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Sa.ChosenPaymentPlan =>
-            upsertIfChanged(
-              j1.into[Journey.Sa.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Simp.ChosenPaymentPlan =>
-            upsertIfChanged(
-              j1.into[Journey.Simp.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              j1.into[Journey.AnsweredCanPayUpfront]
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
 
-          case j1: Journey.Epaye.CheckedPaymentPlan =>
+          case j1: Journey.CheckedPaymentPlan =>
             upsertIfChanged(
-              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Vat.CheckedPaymentPlan =>
-            upsertIfChanged(
-              j1.into[Journey.Vat.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Sa.CheckedPaymentPlan =>
-            upsertIfChanged(
-              j1.into[Journey.Sa.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Simp.CheckedPaymentPlan =>
-            upsertIfChanged(
-              j1.into[Journey.Simp.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              j1.into[Journey.AnsweredCanPayUpfront]
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
 
-          case j1: Journey.Epaye.EnteredCanYouSetUpDirectDebit =>
+          case j1: Journey.EnteredCanYouSetUpDirectDebit =>
             upsertIfChanged(
-              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Vat.EnteredCanYouSetUpDirectDebit =>
-            upsertIfChanged(
-              j1.into[Journey.Vat.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Sa.EnteredCanYouSetUpDirectDebit =>
-            upsertIfChanged(
-              j1.into[Journey.Sa.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Simp.EnteredCanYouSetUpDirectDebit =>
-            upsertIfChanged(
-              j1.into[Journey.Simp.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              j1.into[Journey.AnsweredCanPayUpfront]
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
 
-          case j1: Journey.Epaye.EnteredDirectDebitDetails =>
+          case j1: Journey.EnteredDirectDebitDetails =>
             upsertIfChanged(
-              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Vat.EnteredDirectDebitDetails =>
-            upsertIfChanged(
-              j1.into[Journey.Vat.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Sa.EnteredDirectDebitDetails =>
-            upsertIfChanged(
-              j1.into[Journey.Sa.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Simp.EnteredDirectDebitDetails =>
-            upsertIfChanged(
-              j1.into[Journey.Simp.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              j1.into[Journey.AnsweredCanPayUpfront]
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
 
-          case j1: Journey.Epaye.ConfirmedDirectDebitDetails =>
+          case j1: Journey.ConfirmedDirectDebitDetails =>
             upsertIfChanged(
-              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Vat.ConfirmedDirectDebitDetails =>
-            upsertIfChanged(
-              j1.into[Journey.Vat.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Sa.ConfirmedDirectDebitDetails =>
-            upsertIfChanged(
-              j1.into[Journey.Sa.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Simp.ConfirmedDirectDebitDetails =>
-            upsertIfChanged(
-              j1.into[Journey.Simp.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              j1.into[Journey.AnsweredCanPayUpfront]
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
 
-          case j1: Journey.Epaye.AgreedTermsAndConditions =>
+          case j1: Journey.AgreedTermsAndConditions =>
             upsertIfChanged(
-              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Vat.AgreedTermsAndConditions =>
-            upsertIfChanged(
-              j1.into[Journey.Vat.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Sa.AgreedTermsAndConditions =>
-            upsertIfChanged(
-              j1.into[Journey.Sa.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Simp.AgreedTermsAndConditions =>
-            upsertIfChanged(
-              j1.into[Journey.Simp.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              j1.into[Journey.AnsweredCanPayUpfront]
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
 
-          case j1: Journey.Epaye.SelectedEmailToBeVerified =>
+          case j1: Journey.SelectedEmailToBeVerified =>
             upsertIfChanged(
-              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Vat.SelectedEmailToBeVerified =>
-            upsertIfChanged(
-              j1.into[Journey.Vat.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Sa.SelectedEmailToBeVerified =>
-            upsertIfChanged(
-              j1.into[Journey.Sa.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Simp.SelectedEmailToBeVerified =>
-            upsertIfChanged(
-              j1.into[Journey.Simp.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              j1.into[Journey.AnsweredCanPayUpfront]
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
 
-          case j1: Journey.Epaye.EmailVerificationComplete =>
+          case j1: Journey.EmailVerificationComplete =>
             upsertIfChanged(
-              j1.into[Journey.Epaye.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Vat.EmailVerificationComplete =>
-            upsertIfChanged(
-              j1.into[Journey.Vat.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Sa.EmailVerificationComplete =>
-            upsertIfChanged(
-              j1.into[Journey.Sa.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
-                .withFieldConst(_.canPayUpfront, canPayUpfront)
-                .transform
-            )
-          case j1: Journey.Simp.EmailVerificationComplete =>
-            upsertIfChanged(
-              j1.into[Journey.Simp.AnsweredCanPayUpfront]
-                .withFieldConst(_.stage, determineCanPayUpFrontEnum(canPayUpfront))
+              j1.into[Journey.AnsweredCanPayUpfront]
                 .withFieldConst(_.canPayUpfront, canPayUpfront)
                 .transform
             )
 
-          case _: Journey.Stages.SubmittedArrangement =>
+          case _: model.Journey.SubmittedArrangement =>
             Errors.throwBadRequestException("Cannot update AnsweredCanPayUpFront when journey is in completed state")
         }
     }
-  }
-
-  private def determineCanPayUpFrontEnum(latestCanPayUpfrontValue: CanPayUpfront): Stage.AfterCanPayUpfront = {
-    if (latestCanPayUpfrontValue.value) Stage.AfterCanPayUpfront.Yes
-    else Stage.AfterCanPayUpfront.No
   }
 
 }

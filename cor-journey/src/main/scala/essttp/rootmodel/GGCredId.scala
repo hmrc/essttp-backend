@@ -22,6 +22,6 @@ final case class GGCredId(value: String) extends AnyVal
 
 object GGCredId {
 
-  implicit val format: Format[GGCredId] = Json.valueFormat
+  given Format[GGCredId] = Json.valueFormat
 
 }

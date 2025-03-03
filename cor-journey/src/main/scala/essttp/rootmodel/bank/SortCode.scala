@@ -24,8 +24,8 @@ final case class SortCode(value: SensitiveString) extends AnyVal
 
 object SortCode {
 
-  implicit def format(implicit cryptoFormat: CryptoFormat): Format[SortCode] = {
-    implicit val sensitiveStringFormat: Format[SensitiveString] = essttp.crypto.sensitiveStringFormat(cryptoFormat)
+  implicit def format(using cryptoFormat: CryptoFormat): Format[SortCode] = {
+    given Format[SensitiveString] = essttp.crypto.sensitiveStringFormat(cryptoFormat)
     Json.valueFormat
   }
 

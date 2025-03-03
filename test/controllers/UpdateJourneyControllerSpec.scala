@@ -27,11 +27,11 @@ trait UpdateJourneyControllerSpec { this: ItSpec =>
   lazy val journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
   def testUpdateWithoutExistingValue[R](
-      initialJourney: Journey,
-      newValue:       R
+    initialJourney:     Journey,
+    newValue:           R
   )(
-      doUpdate:           (JourneyId, R) => Future[Journey],
-      expectedNewJourney: Journey
+    doUpdate:           (JourneyId, R) => Future[Journey],
+    expectedNewJourney: Journey
   )(context: JourneyItTest): Unit = {
     import context.request
 
@@ -56,12 +56,12 @@ trait UpdateJourneyControllerSpec { this: ItSpec =>
   }
 
   def testUpdateWithExistingValue[J <: Journey, R](initialJourney: J)(
-      existingJourneyId: J => JourneyId,
-      existingValue:     R
+    existingJourneyId:  J => JourneyId,
+    existingValue:      R
   )(
-      differentValue:     R,
-      doUpdate:           (JourneyId, R) => Future[Journey],
-      expectedNewJourney: Journey
+    differentValue:     R,
+    doUpdate:           (JourneyId, R) => Future[Journey],
+    expectedNewJourney: Journey
   )(context: JourneyItTest): Unit = {
     import context.request
 

@@ -17,13 +17,13 @@
 package journey
 
 import action.Actions
-import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, PaymentPlanAnswers, Stage}
+import essttp.journey.model
+import essttp.journey.model.{Journey, JourneyId, JourneyStage, PaymentPlanAnswers}
 import essttp.rootmodel.ttp.affordablequotes.PaymentPlan
 import essttp.utils.Errors
-import io.scalaland.chimney.dsl.TransformationOps
+import io.scalaland.chimney.dsl.*
 import play.api.mvc.{Action, ControllerComponents, Request}
 import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -32,61 +32,62 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateInstalmentPlanController @Inject() (
-    actions:        Actions,
-    journeyService: JourneyService,
-    cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
+  actions:        Actions,
+  journeyService: JourneyService,
+  cc:             ControllerComponents
+)(using ExecutionContext, OperationalCryptoFormat)
+    extends BackendController(cc) {
 
-  def updateChosenInstalmentPlan(journeyId: JourneyId): Action[PaymentPlan] = actions.authenticatedAction.async(parse.json[PaymentPlan]) { implicit request =>
-    for {
-      journey <- journeyService.get(journeyId)
-      newJourney <- journey match {
-        case j: Journey.BeforeAffordableQuotesResponse   => Errors.throwBadRequestExceptionF(s"UpdateSelectedPaymentPlan is not possible in that state: [${j.stage.toString}]")
-        case j: Journey.Stages.RetrievedAffordableQuotes => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterSelectedPaymentPlan         => updateJourneyWithExistingValue(Left(j), request.body)
-        case j: Journey.AfterCheckedPaymentPlan =>
-          j match {
-            case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(Right(j), request.body)
-            case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update ChosenPlan when journey is in completed state")
-          }
-        case _: Journey.AfterStartedPegaCase => Errors.throwBadRequestExceptionF(s"Not expecting to update SelectedPaymentPlan after starting PEGA case")
-      }
-    } yield Ok(newJourney.json)
-  }
+  def updateChosenInstalmentPlan(journeyId: JourneyId): Action[PaymentPlan] =
+    actions.authenticatedAction.async(parse.json[PaymentPlan]) { implicit request =>
+      for {
+        journey    <- journeyService.get(journeyId)
+        newJourney <- journey match {
+                        case j: JourneyStage.BeforeAffordableQuotesResponse =>
+                          Errors.throwBadRequestExceptionF(
+                            s"UpdateSelectedPaymentPlan is not possible in that state: [${j.stage}]"
+                          )
+                        case j: model.Journey.RetrievedAffordableQuotes     =>
+                          updateJourneyWithNewValue(j, request.body)
+
+                        case j: JourneyStage.AfterSelectedPaymentPlan =>
+                          updateJourneyWithExistingValue(Left(j), request.body)
+
+                        case j: JourneyStage.AfterCheckedPaymentPlan =>
+                          j match {
+                            case _: JourneyStage.BeforeArrangementSubmitted =>
+                              updateJourneyWithExistingValue(Right(j), request.body)
+                            case _: JourneyStage.AfterArrangementSubmitted  =>
+                              Errors.throwBadRequestExceptionF(
+                                "Cannot update ChosenPlan when journey is in completed state"
+                              )
+                          }
+
+                        case _: JourneyStage.AfterStartedPegaCase =>
+                          Errors.throwBadRequestExceptionF(
+                            s"Not expecting to update SelectedPaymentPlan after starting PEGA case"
+                          )
+                      }
+      } yield Ok(newJourney.json)
+    }
 
   private def updateJourneyWithNewValue(
-      journey:     Journey.Stages.RetrievedAffordableQuotes,
-      paymentPlan: PaymentPlan
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey.AfterSelectedPaymentPlan = journey match {
-      case j: Journey.Epaye.RetrievedAffordableQuotes =>
-        j.into[Journey.Epaye.ChosenPaymentPlan]
-          .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-          .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-          .transform
-      case j: Journey.Vat.RetrievedAffordableQuotes =>
-        j.into[Journey.Vat.ChosenPaymentPlan]
-          .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-          .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-          .transform
-      case j: Journey.Sa.RetrievedAffordableQuotes =>
-        j.into[Journey.Sa.ChosenPaymentPlan]
-          .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-          .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-          .transform
-      case j: Journey.Simp.RetrievedAffordableQuotes =>
-        j.into[Journey.Simp.ChosenPaymentPlan]
-          .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-          .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-          .transform
-    }
+    journey:     Journey.RetrievedAffordableQuotes,
+    paymentPlan: PaymentPlan
+  )(using Request[_]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.ChosenPaymentPlan]
+        .withFieldConst(_.selectedPaymentPlan, paymentPlan)
+        .transform
+
     journeyService.upsert(newJourney)
   }
 
   private def updateJourneyWithExistingValue(
-      journey:     Either[Journey.AfterSelectedPaymentPlan, Journey.AfterCheckedPaymentPlan],
-      paymentPlan: PaymentPlan
-  )(implicit request: Request[_]): Future[Journey] =
+    journey:     Either[JourneyStage.AfterSelectedPaymentPlan & Journey, JourneyStage.AfterCheckedPaymentPlan & Journey],
+    paymentPlan: PaymentPlan
+  )(using Request[_]): Future[Journey] =
     journey match {
       case Left(afterSelectedPaymentPlan) =>
         updateJourneyWithExistingValue(
@@ -94,13 +95,7 @@ class UpdateInstalmentPlanController @Inject() (
           afterSelectedPaymentPlan,
           paymentPlan,
           afterSelectedPaymentPlan match {
-            case j: Journey.Epaye.ChosenPaymentPlan =>
-              j.copy(selectedPaymentPlan = paymentPlan)
-            case j: Journey.Vat.ChosenPaymentPlan =>
-              j.copy(selectedPaymentPlan = paymentPlan)
-            case j: Journey.Sa.ChosenPaymentPlan =>
-              j.copy(selectedPaymentPlan = paymentPlan)
-            case j: Journey.Simp.ChosenPaymentPlan =>
+            case j: Journey.ChosenPaymentPlan =>
               j.copy(selectedPaymentPlan = paymentPlan)
           }
         )
@@ -116,36 +111,8 @@ class UpdateInstalmentPlanController @Inject() (
               afterCheckedPaymentPlan,
               paymentPlan,
               afterCheckedPaymentPlan match {
-                case j: Journey.Epaye.CheckedPaymentPlan =>
-                  j.into[Journey.Epaye.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Vat.CheckedPaymentPlan =>
-                  j.into[Journey.Vat.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Sa.CheckedPaymentPlan =>
-                  j.into[Journey.Sa.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Simp.CheckedPaymentPlan =>
-                  j.into[Journey.Simp.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+                case j: Journey.CheckedPaymentPlan =>
+                  j.into[Journey.ChosenPaymentPlan]
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, p.startDatesResponse)
@@ -153,36 +120,8 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
 
-                case j: Journey.Epaye.EnteredCanYouSetUpDirectDebit =>
-                  j.into[Journey.Epaye.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Vat.EnteredCanYouSetUpDirectDebit =>
-                  j.into[Journey.Vat.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Sa.EnteredCanYouSetUpDirectDebit =>
-                  j.into[Journey.Sa.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Simp.EnteredCanYouSetUpDirectDebit =>
-                  j.into[Journey.Simp.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+                case j: Journey.EnteredCanYouSetUpDirectDebit =>
+                  j.into[Journey.ChosenPaymentPlan]
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, p.startDatesResponse)
@@ -190,36 +129,8 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
 
-                case j: Journey.Epaye.EnteredDirectDebitDetails =>
-                  j.into[Journey.Epaye.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Vat.EnteredDirectDebitDetails =>
-                  j.into[Journey.Vat.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Sa.EnteredDirectDebitDetails =>
-                  j.into[Journey.Sa.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Simp.EnteredDirectDebitDetails =>
-                  j.into[Journey.Simp.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+                case j: Journey.EnteredDirectDebitDetails =>
+                  j.into[Journey.ChosenPaymentPlan]
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, p.startDatesResponse)
@@ -227,36 +138,8 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
 
-                case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
-                  j.into[Journey.Epaye.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Vat.ConfirmedDirectDebitDetails =>
-                  j.into[Journey.Vat.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Sa.ConfirmedDirectDebitDetails =>
-                  j.into[Journey.Sa.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Simp.ConfirmedDirectDebitDetails =>
-                  j.into[Journey.Simp.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+                case j: Journey.ConfirmedDirectDebitDetails =>
+                  j.into[Journey.ChosenPaymentPlan]
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, p.startDatesResponse)
@@ -264,36 +147,8 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
 
-                case j: Journey.Epaye.AgreedTermsAndConditions =>
-                  j.into[Journey.Epaye.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Vat.AgreedTermsAndConditions =>
-                  j.into[Journey.Vat.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Sa.AgreedTermsAndConditions =>
-                  j.into[Journey.Sa.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Simp.AgreedTermsAndConditions =>
-                  j.into[Journey.Simp.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+                case j: Journey.AgreedTermsAndConditions =>
+                  j.into[Journey.ChosenPaymentPlan]
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, p.startDatesResponse)
@@ -301,36 +156,8 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
 
-                case j: Journey.Epaye.SelectedEmailToBeVerified =>
-                  j.into[Journey.Epaye.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Vat.SelectedEmailToBeVerified =>
-                  j.into[Journey.Vat.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Sa.SelectedEmailToBeVerified =>
-                  j.into[Journey.Sa.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Simp.SelectedEmailToBeVerified =>
-                  j.into[Journey.Simp.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+                case j: Journey.SelectedEmailToBeVerified =>
+                  j.into[Journey.ChosenPaymentPlan]
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, p.startDatesResponse)
@@ -338,36 +165,8 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
 
-                case j: Journey.Epaye.EmailVerificationComplete =>
-                  j.into[Journey.Epaye.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Vat.EmailVerificationComplete =>
-                  j.into[Journey.Vat.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Sa.EmailVerificationComplete =>
-                  j.into[Journey.Sa.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
-                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
-                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
-                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
-                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
-                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-                    .transform
-                case j: Journey.Simp.EmailVerificationComplete =>
-                  j.into[Journey.Simp.ChosenPaymentPlan]
-                    .withFieldConst(_.stage, Stage.AfterSelectedPlan.SelectedPlan)
+                case j: Journey.EmailVerificationComplete =>
+                  j.into[Journey.ChosenPaymentPlan]
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)
                     .withFieldConst(_.startDatesResponse, p.startDatesResponse)
@@ -375,7 +174,7 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
 
-                case _: Journey.Stages.SubmittedArrangement =>
+                case _: model.Journey.SubmittedArrangement =>
                   Errors.throwBadRequestException("Cannot update ChosenPlan when journey is in completed state")
               }
             )
@@ -383,12 +182,12 @@ class UpdateInstalmentPlanController @Inject() (
     }
 
   private def updateJourneyWithExistingValue(
-      existingValue:   PaymentPlan,
-      existingJourney: Journey,
-      newValue:        PaymentPlan,
-      newJourney:      Journey
-  )(implicit request: Request[_]): Future[Journey] =
-    if (existingValue === newValue) {
+    existingValue:   PaymentPlan,
+    existingJourney: Journey,
+    newValue:        PaymentPlan,
+    newJourney:      Journey
+  )(using Request[_]): Future[Journey] =
+    if (existingValue == newValue) {
       JourneyLogger.info("Nothing to update, selected PaymentPlan is the same as the existing one in journey.")
       Future.successful(existingJourney)
     } else {

@@ -27,8 +27,8 @@ object AuthStub {
 
   private val authoriseUrl: String = "/auth/authorise"
 
-  implicit val enrolmentFormat: OFormat[Enrolment] = {
-    implicit val f: OFormat[EnrolmentIdentifier] = Json.format[EnrolmentIdentifier]
+  given OFormat[Enrolment] = {
+    given OFormat[EnrolmentIdentifier] = Json.format[EnrolmentIdentifier]
     Json.format[Enrolment]
   }
 

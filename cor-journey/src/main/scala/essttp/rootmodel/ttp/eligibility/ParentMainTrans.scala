@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class ParentMainTrans(value: String) extends AnyVal
 
 object ParentMainTrans {
-  implicit val format: Format[ParentMainTrans] = Json.valueFormat[ParentMainTrans]
+  given Format[ParentMainTrans] = Json.valueFormat[ParentMainTrans]
 }

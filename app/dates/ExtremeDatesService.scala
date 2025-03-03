@@ -24,12 +24,14 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ExtremeDatesService @Inject() (datesService: DatesService)(implicit ec: ExecutionContext) {
+class ExtremeDatesService @Inject() (datesService: DatesService)(using ExecutionContext) {
 
-  def calculateExtremeDates(extremeDatesRequest: ExtremeDatesRequest)(implicit hc: HeaderCarrier): Future[ExtremeDatesResponse] = {
+  def calculateExtremeDates(
+    extremeDatesRequest: ExtremeDatesRequest
+  )(using HeaderCarrier): Future[ExtremeDatesResponse] = {
     val earliestDatePaymentCanBeTakenF = datesService.todayPlusWorkingDays(6)
 
-    earliestDatePaymentCanBeTakenF.map{ earliestDatePaymentCanBeTaken =>
+    earliestDatePaymentCanBeTakenF.map { earliestDatePaymentCanBeTaken =>
       val initialPaymentDate: Option[InitialPaymentDate] =
         if (extremeDatesRequest.initialPayment.value) Some(InitialPaymentDate(earliestDatePaymentCanBeTaken))
         else None
@@ -38,15 +40,15 @@ class ExtremeDatesService @Inject() (datesService: DatesService)(implicit ec: Ex
         case InitialPayment(true)  => EarliestPaymentPlanStartDate(datesService.todayPlusCalendarDays(30))
         case InitialPayment(false) => EarliestPaymentPlanStartDate(earliestDatePaymentCanBeTaken)
       }
-      val latestPlanStartDate: LatestPaymentPlanStartDate = extremeDatesRequest.initialPayment match {
+      val latestPlanStartDate: LatestPaymentPlanStartDate     = extremeDatesRequest.initialPayment match {
         case InitialPayment(true)  => LatestPaymentPlanStartDate(datesService.todayPlusCalendarDays(60))
         case InitialPayment(false) => LatestPaymentPlanStartDate(datesService.todayPlusCalendarDays(40))
       }
 
       ExtremeDatesResponse(
-        initialPaymentDate    = initialPaymentDate,
+        initialPaymentDate = initialPaymentDate,
         earliestPlanStartDate = earliestPlanStartDate,
-        latestPlanStartDate   = latestPlanStartDate
+        latestPlanStartDate = latestPlanStartDate
       )
 
     }

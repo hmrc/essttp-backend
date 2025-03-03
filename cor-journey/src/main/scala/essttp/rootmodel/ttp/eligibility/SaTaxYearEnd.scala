@@ -23,5 +23,5 @@ import java.time.LocalDate
 final case class SaTaxYearEnd(value: LocalDate) extends AnyVal
 
 object SaTaxYearEnd {
-  implicit val format: Format[SaTaxYearEnd] = Json.valueFormat[SaTaxYearEnd]
+  given Format[SaTaxYearEnd] = Json.valueFormat[SaTaxYearEnd]
 }

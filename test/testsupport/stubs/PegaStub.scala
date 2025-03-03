@@ -36,8 +36,8 @@ object PegaStub {
     s"/prweb/api/payments/v1/cases/${caseId.value}"
 
   val getCaseRequestQueryParams = Map(
-    "viewType" -> equalTo("none"),
-    "pageName" -> equalTo("GetCaseDetailsWrapper"),
+    "viewType"            -> equalTo("none"),
+    "pageName"            -> equalTo("GetCaseDetailsWrapper"),
     "getBusinessDataOnly" -> equalTo("true")
   ).asJava
 
@@ -49,39 +49,46 @@ object PegaStub {
         .willReturn(
           result.fold(
             aResponse().withStatus(_),
-            token => aResponse().withStatus(200).withBody(
-              s"""{
+            token =>
+              aResponse()
+                .withStatus(200)
+                .withBody(
+                  s"""{
                  |  "access_token": "${token.accessToken}",
                  |  "token_type": "${token.tokenType}",
                  |  "expires_in": ${token.expiresIn.toString}
                  |}
                  |""".stripMargin
-            )
+                )
           )
         )
     )
 
-  def stubStartCase(result: Either[HttpStatus, PegaStartCaseResponse], expiredToken: Boolean = false): StubMapping = {
+  def stubStartCase(result: Either[HttpStatus, PegaStartCaseResponse], expiredToken: Boolean = false): StubMapping =
     if (expiredToken) {
       val scenarioName = "StartCaseScenario"
       val initialState = "Initial"
-      val failedState = "Failed"
+      val failedState  = "Failed"
 
-      stubFor(post(urlPathEqualTo(startCaseUrlPath))
-        .inScenario(scenarioName)
-        .whenScenarioStateIs(initialState)
-        .willReturn(aResponse().withStatus(401))
-        .willSetStateTo(failedState))
+      stubFor(
+        post(urlPathEqualTo(startCaseUrlPath))
+          .inScenario(scenarioName)
+          .whenScenarioStateIs(initialState)
+          .willReturn(aResponse().withStatus(401))
+          .willSetStateTo(failedState)
+      )
 
-      stubFor(post(urlPathEqualTo(startCaseUrlPath))
-        .inScenario(scenarioName)
-        .whenScenarioStateIs(failedState)
-        .willReturn(
-          result.fold(
-            aResponse().withStatus(_),
-            response => aResponse().withStatus(200).withBody(generateResponseBody(response))
+      stubFor(
+        post(urlPathEqualTo(startCaseUrlPath))
+          .inScenario(scenarioName)
+          .whenScenarioStateIs(failedState)
+          .willReturn(
+            result.fold(
+              aResponse().withStatus(_),
+              response => aResponse().withStatus(200).withBody(generateResponseBody(response))
+            )
           )
-        ))
+      )
     } else {
       stubFor(
         post(urlPathEqualTo(startCaseUrlPath))
@@ -93,7 +100,6 @@ object PegaStub {
           )
       )
     }
-  }
 
   private def generateResponseBody(response: PegaStartCaseResponse): String =
     s"""{
@@ -101,34 +107,36 @@ object PegaStub {
        |}""".stripMargin
 
   def stubGetCase(
-      caseId:       PegaCaseId,
-      result:       Either[HttpStatus, String],
-      expiredToken: Boolean                    = false
-  ): StubMapping = {
+    caseId:       PegaCaseId,
+    result:       Either[HttpStatus, String],
+    expiredToken: Boolean = false
+  ): StubMapping =
     if (expiredToken) {
       val scenarioName = "GetCaseScenario"
       val initialState = "Started"
-      val failedState = "FirstFail"
+      val failedState  = "FirstFail"
 
-      stubFor(get(urlPathEqualTo(getCaseUrlPath(caseId)))
-        .withQueryParams(getCaseRequestQueryParams)
-        .inScenario(scenarioName)
-        .whenScenarioStateIs(initialState)
-        .willReturn(aResponse().withStatus(401))
-        .willSetStateTo(failedState))
+      stubFor(
+        get(urlPathEqualTo(getCaseUrlPath(caseId)))
+          .withQueryParams(getCaseRequestQueryParams)
+          .inScenario(scenarioName)
+          .whenScenarioStateIs(initialState)
+          .willReturn(aResponse().withStatus(401))
+          .willSetStateTo(failedState)
+      )
 
-      stubFor(get(urlPathEqualTo(getCaseUrlPath(caseId)))
-        .withQueryParams(getCaseRequestQueryParams)
-        .inScenario(scenarioName)
-        .whenScenarioStateIs(failedState)
-        .willReturn(
-          result.fold(
-            aResponse().withStatus(_),
-            response => {
-              aResponse().withStatus(200).withBody(response)
-            }
+      stubFor(
+        get(urlPathEqualTo(getCaseUrlPath(caseId)))
+          .withQueryParams(getCaseRequestQueryParams)
+          .inScenario(scenarioName)
+          .whenScenarioStateIs(failedState)
+          .willReturn(
+            result.fold(
+              aResponse().withStatus(_),
+              response => aResponse().withStatus(200).withBody(response)
+            )
           )
-        ))
+      )
     } else {
       stubFor(
         get(urlPathEqualTo(getCaseUrlPath(caseId)))
@@ -136,14 +144,11 @@ object PegaStub {
           .willReturn(
             result.fold(
               aResponse().withStatus(_),
-              response => {
-                aResponse().withStatus(200).withBody(response)
-              }
+              response => aResponse().withStatus(200).withBody(response)
             )
           )
       )
     }
-  }
 
   def verifyOauthCalled(username: String, password: String, numberOfTimes: Int = 1): Unit = {
     val expectedEncodedCreds =

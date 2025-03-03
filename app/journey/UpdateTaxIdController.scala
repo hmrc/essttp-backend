@@ -17,13 +17,15 @@
 package journey
 
 import action.Actions
+import cats.data.Validated
+import cats.data.Validated.{Invalid, Valid}
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model._
-import essttp.rootmodel.{EmpRef, SaUtr, TaxId, Vrn, Nino}
+import essttp.journey.model.*
+import essttp.rootmodel.{EmpRef, Nino, SaUtr, TaxId, TaxRegime, Vrn}
 import essttp.utils.Errors
-import io.scalaland.chimney.dsl._
-import play.api.mvc._
+import io.scalaland.chimney.dsl.*
+import play.api.mvc.*
 import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
@@ -31,67 +33,47 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateTaxIdController @Inject() (
-    actions:        Actions,
-    journeyService: JourneyService,
-    cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
+  actions:        Actions,
+  journeyService: JourneyService,
+  cc:             ControllerComponents
+)(using ExecutionContext, OperationalCryptoFormat)
+    extends BackendController(cc) {
 
-  def updateTaxId(journeyId: JourneyId): Action[TaxId] = actions.authenticatedAction.async(parse.json[TaxId]) { implicit request =>
-    for {
-      journey <- journeyService.get(journeyId)
-      newJourney <- updateJourney(journey, request.body)
-    } yield Ok(newJourney.json)
+  def updateTaxId(journeyId: JourneyId): Action[TaxId] = actions.authenticatedAction.async(parse.json[TaxId]) {
+    implicit request =>
+      for {
+        journey    <- journeyService.get(journeyId)
+        newJourney <- updateJourney(journey, request.body)
+      } yield Ok(newJourney.json)
   }
 
-  private def updateJourney(journey: Journey, taxId: TaxId)(implicit request: Request[_]): Future[Journey] = {
+  private def updateJourney(journey: Journey, taxId: TaxId)(using Request[_]): Future[Journey] =
     journey match {
-      case j: Journey.Epaye.Started =>
-        taxId match {
-          case empRef: EmpRef => journeyService.upsert(asEpayeComputedTaxId(j, empRef))
-          case other          => Errors.throwBadRequestExceptionF(s"Why is there a ${other.getClass.getSimpleName}, this is for EPAYE...")
+      case j: Journey.Started =>
+        val validatedId: Validated[String, TaxId] = (j.origin.taxRegime, taxId) match {
+          case (TaxRegime.Epaye, id: EmpRef) => Valid(id)
+          case (TaxRegime.Vat, id: Vrn)      => Valid(id)
+          case (TaxRegime.Sa, id: SaUtr)     => Valid(id)
+          case (TaxRegime.Simp, id: Nino)    => Valid(id)
+          case (regime, id)                  =>
+            Invalid(s"Why is there a ${id.getClass.getSimpleName}, this is for ${regime.entryName}...")
         }
-      case j: Journey.Vat.Started =>
-        taxId match {
-          case vrn: Vrn => journeyService.upsert(asVatComputedTaxId(j, vrn))
-          case other    => Errors.throwBadRequestExceptionF(s"Why is there a ${other.getClass.getSimpleName}, this is for Vat...")
-        }
-      case j: Journey.Sa.Started =>
-        taxId match {
-          case saUtr: SaUtr => journeyService.upsert(asSaComputedTaxId(j, saUtr))
-          case other        => Errors.throwBadRequestExceptionF(s"Why is there a ${other.getClass.getSimpleName}, this is for Sa...")
-        }
-      case j: Journey.Simp.Started =>
-        taxId match {
-          case nino: Nino => journeyService.upsert(asSimpComputedTaxId(j, nino))
-          case other      => Errors.throwBadRequestExceptionF(s"Why is there a ${other.getClass.getSimpleName}, this is for Simp...")
-        }
-      case j: Journey.AfterComputedTaxId =>
-        Errors.throwBadRequestExceptionF(s"UpdateTaxId is not possible in this stage, why is it happening? Debug me... [${j.stage.toString}]")
+
+        validatedId.fold(
+          message => Errors.throwBadRequestExceptionF(message),
+          { id =>
+            val newJourney = j
+              .into[Journey.ComputedTaxId]
+              .withFieldConst(_.taxId, id)
+              .transform
+            journeyService.upsert(newJourney)
+          }
+        )
+
+      case j: JourneyStage.AfterComputedTaxId =>
+        Errors.throwBadRequestExceptionF(
+          s"UpdateTaxId is not possible in this stage, why is it happening? Debug me... [${j.stage}]"
+        )
     }
-  }
-
-  private def asEpayeComputedTaxId(journey: Journey.Epaye.Started, empRef: EmpRef): Journey.Epaye.ComputedTaxId =
-    journey.into[Journey.Epaye.ComputedTaxId]
-      .withFieldConst(_.stage, Stage.AfterComputedTaxId.ComputedTaxId)
-      .withFieldConst(_.taxId, empRef)
-      .transform
-
-  private def asVatComputedTaxId(journey: Journey.Vat.Started, vrn: Vrn): Journey.Vat.ComputedTaxId =
-    journey.into[Journey.Vat.ComputedTaxId]
-      .withFieldConst(_.stage, Stage.AfterComputedTaxId.ComputedTaxId)
-      .withFieldConst(_.taxId, vrn)
-      .transform
-
-  private def asSaComputedTaxId(journey: Journey.Sa.Started, saUtr: SaUtr): Journey.Sa.ComputedTaxId =
-    journey.into[Journey.Sa.ComputedTaxId]
-      .withFieldConst(_.stage, Stage.AfterComputedTaxId.ComputedTaxId)
-      .withFieldConst(_.taxId, saUtr)
-      .transform
-
-  private def asSimpComputedTaxId(journey: Journey.Simp.Started, nino: Nino): Journey.Simp.ComputedTaxId =
-    journey.into[Journey.Simp.ComputedTaxId]
-      .withFieldConst(_.stage, Stage.AfterComputedTaxId.ComputedTaxId)
-      .withFieldConst(_.taxId, nino)
-      .transform
 
 }

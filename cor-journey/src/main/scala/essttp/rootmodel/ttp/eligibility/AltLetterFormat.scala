@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class AltLetterFormat(value: Int) extends AnyVal
 
 object AltLetterFormat {
-  implicit val format: Format[AltLetterFormat] = Json.valueFormat[AltLetterFormat]
+  given Format[AltLetterFormat] = Json.valueFormat[AltLetterFormat]
 }

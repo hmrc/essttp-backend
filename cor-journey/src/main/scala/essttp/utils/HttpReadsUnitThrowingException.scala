@@ -21,24 +21,23 @@ import uk.gov.hmrc.http.{HttpReads, HttpResponse, UpstreamErrorResponse}
 
 object HttpReadsUnitThrowingException {
 
-  /**
-   * It's a backward compatible implementation of readUnit for code written using versions of http-verbs before version 11.0.0.
-   * This implementation retains the old behaviour of readUnit which throws an exception
-   * if the http response status is 5xx or 4xx.
-   *
-   * Use it by avoiding the import of `readUnit` from import uk.gov.hmrc.http.HttpReads.Implicits.readUnit and instead
-   * using this HttpReadsUnitThrowingException.readUnit in its place (try to do this without shadowing just in case).
-   *
-   * Example:
-   * {{{
-   *   import uk.gov.hmrc.http.HttpReads.Implicits.{readUnit =>_, _} //this imports all but readUnit
-   *   import essttp.utils.HttpReadsUnitThrowingException.readUnit
-   * }}}
-   *
-   */
-  implicit val readUnit: HttpReads[Unit] = {
+  /** It's a backward compatible implementation of readUnit for code written using versions of http-verbs before version
+    * 11.0.0. This implementation retains the old behaviour of readUnit which throws an exception if the http response
+    * status is 5xx or 4xx.
+    *
+    * Use it by avoiding the import of `readUnit` from import uk.gov.hmrc.http.HttpReads.Implicits.readUnit and instead
+    * using this HttpReadsUnitThrowingException.readUnit in its place (try to do this without shadowing just in case).
+    *
+    * Example:
+    * {{{
+    *   import uk.gov.hmrc.http.HttpReads.Implicits.{readUnit =>_, _} //this imports all but readUnit
+    *   import essttp.utils.HttpReadsUnitThrowingException.readUnit
+    * }}}
+    */
+  given HttpReads[Unit] = {
     val eitherHttpResponseReads: HttpReads[Either[UpstreamErrorResponse, HttpResponse]] = readEitherOf[HttpResponse]
-    val eitherUnitReads: HttpReads[Either[UpstreamErrorResponse, Unit]] = eitherHttpResponseReads.map(x => x.map(_ => ()))
+    val eitherUnitReads: HttpReads[Either[UpstreamErrorResponse, Unit]]                 =
+      eitherHttpResponseReads.map(x => x.map(_ => ()))
     throwOnFailure(eitherUnitReads)
   }
 }

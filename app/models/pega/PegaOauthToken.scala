@@ -22,11 +22,11 @@ final case class PegaOauthToken(accessToken: String, tokenType: String, expiresI
 
 object PegaOauthToken {
 
-  implicit val pegaReads: Reads[PegaOauthToken] = Reads { json =>
+  given Reads[PegaOauthToken] = Reads { json =>
     for {
       accessToken <- (json \ "access_token").validate[String]
-      tokenType <- (json \ "token_type").validate[String]
-      expiresIn <- (json \ "expires_in").validate[Long]
+      tokenType   <- (json \ "token_type").validate[String]
+      expiresIn   <- (json \ "expires_in").validate[Long]
     } yield PegaOauthToken(accessToken, tokenType, expiresIn)
   }
 

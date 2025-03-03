@@ -34,24 +34,22 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
+import JourneyByTaxIdRepo.{id, idExtractor}
 
-/**
- * Journeys to be stored for slightly longer than a session. Facilitates recreating
- * session data when coming back from PEGA
- */
+/** Journeys to be stored for slightly longer than a session. Facilitates recreating session data when coming back from
+  * PEGA
+  */
 class JourneyByTaxIdRepo @Inject() (
-    mongoComponent: MongoComponent,
-    config:         AppConfig
-)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
-  extends Repo[TaxId, JourneyWithTaxId](
-    collectionName = "journeyByTaxId",
-    mongoComponent = mongoComponent,
-    indexes        = JourneyByTaxIdRepo.indexes(config.journeyByTaxIdRepoTtl),
-    extraCodecs    = Codecs.playFormatSumCodecs(Journey.format),
-    replaceIndexes = true
-  ) {
-
-}
+  mongoComponent: MongoComponent,
+  config:         AppConfig
+)(using ExecutionContext, OperationalCryptoFormat)
+    extends Repo[TaxId, JourneyWithTaxId](
+      collectionName = "journeyByTaxId",
+      mongoComponent = mongoComponent,
+      indexes = JourneyByTaxIdRepo.indexes(config.journeyByTaxIdRepoTtl),
+      extraCodecs = Codecs.playFormatSumCodecs(Journey.format),
+      replaceIndexes = true
+    ) {}
 
 object JourneyByTaxIdRepo {
 
@@ -60,21 +58,21 @@ object JourneyByTaxIdRepo {
   object JourneyWithTaxId {
 
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[JourneyWithTaxId] =
+    given (using CryptoFormat): OFormat[JourneyWithTaxId] =
       Json.format
   }
 
-  implicit val journeyId: Id[TaxId] = new Id[TaxId] {
+  given id: Id[TaxId] = new Id[TaxId] {
     override def value(i: TaxId): String = i.value
   }
 
-  implicit val journeyIdExtractor: IdExtractor[JourneyWithTaxId, TaxId] = new IdExtractor[JourneyWithTaxId, TaxId] {
+  given idExtractor: IdExtractor[JourneyWithTaxId, TaxId] = new IdExtractor[JourneyWithTaxId, TaxId] {
     override def id(j: JourneyWithTaxId): TaxId = j.taxId
   }
 
   def indexes(cacheTtl: FiniteDuration): Seq[IndexModel] = Seq(
     IndexModel(
-      keys         = Indexes.ascending("lastUpdated"),
+      keys = Indexes.ascending("lastUpdated"),
       indexOptions = IndexOptions().expireAfter(cacheTtl.toSeconds, TimeUnit.SECONDS).name("lastUpdatedIdx")
     ),
     IndexModel(

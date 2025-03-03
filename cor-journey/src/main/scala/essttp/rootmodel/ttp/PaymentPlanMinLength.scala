@@ -16,10 +16,10 @@
 
 package essttp.rootmodel.ttp
 
-import play.api.libs.json.{Json, Format}
+import play.api.libs.json.{Format, Json}
 
 final case class PaymentPlanMinLength(value: Int) extends AnyVal
 
 object PaymentPlanMinLength {
-  implicit val format: Format[PaymentPlanMinLength] = Json.valueFormat
+  given Format[PaymentPlanMinLength] = Json.valueFormat
 }

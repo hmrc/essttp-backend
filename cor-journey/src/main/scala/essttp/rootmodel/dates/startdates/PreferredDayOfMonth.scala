@@ -18,11 +18,19 @@ package essttp.rootmodel.dates.startdates
 
 import play.api.libs.json.{Format, Json}
 
-final case class PreferredDayOfMonth(value: Int) {
-  require(value >= 1, "Day of month can't be less then 1")
-  require(value <= 28, "Day of month can't be grater then 28")
-}
+final case class PreferredDayOfMonth(value: Int) extends AnyVal derives CanEqual
 
 object PreferredDayOfMonth {
-  implicit val format: Format[PreferredDayOfMonth] = Json.valueFormat
+
+  given Format[PreferredDayOfMonth] =
+    Json
+      .valueFormat[PreferredDayOfMonth]
+      .bimap(
+        (day: PreferredDayOfMonth) =>
+          if (day.value < 1) throw IllegalArgumentException("Day of month can't be less then 1")
+          else if (day.value > 28) throw IllegalArgumentException("Day of month can't be greater then 28")
+          else day,
+        identity
+      )
+
 }

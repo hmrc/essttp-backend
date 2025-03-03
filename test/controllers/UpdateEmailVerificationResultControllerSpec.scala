@@ -22,7 +22,7 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateEmailVerificationResultControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-email-verification-status" - {
 
@@ -30,8 +30,13 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
       stubCommonActions()
 
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
-      val result: Throwable = journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Verified).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"UpdateEmailVerificationResult is not possible in that state: [Started]"}""")
+      val result: Throwable = journeyConnector
+        .updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Verified)
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"UpdateEmailVerificationResult is not possible in that state: [Started]"}"""
+      )
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }
@@ -43,9 +48,9 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
           tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability,
           EmailVerificationResult.Verified
         )(
-            journeyConnector.updateEmailVerificationResult,
-            tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
-          )(this)
+          journeyConnector.updateEmailVerificationResult,
+          tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+        )(this)
       }
 
       "Vat" in new JourneyItTest {
@@ -53,9 +58,9 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
           tdAll.VatBta.journeyAfterSelectedEmailNoAffordability,
           EmailVerificationResult.Verified
         )(
-            journeyConnector.updateEmailVerificationResult,
-            tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
-          )(this)
+          journeyConnector.updateEmailVerificationResult,
+          tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+        )(this)
       }
 
       "Sa" in new JourneyItTest {
@@ -63,9 +68,9 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
           tdAll.SaBta.journeyAfterSelectedEmailNoAffordability,
           EmailVerificationResult.Verified
         )(
-            journeyConnector.updateEmailVerificationResult,
-            tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
-          )(this)
+          journeyConnector.updateEmailVerificationResult,
+          tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+        )(this)
       }
 
       "Simp" in new JourneyItTest {
@@ -73,9 +78,9 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
           tdAll.SimpPta.journeyAfterSelectedEmail,
           EmailVerificationResult.Verified
         )(
-            journeyConnector.updateEmailVerificationResult,
-            tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
-          )(this)
+          journeyConnector.updateEmailVerificationResult,
+          tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified)
+        )(this)
       }
     }
 
@@ -83,96 +88,112 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
 
       "Epaye when the current stage is" - {
 
-          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => EmailVerificationResult)(context: JourneyItTest): Unit = {
-            val differentVerificationResult: EmailVerificationResult = existingValue(initialJourney) match {
-              case EmailVerificationResult.Verified => EmailVerificationResult.Locked
-              case EmailVerificationResult.Locked   => EmailVerificationResult.Verified
-            }
-
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentVerificationResult,
-                journeyConnector.updateEmailVerificationResult(_, _)(context.request),
-                context.tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(differentVerificationResult)
-              )(context)
+        def testEpayeBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EmailVerificationResult)(context: JourneyItTest): Unit = {
+          val differentVerificationResult: EmailVerificationResult = existingValue(initialJourney) match {
+            case EmailVerificationResult.Verified => EmailVerificationResult.Locked
+            case EmailVerificationResult.Locked   => EmailVerificationResult.Verified
           }
 
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentVerificationResult,
+            journeyConnector.updateEmailVerificationResult(_, _)(using context.request),
+            context.tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(differentVerificationResult)
+          )(context)
+        }
+
         "EmailVerificationComplete" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.emailVerificationResult)(this)
+          testEpayeBta(
+            tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+          )(_.emailVerificationResult)(this)
         }
 
       }
 
       "Vat when the current stage is" - {
 
-          def testVatBta[J <: Journey](initialJourney: J)(existingValue: J => EmailVerificationResult)(context: JourneyItTest): Unit = {
-            val differentVerificationResult: EmailVerificationResult = existingValue(initialJourney) match {
-              case EmailVerificationResult.Verified => EmailVerificationResult.Locked
-              case EmailVerificationResult.Locked   => EmailVerificationResult.Verified
-            }
-
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentVerificationResult,
-                journeyConnector.updateEmailVerificationResult(_, _)(context.request),
-                context.tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(differentVerificationResult)
-              )(context)
+        def testVatBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EmailVerificationResult)(context: JourneyItTest): Unit = {
+          val differentVerificationResult: EmailVerificationResult = existingValue(initialJourney) match {
+            case EmailVerificationResult.Verified => EmailVerificationResult.Locked
+            case EmailVerificationResult.Locked   => EmailVerificationResult.Verified
           }
 
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentVerificationResult,
+            journeyConnector.updateEmailVerificationResult(_, _)(using context.request),
+            context.tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(differentVerificationResult)
+          )(context)
+        }
+
         "EmailVerificationComplete" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.emailVerificationResult)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
+            _.emailVerificationResult
+          )(this)
         }
 
       }
 
       "Sa when the current stage is" - {
 
-          def testSaBta[J <: Journey](initialJourney: J)(existingValue: J => EmailVerificationResult)(context: JourneyItTest): Unit = {
-            val differentVerificationResult: EmailVerificationResult = existingValue(initialJourney) match {
-              case EmailVerificationResult.Verified => EmailVerificationResult.Locked
-              case EmailVerificationResult.Locked   => EmailVerificationResult.Verified
-            }
-
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentVerificationResult,
-                journeyConnector.updateEmailVerificationResult(_, _)(context.request),
-                context.tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(differentVerificationResult)
-              )(context)
+        def testSaBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EmailVerificationResult)(context: JourneyItTest): Unit = {
+          val differentVerificationResult: EmailVerificationResult = existingValue(initialJourney) match {
+            case EmailVerificationResult.Verified => EmailVerificationResult.Locked
+            case EmailVerificationResult.Locked   => EmailVerificationResult.Verified
           }
 
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentVerificationResult,
+            journeyConnector.updateEmailVerificationResult(_, _)(using context.request),
+            context.tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(differentVerificationResult)
+          )(context)
+        }
+
         "EmailVerificationComplete" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.emailVerificationResult)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
+            _.emailVerificationResult
+          )(this)
         }
 
       }
 
       "Simp when the current stage is" - {
 
-          def testSimpPta[J <: Journey](initialJourney: J)(existingValue: J => EmailVerificationResult)(context: JourneyItTest): Unit = {
-            val differentVerificationResult: EmailVerificationResult = existingValue(initialJourney) match {
-              case EmailVerificationResult.Verified => EmailVerificationResult.Locked
-              case EmailVerificationResult.Locked   => EmailVerificationResult.Verified
-            }
-
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentVerificationResult,
-                journeyConnector.updateEmailVerificationResult(_, _)(context.request),
-                context.tdAll.SimpPta.journeyAfterEmailVerificationResult(differentVerificationResult)
-              )(context)
+        def testSimpPta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EmailVerificationResult)(context: JourneyItTest): Unit = {
+          val differentVerificationResult: EmailVerificationResult = existingValue(initialJourney) match {
+            case EmailVerificationResult.Verified => EmailVerificationResult.Locked
+            case EmailVerificationResult.Locked   => EmailVerificationResult.Verified
           }
 
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentVerificationResult,
+            journeyConnector.updateEmailVerificationResult(_, _)(using context.request),
+            context.tdAll.SimpPta.journeyAfterEmailVerificationResult(differentVerificationResult)
+          )(context)
+        }
+
         "EmailVerificationComplete" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.emailVerificationResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(
+            _.emailVerificationResult
+          )(this)
         }
 
       }
@@ -180,15 +201,27 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
     }
 
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
+      val j: Journey = TdAll.EpayeBta
+        .journeyAfterSubmittedArrangementNoAffordability()
+        .copy(_id = tdAll.journeyId)
+        .copy(correlationId = tdAll.correlationId)
+        .copy(isEmailAddressRequired = IsEmailAddressRequired(value = true))
+
       stubCommonActions()
       insertJourneyForTest(
-        TdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability()
+        TdAll.EpayeBta
+          .journeyAfterSubmittedArrangementNoAffordability()
           .copy(_id = tdAll.journeyId)
           .copy(correlationId = tdAll.correlationId)
           .copy(isEmailAddressRequired = IsEmailAddressRequired(value = true))
       )
-      val result: Throwable = journeyConnector.updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Locked).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"Cannot update EmailVerificationResult when journey is in completed state."}""")
+      val result: Throwable = journeyConnector
+        .updateEmailVerificationResult(tdAll.journeyId, EmailVerificationResult.Locked)
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"Cannot update EmailVerificationResult when journey is in completed state."}"""
+      )
       verifyCommonActions(numberOfAuthCalls = 1)
     }
 

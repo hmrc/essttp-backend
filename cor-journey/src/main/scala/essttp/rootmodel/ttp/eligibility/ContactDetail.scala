@@ -21,15 +21,15 @@ import essttp.rootmodel.Email
 import play.api.libs.json.{Format, Json}
 
 final case class ContactDetail(
-    telephoneNumber: Option[TelNumber],
-    fax:             Option[FaxNumber],
-    mobile:          Option[TelNumber],
-    emailAddress:    Option[Email],
-    emailSource:     Option[EmailSource],
-    altFormat:       Option[AltLetterFormat]
+  telephoneNumber: Option[TelNumber],
+  fax:             Option[FaxNumber],
+  mobile:          Option[TelNumber],
+  emailAddress:    Option[Email],
+  emailSource:     Option[EmailSource],
+  altFormat:       Option[AltLetterFormat]
 )
 
 object ContactDetail {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): Format[ContactDetail] = Json.format[ContactDetail]
+  given (using CryptoFormat): Format[ContactDetail] = Json.format[ContactDetail]
 }

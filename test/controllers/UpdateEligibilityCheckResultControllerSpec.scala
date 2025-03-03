@@ -25,15 +25,20 @@ import testsupport.testdata.TdAll
 
 import java.time.Instant
 
-class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateEligibilityCheckResultControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-eligibility-result" - {
     "should throw Bad Request when Journey is in a stage [BeforeComputedTaxId]" in new JourneyItTest {
       stubCommonActions()
 
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
-      val result: Throwable = journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"EligibilityCheckResult update is not possible in that state."}""")
+      val result: Throwable = journeyConnector
+        .updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest())
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"EligibilityCheckResult update is not possible in that state."}"""
+      )
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }
@@ -45,9 +50,9 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
           tdAll.EpayeBta.journeyAfterDetermineTaxIds,
           TdAll.EpayeBta.updateEligibilityCheckRequest()
         )(
-            journeyConnector.updateEligibilityCheckResult,
-            tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
-          )(this)
+          journeyConnector.updateEligibilityCheckResult,
+          tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
+        )(this)
       }
 
       "Vat" in new JourneyItTest {
@@ -55,9 +60,9 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
           tdAll.VatBta.journeyAfterDetermineTaxIds,
           TdAll.VatBta.updateEligibilityCheckRequest()
         )(
-            journeyConnector.updateEligibilityCheckResult,
-            tdAll.VatBta.journeyAfterEligibilityCheckEligible
-          )(this)
+          journeyConnector.updateEligibilityCheckResult,
+          tdAll.VatBta.journeyAfterEligibilityCheckEligible
+        )(this)
       }
 
       "Sa" in new JourneyItTest {
@@ -65,9 +70,9 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
           tdAll.SaBta.journeyAfterDetermineTaxIds,
           TdAll.SaBta.updateEligibilityCheckRequest()
         )(
-            journeyConnector.updateEligibilityCheckResult,
-            tdAll.SaBta.journeyAfterEligibilityCheckEligible
-          )(this)
+          journeyConnector.updateEligibilityCheckResult,
+          tdAll.SaBta.journeyAfterEligibilityCheckEligible
+        )(this)
       }
 
       "Simp" in new JourneyItTest {
@@ -75,9 +80,9 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
           tdAll.SimpPta.journeyAfterDetermineTaxIds,
           TdAll.SimpPta.updateEligibilityCheckRequest()
         )(
-            journeyConnector.updateEligibilityCheckResult,
-            tdAll.SimpPta.journeyAfterEligibilityCheckEligible
-          )(this)
+          journeyConnector.updateEligibilityCheckResult,
+          tdAll.SimpPta.journeyAfterEligibilityCheckEligible
+        )(this)
       }
     }
 
@@ -86,27 +91,37 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
       "Epaye when the current stage is" - {
 
         val differentEligibilityCheckResult =
-          TdAll.eligibleEligibilityCheckResultEpaye.copy(processingDateTime = ProcessingDateTime(Instant.now().toString))
+          TdAll.eligibleEligibilityCheckResultEpaye.copy(processingDateTime =
+            ProcessingDateTime(Instant.now().toString)
+          )
 
-          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentEligibilityCheckResult,
-                journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-                context.tdAll.EpayeBta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult)
-              )(context)
+        def testEpayeBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentEligibilityCheckResult,
+            journeyConnector.updateEligibilityCheckResult(_, _)(using context.request),
+            context.tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
+              .copy(eligibilityCheckResult = differentEligibilityCheckResult)
+          )(context)
 
-          def testEpayeBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentEligibilityCheckResult,
-                journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-                context.tdAll.EpayeBta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult, pegaCaseId = Some(PegaCaseId("case-id")))
-              )(context)
+        def testEpayeBtaWithCaseId[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentEligibilityCheckResult,
+            journeyConnector.updateEligibilityCheckResult(_, _)(using context.request),
+            context.tdAll.EpayeBta.journeyAfterEligibilityCheckEligible.copy(
+              eligibilityCheckResult = differentEligibilityCheckResult,
+              pegaCaseId = Some(PegaCaseId("case-id"))
+            )
+          )(context)
 
         "EligibilityChecked" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)
@@ -165,19 +180,27 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.eligibilityCheckResult)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.eligibilityCheckResult
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.eligibilityCheckResult)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.eligibilityCheckResult)(
+            this
+          )
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.eligibilityCheckResult)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.eligibilityCheckResult)(
+            this
+          )
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.eligibilityCheckResult)(this)
+          testEpayeBta(
+            tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
+          )(_.eligibilityCheckResult)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
@@ -185,7 +208,9 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.eligibilityCheckResult)(this)
+          testEpayeBta(
+            tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+          )(_.eligibilityCheckResult)(this)
         }
 
       }
@@ -193,27 +218,37 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
       "Vat when the current stage is" - {
 
         val differentEligibilityCheckResult =
-          TdAll.eligibleEligibilityCheckResultVat().copy(processingDateTime = ProcessingDateTime(Instant.now().toString))
+          TdAll
+            .eligibleEligibilityCheckResultVat()
+            .copy(processingDateTime = ProcessingDateTime(Instant.now().toString))
 
-          def testVatBta[J <: Journey](initialJourney: J)(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentEligibilityCheckResult,
-                journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-                context.tdAll.VatBta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult)
-              )(context)
+        def testVatBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentEligibilityCheckResult,
+            journeyConnector.updateEligibilityCheckResult(_, _)(using context.request),
+            context.tdAll.VatBta.journeyAfterEligibilityCheckEligible
+              .copy(eligibilityCheckResult = differentEligibilityCheckResult)
+          )(context)
 
-          def testVatBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentEligibilityCheckResult,
-                journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-                context.tdAll.VatBta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult, pegaCaseId = Some(PegaCaseId("case-id")))
-              )(context)
+        def testVatBtaWithCaseId[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentEligibilityCheckResult,
+            journeyConnector.updateEligibilityCheckResult(_, _)(using context.request),
+            context.tdAll.VatBta.journeyAfterEligibilityCheckEligible.copy(
+              eligibilityCheckResult = differentEligibilityCheckResult,
+              pegaCaseId = Some(PegaCaseId("case-id"))
+            )
+          )(context)
 
         "EligibilityChecked" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)
@@ -272,19 +307,27 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.eligibilityCheckResult)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.eligibilityCheckResult
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.eligibilityCheckResult)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.eligibilityCheckResult)(
+            this
+          )
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.eligibilityCheckResult)(this)
+          testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.eligibilityCheckResult)(
+            this
+          )
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.eligibilityCheckResult)(this)
+          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.eligibilityCheckResult
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
@@ -292,7 +335,9 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.eligibilityCheckResult)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
+            _.eligibilityCheckResult
+          )(this)
         }
 
       }
@@ -302,25 +347,33 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         val differentEligibilityCheckResult =
           TdAll.eligibleEligibilityCheckResultSa.copy(processingDateTime = ProcessingDateTime(Instant.now().toString))
 
-          def testSaBta[J <: Journey](initialJourney: J)(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentEligibilityCheckResult,
-                journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-                context.tdAll.SaBta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult)
-              )(context)
+        def testSaBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentEligibilityCheckResult,
+            journeyConnector.updateEligibilityCheckResult(_, _)(using context.request),
+            context.tdAll.SaBta.journeyAfterEligibilityCheckEligible
+              .copy(eligibilityCheckResult = differentEligibilityCheckResult)
+          )(context)
 
-          def testSaBtaWithcaseId[J <: Journey](initialJourney: J)(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentEligibilityCheckResult,
-                journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-                context.tdAll.SaBta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult, pegaCaseId = Some(PegaCaseId("case-id")))
-              )(context)
+        def testSaBtaWithcaseId[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentEligibilityCheckResult,
+            journeyConnector.updateEligibilityCheckResult(_, _)(using context.request),
+            context.tdAll.SaBta.journeyAfterEligibilityCheckEligible.copy(
+              eligibilityCheckResult = differentEligibilityCheckResult,
+              pegaCaseId = Some(PegaCaseId("case-id"))
+            )
+          )(context)
 
         "EligibilityChecked" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)
@@ -379,7 +432,9 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.eligibilityCheckResult)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.eligibilityCheckResult
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -391,7 +446,9 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.eligibilityCheckResult)(this)
+          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.eligibilityCheckResult
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
@@ -399,7 +456,9 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.eligibilityCheckResult)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
+            _.eligibilityCheckResult
+          )(this)
         }
 
       }
@@ -409,25 +468,33 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         val differentEligibilityCheckResult =
           TdAll.eligibleEligibilityCheckResultSa.copy(processingDateTime = ProcessingDateTime(Instant.now().toString))
 
-          def testSimpPta[J <: Journey](initialJourney: J)(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentEligibilityCheckResult,
-                journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-                context.tdAll.SimpPta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult)
-              )(context)
+        def testSimpPta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentEligibilityCheckResult,
+            journeyConnector.updateEligibilityCheckResult(_, _)(using context.request),
+            context.tdAll.SimpPta.journeyAfterEligibilityCheckEligible
+              .copy(eligibilityCheckResult = differentEligibilityCheckResult)
+          )(context)
 
-          def testSimpPtaWithCaseid[J <: Journey](initialJourney: J)(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentEligibilityCheckResult,
-                journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-                context.tdAll.SimpPta.journeyAfterEligibilityCheckEligible.copy(eligibilityCheckResult = differentEligibilityCheckResult, pegaCaseId = Some(PegaCaseId("case-id")))
-              )(context)
+        def testSimpPtaWithCaseid[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentEligibilityCheckResult,
+            journeyConnector.updateEligibilityCheckResult(_, _)(using context.request),
+            context.tdAll.SimpPta.journeyAfterEligibilityCheckEligible.copy(
+              eligibilityCheckResult = differentEligibilityCheckResult,
+              pegaCaseId = Some(PegaCaseId("case-id"))
+            )
+          )(context)
 
         "EligibilityChecked" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)
@@ -486,19 +553,27 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.eligibilityCheckResult
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.eligibilityCheckResult)(
+            this
+          )
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.eligibilityCheckResult)(
+            this
+          )
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.eligibilityCheckResult
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
@@ -506,7 +581,9 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.eligibilityCheckResult)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(
+            _.eligibilityCheckResult
+          )(this)
         }
 
       }
@@ -516,9 +593,19 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      val result: Throwable = journeyConnector.updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest()).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"Cannot update EligibilityCheckResult when journey is in completed state"}""")
+      insertJourneyForTest(
+        TdAll.EpayeBta
+          .journeyAfterSubmittedArrangementNoAffordability()
+          .copy(_id = tdAll.journeyId)
+          .copy(correlationId = tdAll.correlationId)
+      )
+      val result: Throwable = journeyConnector
+        .updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest())
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"Cannot update EligibilityCheckResult when journey is in completed state"}"""
+      )
 
       verifyCommonActions(numberOfAuthCalls = 1)
     }

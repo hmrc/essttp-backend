@@ -16,10 +16,10 @@
 
 package essttp.rootmodel.ttp.affordablequotes
 
-import play.api.libs.json.{Json, Format}
+import play.api.libs.json.{Format, Json}
 
 final case class PlanDuration(value: Int) extends AnyVal
 
 object PlanDuration {
-  implicit val format: Format[PlanDuration] = Json.valueFormat[PlanDuration]
+  given Format[PlanDuration] = Json.valueFormat[PlanDuration]
 }

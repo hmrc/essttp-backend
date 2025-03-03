@@ -16,7 +16,7 @@
 
 package bars
 
-import bars.BarsVerifyStatusRepo._
+import bars.BarsVerifyStatusRepoUtils.{taxId, taxIdExtractor}
 import config.AppConfig
 import essttp.bars.model.{BarsVerifyStatus, TaxIdIndex}
 import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
@@ -31,26 +31,25 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 final class BarsVerifyStatusRepo @Inject() (
-    mongoComponent: MongoComponent,
-    config:         AppConfig
-)(implicit ec: ExecutionContext)
-  extends Repo[TaxIdIndex, BarsVerifyStatus](
-    collectionName = "bars",
-    mongoComponent = mongoComponent,
-    indexes        = BarsVerifyStatusRepo.indexes(config.barsVerifyRepoTtl.toSeconds),
-    extraCodecs    = Codecs.playFormatCodecsBuilder(BarsVerifyStatus.format).build,
-    replaceIndexes = true
-  )
+  mongoComponent: MongoComponent,
+  config:         AppConfig
+)(using ec: ExecutionContext)
+    extends Repo[TaxIdIndex, BarsVerifyStatus](
+      collectionName = "bars",
+      mongoComponent = mongoComponent,
+      indexes = BarsVerifyStatusRepoUtils.indexes(config.barsVerifyRepoTtl.toSeconds),
+      extraCodecs = Codecs.playFormatCodecsBuilder(BarsVerifyStatus.format).build,
+      replaceIndexes = true
+    )
 
-object BarsVerifyStatusRepo {
-  implicit val taxId: Id[TaxIdIndex] = (i: TaxIdIndex) => i.value
-  implicit val taxIdExtractor: IdExtractor[BarsVerifyStatus, TaxIdIndex] = (b: BarsVerifyStatus) => b._id
+object BarsVerifyStatusRepoUtils {
+  given taxId: Id[TaxIdIndex]                                     = (i: TaxIdIndex) => i.value
+  given taxIdExtractor: IdExtractor[BarsVerifyStatus, TaxIdIndex] = (b: BarsVerifyStatus) => b._id
 
   def indexes(cacheTtlInSeconds: Long): Seq[IndexModel] = Seq(
     IndexModel(
-      keys         = Indexes.ascending("lastUpdated"),
+      keys = Indexes.ascending("lastUpdated"),
       indexOptions = IndexOptions().expireAfter(cacheTtlInSeconds, TimeUnit.SECONDS).name("lastUpdatedIdx")
     )
   )
 }
-

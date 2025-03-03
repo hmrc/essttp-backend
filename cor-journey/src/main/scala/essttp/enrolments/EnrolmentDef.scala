@@ -21,19 +21,18 @@ import essttp.rootmodel.{SaUtr, Vrn}
 import uk.gov.hmrc.auth.core.Enrolments
 import essttp.enrolments.EnrolmentDefResult._
 
-/**
- * Enrolment Definition - defines the enrolment a user has to have
- */
+/** Enrolment Definition - defines the enrolment a user has to have
+  */
 final case class EnrolmentDef(
-    enrolmentKey:  String,
-    identifierKey: String
+  enrolmentKey:  String,
+  identifierKey: String
 )
 
 object EnrolmentDef {
 
   object Epaye {
 
-    val `IR-PAYE-TaxOfficeNumber`: EnrolmentDef = EnrolmentDef("IR-PAYE", "TaxOfficeNumber")
+    val `IR-PAYE-TaxOfficeNumber`: EnrolmentDef    = EnrolmentDef("IR-PAYE", "TaxOfficeNumber")
     val `IR-PAYE-TaxOfficeReference`: EnrolmentDef = EnrolmentDef("IR-PAYE", "TaxOfficeReference")
 
     def findEnrolmentValues(enrolments: Enrolments): EnrolmentDefResult[(TaxOfficeNumber, TaxOfficeReference)] =
@@ -41,37 +40,35 @@ object EnrolmentDef {
         findMatchingEnrolmentsValues(enrolments, `IR-PAYE-TaxOfficeNumber`),
         findMatchingEnrolmentsValues(enrolments, `IR-PAYE-TaxOfficeReference`)
       ) match {
-          case (Success(taxOfficeNumber), Success(taxOfficeReference)) =>
-            Success(TaxOfficeNumber(taxOfficeNumber) -> TaxOfficeReference(taxOfficeReference))
+        case (Success(taxOfficeNumber), Success(taxOfficeReference)) =>
+          Success(TaxOfficeNumber(taxOfficeNumber) -> TaxOfficeReference(taxOfficeReference))
 
-          case (IdentifierNotFound(enrolmentDef1), IdentifierNotFound(enrolmentDef2)) =>
-            IdentifierNotFound(enrolmentDef1 ++ enrolmentDef2)
+        case (IdentifierNotFound(enrolmentDef1), IdentifierNotFound(enrolmentDef2)) =>
+          IdentifierNotFound(enrolmentDef1 ++ enrolmentDef2)
 
-          case (IdentifierNotFound(enrolmentDef), _) =>
-            IdentifierNotFound(enrolmentDef)
+        case (IdentifierNotFound(enrolmentDef), _) =>
+          IdentifierNotFound(enrolmentDef)
 
-          case (_, IdentifierNotFound(enrolmentDef)) =>
-            IdentifierNotFound(enrolmentDef)
+        case (_, IdentifierNotFound(enrolmentDef)) =>
+          IdentifierNotFound(enrolmentDef)
 
-          case (_: EnrolmentNotFound[_], _) => EnrolmentNotFound()
-          case (_, _: EnrolmentNotFound[_]) => EnrolmentNotFound()
-          case (_: Inactive[_], _)          => Inactive()
-          case (_, _: Inactive[_])          => Inactive()
-        }
+        case (_: EnrolmentNotFound[_], _) => EnrolmentNotFound()
+        case (_, _: EnrolmentNotFound[_]) => EnrolmentNotFound()
+        case (_: Inactive[_], _)          => Inactive()
+        case (_, _: Inactive[_])          => Inactive()
+      }
 
   }
 
   object Vat {
 
-    val `HMRC-MTD-VAT`: EnrolmentDef = EnrolmentDef("HMRC-MTD-VAT", "VRN")
+    val `HMRC-MTD-VAT`: EnrolmentDef    = EnrolmentDef("HMRC-MTD-VAT", "VRN")
     val `HMCE-VATDEC-ORG`: EnrolmentDef = EnrolmentDef("HMCE-VATDEC-ORG", "VATRegNo")
     val `HMCE-VATVAR-ORG`: EnrolmentDef = EnrolmentDef("HMCE-VATVAR-ORG", "VATRegNo")
 
-    /**
-     * It extracts VRN as an option from enrolments.It might happen that enrolments have multiple vrn values.
-     * If so it selects the MTD related one.
-     * see https://jira.tools.tax.service.gov.uk/browse/OPS-5542
-     */
+    /** It extracts VRN as an option from enrolments.It might happen that enrolments have multiple vrn values. If so it
+      * selects the MTD related one. see https://jira.tools.tax.service.gov.uk/browse/OPS-5542
+      */
     def findEnrolmentValues(enrolments: Enrolments): EnrolmentDefResult[Vrn] = {
       val mtdVatVrn: EnrolmentDefResult[String] = findMatchingEnrolmentsValues(
         enrolments,
@@ -87,11 +84,11 @@ object EnrolmentDef {
       )
 
       val vrns = List(mtdVatVrn, vatVarVrn, vatDecVrn)
-      val vrn = vrns.collectFirst{ case Success(vrn) => Vrn(vrn) }
+      val vrn  = vrns.collectFirst { case Success(vrn) => Vrn(vrn) }
 
-      vrn.map(Success(_)).getOrElse{
-        val identifierNotFounds = vrns.collect{ case n: IdentifierNotFound[String] => n }
-        val enrolmentsNotFound = vrns.collect { case e: EnrolmentNotFound[String] => e }
+      vrn.map(Success(_)).getOrElse {
+        val identifierNotFounds = vrns.collect { case n: IdentifierNotFound[String] => n }
+        val enrolmentsNotFound  = vrns.collect { case e: EnrolmentNotFound[String] => e }
 
         if (identifierNotFounds.nonEmpty)
           IdentifierNotFound(identifierNotFounds.flatMap(_.enrolmentDefs).toSet)
@@ -113,19 +110,22 @@ object EnrolmentDef {
       findMatchingEnrolmentsValues(enrolments, `IR-SA`).map(SaUtr(_))
   }
 
-  private def findMatchingEnrolmentsValues(enrolments: Enrolments, enrolmentDef: EnrolmentDef): EnrolmentDefResult[String] = {
+  private def findMatchingEnrolmentsValues(
+    enrolments:   Enrolments,
+    enrolmentDef: EnrolmentDef
+  ): EnrolmentDefResult[String] =
     enrolments.enrolments.find(_.key.equalsIgnoreCase(enrolmentDef.enrolmentKey)) match {
       case Some(enrolment) =>
-        enrolment.identifiers.find(_.key.equalsIgnoreCase(enrolmentDef.identifierKey))
+        enrolment.identifiers
+          .find(_.key.equalsIgnoreCase(enrolmentDef.identifierKey))
           .fold[EnrolmentDefResult[String]](
             EnrolmentDefResult.IdentifierNotFound(Set(enrolmentDef))
           )(id =>
-              if (enrolment.isActivated) EnrolmentDefResult.Success(id.value)
-              else EnrolmentDefResult.Inactive())
-      case None => EnrolmentDefResult.EnrolmentNotFound()
+            if (enrolment.isActivated) EnrolmentDefResult.Success(id.value)
+            else EnrolmentDefResult.Inactive()
+          )
+      case None            => EnrolmentDefResult.EnrolmentNotFound()
 
     }
-  }
 
 }
-

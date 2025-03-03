@@ -23,6 +23,6 @@ final case class PegaStartCaseResponse(ID: String)
 object PegaStartCaseResponse {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val reads: Reads[PegaStartCaseResponse] = Json.reads
+  given Reads[PegaStartCaseResponse] = Json.reads
 
 }

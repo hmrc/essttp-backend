@@ -23,5 +23,5 @@ import java.time.LocalDate
 final case class InterestStartDate(value: LocalDate) extends AnyVal
 
 object InterestStartDate {
-  implicit val format: Format[InterestStartDate] = Json.valueFormat
+  given Format[InterestStartDate] = Json.valueFormat
 }

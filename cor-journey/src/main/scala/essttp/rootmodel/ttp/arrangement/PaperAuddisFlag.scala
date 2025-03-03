@@ -22,6 +22,6 @@ final case class PaperAuddisFlag(value: Boolean) extends AnyVal
 
 object PaperAuddisFlag {
 
-  implicit val format: Format[PaperAuddisFlag] = Json.valueFormat
+  given Format[PaperAuddisFlag] = Json.valueFormat
 
 }

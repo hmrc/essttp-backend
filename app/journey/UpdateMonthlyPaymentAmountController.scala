@@ -17,14 +17,12 @@
 package journey
 
 import action.Actions
-import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.{Epaye, Sa, Simp, Stages, Vat}
-import essttp.journey.model.{Journey, JourneyId, PaymentPlanAnswers, Stage}
+import essttp.journey.model.{Journey, JourneyId, JourneyStage, PaymentPlanAnswers}
 import essttp.rootmodel.MonthlyPaymentAmount
 import essttp.utils.Errors
-import io.scalaland.chimney.dsl.TransformationOps
+import io.scalaland.chimney.dsl.*
 import play.api.mvc.{Action, ControllerComponents, Request}
 import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -33,57 +31,55 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateMonthlyPaymentAmountController @Inject() (
-    actions:        Actions,
-    journeyService: JourneyService,
-    cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
+  actions:        Actions,
+  journeyService: JourneyService,
+  cc:             ControllerComponents
+)(using ExecutionContext, OperationalCryptoFormat)
+    extends BackendController(cc) {
 
-  def updateMonthlyPaymentAmount(journeyId: JourneyId): Action[MonthlyPaymentAmount] = actions.authenticatedAction.async(parse.json[MonthlyPaymentAmount]) { implicit request =>
-    for {
-      journey <- journeyService.get(journeyId)
-      newJourney <- journey match {
-        case j: Journey.BeforeCanPayWithinSixMonthsAnswers          => Errors.throwBadRequestExceptionF(s"UpdateMonthlyPaymentAmount update is not possible in that state: [${j.stage.toString}]")
-        case j: Journey.Stages.ObtainedCanPayWithinSixMonthsAnswers => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterEnteredMonthlyPaymentAmount            => updateJourneyWithExistingValue(Left(j), request.body)
-        case _: Journey.AfterStartedPegaCase                        => Errors.throwBadRequestExceptionF("Not expecting monthly payment amount to be updated after PEGA case started")
-        case j: Journey.AfterCheckedPaymentPlan                     => updateJourneyWithExistingValue(Right(j), request.body)
-      }
-    } yield Ok(newJourney.json)
-  }
+  def updateMonthlyPaymentAmount(journeyId: JourneyId): Action[MonthlyPaymentAmount] =
+    actions.authenticatedAction.async(parse.json[MonthlyPaymentAmount]) { implicit request =>
+      for {
+        journey    <- journeyService.get(journeyId)
+        newJourney <- journey match {
+                        case j: JourneyStage.BeforeCanPayWithinSixMonthsAnswers =>
+                          Errors.throwBadRequestExceptionF(
+                            s"UpdateMonthlyPaymentAmount update is not possible in that state: [${j.stage}]"
+                          )
+                        case j: Journey.ObtainedCanPayWithinSixMonthsAnswers    =>
+                          updateJourneyWithNewValue(j, request.body)
+                        case j: JourneyStage.AfterEnteredMonthlyPaymentAmount   =>
+                          updateJourneyWithExistingValue(Left(j), request.body)
+                        case _: JourneyStage.AfterStartedPegaCase               =>
+                          Errors.throwBadRequestExceptionF(
+                            "Not expecting monthly payment amount to be updated after PEGA case started"
+                          )
+                        case j: JourneyStage.AfterCheckedPaymentPlan            =>
+                          updateJourneyWithExistingValue(Right(j), request.body)
+                      }
+      } yield Ok(newJourney.json)
+    }
 
   private def updateJourneyWithNewValue(
-      journey:              Stages.ObtainedCanPayWithinSixMonthsAnswers,
-      monthlyPaymentAmount: MonthlyPaymentAmount
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey.AfterEnteredMonthlyPaymentAmount = journey match {
-      case j: Epaye.ObtainedCanPayWithinSixMonthsAnswers =>
-        j.into[Epaye.EnteredMonthlyPaymentAmount]
-          .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-          .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-          .transform
-      case j: Vat.ObtainedCanPayWithinSixMonthsAnswers =>
-        j.into[Vat.EnteredMonthlyPaymentAmount]
-          .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-          .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-          .transform
-      case j: Sa.ObtainedCanPayWithinSixMonthsAnswers =>
-        j.into[Sa.EnteredMonthlyPaymentAmount]
-          .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-          .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-          .transform
-      case j: Simp.ObtainedCanPayWithinSixMonthsAnswers =>
-        j.into[Simp.EnteredMonthlyPaymentAmount]
-          .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-          .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-          .transform
-    }
+    journey:              Journey.ObtainedCanPayWithinSixMonthsAnswers,
+    monthlyPaymentAmount: MonthlyPaymentAmount
+  )(using Request[_]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.EnteredMonthlyPaymentAmount]
+        .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+        .transform
+
     journeyService.upsert(newJourney)
   }
 
   private def updateJourneyWithExistingValue(
-      journey:              Either[Journey.AfterEnteredMonthlyPaymentAmount, Journey.AfterCheckedPaymentPlan],
-      monthlyPaymentAmount: MonthlyPaymentAmount
-  )(implicit request: Request[_]): Future[Journey] =
+    journey:              Either[
+      JourneyStage.AfterEnteredMonthlyPaymentAmount & Journey,
+      JourneyStage.AfterCheckedPaymentPlan & Journey
+    ],
+    monthlyPaymentAmount: MonthlyPaymentAmount
+  )(using Request[_]): Future[Journey] =
     journey match {
       case Left(afterEnteredMonthlyPaymentAmount) =>
         updateJourneyWithExistingValue(
@@ -91,96 +87,26 @@ class UpdateMonthlyPaymentAmountController @Inject() (
           afterEnteredMonthlyPaymentAmount,
           monthlyPaymentAmount,
           afterEnteredMonthlyPaymentAmount match {
-            case j: Epaye.EnteredMonthlyPaymentAmount =>
-              j.copy(monthlyPaymentAmount = monthlyPaymentAmount)
-            case j: Vat.EnteredMonthlyPaymentAmount =>
-              j.copy(monthlyPaymentAmount = monthlyPaymentAmount)
-            case j: Sa.EnteredMonthlyPaymentAmount =>
-              j.copy(monthlyPaymentAmount = monthlyPaymentAmount)
-            case j: Simp.EnteredMonthlyPaymentAmount =>
+            case j: Journey.EnteredMonthlyPaymentAmount =>
               j.copy(monthlyPaymentAmount = monthlyPaymentAmount)
 
-            case j: Epaye.EnteredDayOfMonth =>
-              j.into[Epaye.EnteredMonthlyPaymentAmount]
-                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                .transform
-            case j: Vat.EnteredDayOfMonth =>
-              j.into[Vat.EnteredMonthlyPaymentAmount]
-                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                .transform
-            case j: Sa.EnteredDayOfMonth =>
-              j.into[Sa.EnteredMonthlyPaymentAmount]
-                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                .transform
-            case j: Simp.EnteredDayOfMonth =>
-              j.into[Simp.EnteredMonthlyPaymentAmount]
-                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            case j: Journey.EnteredDayOfMonth =>
+              j.into[Journey.EnteredMonthlyPaymentAmount]
                 .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                 .transform
 
-            case j: Epaye.RetrievedStartDates =>
-              j.into[Epaye.EnteredMonthlyPaymentAmount]
-                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                .transform
-            case j: Vat.RetrievedStartDates =>
-              j.into[Vat.EnteredMonthlyPaymentAmount]
-                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                .transform
-            case j: Sa.RetrievedStartDates =>
-              j.into[Sa.EnteredMonthlyPaymentAmount]
-                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                .transform
-            case j: Simp.RetrievedStartDates =>
-              j.into[Simp.EnteredMonthlyPaymentAmount]
-                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            case j: Journey.RetrievedStartDates =>
+              j.into[Journey.EnteredMonthlyPaymentAmount]
                 .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                 .transform
 
-            case j: Epaye.RetrievedAffordableQuotes =>
-              j.into[Epaye.EnteredMonthlyPaymentAmount]
-                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                .transform
-            case j: Vat.RetrievedAffordableQuotes =>
-              j.into[Vat.EnteredMonthlyPaymentAmount]
-                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                .transform
-            case j: Sa.RetrievedAffordableQuotes =>
-              j.into[Sa.EnteredMonthlyPaymentAmount]
-                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                .transform
-            case j: Simp.RetrievedAffordableQuotes =>
-              j.into[Simp.EnteredMonthlyPaymentAmount]
-                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            case j: Journey.RetrievedAffordableQuotes =>
+              j.into[Journey.EnteredMonthlyPaymentAmount]
                 .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                 .transform
 
-            case j: Epaye.ChosenPaymentPlan =>
-              j.into[Epaye.EnteredMonthlyPaymentAmount]
-                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                .transform
-            case j: Vat.ChosenPaymentPlan =>
-              j.into[Vat.EnteredMonthlyPaymentAmount]
-                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                .transform
-            case j: Sa.ChosenPaymentPlan =>
-              j.into[Sa.EnteredMonthlyPaymentAmount]
-                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                .transform
-            case j: Simp.ChosenPaymentPlan =>
-              j.into[Simp.EnteredMonthlyPaymentAmount]
-                .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+            case j: Journey.ChosenPaymentPlan =>
+              j.into[Journey.EnteredMonthlyPaymentAmount]
                 .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                 .transform
 
@@ -198,154 +124,42 @@ class UpdateMonthlyPaymentAmountController @Inject() (
               afterCheckedPaymentPlan,
               monthlyPaymentAmount,
               afterCheckedPaymentPlan match {
-                case j: Epaye.CheckedPaymentPlan =>
-                  j.into[Epaye.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Vat.CheckedPaymentPlan =>
-                  j.into[Vat.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Sa.CheckedPaymentPlan =>
-                  j.into[Sa.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Simp.CheckedPaymentPlan =>
-                  j.into[Simp.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                case j: Journey.CheckedPaymentPlan =>
+                  j.into[Journey.EnteredMonthlyPaymentAmount]
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
 
-                case j: Epaye.EnteredCanYouSetUpDirectDebit =>
-                  j.into[Epaye.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Vat.EnteredCanYouSetUpDirectDebit =>
-                  j.into[Vat.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Sa.EnteredCanYouSetUpDirectDebit =>
-                  j.into[Sa.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Simp.EnteredCanYouSetUpDirectDebit =>
-                  j.into[Simp.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                case j: Journey.EnteredCanYouSetUpDirectDebit =>
+                  j.into[Journey.EnteredMonthlyPaymentAmount]
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
 
-                case j: Epaye.EnteredDirectDebitDetails =>
-                  j.into[Epaye.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Vat.EnteredDirectDebitDetails =>
-                  j.into[Vat.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Sa.EnteredDirectDebitDetails =>
-                  j.into[Sa.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Simp.EnteredDirectDebitDetails =>
-                  j.into[Simp.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                case j: Journey.EnteredDirectDebitDetails =>
+                  j.into[Journey.EnteredMonthlyPaymentAmount]
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
 
-                case j: Epaye.ConfirmedDirectDebitDetails =>
-                  j.into[Epaye.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Vat.ConfirmedDirectDebitDetails =>
-                  j.into[Vat.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Sa.ConfirmedDirectDebitDetails =>
-                  j.into[Sa.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Simp.ConfirmedDirectDebitDetails =>
-                  j.into[Simp.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                case j: Journey.ConfirmedDirectDebitDetails =>
+                  j.into[Journey.EnteredMonthlyPaymentAmount]
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
 
-                case j: Epaye.AgreedTermsAndConditions =>
-                  j.into[Epaye.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Vat.AgreedTermsAndConditions =>
-                  j.into[Vat.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Sa.AgreedTermsAndConditions =>
-                  j.into[Sa.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Simp.AgreedTermsAndConditions =>
-                  j.into[Simp.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                case j: Journey.AgreedTermsAndConditions =>
+                  j.into[Journey.EnteredMonthlyPaymentAmount]
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
 
-                case j: Epaye.SelectedEmailToBeVerified =>
-                  j.into[Epaye.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Vat.SelectedEmailToBeVerified =>
-                  j.into[Vat.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Sa.SelectedEmailToBeVerified =>
-                  j.into[Sa.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Simp.SelectedEmailToBeVerified =>
-                  j.into[Simp.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                case j: Journey.SelectedEmailToBeVerified =>
+                  j.into[Journey.EnteredMonthlyPaymentAmount]
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
 
-                case j: Epaye.EmailVerificationComplete =>
-                  j.into[Epaye.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Vat.EmailVerificationComplete =>
-                  j.into[Vat.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Sa.EmailVerificationComplete =>
-                  j.into[Sa.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
-                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-                    .transform
-                case j: Simp.EmailVerificationComplete =>
-                  j.into[Simp.EnteredMonthlyPaymentAmount]
-                    .withFieldConst(_.stage, Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount)
+                case j: Journey.EmailVerificationComplete =>
+                  j.into[Journey.EnteredMonthlyPaymentAmount]
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
 
-                case _: Stages.SubmittedArrangement =>
+                case _: Journey.SubmittedArrangement =>
                   Errors.throwBadRequestException("Cannot update MonthlyAmount when journey is in completed state")
               }
             )
@@ -353,12 +167,12 @@ class UpdateMonthlyPaymentAmountController @Inject() (
     }
 
   private def updateJourneyWithExistingValue(
-      existingValue:   MonthlyPaymentAmount,
-      existingJourney: Journey,
-      newValue:        MonthlyPaymentAmount,
-      newJourney:      Journey
-  )(implicit request: Request[_]): Future[Journey] =
-    if (existingValue.value === newValue.value) {
+    existingValue:   MonthlyPaymentAmount,
+    existingJourney: Journey,
+    newValue:        MonthlyPaymentAmount,
+    newJourney:      Journey
+  )(using Request[_]): Future[Journey] =
+    if (existingValue.value == newValue.value) {
       JourneyLogger.info("Nothing to update, selected MonthlyPaymentAmount is the same as the existing one in journey.")
       Future.successful(existingJourney)
     } else {

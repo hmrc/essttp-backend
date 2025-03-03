@@ -23,5 +23,5 @@ import java.time.LocalDate
 final case class DebtItemOriginalDueDate(value: LocalDate) extends AnyVal
 
 object DebtItemOriginalDueDate {
-  implicit val format: Format[DebtItemOriginalDueDate] = Json.valueFormat[DebtItemOriginalDueDate]
+  given Format[DebtItemOriginalDueDate] = Json.valueFormat[DebtItemOriginalDueDate]
 }

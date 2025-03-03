@@ -20,19 +20,19 @@ import essttp.crypto.CryptoFormat
 import play.api.libs.json.{Format, Json}
 
 final case class Address(
-    addressType:     AddressType,
-    addressLine1:    Option[AddressLine],
-    addressLine2:    Option[AddressLine],
-    addressLine3:    Option[AddressLine],
-    addressLine4:    Option[AddressLine],
-    rls:             Option[IsReturnedLetterService],
-    contactDetails:  Option[ContactDetail],
-    postCode:        Option[Postcode],
-    country:         Option[Country],
-    postcodeHistory: List[PostcodeHistory]
+  addressType:     AddressType,
+  addressLine1:    Option[AddressLine],
+  addressLine2:    Option[AddressLine],
+  addressLine3:    Option[AddressLine],
+  addressLine4:    Option[AddressLine],
+  rls:             Option[IsReturnedLetterService],
+  contactDetails:  Option[ContactDetail],
+  postCode:        Option[Postcode],
+  country:         Option[Country],
+  postcodeHistory: List[PostcodeHistory]
 )
 
 object Address {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): Format[Address] = Json.format[Address]
+  given (using CryptoFormat): Format[Address] = Json.format[Address]
 }

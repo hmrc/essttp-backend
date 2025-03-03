@@ -29,37 +29,40 @@ import uk.gov.hmrc.http.{Authorization, HeaderCarrier, UpstreamErrorResponse}
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class DatesControllerSpec extends ItSpec with TableDrivenPropertyChecks {
+class DatesControllerSpec extends ItSpec, TableDrivenPropertyChecks {
 
   def connector: TestDatesConnector = app.injector.instanceOf[TestDatesConnector]
 
   "POST /start-dates" - {
 
     behave like unauthenticatedBehaviour(
-      connector.startDates(DatesTdAll.startDatesRequest(InitialPayment(value = true), PreferredDayOfMonth(28)))(_)
+      connector.startDates(DatesTdAll.startDatesRequest(InitialPayment(value = true), PreferredDayOfMonth(28)))(using _)
     )
 
     val testDataTable = Table(
-      ("Current date", "Preferred day of month", "Initial payment", "Earliest InitialPaymentDate", "Earliest InstalmentStartDate"),
+      (
+        "Current date",
+        "Preferred day of month",
+        "Initial payment",
+        "Earliest InitialPaymentDate",
+        "Earliest InstalmentStartDate"
+      ),
       (TdDates.`1stJan2022`, 1, false, None, TdDates.`1stFeb2022`),
       (TdDates.`1stJan2022`, 2, false, None, TdDates.`2ndFeb2022`),
       (TdDates.`1stJan2022`, 10, false, None, TdDates.`10thFeb2022`),
       (TdDates.`1stJan2022`, 11, false, None, TdDates.`11thJan2022`),
       (TdDates.`1stJan2022`, 15, false, None, TdDates.`15thJan2022`),
       (TdDates.`1stJan2022`, 28, false, None, TdDates.`28thJan2022`),
-
       (TdDates.`15thJan2022`, 1, false, None, TdDates.`1stFeb2022`),
       (TdDates.`15thJan2022`, 2, false, None, TdDates.`2ndFeb2022`),
       (TdDates.`15thJan2022`, 10, false, None, TdDates.`10thFeb2022`),
       (TdDates.`15thJan2022`, 15, false, None, TdDates.`15thFeb2022`),
       (TdDates.`15thJan2022`, 25, false, None, TdDates.`25thJan2022`),
       (TdDates.`15thJan2022`, 28, false, None, TdDates.`28thJan2022`),
-
       (TdDates.`28thJan2022`, 1, false, None, TdDates.`1stMar2022`),
       (TdDates.`28thJan2022`, 2, false, None, TdDates.`2ndMar2022`),
       (TdDates.`28thJan2022`, 15, false, None, TdDates.`15thFeb2022`),
       (TdDates.`28thJan2022`, 28, false, None, TdDates.`28thFeb2022`),
-
       (TdDates.`1stFeb2022`, 1, false, None, TdDates.`1stMar2022`),
       (TdDates.`1stFeb2022`, 2, false, None, TdDates.`2ndMar2022`),
       (TdDates.`1stFeb2022`, 15, false, None, TdDates.`15thFeb2022`),
@@ -68,21 +71,17 @@ class DatesControllerSpec extends ItSpec with TableDrivenPropertyChecks {
       (TdDates.`15thFeb2022`, 2, false, None, TdDates.`2ndMar2022`),
       (TdDates.`15thFeb2022`, 15, false, None, TdDates.`15thMar2022`),
       (TdDates.`15thFeb2022`, 25, false, None, TdDates.`25thFeb2022`),
-
       (TdDates.`1stJan2022`, 1, true, Some(TdDates.`11thJan2022`), TdDates.`1stFeb2022`),
       (TdDates.`1stJan2022`, 2, true, Some(TdDates.`11thJan2022`), TdDates.`2ndFeb2022`),
       (TdDates.`1stJan2022`, 15, true, Some(TdDates.`11thJan2022`), TdDates.`15thFeb2022`),
       (TdDates.`1stJan2022`, 28, true, Some(TdDates.`11thJan2022`), TdDates.`28thFeb2022`),
-
       (TdDates.`15thJan2022`, 1, true, Some(TdDates.`25thJan2022`), TdDates.`1stMar2022`),
       (TdDates.`15thJan2022`, 2, true, Some(TdDates.`25thJan2022`), TdDates.`2ndMar2022`),
       (TdDates.`15thJan2022`, 15, true, Some(TdDates.`25thJan2022`), TdDates.`15thFeb2022`),
       (TdDates.`15thJan2022`, 28, true, Some(TdDates.`25thJan2022`), TdDates.`28thFeb2022`),
-
       (TdDates.`28thJan2022`, 1, true, Some(TdDates.`7thFeb2022`), TdDates.`1stMar2022`),
       (TdDates.`28thJan2022`, 2, true, Some(TdDates.`7thFeb2022`), TdDates.`2ndMar2022`),
       (TdDates.`28thJan2022`, 15, true, Some(TdDates.`7thFeb2022`), TdDates.`15thMar2022`),
-
       (TdDates.`25thDec2022`, 1, false, None, TdDates.`1stFeb2023`),
       (TdDates.`25thDec2022`, 1, true, Some(TdDates.`4thJan2023`), TdDates.`1stFeb2023`),
       (TdDates.`25thDec2022`, 15, false, None, TdDates.`15thJan2023`),
@@ -90,49 +89,52 @@ class DatesControllerSpec extends ItSpec with TableDrivenPropertyChecks {
       (TdDates.`25thDec2022`, 28, false, None, TdDates.`28thJan2023`),
       (TdDates.`25thDec2022`, 28, true, Some(TdDates.`4thJan2023`), TdDates.`28thJan2023`)
     )
-    forAll(testDataTable) { (
-      currentDate: String,
-      preferredDayOfMonth: Int,
-      initialPayment: Boolean,
-      earliestInitialPaymentDate: Option[String],
-      earliestInstalmentStartDate: String
-    ) =>
-      s"[CurrentDay: $currentDate][PreferredDayOfMonth: ${preferredDayOfMonth.toString}][InitialPayment:${initialPayment.toString}][ExpectedStartDate: $earliestInstalmentStartDate]" in {
-        implicit val hc: HeaderCarrier = HeaderCarrier(Some(Authorization("Bearer abc")))
-        stubCommonActions()
-        DateCalculatorStub.stubAddWorkingDays(LocalDate.parse(currentDate).plusDays(10))
+    forAll(testDataTable) {
+      (
+        currentDate: String,
+        preferredDayOfMonth: Int,
+        initialPayment: Boolean,
+        earliestInitialPaymentDate: Option[String],
+        earliestInstalmentStartDate: String
+      ) =>
+        s"[CurrentDay: $currentDate][PreferredDayOfMonth: ${preferredDayOfMonth.toString}][InitialPayment:${initialPayment.toString}][ExpectedStartDate: $earliestInstalmentStartDate]" in {
+          given HeaderCarrier = HeaderCarrier(Some(Authorization("Bearer abc")))
+          stubCommonActions()
+          DateCalculatorStub.stubAddWorkingDays(LocalDate.parse(currentDate).plusDays(10))
 
-        FrozenTime.setTime(currentDate)
-        val initialPaymentDate: Option[InitialPaymentDate] = earliestInitialPaymentDate.map(someDate => InitialPaymentDate(LocalDate.parse(someDate)))
-        val request: StartDatesRequest = DatesTdAll.startDatesRequest(InitialPayment(initialPayment), PreferredDayOfMonth(preferredDayOfMonth))
-        val response: StartDatesResponse = connector.startDates(request).futureValue
-        response shouldBe DatesTdAll.startDatesResponse(initialPaymentDate, earliestInstalmentStartDate)
+          FrozenTime.setTime(currentDate)
+          val initialPaymentDate: Option[InitialPaymentDate] =
+            earliestInitialPaymentDate.map(someDate => InitialPaymentDate(LocalDate.parse(someDate)))
+          val request: StartDatesRequest                     =
+            DatesTdAll.startDatesRequest(InitialPayment(initialPayment), PreferredDayOfMonth(preferredDayOfMonth))
+          val response: StartDatesResponse                   = connector.startDates(request).futureValue
+          response shouldBe DatesTdAll.startDatesResponse(initialPaymentDate, earliestInstalmentStartDate)
 
-        verifyCommonActions(numberOfAuthCalls = 1)
-        DateCalculatorStub.verifyAddWorkingDaysCalled(LocalDate.parse(currentDate), 6)
-      }
+          verifyCommonActions(numberOfAuthCalls = 1)
+          DateCalculatorStub.verifyAddWorkingDaysCalled(LocalDate.parse(currentDate), 6)
+        }
     }
   }
 
   "POST /extreme-dates should" - {
 
     behave like unauthenticatedBehaviour(
-      connector.extremeDates(ExtremeDatesRequest(InitialPayment(value = false)))(_)
+      connector.extremeDates(ExtremeDatesRequest(InitialPayment(value = false)))(using _)
     )
 
     "return earliestPlanStartDate(+6 working days), latestPlanStartDate(+40 calendar days), when initialPayment=false, " in {
-      implicit val hc: HeaderCarrier = HeaderCarrier(Some(Authorization("Bearer abc")))
+      given HeaderCarrier = HeaderCarrier(Some(Authorization("Bearer abc")))
       stubCommonActions()
       DateCalculatorStub.stubAddWorkingDays(LocalDate.parse(TdDates.`1stJan2022`).plusDays(10))
 
       FrozenTime.setTime(TdDates.`1stJan2022`)
-      val request: ExtremeDatesRequest = ExtremeDatesRequest(InitialPayment(value = false))
+      val request: ExtremeDatesRequest         = ExtremeDatesRequest(InitialPayment(value = false))
       val expectedResult: ExtremeDatesResponse = ExtremeDatesResponse(
-        initialPaymentDate    = None,
+        initialPaymentDate = None,
         earliestPlanStartDate = EarliestPaymentPlanStartDate(LocalDate.parse(TdDates.`11thJan2022`)),
-        latestPlanStartDate   = LatestPaymentPlanStartDate(LocalDate.parse(TdDates.`10thFeb2022`))
+        latestPlanStartDate = LatestPaymentPlanStartDate(LocalDate.parse(TdDates.`10thFeb2022`))
       )
-      val response: ExtremeDatesResponse = connector.extremeDates(request).futureValue
+      val response: ExtremeDatesResponse       = connector.extremeDates(request).futureValue
       response shouldBe expectedResult
 
       verifyCommonActions(numberOfAuthCalls = 1)
@@ -140,18 +142,18 @@ class DatesControllerSpec extends ItSpec with TableDrivenPropertyChecks {
     }
 
     "return Some(initialPaymentDate(+6 working days)), earliestPlanStartDate(+30 calendar days), latestPlanStartDate(+60 calendar days), when initialPayment=true" in {
-      implicit val hc: HeaderCarrier = HeaderCarrier(Some(Authorization("Bearer abc")))
+      given HeaderCarrier = HeaderCarrier(Some(Authorization("Bearer abc")))
       stubCommonActions()
       DateCalculatorStub.stubAddWorkingDays(LocalDate.parse(TdDates.`1stJan2022`).plusDays(10))
 
       FrozenTime.setTime(TdDates.`1stJan2022`)
-      val request: ExtremeDatesRequest = ExtremeDatesRequest(InitialPayment(value = true))
+      val request: ExtremeDatesRequest         = ExtremeDatesRequest(InitialPayment(value = true))
       val expectedResult: ExtremeDatesResponse = ExtremeDatesResponse(
-        initialPaymentDate    = Some(InitialPaymentDate(LocalDate.parse(TdDates.`11thJan2022`))),
+        initialPaymentDate = Some(InitialPaymentDate(LocalDate.parse(TdDates.`11thJan2022`))),
         earliestPlanStartDate = EarliestPaymentPlanStartDate(LocalDate.parse("2022-01-31")),
-        latestPlanStartDate   = LatestPaymentPlanStartDate(LocalDate.parse(TdDates.`2ndMar2022`))
+        latestPlanStartDate = LatestPaymentPlanStartDate(LocalDate.parse(TdDates.`2ndMar2022`))
       )
-      val response: ExtremeDatesResponse = connector.extremeDates(request).futureValue
+      val response: ExtremeDatesResponse       = connector.extremeDates(request).futureValue
       response shouldBe expectedResult
 
       verifyCommonActions(numberOfAuthCalls = 1)
@@ -161,15 +163,15 @@ class DatesControllerSpec extends ItSpec with TableDrivenPropertyChecks {
   }
 
   def unauthenticatedBehaviour[A](doCall: HeaderCarrier => Future[A]): Unit = {
-      def checkResultHasStatus(status: Int, hc: HeaderCarrier): Unit = {
-        val result = doCall(hc).failed.futureValue
+    def checkResultHasStatus(status: Int, hc: HeaderCarrier): Unit = {
+      val result = doCall(hc).failed.futureValue
 
-        result match {
-          case e: UpstreamErrorResponse => e.statusCode shouldBe status
-          case other                    => fail(s"Expected UpstreamErrorResponse but got ${other.getClass.getSimpleName}")
-        }
-        ()
+      result match {
+        case e: UpstreamErrorResponse => e.statusCode shouldBe status
+        case other                    => fail(s"Expected UpstreamErrorResponse but got ${other.getClass.getSimpleName}")
       }
+      ()
+    }
 
     "should return an 401 (UNAUTHORIZED) response" - {
 
@@ -199,4 +201,3 @@ class DatesControllerSpec extends ItSpec with TableDrivenPropertyChecks {
   }
 
 }
-

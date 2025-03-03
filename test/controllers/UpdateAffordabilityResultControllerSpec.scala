@@ -24,15 +24,20 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateAffordabilityResultControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-affordability-result" - {
     "should throw Bad Request when Journey is in a stage [BeforeExtremeDatesResponse]" in new JourneyItTest {
       stubCommonActions()
 
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
-      val result: Throwable = journeyConnector.updateAffordabilityResult(tdAll.journeyId, TdAll.EpayeBta.updateInstalmentAmountsRequest()).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"UpdateAffordabilityResult update is not possible in that state: [Started]"}""")
+      val result: Throwable = journeyConnector
+        .updateAffordabilityResult(tdAll.journeyId, TdAll.EpayeBta.updateInstalmentAmountsRequest())
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"UpdateAffordabilityResult update is not possible in that state: [Started]"}"""
+      )
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }
@@ -44,9 +49,9 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
           tdAll.EpayeBta.journeyAfterExtremeDates,
           TdAll.EpayeBta.updateInstalmentAmountsRequest()
         )(
-            journeyConnector.updateAffordabilityResult,
-            tdAll.EpayeBta.journeyAfterInstalmentAmounts
-          )(this)
+          journeyConnector.updateAffordabilityResult,
+          tdAll.EpayeBta.journeyAfterInstalmentAmounts
+        )(this)
       }
 
       "Vat" in new JourneyItTest {
@@ -54,9 +59,9 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
           tdAll.VatBta.journeyAfterExtremeDates,
           TdAll.VatBta.updateInstalmentAmountsRequest()
         )(
-            journeyConnector.updateAffordabilityResult,
-            tdAll.VatBta.journeyAfterInstalmentAmounts
-          )(this)
+          journeyConnector.updateAffordabilityResult,
+          tdAll.VatBta.journeyAfterInstalmentAmounts
+        )(this)
       }
 
       "Sa" in new JourneyItTest {
@@ -64,9 +69,9 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
           tdAll.SaBta.journeyAfterExtremeDates,
           TdAll.SaBta.updateInstalmentAmountsRequest()
         )(
-            journeyConnector.updateAffordabilityResult,
-            tdAll.SaBta.journeyAfterInstalmentAmounts
-          )(this)
+          journeyConnector.updateAffordabilityResult,
+          tdAll.SaBta.journeyAfterInstalmentAmounts
+        )(this)
       }
 
       "Simp" in new JourneyItTest {
@@ -74,9 +79,9 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
           tdAll.SimpPta.journeyAfterExtremeDates,
           TdAll.SimpPta.updateInstalmentAmountsRequest()
         )(
-            journeyConnector.updateAffordabilityResult,
-            tdAll.SimpPta.journeyAfterInstalmentAmounts
-          )(this)
+          journeyConnector.updateAffordabilityResult,
+          tdAll.SimpPta.journeyAfterInstalmentAmounts
+        )(this)
       }
     }
 
@@ -86,25 +91,30 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
 
       "Epaye when the current stage is" - {
 
-          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => InstalmentAmounts)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentInstalmentAmount,
-                journeyConnector.updateAffordabilityResult(_, _)(context.request),
-                context.tdAll.EpayeBta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = differentInstalmentAmount)
-              )(context)
+        def testEpayeBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => InstalmentAmounts)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentInstalmentAmount,
+            journeyConnector.updateAffordabilityResult(_, _)(using context.request),
+            context.tdAll.EpayeBta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = differentInstalmentAmount)
+          )(context)
 
-          def testEpayeBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => InstalmentAmounts)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentInstalmentAmount,
-                journeyConnector.updateAffordabilityResult(_, _)(context.request),
-                context.tdAll.EpayeBta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = differentInstalmentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
-              )(context)
+        def testEpayeBtaWithCaseId[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => InstalmentAmounts)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentInstalmentAmount,
+            journeyConnector.updateAffordabilityResult(_, _)(using context.request),
+            context.tdAll.EpayeBta.journeyAfterInstalmentAmounts
+              .copy(instalmentAmounts = differentInstalmentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
+          )(context)
 
         "RetrievedAffordabilityResult" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterInstalmentAmounts)(_.instalmentAmounts)(this)
@@ -143,7 +153,9 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.instalmentAmounts)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.instalmentAmounts
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -155,7 +167,9 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.instalmentAmounts)(this)
+          testEpayeBta(
+            tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
+          )(_.instalmentAmounts)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
@@ -163,32 +177,39 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.instalmentAmounts)(this)
+          testEpayeBta(
+            tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+          )(_.instalmentAmounts)(this)
         }
 
       }
 
       "Vat when the current stage is" - {
 
-          def testVatBta[J <: Journey](initialJourney: J)(existingValue: J => InstalmentAmounts)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentInstalmentAmount,
-                journeyConnector.updateAffordabilityResult(_, _)(context.request),
-                context.tdAll.VatBta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = differentInstalmentAmount)
-              )(context)
+        def testVatBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => InstalmentAmounts)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentInstalmentAmount,
+            journeyConnector.updateAffordabilityResult(_, _)(using context.request),
+            context.tdAll.VatBta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = differentInstalmentAmount)
+          )(context)
 
-          def testVatBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => InstalmentAmounts)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentInstalmentAmount,
-                journeyConnector.updateAffordabilityResult(_, _)(context.request),
-                context.tdAll.VatBta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = differentInstalmentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
-              )(context)
+        def testVatBtaWithCaseId[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => InstalmentAmounts)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentInstalmentAmount,
+            journeyConnector.updateAffordabilityResult(_, _)(using context.request),
+            context.tdAll.VatBta.journeyAfterInstalmentAmounts
+              .copy(instalmentAmounts = differentInstalmentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
+          )(context)
 
         "RetrievedAffordabilityResult" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterInstalmentAmounts)(_.instalmentAmounts)(this)
@@ -227,7 +248,9 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.instalmentAmounts)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.instalmentAmounts
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -239,7 +262,9 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.instalmentAmounts)(this)
+          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.instalmentAmounts
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
@@ -247,32 +272,39 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.instalmentAmounts)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
+            _.instalmentAmounts
+          )(this)
         }
 
       }
 
       "Sa when the current stage is" - {
 
-          def testSaBta[J <: Journey](initialJourney: J)(existingValue: J => InstalmentAmounts)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentInstalmentAmount,
-                journeyConnector.updateAffordabilityResult(_, _)(context.request),
-                context.tdAll.SaBta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = differentInstalmentAmount)
-              )(context)
+        def testSaBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => InstalmentAmounts)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentInstalmentAmount,
+            journeyConnector.updateAffordabilityResult(_, _)(using context.request),
+            context.tdAll.SaBta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = differentInstalmentAmount)
+          )(context)
 
-          def testSaBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => InstalmentAmounts)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentInstalmentAmount,
-                journeyConnector.updateAffordabilityResult(_, _)(context.request),
-                context.tdAll.SaBta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = differentInstalmentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
-              )(context)
+        def testSaBtaWithCaseId[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => InstalmentAmounts)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentInstalmentAmount,
+            journeyConnector.updateAffordabilityResult(_, _)(using context.request),
+            context.tdAll.SaBta.journeyAfterInstalmentAmounts
+              .copy(instalmentAmounts = differentInstalmentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
+          )(context)
 
         "RetrievedAffordabilityResult" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterInstalmentAmounts)(_.instalmentAmounts)(this)
@@ -311,7 +343,9 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.instalmentAmounts)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.instalmentAmounts
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -323,7 +357,9 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.instalmentAmounts)(this)
+          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.instalmentAmounts
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
@@ -331,32 +367,39 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.instalmentAmounts)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
+            _.instalmentAmounts
+          )(this)
         }
 
       }
 
       "Simp when the current stage is" - {
 
-          def testSimpPta[J <: Journey](initialJourney: J)(existingValue: J => InstalmentAmounts)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentInstalmentAmount,
-                journeyConnector.updateAffordabilityResult(_, _)(context.request),
-                context.tdAll.SimpPta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = differentInstalmentAmount)
-              )(context)
+        def testSimpPta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => InstalmentAmounts)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentInstalmentAmount,
+            journeyConnector.updateAffordabilityResult(_, _)(using context.request),
+            context.tdAll.SimpPta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = differentInstalmentAmount)
+          )(context)
 
-          def testSimpPtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => InstalmentAmounts)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentInstalmentAmount,
-                journeyConnector.updateAffordabilityResult(_, _)(context.request),
-                context.tdAll.SimpPta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = differentInstalmentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
-              )(context)
+        def testSimpPtaWithCaseId[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => InstalmentAmounts)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentInstalmentAmount,
+            journeyConnector.updateAffordabilityResult(_, _)(using context.request),
+            context.tdAll.SimpPta.journeyAfterInstalmentAmounts
+              .copy(instalmentAmounts = differentInstalmentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
+          )(context)
 
         "RetrievedAffordabilityResult" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterInstalmentAmounts)(_.instalmentAmounts)(this)
@@ -395,7 +438,9 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.instalmentAmounts)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.instalmentAmounts
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -407,7 +452,9 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.instalmentAmounts)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.instalmentAmounts
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
@@ -415,7 +462,9 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.instalmentAmounts)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(
+            _.instalmentAmounts
+          )(this)
         }
 
       }
@@ -426,8 +475,13 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
       stubCommonActions()
 
       insertJourneyForTest(tdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability())
-      val result: Throwable = journeyConnector.updateAffordabilityResult(tdAll.journeyId, tdAll.EpayeBta.updateInstalmentAmountsRequest()).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"Cannot update AffordabilityResult when journey is in completed state"}""")
+      val result: Throwable = journeyConnector
+        .updateAffordabilityResult(tdAll.journeyId, tdAll.EpayeBta.updateInstalmentAmountsRequest())
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"Cannot update AffordabilityResult when journey is in completed state"}"""
+      )
 
       verifyCommonActions(numberOfAuthCalls = 1)
     }

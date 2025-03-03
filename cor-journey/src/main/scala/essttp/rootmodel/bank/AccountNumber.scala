@@ -24,8 +24,8 @@ final case class AccountNumber(value: SensitiveString) extends AnyVal
 
 object AccountNumber {
 
-  implicit def format(implicit cryptoFormat: CryptoFormat): Format[AccountNumber] = {
-    implicit val sensitiveStringFormat: Format[SensitiveString] = essttp.crypto.sensitiveStringFormat(cryptoFormat)
+  implicit def format(using cryptoFormat: CryptoFormat): Format[AccountNumber] = {
+    given Format[SensitiveString] = essttp.crypto.sensitiveStringFormat(cryptoFormat)
     Json.valueFormat
   }
 

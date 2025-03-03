@@ -28,22 +28,25 @@ import scala.concurrent.ExecutionContext
 
 @Singleton()
 class DatesController @Inject() (
-    actions:             Actions,
-    startDatesService:   StartDatesService,
-    extremeDatesService: ExtremeDatesService,
-    cc:                  ControllerComponents
-)(implicit ec: ExecutionContext) extends BackendController(cc) {
+  actions:             Actions,
+  startDatesService:   StartDatesService,
+  extremeDatesService: ExtremeDatesService,
+  cc:                  ControllerComponents
+)(using ExecutionContext)
+    extends BackendController(cc) {
 
-  val startDates: Action[StartDatesRequest] = actions.authenticatedAction(parse.json[StartDatesRequest]).async { implicit request =>
-    startDatesService.calculateStartDates(request.body).map { result =>
-      Ok(Json.toJson(result))
+  val startDates: Action[StartDatesRequest] =
+    actions.authenticatedAction(parse.json[StartDatesRequest]).async { implicit request =>
+      startDatesService.calculateStartDates(request.body).map { result =>
+        Ok(Json.toJson(result))
+      }
     }
-  }
 
-  val extremeDates: Action[ExtremeDatesRequest] = actions.authenticatedAction(parse.json[ExtremeDatesRequest]).async { implicit request =>
-    extremeDatesService.calculateExtremeDates(request.body).map { result =>
-      Ok(Json.toJson(result))
+  val extremeDates: Action[ExtremeDatesRequest] =
+    actions.authenticatedAction(parse.json[ExtremeDatesRequest]).async { implicit request =>
+      extremeDatesService.calculateExtremeDates(request.body).map { result =>
+        Ok(Json.toJson(result))
+      }
     }
-  }
 
 }

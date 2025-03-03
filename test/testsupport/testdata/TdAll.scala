@@ -21,38 +21,37 @@ import testsupport.testdata.sa._
 import testsupport.testdata.simp.{TdJourneySimpDetachedUrl, TdJourneySimpGovUk, TdJourneySimpMobile, TdJourneySimpPta, TdSimp}
 import testsupport.testdata.vat._
 
-/**
- * Test Data (Td) all test instances
- */
+/** Test Data (Td) all test instances
+  */
 object TdAll extends TdAll
 
-/**
- * Test Data (Td) all test instances
- *
- * Override what you need.
- */
-trait TdAll extends AnyRef
-  with TdBase
-  with TdEpaye
-  with TdJourneyEpayeBta
-  with TdJourneyEpayeGovUk
-  with TdJourneyEpayeDetachedUrl
-  with TdJourneyEpayeEpayeService
-  with TdVat
-  with TdJourneyVatBta
-  with TdJourneyVatGovUk
-  with TdJourneyVatDetachedUrl
-  with TdJourneyVatVatService
-  with TdJourneyVatVatPenalties
-  with TdSa
-  with TdJourneySaBta
-  with TdJourneySaPta
-  with TdJourneySaMobile
-  with TdJourneySaGovUk
-  with TdJourneySaDetachedUrl
-  with TdJourneySaItsaViewAndChange
-  with TdSimp
-  with TdJourneySimpPta
-  with TdJourneySimpMobile
-  with TdJourneySimpGovUk
-  with TdJourneySimpDetachedUrl
+/** Test Data (Td) all test instances
+  *
+  * Override what you need.
+  */
+trait TdAll
+    extends AnyRef
+    with TdBase
+    with TdEpaye
+    with TdJourneyEpayeBta
+    with TdJourneyEpayeGovUk
+    with TdJourneyEpayeDetachedUrl
+    with TdJourneyEpayeEpayeService
+    with TdVat
+    with TdJourneyVatBta
+    with TdJourneyVatGovUk
+    with TdJourneyVatDetachedUrl
+    with TdJourneyVatVatService
+    with TdJourneyVatVatPenalties
+    with TdSa
+    with TdJourneySaBta
+    with TdJourneySaPta
+    with TdJourneySaMobile
+    with TdJourneySaGovUk
+    with TdJourneySaDetachedUrl
+    with TdJourneySaItsaViewAndChange
+    with TdSimp
+    with TdJourneySimpPta
+    with TdJourneySimpMobile
+    with TdJourneySimpGovUk
+    with TdJourneySimpDetachedUrl

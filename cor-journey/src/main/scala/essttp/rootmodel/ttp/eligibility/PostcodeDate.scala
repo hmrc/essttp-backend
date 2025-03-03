@@ -23,5 +23,5 @@ import java.time.LocalDate
 final case class PostcodeDate(value: LocalDate) extends AnyVal
 
 object PostcodeDate {
-  implicit val format: Format[PostcodeDate] = Json.valueFormat[PostcodeDate]
+  given Format[PostcodeDate] = Json.valueFormat[PostcodeDate]
 }

@@ -22,7 +22,6 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 final case class JourneyConfig(nextUrlHost: String) {
 
   @Inject
-  def this(servicesConfig: ServicesConfig) = {
+  def this(servicesConfig: ServicesConfig) =
     this(servicesConfig.getString("nextUrlHost"))
-  }
 }

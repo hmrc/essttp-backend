@@ -24,29 +24,29 @@ import scala.util.{Failure, Success, Try}
 
 object DateFormats {
 
-  /**
-   * This formatter is equivalent to the previous Joda version used from org.joda.time.format.ISODateTimeFormat.dateTime
-   */
+  /** This formatter is equivalent to the previous Joda version used from
+    * org.joda.time.format.ISODateTimeFormat.dateTime
+    */
   val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
 
-  implicit val localDateTimeRead: Reads[LocalDateTime] = new Reads[LocalDateTime] {
+  given localDateTimeRead: Reads[LocalDateTime] = new Reads[LocalDateTime] {
     override def reads(json: JsValue): JsResult[LocalDateTime] =
       json match {
         case JsString(s) =>
           Try(LocalDateTime.parse(s, dateTimeFormatter)) match {
-            case Failure(e) => JsError(
-              s"Could not parse $s as a LocalDateTime with format '${dateTimeFormatter.toString}' : ${e.getMessage}"
-            )
+            case Failure(e) =>
+              JsError(
+                s"Could not parse $s as a LocalDateTime with format '${dateTimeFormatter.toString}' : ${e.getMessage}"
+              )
             case Success(v) => JsSuccess(v)
           }
-        case _ => JsError(s"Expected value to be a string, was actually ${json.toString}")
+        case _           => JsError(s"Expected value to be a string, was actually ${json.toString}")
       }
   }
 
-  implicit val localDateTimeWrite: Writes[LocalDateTime] = new Writes[LocalDateTime] {
+  given localDateTimeWrite: Writes[LocalDateTime] = new Writes[LocalDateTime] {
     def writes(dateTime: LocalDateTime): JsValue = JsString(dateTimeFormatter.format(dateTime.atZone(ZoneOffset.UTC)))
   }
 
-  implicit val localDateTimeFormat: Format[LocalDateTime] = Format(localDateTimeRead, localDateTimeWrite)
+  given Format[LocalDateTime] = Format(localDateTimeRead, localDateTimeWrite)
 }
-

@@ -17,201 +17,166 @@
 package essttp.journey.model
 
 import essttp.rootmodel.{BackUrl, ReturnUrl}
-import julienrf.json.derived
-import play.api.libs.json._
+import essttp.utils.DerivedJson
+import essttp.utils.DerivedJson.Circe.formatToCodec
+import io.circe.generic.semiauto.deriveCodec
+import play.api.libs.json.*
 
 import scala.util.Try
 
-/**
- * Start Journey (Sj) Request
- */
+/** Start Journey (Sj) Request
+  */
 sealed trait SjRequest
 
 object SjRequest {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[SjRequest] = derived.oformat[SjRequest]()
+  given OFormat[SjRequest] =
+    DerivedJson.Circe.format(deriveCodec[SjRequest])
 
   def isAbsoluteUrl(urlStr: String): Boolean = Try(java.net.URI.create(urlStr).isAbsolute).getOrElse(false)
 
-  /**
-   * Marking trait aggregating all Epaye [[SjRequest]]s
-   */
+  /** Marking trait aggregating all Epaye [[SjRequest]]s
+    */
   sealed trait Epaye extends SjRequest { self: SjRequest => }
 
-  /**
-   * SjRequest for Epaye tax regime
-   */
+  /** SjRequest for Epaye tax regime
+    */
   object Epaye {
 
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[SjRequest.Epaye] = derived.oformat[SjRequest.Epaye]()
+    given OFormat[SjRequest.Epaye] =
+      DerivedJson.Circe.format(deriveCodec[SjRequest.Epaye])
 
-    /**
-     * Start Journey (Sj) Request
-     * for Epaye (Employers' Pay as you earn)
-     * used by [[Origin]]s which provide only back and return urls
-     */
+    /** Start Journey (Sj) Request for Epaye (Employers' Pay as you earn) used by [[Origin]]s which provide only back
+      * and return urls
+      */
     final case class Simple(
-        returnUrl: ReturnUrl,
-        backUrl:   BackUrl
-    )
-      extends SjRequest
-      with Epaye
+      returnUrl: ReturnUrl,
+      backUrl:   BackUrl
+    ) extends SjRequest
+        with Epaye
 
     object Simple {
       @SuppressWarnings(Array("org.wartremover.warts.Any"))
-      implicit val format: OFormat[Simple] = Json.format
+      given OFormat[Simple] = Json.format
     }
 
-    /**
-     * Start Journey (Sj) Request
-     * for Epaye (Employers' Pay as you earn)
-     * It is used by origins which doesn't provide any data
-     */
-    final case class Empty()
-      extends SjRequest
-      with Epaye
+    /** Start Journey (Sj) Request for Epaye (Employers' Pay as you earn) It is used by origins which doesn't provide
+      * any data
+      */
+    final case class Empty() extends SjRequest with Epaye
 
     object Empty {
-      implicit val format: OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
+      given OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
     }
   }
 
-  /**
-   * Marking trait aggregating all Vat [[SjRequest]]s
-   */
+  /** Marking trait aggregating all Vat [[SjRequest]]s
+    */
   sealed trait Vat extends SjRequest { self: SjRequest => }
 
-  /**
-   * SjRequest for Vat tax regime
-   */
+  /** SjRequest for Vat tax regime
+    */
   object Vat {
 
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[SjRequest.Vat] = derived.oformat[SjRequest.Vat]()
+    given OFormat[SjRequest.Vat] =
+      DerivedJson.Circe.format(deriveCodec[SjRequest.Vat])
 
-    /**
-     * Start Journey (Sj) Request
-     * for Value Added Tax (Vat)
-     */
+    /** Start Journey (Sj) Request for Value Added Tax (Vat)
+      */
     final case class Simple(
-        returnUrl: ReturnUrl,
-        backUrl:   BackUrl
-    )
-      extends SjRequest
-      with Vat
+      returnUrl: ReturnUrl,
+      backUrl:   BackUrl
+    ) extends SjRequest
+        with Vat
 
     object Simple {
       @SuppressWarnings(Array("org.wartremover.warts.Any"))
-      implicit val format: OFormat[Simple] = Json.format
+      given OFormat[Simple] = Json.format
     }
 
-    /**
-     * Start Journey (Sj) Request
-     * for VAT (Value Added Tax)
-     * It is used by origins which doesn't provide any data
-     */
-    final case class Empty()
-      extends SjRequest
-      with Vat
+    /** Start Journey (Sj) Request for VAT (Value Added Tax) It is used by origins which doesn't provide any data
+      */
+    final case class Empty() extends SjRequest with Vat
 
     object Empty {
-      implicit val format: OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
+      given OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
     }
   }
 
-  /**
-   * Marking trait aggregating all Sa [[SjRequest]]s
-   */
+  /** Marking trait aggregating all Sa [[SjRequest]]s
+    */
   sealed trait Sa extends SjRequest {
     self: SjRequest =>
   }
 
-  /**
-   * SjRequest for Sa tax regime
-   */
+  /** SjRequest for Sa tax regime
+    */
   object Sa {
 
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[SjRequest.Sa] = derived.oformat[SjRequest.Sa]()
+    given OFormat[SjRequest.Sa] =
+      DerivedJson.Circe.format(deriveCodec[SjRequest.Sa])
 
-    /**
-     * Start Journey (Sj) Request
-     * for Sa (self assessment)
-     * used by [[Origin]]s which provide only back and return urls
-     */
+    /** Start Journey (Sj) Request for Sa (self assessment) used by [[Origin]]s which provide only back and return urls
+      */
     final case class Simple(
-        returnUrl: ReturnUrl,
-        backUrl:   BackUrl
-    )
-      extends SjRequest
-      with Sa
+      returnUrl: ReturnUrl,
+      backUrl:   BackUrl
+    ) extends SjRequest
+        with Sa
 
     object Simple {
       @SuppressWarnings(Array("org.wartremover.warts.Any"))
-      implicit val format: OFormat[Simple] = Json.format
+      given OFormat[Simple] = Json.format
     }
 
-    /**
-     * Start Journey (Sj) Request
-     * for Sa (self assessment)
-     * It is used by origins which doesn't provide any data
-     */
-    final case class Empty()
-      extends SjRequest
-      with Sa
+    /** Start Journey (Sj) Request for Sa (self assessment) It is used by origins which doesn't provide any data
+      */
+    final case class Empty() extends SjRequest with Sa
 
     object Empty {
-      implicit val format: OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
+      given OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
     }
   }
 
-  /**
-   * Marking trait aggregating all Simp [[SjRequest]]s
-   */
+  /** Marking trait aggregating all Simp [[SjRequest]]s
+    */
   sealed trait Simp extends SjRequest {
     self: SjRequest =>
   }
 
-  /**
-   * SjRequest for Simp tax regime
-   */
+  /** SjRequest for Simp tax regime
+    */
   object Simp {
 
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[SjRequest.Simp] = derived.oformat[SjRequest.Simp]()
+    given OFormat[SjRequest.Simp] =
+      DerivedJson.Circe.format(deriveCodec[SjRequest.Simp])
 
-    /**
-     * Start Journey (Sj) Request
-     * for Simp (simple assessment)
-     * used by [[Origin]]s which provide only back and return urls
-     */
+    /** Start Journey (Sj) Request for Simp (simple assessment) used by [[Origin]]s which provide only back and return
+      * urls
+      */
     final case class Simple(
-        returnUrl: ReturnUrl,
-        backUrl:   BackUrl
-    )
-      extends SjRequest
-      with Simp
+      returnUrl: ReturnUrl,
+      backUrl:   BackUrl
+    ) extends SjRequest
+        with Simp
 
     object Simple {
       @SuppressWarnings(Array("org.wartremover.warts.Any"))
-      implicit val format: OFormat[Simple] = Json.format
+      given OFormat[Simple] = Json.format
     }
 
-    /**
-     * Start Journey (Sj) Request
-     * for Simp (simple assessment)
-     * It is used by origins which doesn't provide any data
-     */
-    final case class Empty()
-      extends SjRequest
-      with Simp
+    /** Start Journey (Sj) Request for Simp (simple assessment) It is used by origins which doesn't provide any data
+      */
+    final case class Empty() extends SjRequest with Simp
 
     object Empty {
-      implicit val format: OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
+      given OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
     }
   }
 
 }
-

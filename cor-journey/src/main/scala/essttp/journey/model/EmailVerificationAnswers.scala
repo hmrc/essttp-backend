@@ -18,20 +18,23 @@ package essttp.journey.model
 
 import essttp.crypto.CryptoFormat
 import essttp.rootmodel.Email
-import julienrf.json.derived
+import essttp.utils.DerivedJson
+import essttp.utils.DerivedJson.Circe.formatToCodec
+import io.circe.generic.semiauto.deriveCodec
 import paymentsEmailVerification.models.EmailVerificationResult
 import play.api.libs.json.OFormat
 
-sealed trait EmailVerificationAnswers
+sealed trait EmailVerificationAnswers derives CanEqual
 
 object EmailVerificationAnswers {
 
   case object NoEmailJourney extends EmailVerificationAnswers
 
-  final case class EmailVerified(email: Email, emailVerificationResult: EmailVerificationResult) extends EmailVerificationAnswers
+  final case class EmailVerified(email: Email, emailVerificationResult: EmailVerificationResult)
+      extends EmailVerificationAnswers
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[EmailVerificationAnswers] =
-    derived.oformat[EmailVerificationAnswers]()
+  implicit def format(using CryptoFormat): OFormat[EmailVerificationAnswers] =
+    DerivedJson.Circe.format(deriveCodec[EmailVerificationAnswers])
 
 }

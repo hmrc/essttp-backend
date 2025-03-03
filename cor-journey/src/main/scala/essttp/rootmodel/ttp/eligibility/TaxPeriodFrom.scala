@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class TaxPeriodFrom(value: String) extends AnyVal
 
 object TaxPeriodFrom {
-  implicit val format: Format[TaxPeriodFrom] = Json.valueFormat
+  given Format[TaxPeriodFrom] = Json.valueFormat
 }

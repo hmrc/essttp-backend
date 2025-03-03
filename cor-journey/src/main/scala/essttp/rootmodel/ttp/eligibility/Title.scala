@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class Title(value: String) extends AnyVal
 
 object Title {
-  implicit val format: Format[Title] = Json.valueFormat[Title]
+  given Format[Title] = Json.valueFormat[Title]
 }

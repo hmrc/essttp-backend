@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class DistrictNumber(value: String) extends AnyVal
 
 object DistrictNumber {
-  implicit val format: Format[DistrictNumber] = Json.valueFormat[DistrictNumber]
+  given Format[DistrictNumber] = Json.valueFormat[DistrictNumber]
 }

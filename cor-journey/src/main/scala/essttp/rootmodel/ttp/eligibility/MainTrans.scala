@@ -16,15 +16,13 @@
 
 package essttp.rootmodel.ttp.eligibility
 
-import cats.Eq
 import play.api.libs.json.{Format, Json}
 
-final case class MainTrans(value: String) extends AnyVal
+final case class MainTrans(value: String) extends AnyVal derives CanEqual
 
 object MainTrans {
 
   final case class UnknownMainTransException(mTrans: MainTrans) extends Exception
 
-  implicit val eqMainTrans: Eq[MainTrans] = Eq.fromUniversalEquals
-  implicit val format: Format[MainTrans] = Json.valueFormat
+  given Format[MainTrans] = Json.valueFormat
 }
