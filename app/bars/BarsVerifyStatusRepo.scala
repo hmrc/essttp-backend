@@ -16,7 +16,7 @@
 
 package bars
 
-import bars.BarsVerifyStatusRepo._
+import bars.BarsVerifyStatusRepoUtils._
 import config.AppConfig
 import essttp.bars.model.{BarsVerifyStatus, TaxIdIndex}
 import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
@@ -37,12 +37,12 @@ final class BarsVerifyStatusRepo @Inject() (
     extends Repo[TaxIdIndex, BarsVerifyStatus](
       collectionName = "bars",
       mongoComponent = mongoComponent,
-      indexes = BarsVerifyStatusRepo.indexes(config.barsVerifyRepoTtl.toSeconds),
+      indexes = BarsVerifyStatusRepoUtils.indexes(config.barsVerifyRepoTtl.toSeconds),
       extraCodecs = Codecs.playFormatCodecsBuilder(BarsVerifyStatus.format).build,
       replaceIndexes = true
     )
 
-object BarsVerifyStatusRepo {
+object BarsVerifyStatusRepoUtils {
   implicit val taxId: Id[TaxIdIndex]                                     = (i: TaxIdIndex) => i.value
   implicit val taxIdExtractor: IdExtractor[BarsVerifyStatus, TaxIdIndex] = (b: BarsVerifyStatus) => b._id
 

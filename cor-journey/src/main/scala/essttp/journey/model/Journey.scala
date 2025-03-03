@@ -26,7 +26,7 @@ import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
-import essttp.utils.{DerivedJson, Errors}
+import essttp.utils.DerivedJson
 import essttp.utils.DerivedJson.Circe.formatToCodec
 import io.circe.Codec
 import io.circe.generic.semiauto.deriveCodec
@@ -36,7 +36,767 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.{Clock, Instant}
 
-sealed trait Journey {
+sealed trait JourneyStage
+
+@SuppressWarnings(Array("org.wartremover.warts.Sealed"))
+object JourneyStage {
+
+  sealed trait BeforeComputedTaxId extends JourneyStage 
+
+  sealed trait AfterComputedTaxId extends JourneyStage {
+    def taxId: TaxId
+  }
+
+  sealed trait BeforeEligibilityChecked extends JourneyStage 
+
+  sealed trait AfterEligibilityChecked extends JourneyStage {
+    def eligibilityCheckResult: EligibilityCheckResult
+  }
+
+  sealed trait BeforeWhyCannotPayInFullAnswers extends JourneyStage 
+
+  sealed trait AfterWhyCannotPayInFullAnswers extends JourneyStage {
+    def whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers
+  }
+
+  sealed trait BeforeAnsweredCanPayUpfront extends JourneyStage 
+
+  sealed trait AfterAnsweredCanPayUpfront extends JourneyStage {
+    def canPayUpfront: CanPayUpfront
+  }
+
+  sealed trait BeforeEnteredUpfrontPaymentAmount extends JourneyStage 
+
+  sealed trait AfterEnteredUpfrontPaymentAmount extends JourneyStage {
+    def upfrontPaymentAmount: UpfrontPaymentAmount
+  }
+
+  sealed trait BeforeUpfrontPaymentAnswers extends JourneyStage 
+
+  sealed trait AfterUpfrontPaymentAnswers extends JourneyStage  {
+    def upfrontPaymentAnswers: UpfrontPaymentAnswers
+  }
+
+  sealed trait BeforeExtremeDatesResponse extends JourneyStage 
+
+  sealed trait AfterExtremeDatesResponse extends JourneyStage  {
+    def extremeDatesResponse: ExtremeDatesResponse
+  }
+
+  sealed trait BeforeRetrievedAffordabilityResult extends JourneyStage 
+
+  sealed trait AfterRetrievedAffordabilityResult extends JourneyStage {
+    def instalmentAmounts: InstalmentAmounts
+  }
+
+  sealed trait BeforeCanPayWithinSixMonthsAnswers extends JourneyStage 
+
+  sealed trait AfterCanPayWithinSixMonthsAnswers extends JourneyStage {
+    def canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers
+  }
+
+  sealed trait BeforeStartedPegaCase extends JourneyStage 
+
+  sealed trait AfterStartedPegaCase extends JourneyStage {
+    def startCaseResponse: StartCaseResponse
+  }
+
+  sealed trait BeforeEnteredMonthlyPaymentAmount extends JourneyStage 
+
+  sealed trait AfterEnteredMonthlyPaymentAmount extends JourneyStage {
+    def monthlyPaymentAmount: MonthlyPaymentAmount
+  }
+
+  sealed trait BeforeEnteredDayOfMonth extends JourneyStage 
+
+  sealed trait AfterEnteredDayOfMonth extends JourneyStage {
+    def dayOfMonth: DayOfMonth
+  }
+
+  sealed trait BeforeStartDatesResponse extends JourneyStage 
+
+  sealed trait AfterStartDatesResponse extends JourneyStage {
+    def startDatesResponse: StartDatesResponse
+  }
+
+  sealed trait BeforeAffordableQuotesResponse extends JourneyStage 
+
+  sealed trait AfterAffordableQuotesResponse extends JourneyStage {
+    def affordableQuotesResponse: AffordableQuotesResponse
+  }
+
+  sealed trait BeforeSelectedPaymentPlan extends JourneyStage 
+
+  sealed trait AfterSelectedPaymentPlan extends JourneyStage {
+    def selectedPaymentPlan: PaymentPlan
+  }
+
+  sealed trait BeforeCheckedPaymentPlan extends JourneyStage 
+
+  sealed trait AfterCheckedPaymentPlan extends JourneyStage {
+    def paymentPlanAnswers: PaymentPlanAnswers
+  }
+
+  sealed trait BeforeEnteredCanYouSetUpDirectDebit extends JourneyStage 
+
+  sealed trait AfterEnteredCanYouSetUpDirectDebit extends JourneyStage {
+    def canSetUpDirectDebitAnswer: CanSetUpDirectDebit
+  }
+
+  sealed trait BeforeEnteredDirectDebitDetails extends JourneyStage 
+
+  sealed trait AfterEnteredDirectDebitDetails extends JourneyStage {
+    def directDebitDetails: BankDetails
+  }
+
+  sealed trait BeforeConfirmedDirectDebitDetails extends JourneyStage 
+
+  sealed trait AfterConfirmedDirectDebitDetails extends JourneyStage
+
+  sealed trait BeforeAgreedTermsAndConditions extends JourneyStage 
+
+  sealed trait AfterAgreedTermsAndConditions extends JourneyStage {
+    def isEmailAddressRequired: IsEmailAddressRequired
+  }
+
+  sealed trait BeforeEmailAddressSelectedToBeVerified extends JourneyStage 
+
+  sealed trait AfterEmailAddressSelectedToBeVerified extends JourneyStage  {
+    def emailToBeVerified: Email
+  }
+
+  sealed trait BeforeEmailAddressVerificationResult extends JourneyStage 
+
+  sealed trait AfterEmailAddressVerificationResult extends JourneyStage  {
+    def emailVerificationResult: EmailVerificationResult
+  }
+
+  sealed trait BeforeEmailVerificationPhase extends JourneyStage 
+
+  sealed trait AfterEmailVerificationPhase extends JourneyStage  {
+    def emailVerificationAnswers: EmailVerificationAnswers
+  }
+
+  sealed trait BeforeArrangementSubmitted extends JourneyStage 
+
+  sealed trait AfterArrangementSubmitted extends JourneyStage {
+    def arrangementResponse: ArrangementResponse
+  }
+
+}
+
+sealed trait JourneyStageView { this: JourneyStage => }
+
+object JourneyStageView {
+
+  import JourneyStage._
+
+  sealed trait Started
+    extends JourneyStageView
+      with BeforeComputedTaxId
+      with BeforeEligibilityChecked
+      with BeforeWhyCannotPayInFullAnswers
+      with BeforeAnsweredCanPayUpfront
+      with BeforeEnteredUpfrontPaymentAmount
+      with BeforeUpfrontPaymentAnswers
+      with BeforeExtremeDatesResponse
+      with BeforeRetrievedAffordabilityResult
+      with BeforeCanPayWithinSixMonthsAnswers
+      with BeforeStartedPegaCase
+      with BeforeEnteredMonthlyPaymentAmount
+      with BeforeEnteredDayOfMonth
+      with BeforeStartDatesResponse
+      with BeforeAffordableQuotesResponse
+      with BeforeSelectedPaymentPlan
+      with BeforeCheckedPaymentPlan
+      with BeforeEnteredCanYouSetUpDirectDebit
+      with BeforeEnteredDirectDebitDetails
+      with BeforeConfirmedDirectDebitDetails
+      with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailAddressVerificationResult
+      with BeforeEmailVerificationPhase
+      with BeforeArrangementSubmitted
+
+  sealed trait ComputedTaxId
+    extends JourneyStageView
+      with AfterComputedTaxId
+      with BeforeWhyCannotPayInFullAnswers
+      with BeforeEligibilityChecked
+      with BeforeAnsweredCanPayUpfront
+      with BeforeEnteredUpfrontPaymentAmount
+      with BeforeUpfrontPaymentAnswers
+      with BeforeExtremeDatesResponse
+      with BeforeRetrievedAffordabilityResult
+      with BeforeCanPayWithinSixMonthsAnswers
+      with BeforeStartedPegaCase
+      with BeforeEnteredMonthlyPaymentAmount
+      with BeforeEnteredDayOfMonth
+      with BeforeStartDatesResponse
+      with BeforeAffordableQuotesResponse
+      with BeforeSelectedPaymentPlan
+      with BeforeCheckedPaymentPlan
+      with BeforeEnteredCanYouSetUpDirectDebit
+      with BeforeEnteredDirectDebitDetails
+      with BeforeConfirmedDirectDebitDetails
+      with BeforeAgreedTermsAndConditions
+      with BeforeEmailAddressSelectedToBeVerified
+      with BeforeEmailAddressVerificationResult
+      with BeforeEmailVerificationPhase
+      with BeforeArrangementSubmitted
+
+  sealed trait EligibilityChecked
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with BeforeWhyCannotPayInFullAnswers
+        with BeforeAnsweredCanPayUpfront
+        with BeforeEnteredUpfrontPaymentAmount
+        with BeforeUpfrontPaymentAnswers
+        with BeforeExtremeDatesResponse
+        with BeforeRetrievedAffordabilityResult
+        with BeforeCanPayWithinSixMonthsAnswers
+        with BeforeStartedPegaCase
+        with BeforeEnteredMonthlyPaymentAmount
+        with BeforeEnteredDayOfMonth
+        with BeforeStartDatesResponse
+        with BeforeAffordableQuotesResponse
+        with BeforeSelectedPaymentPlan
+        with BeforeCheckedPaymentPlan
+        with BeforeEnteredCanYouSetUpDirectDebit
+        with BeforeEnteredDirectDebitDetails
+        with BeforeConfirmedDirectDebitDetails
+        with BeforeAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait ObtainedWhyCannotPayInFullAnswers
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with BeforeAnsweredCanPayUpfront
+        with BeforeEnteredUpfrontPaymentAmount
+        with BeforeUpfrontPaymentAnswers
+        with BeforeExtremeDatesResponse
+        with BeforeRetrievedAffordabilityResult
+        with BeforeCanPayWithinSixMonthsAnswers
+        with BeforeStartedPegaCase
+        with BeforeEnteredMonthlyPaymentAmount
+        with BeforeEnteredDayOfMonth
+        with BeforeStartDatesResponse
+        with BeforeAffordableQuotesResponse
+        with BeforeSelectedPaymentPlan
+        with BeforeCheckedPaymentPlan
+        with BeforeEnteredCanYouSetUpDirectDebit
+        with BeforeEnteredDirectDebitDetails
+        with BeforeConfirmedDirectDebitDetails
+        with BeforeAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait AnsweredCanPayUpfront
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterAnsweredCanPayUpfront
+        with BeforeEnteredUpfrontPaymentAmount
+        with BeforeUpfrontPaymentAnswers
+        with BeforeExtremeDatesResponse
+        with BeforeRetrievedAffordabilityResult
+        with BeforeCanPayWithinSixMonthsAnswers
+        with BeforeStartedPegaCase
+        with BeforeEnteredMonthlyPaymentAmount
+        with BeforeEnteredDayOfMonth
+        with BeforeStartDatesResponse
+        with BeforeAffordableQuotesResponse
+        with BeforeSelectedPaymentPlan
+        with BeforeCheckedPaymentPlan
+        with BeforeEnteredCanYouSetUpDirectDebit
+        with BeforeEnteredDirectDebitDetails
+        with BeforeConfirmedDirectDebitDetails
+        with BeforeAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait EnteredUpfrontPaymentAmount
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterAnsweredCanPayUpfront
+        with AfterEnteredUpfrontPaymentAmount
+        with BeforeUpfrontPaymentAnswers
+        with BeforeExtremeDatesResponse
+        with BeforeRetrievedAffordabilityResult
+        with BeforeCanPayWithinSixMonthsAnswers
+        with BeforeStartedPegaCase
+        with BeforeEnteredMonthlyPaymentAmount
+        with BeforeEnteredDayOfMonth
+        with BeforeStartDatesResponse
+        with BeforeAffordableQuotesResponse
+        with BeforeSelectedPaymentPlan
+        with BeforeCheckedPaymentPlan
+        with BeforeEnteredCanYouSetUpDirectDebit
+        with BeforeEnteredDirectDebitDetails
+        with BeforeConfirmedDirectDebitDetails
+        with BeforeAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait RetrievedExtremeDates
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterUpfrontPaymentAnswers
+        with AfterExtremeDatesResponse
+        with BeforeRetrievedAffordabilityResult
+        with BeforeCanPayWithinSixMonthsAnswers
+        with BeforeEnteredMonthlyPaymentAmount
+        with BeforeEnteredDayOfMonth
+        with BeforeStartDatesResponse
+        with BeforeAffordableQuotesResponse
+        with BeforeSelectedPaymentPlan
+        with BeforeCheckedPaymentPlan
+        with BeforeEnteredCanYouSetUpDirectDebit
+        with BeforeEnteredDirectDebitDetails
+        with BeforeConfirmedDirectDebitDetails
+        with BeforeAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait RetrievedAffordabilityResult
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterUpfrontPaymentAnswers
+        with AfterExtremeDatesResponse
+        with AfterRetrievedAffordabilityResult
+        with BeforeCanPayWithinSixMonthsAnswers
+        with BeforeEnteredMonthlyPaymentAmount
+        with BeforeStartedPegaCase
+        with BeforeEnteredDayOfMonth
+        with BeforeStartDatesResponse
+        with BeforeAffordableQuotesResponse
+        with BeforeSelectedPaymentPlan
+        with BeforeCheckedPaymentPlan
+        with BeforeEnteredCanYouSetUpDirectDebit
+        with BeforeEnteredDirectDebitDetails
+        with BeforeConfirmedDirectDebitDetails
+        with BeforeAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait ObtainedCanPayWithinSixMonthsAnswers
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterUpfrontPaymentAnswers
+        with AfterExtremeDatesResponse
+        with AfterRetrievedAffordabilityResult
+        with AfterCanPayWithinSixMonthsAnswers
+        with BeforeEnteredMonthlyPaymentAmount
+        with BeforeStartedPegaCase
+        with BeforeEnteredDayOfMonth
+        with BeforeStartDatesResponse
+        with BeforeAffordableQuotesResponse
+        with BeforeSelectedPaymentPlan
+        with BeforeCheckedPaymentPlan
+        with BeforeEnteredCanYouSetUpDirectDebit
+        with BeforeEnteredDirectDebitDetails
+        with BeforeConfirmedDirectDebitDetails
+        with BeforeAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait StartedPegaCase
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterUpfrontPaymentAnswers
+        with AfterExtremeDatesResponse
+        with AfterRetrievedAffordabilityResult
+        with AfterCanPayWithinSixMonthsAnswers
+        with AfterStartedPegaCase
+        with BeforeCheckedPaymentPlan
+        with BeforeEnteredCanYouSetUpDirectDebit
+        with BeforeEnteredDirectDebitDetails
+        with BeforeConfirmedDirectDebitDetails
+        with BeforeAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait EnteredMonthlyPaymentAmount
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterUpfrontPaymentAnswers
+        with AfterExtremeDatesResponse
+        with AfterRetrievedAffordabilityResult
+        with AfterCanPayWithinSixMonthsAnswers
+        with AfterEnteredMonthlyPaymentAmount
+        with BeforeEnteredDayOfMonth
+        with BeforeStartDatesResponse
+        with BeforeAffordableQuotesResponse
+        with BeforeSelectedPaymentPlan
+        with BeforeCheckedPaymentPlan
+        with BeforeEnteredCanYouSetUpDirectDebit
+        with BeforeEnteredDirectDebitDetails
+        with BeforeConfirmedDirectDebitDetails
+        with BeforeAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait EnteredDayOfMonth
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterUpfrontPaymentAnswers
+        with AfterExtremeDatesResponse
+        with AfterRetrievedAffordabilityResult
+        with AfterCanPayWithinSixMonthsAnswers
+        with AfterEnteredMonthlyPaymentAmount
+        with AfterEnteredDayOfMonth
+        with BeforeStartDatesResponse
+        with BeforeAffordableQuotesResponse
+        with BeforeSelectedPaymentPlan
+        with BeforeCheckedPaymentPlan
+        with BeforeEnteredCanYouSetUpDirectDebit
+        with BeforeEnteredDirectDebitDetails
+        with BeforeConfirmedDirectDebitDetails
+        with BeforeAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait RetrievedStartDates
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterUpfrontPaymentAnswers
+        with AfterExtremeDatesResponse
+        with AfterRetrievedAffordabilityResult
+        with AfterCanPayWithinSixMonthsAnswers
+        with AfterEnteredMonthlyPaymentAmount
+        with AfterEnteredDayOfMonth
+        with AfterStartDatesResponse
+        with BeforeAffordableQuotesResponse
+        with BeforeSelectedPaymentPlan
+        with BeforeCheckedPaymentPlan
+        with BeforeEnteredCanYouSetUpDirectDebit
+        with BeforeEnteredDirectDebitDetails
+        with BeforeConfirmedDirectDebitDetails
+        with BeforeAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait RetrievedAffordableQuotes
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterUpfrontPaymentAnswers
+        with AfterExtremeDatesResponse
+        with AfterRetrievedAffordabilityResult
+        with AfterCanPayWithinSixMonthsAnswers
+        with AfterEnteredMonthlyPaymentAmount
+        with AfterEnteredDayOfMonth
+        with AfterStartDatesResponse
+        with AfterAffordableQuotesResponse
+        with BeforeSelectedPaymentPlan
+        with BeforeCheckedPaymentPlan
+        with BeforeEnteredCanYouSetUpDirectDebit
+        with BeforeEnteredDirectDebitDetails
+        with BeforeConfirmedDirectDebitDetails
+        with BeforeAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait ChosenPaymentPlan
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterUpfrontPaymentAnswers
+        with AfterExtremeDatesResponse
+        with AfterRetrievedAffordabilityResult
+        with AfterCanPayWithinSixMonthsAnswers
+        with AfterEnteredMonthlyPaymentAmount
+        with AfterEnteredDayOfMonth
+        with AfterStartDatesResponse
+        with AfterAffordableQuotesResponse
+        with AfterSelectedPaymentPlan
+        with BeforeCheckedPaymentPlan
+        with BeforeEnteredCanYouSetUpDirectDebit
+        with BeforeEnteredDirectDebitDetails
+        with BeforeConfirmedDirectDebitDetails
+        with BeforeAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait CheckedPaymentPlan
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterUpfrontPaymentAnswers
+        with AfterExtremeDatesResponse
+        with AfterRetrievedAffordabilityResult
+        with AfterCanPayWithinSixMonthsAnswers
+        with AfterCheckedPaymentPlan
+        with BeforeEnteredCanYouSetUpDirectDebit
+        with BeforeEnteredDirectDebitDetails
+        with BeforeConfirmedDirectDebitDetails
+        with BeforeAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait EnteredCanYouSetUpDirectDebit
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterUpfrontPaymentAnswers
+        with AfterExtremeDatesResponse
+        with AfterRetrievedAffordabilityResult
+        with AfterCanPayWithinSixMonthsAnswers
+        with AfterCheckedPaymentPlan
+        with AfterEnteredCanYouSetUpDirectDebit
+        with BeforeEnteredDirectDebitDetails
+        with BeforeConfirmedDirectDebitDetails
+        with BeforeAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait EnteredDirectDebitDetails
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterUpfrontPaymentAnswers
+        with AfterExtremeDatesResponse
+        with AfterRetrievedAffordabilityResult
+        with AfterCanPayWithinSixMonthsAnswers
+        with AfterCheckedPaymentPlan
+        with AfterEnteredCanYouSetUpDirectDebit
+        with AfterEnteredDirectDebitDetails
+        with BeforeConfirmedDirectDebitDetails
+        with BeforeAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait ConfirmedDirectDebitDetails
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterUpfrontPaymentAnswers
+        with AfterExtremeDatesResponse
+        with AfterRetrievedAffordabilityResult
+        with AfterCanPayWithinSixMonthsAnswers
+        with AfterCheckedPaymentPlan
+        with AfterEnteredCanYouSetUpDirectDebit
+        with AfterEnteredDirectDebitDetails
+        with AfterConfirmedDirectDebitDetails
+        with BeforeAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait AgreedTermsAndConditions
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterUpfrontPaymentAnswers
+        with AfterExtremeDatesResponse
+        with AfterRetrievedAffordabilityResult
+        with AfterCanPayWithinSixMonthsAnswers
+        with AfterCheckedPaymentPlan
+        with AfterEnteredCanYouSetUpDirectDebit
+        with AfterEnteredDirectDebitDetails
+        with AfterConfirmedDirectDebitDetails
+        with AfterAgreedTermsAndConditions
+        with BeforeEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait SelectedEmailToBeVerified
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterUpfrontPaymentAnswers
+        with AfterExtremeDatesResponse
+        with AfterRetrievedAffordabilityResult
+        with AfterCanPayWithinSixMonthsAnswers
+        with AfterCheckedPaymentPlan
+        with AfterEnteredCanYouSetUpDirectDebit
+        with AfterEnteredDirectDebitDetails
+        with AfterConfirmedDirectDebitDetails
+        with AfterAgreedTermsAndConditions
+        with AfterEmailAddressSelectedToBeVerified
+        with BeforeEmailAddressVerificationResult
+        with BeforeEmailVerificationPhase
+        with BeforeArrangementSubmitted
+
+  sealed trait EmailVerificationComplete
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterUpfrontPaymentAnswers
+        with AfterExtremeDatesResponse
+        with AfterRetrievedAffordabilityResult
+        with AfterCanPayWithinSixMonthsAnswers
+        with AfterCheckedPaymentPlan
+        with AfterEnteredCanYouSetUpDirectDebit
+        with AfterEnteredDirectDebitDetails
+        with AfterConfirmedDirectDebitDetails
+        with AfterAgreedTermsAndConditions
+        with AfterEmailAddressSelectedToBeVerified
+        with AfterEmailAddressVerificationResult
+        with AfterEmailVerificationPhase
+        with BeforeArrangementSubmitted
+  
+  sealed trait SubmittedArrangement
+      extends JourneyStageView
+        with AfterComputedTaxId
+        with AfterEligibilityChecked
+        with AfterWhyCannotPayInFullAnswers
+        with AfterUpfrontPaymentAnswers
+        with AfterExtremeDatesResponse
+        with AfterRetrievedAffordabilityResult
+        with AfterCanPayWithinSixMonthsAnswers
+        with AfterCheckedPaymentPlan
+        with AfterEnteredCanYouSetUpDirectDebit
+        with AfterEnteredDirectDebitDetails
+        with AfterConfirmedDirectDebitDetails
+        with AfterAgreedTermsAndConditions
+        with AfterEmailVerificationPhase
+        with AfterArrangementSubmitted
+
+}
+
+@SuppressWarnings(Array("org.wartremover.warts.Sealed"))
+sealed trait JourneyRegime {
+  def taxRegime: TaxRegime
+
+  def sjRequest: SjRequest
+
+  def origin: Origin
+
+  def backUrl: Option[BackUrl]
+
+  def returnUrl: Option[ReturnUrl]
+}
+
+object JourneyRegime {
+
+  /** Marking sealed trait for extracting Epaye [[Journey]]s
+    */
+  sealed trait Epaye extends JourneyRegime {
+    override def taxRegime: TaxRegime.Epaye.type = TaxRegime.Epaye
+
+    override def sjRequest: SjRequest.Epaye
+
+    override def origin: Origins.Epaye
+
+    override val (backUrl, returnUrl) = sjRequest match {
+      case r: SjRequest.Epaye.Simple => (Some(r.backUrl), Some(r.returnUrl))
+      case _                         => (None, None)
+    }
+  }
+
+  /** Marking sealed trait for extracting Vat [[Journey]]s
+    */
+  sealed trait Vat extends JourneyRegime {
+    override def taxRegime: TaxRegime.Vat.type = TaxRegime.Vat
+
+    override def sjRequest: SjRequest.Vat
+
+    override def origin: Origins.Vat
+
+    override val (backUrl, returnUrl) = sjRequest match {
+      case r: SjRequest.Vat.Simple => (Some(r.backUrl), Some(r.returnUrl))
+      case _                       => (None, None)
+    }
+  }
+
+  /** Marking sealed trait for extracting Sa [[Journey]]s
+    */
+  sealed trait Sa extends JourneyRegime {
+    override def taxRegime: TaxRegime.Sa.type = TaxRegime.Sa
+
+    override def sjRequest: SjRequest.Sa
+
+    override def origin: Origins.Sa
+
+    override val (backUrl, returnUrl) = sjRequest match {
+      case r: SjRequest.Sa.Simple => (Some(r.backUrl), Some(r.returnUrl))
+      case _                      => (None, None)
+    }
+  }
+
+  /** Marking sealed trait for extracting Simp [[Journey]]s
+    */
+  sealed trait Simp extends JourneyRegime {
+    override def taxRegime: TaxRegime.Simp.type = TaxRegime.Simp
+
+    override def sjRequest: SjRequest.Simp
+
+    override def origin: Origins.Simp
+
+    override val (backUrl, returnUrl) = sjRequest match {
+      case r: SjRequest.Simp.Simple => (Some(r.backUrl), Some(r.returnUrl))
+      case _                        => (None, None)
+    }
+  }
+
+}
+
+sealed trait Journey { this: JourneyStageView with JourneyRegime =>
   def _id: JourneyId
   def origin: Origin
   def createdOn: Instant
@@ -44,7 +804,6 @@ sealed trait Journey {
   def sjRequest: SjRequest
   def sessionId: SessionId
   def taxRegime: TaxRegime
-  def stage: Stage
   def correlationId: CorrelationId
   def affordabilityEnabled: Option[Boolean]
   def pegaCaseId: Option[PegaCaseId]
@@ -74,793 +833,10 @@ object Journey {
 
     def json(implicit cryptoFormat: CryptoFormat): JsValue = Json.toJson(j)
 
-  }
-
-  sealed trait BeforeComputedTaxId extends Journey with Stages.JourneyStage
-
-  sealed trait AfterComputedTaxId extends Journey {
-    def taxId: TaxId
-  }
-
-  sealed trait BeforeEligibilityChecked extends Journey with Stages.JourneyStage
-
-  sealed trait AfterEligibilityChecked extends Journey {
-    def eligibilityCheckResult: EligibilityCheckResult
-  }
-
-  sealed trait BeforeWhyCannotPayInFullAnswers extends Journey with Stages.JourneyStage
-
-  sealed trait AfterWhyCannotPayInFullAnswers extends Journey {
-    def whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers
-  }
-
-  sealed trait BeforeAnsweredCanPayUpfront extends Journey with Stages.JourneyStage
-
-  sealed trait AfterAnsweredCanPayUpfront extends Journey {
-    def canPayUpfront: CanPayUpfront
-  }
-
-  sealed trait BeforeEnteredUpfrontPaymentAmount extends Journey with Stages.JourneyStage
-
-  sealed trait AfterEnteredUpfrontPaymentAmount extends Journey {
-    def upfrontPaymentAmount: UpfrontPaymentAmount
-  }
-
-  sealed trait BeforeUpfrontPaymentAnswers extends Journey with Stages.JourneyStage
-
-  sealed trait AfterUpfrontPaymentAnswers extends Journey with Stages.JourneyStage {
-    def upfrontPaymentAnswers: UpfrontPaymentAnswers
-  }
-
-  sealed trait BeforeExtremeDatesResponse extends Journey with Stages.JourneyStage
-
-  sealed trait AfterExtremeDatesResponse extends Journey with Stages.JourneyStage {
-    def extremeDatesResponse: ExtremeDatesResponse
-  }
-
-  sealed trait BeforeRetrievedAffordabilityResult extends Journey with Stages.JourneyStage
-
-  sealed trait AfterRetrievedAffordabilityResult extends Journey {
-    def instalmentAmounts: InstalmentAmounts
-  }
-
-  sealed trait BeforeCanPayWithinSixMonthsAnswers extends Journey with Stages.JourneyStage
-
-  sealed trait AfterCanPayWithinSixMonthsAnswers extends Journey {
-    def canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers
-  }
-
-  sealed trait BeforeStartedPegaCase extends Journey with Stages.JourneyStage
-
-  sealed trait AfterStartedPegaCase extends Journey {
-    def startCaseResponse: StartCaseResponse
-  }
-
-  sealed trait BeforeEnteredMonthlyPaymentAmount extends Journey with Stages.JourneyStage
-
-  sealed trait AfterEnteredMonthlyPaymentAmount extends Journey {
-    def monthlyPaymentAmount: MonthlyPaymentAmount
-  }
-
-  sealed trait BeforeEnteredDayOfMonth extends Journey with Stages.JourneyStage
-
-  sealed trait AfterEnteredDayOfMonth extends Journey {
-    def dayOfMonth: DayOfMonth
-  }
-
-  sealed trait BeforeStartDatesResponse extends Journey with Stages.JourneyStage
-
-  sealed trait AfterStartDatesResponse extends Journey {
-    def startDatesResponse: StartDatesResponse
-  }
-
-  sealed trait BeforeAffordableQuotesResponse extends Journey with Stages.JourneyStage
-
-  sealed trait AfterAffordableQuotesResponse extends Journey {
-    def affordableQuotesResponse: AffordableQuotesResponse
-  }
-
-  sealed trait BeforeSelectedPaymentPlan extends Journey with Stages.JourneyStage
-
-  sealed trait AfterSelectedPaymentPlan extends Journey {
-    def selectedPaymentPlan: PaymentPlan
-  }
-
-  sealed trait BeforeCheckedPaymentPlan extends Journey with Stages.JourneyStage
-
-  sealed trait AfterCheckedPaymentPlan extends Journey {
-    def paymentPlanAnswers: PaymentPlanAnswers
-  }
-
-  sealed trait BeforeEnteredCanYouSetUpDirectDebit extends Journey with Stages.JourneyStage
-
-  sealed trait AfterEnteredCanYouSetUpDirectDebit extends Journey {
-    def canSetUpDirectDebitAnswer: CanSetUpDirectDebit
-  }
-
-  sealed trait BeforeEnteredDirectDebitDetails extends Journey with Stages.JourneyStage
-
-  sealed trait AfterEnteredDirectDebitDetails extends Journey {
-    def directDebitDetails: BankDetails
-  }
-
-  sealed trait BeforeConfirmedDirectDebitDetails extends Journey with Stages.JourneyStage
-
-  sealed trait AfterConfirmedDirectDebitDetails extends Journey
-
-  sealed trait BeforeAgreedTermsAndConditions extends Journey with Stages.JourneyStage
-
-  sealed trait AfterAgreedTermsAndConditions extends Journey {
-    def isEmailAddressRequired: IsEmailAddressRequired
-  }
-
-  sealed trait BeforeEmailAddressSelectedToBeVerified extends Journey with Stages.JourneyStage
-
-  sealed trait AfterEmailAddressSelectedToBeVerified extends Journey with Stages.JourneyStage {
-    def emailToBeVerified: Email
-  }
-
-  sealed trait BeforeEmailAddressVerificationResult extends Journey with Stages.JourneyStage
-
-  sealed trait AfterEmailAddressVerificationResult extends Journey with Stages.JourneyStage {
-    def emailVerificationResult: EmailVerificationResult
-  }
-
-  sealed trait BeforeEmailVerificationPhase extends Journey with Stages.JourneyStage
-
-  sealed trait AfterEmailVerificationPhase extends Journey with Stages.JourneyStage {
-    def emailVerificationAnswers: EmailVerificationAnswers
-  }
-
-  sealed trait BeforeArrangementSubmitted extends Journey with Stages.JourneyStage
-
-  sealed trait AfterArrangementSubmitted extends Journey {
-    def arrangementResponse: ArrangementResponse
-  }
-
-  /** Journey extractors extracting journeys in particular stage. They correspond to actual [[Stage]] values
-    */
-  object Stages {
-
-    /** Marking trait for selecting journey in stage
-      */
-    sealed trait JourneyStage extends Journey {
-      def stage: Stage
+    def stage: String = j match {
+      case stage: JourneyStageView => stage.getClass.getSimpleName
     }
 
-    private val sanityMessage = "Sanity check just in case if you messed journey traits up"
-
-    sealed trait Started
-        extends Journey
-        with JourneyStage
-        with BeforeComputedTaxId
-        with BeforeEligibilityChecked
-        with BeforeWhyCannotPayInFullAnswers
-        with BeforeAnsweredCanPayUpfront
-        with BeforeEnteredUpfrontPaymentAmount
-        with BeforeUpfrontPaymentAnswers
-        with BeforeExtremeDatesResponse
-        with BeforeRetrievedAffordabilityResult
-        with BeforeCanPayWithinSixMonthsAnswers
-        with BeforeStartedPegaCase
-        with BeforeEnteredMonthlyPaymentAmount
-        with BeforeEnteredDayOfMonth
-        with BeforeStartDatesResponse
-        with BeforeAffordableQuotesResponse
-        with BeforeSelectedPaymentPlan
-        with BeforeCheckedPaymentPlan
-        with BeforeEnteredCanYouSetUpDirectDebit
-        with BeforeEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterStarted.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterStarted
-    }
-
-    sealed trait ComputedTaxId
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with BeforeWhyCannotPayInFullAnswers
-        with BeforeEligibilityChecked
-        with BeforeAnsweredCanPayUpfront
-        with BeforeEnteredUpfrontPaymentAmount
-        with BeforeUpfrontPaymentAnswers
-        with BeforeExtremeDatesResponse
-        with BeforeRetrievedAffordabilityResult
-        with BeforeCanPayWithinSixMonthsAnswers
-        with BeforeStartedPegaCase
-        with BeforeEnteredMonthlyPaymentAmount
-        with BeforeEnteredDayOfMonth
-        with BeforeStartDatesResponse
-        with BeforeAffordableQuotesResponse
-        with BeforeSelectedPaymentPlan
-        with BeforeCheckedPaymentPlan
-        with BeforeEnteredCanYouSetUpDirectDebit
-        with BeforeEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterComputedTaxId.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterComputedTaxId
-    }
-
-    sealed trait EligibilityChecked
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with BeforeWhyCannotPayInFullAnswers
-        with BeforeAnsweredCanPayUpfront
-        with BeforeEnteredUpfrontPaymentAmount
-        with BeforeUpfrontPaymentAnswers
-        with BeforeExtremeDatesResponse
-        with BeforeRetrievedAffordabilityResult
-        with BeforeCanPayWithinSixMonthsAnswers
-        with BeforeStartedPegaCase
-        with BeforeEnteredMonthlyPaymentAmount
-        with BeforeEnteredDayOfMonth
-        with BeforeStartDatesResponse
-        with BeforeAffordableQuotesResponse
-        with BeforeSelectedPaymentPlan
-        with BeforeCheckedPaymentPlan
-        with BeforeEnteredCanYouSetUpDirectDebit
-        with BeforeEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterEligibilityCheck.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterEligibilityCheck
-    }
-
-    sealed trait ObtainedWhyCannotPayInFullAnswers
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with BeforeAnsweredCanPayUpfront
-        with BeforeEnteredUpfrontPaymentAmount
-        with BeforeUpfrontPaymentAnswers
-        with BeforeExtremeDatesResponse
-        with BeforeRetrievedAffordabilityResult
-        with BeforeCanPayWithinSixMonthsAnswers
-        with BeforeStartedPegaCase
-        with BeforeEnteredMonthlyPaymentAmount
-        with BeforeEnteredDayOfMonth
-        with BeforeStartDatesResponse
-        with BeforeAffordableQuotesResponse
-        with BeforeSelectedPaymentPlan
-        with BeforeCheckedPaymentPlan
-        with BeforeEnteredCanYouSetUpDirectDebit
-        with BeforeEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterWhyCannotPayInFullAnswers.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterWhyCannotPayInFullAnswers
-    }
-
-    sealed trait AnsweredCanPayUpfront
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterAnsweredCanPayUpfront
-        with BeforeEnteredUpfrontPaymentAmount
-        with BeforeUpfrontPaymentAnswers
-        with BeforeExtremeDatesResponse
-        with BeforeRetrievedAffordabilityResult
-        with BeforeCanPayWithinSixMonthsAnswers
-        with BeforeStartedPegaCase
-        with BeforeEnteredMonthlyPaymentAmount
-        with BeforeEnteredDayOfMonth
-        with BeforeStartDatesResponse
-        with BeforeAffordableQuotesResponse
-        with BeforeSelectedPaymentPlan
-        with BeforeCheckedPaymentPlan
-        with BeforeEnteredCanYouSetUpDirectDebit
-        with BeforeEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterCanPayUpfront.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterCanPayUpfront
-    }
-
-    sealed trait EnteredUpfrontPaymentAmount
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterAnsweredCanPayUpfront
-        with AfterEnteredUpfrontPaymentAmount
-        with BeforeUpfrontPaymentAnswers
-        with BeforeExtremeDatesResponse
-        with BeforeRetrievedAffordabilityResult
-        with BeforeCanPayWithinSixMonthsAnswers
-        with BeforeStartedPegaCase
-        with BeforeEnteredMonthlyPaymentAmount
-        with BeforeEnteredDayOfMonth
-        with BeforeStartDatesResponse
-        with BeforeAffordableQuotesResponse
-        with BeforeSelectedPaymentPlan
-        with BeforeCheckedPaymentPlan
-        with BeforeEnteredCanYouSetUpDirectDebit
-        with BeforeEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterUpfrontPaymentAmount.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterUpfrontPaymentAmount
-    }
-
-    sealed trait RetrievedExtremeDates
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterUpfrontPaymentAnswers
-        with AfterExtremeDatesResponse
-        with BeforeRetrievedAffordabilityResult
-        with BeforeCanPayWithinSixMonthsAnswers
-        with BeforeEnteredMonthlyPaymentAmount
-        with BeforeEnteredDayOfMonth
-        with BeforeStartDatesResponse
-        with BeforeAffordableQuotesResponse
-        with BeforeSelectedPaymentPlan
-        with BeforeCheckedPaymentPlan
-        with BeforeEnteredCanYouSetUpDirectDebit
-        with BeforeEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterExtremeDatesResponse.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterExtremeDatesResponse
-    }
-
-    sealed trait RetrievedAffordabilityResult
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterUpfrontPaymentAnswers
-        with AfterExtremeDatesResponse
-        with AfterRetrievedAffordabilityResult
-        with BeforeCanPayWithinSixMonthsAnswers
-        with BeforeEnteredMonthlyPaymentAmount
-        with BeforeStartedPegaCase
-        with BeforeEnteredDayOfMonth
-        with BeforeStartDatesResponse
-        with BeforeAffordableQuotesResponse
-        with BeforeSelectedPaymentPlan
-        with BeforeCheckedPaymentPlan
-        with BeforeEnteredCanYouSetUpDirectDebit
-        with BeforeEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterAffordabilityResult.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterAffordabilityResult
-    }
-
-    sealed trait ObtainedCanPayWithinSixMonthsAnswers
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterUpfrontPaymentAnswers
-        with AfterExtremeDatesResponse
-        with AfterRetrievedAffordabilityResult
-        with AfterCanPayWithinSixMonthsAnswers
-        with BeforeEnteredMonthlyPaymentAmount
-        with BeforeStartedPegaCase
-        with BeforeEnteredDayOfMonth
-        with BeforeStartDatesResponse
-        with BeforeAffordableQuotesResponse
-        with BeforeSelectedPaymentPlan
-        with BeforeCheckedPaymentPlan
-        with BeforeEnteredCanYouSetUpDirectDebit
-        with BeforeEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterCanPayWithinSixMonthsAnswers.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterCanPayWithinSixMonthsAnswers
-    }
-
-    sealed trait StartedPegaCase
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterUpfrontPaymentAnswers
-        with AfterExtremeDatesResponse
-        with AfterRetrievedAffordabilityResult
-        with AfterCanPayWithinSixMonthsAnswers
-        with AfterStartedPegaCase
-        with BeforeCheckedPaymentPlan
-        with BeforeEnteredCanYouSetUpDirectDebit
-        with BeforeEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterStartedPegaCase.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterStartedPegaCase
-    }
-
-    sealed trait EnteredMonthlyPaymentAmount
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterUpfrontPaymentAnswers
-        with AfterExtremeDatesResponse
-        with AfterRetrievedAffordabilityResult
-        with AfterCanPayWithinSixMonthsAnswers
-        with AfterEnteredMonthlyPaymentAmount
-        with BeforeEnteredDayOfMonth
-        with BeforeStartDatesResponse
-        with BeforeAffordableQuotesResponse
-        with BeforeSelectedPaymentPlan
-        with BeforeCheckedPaymentPlan
-        with BeforeEnteredCanYouSetUpDirectDebit
-        with BeforeEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterMonthlyPaymentAmount.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterMonthlyPaymentAmount
-    }
-
-    sealed trait EnteredDayOfMonth
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterUpfrontPaymentAnswers
-        with AfterExtremeDatesResponse
-        with AfterRetrievedAffordabilityResult
-        with AfterCanPayWithinSixMonthsAnswers
-        with AfterEnteredMonthlyPaymentAmount
-        with AfterEnteredDayOfMonth
-        with BeforeStartDatesResponse
-        with BeforeAffordableQuotesResponse
-        with BeforeSelectedPaymentPlan
-        with BeforeCheckedPaymentPlan
-        with BeforeEnteredCanYouSetUpDirectDebit
-        with BeforeEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterEnteredDayOfMonth.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterEnteredDayOfMonth
-    }
-
-    sealed trait RetrievedStartDates
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterUpfrontPaymentAnswers
-        with AfterExtremeDatesResponse
-        with AfterRetrievedAffordabilityResult
-        with AfterCanPayWithinSixMonthsAnswers
-        with AfterEnteredMonthlyPaymentAmount
-        with AfterEnteredDayOfMonth
-        with AfterStartDatesResponse
-        with BeforeAffordableQuotesResponse
-        with BeforeSelectedPaymentPlan
-        with BeforeCheckedPaymentPlan
-        with BeforeEnteredCanYouSetUpDirectDebit
-        with BeforeEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterStartDatesResponse.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterStartDatesResponse
-    }
-
-    sealed trait RetrievedAffordableQuotes
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterUpfrontPaymentAnswers
-        with AfterExtremeDatesResponse
-        with AfterRetrievedAffordabilityResult
-        with AfterCanPayWithinSixMonthsAnswers
-        with AfterEnteredMonthlyPaymentAmount
-        with AfterEnteredDayOfMonth
-        with AfterStartDatesResponse
-        with AfterAffordableQuotesResponse
-        with BeforeSelectedPaymentPlan
-        with BeforeCheckedPaymentPlan
-        with BeforeEnteredCanYouSetUpDirectDebit
-        with BeforeEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterAffordableQuotesResponse.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterAffordableQuotesResponse
-    }
-
-    sealed trait ChosenPaymentPlan
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterUpfrontPaymentAnswers
-        with AfterExtremeDatesResponse
-        with AfterRetrievedAffordabilityResult
-        with AfterCanPayWithinSixMonthsAnswers
-        with AfterEnteredMonthlyPaymentAmount
-        with AfterEnteredDayOfMonth
-        with AfterStartDatesResponse
-        with AfterAffordableQuotesResponse
-        with AfterSelectedPaymentPlan
-        with BeforeCheckedPaymentPlan
-        with BeforeEnteredCanYouSetUpDirectDebit
-        with BeforeEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterSelectedPlan.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterSelectedPlan
-    }
-
-    sealed trait CheckedPaymentPlan
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterUpfrontPaymentAnswers
-        with AfterExtremeDatesResponse
-        with AfterRetrievedAffordabilityResult
-        with AfterCanPayWithinSixMonthsAnswers
-        with AfterCheckedPaymentPlan
-        with BeforeEnteredCanYouSetUpDirectDebit
-        with BeforeEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterCheckedPlan.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterCheckedPlan
-    }
-
-    sealed trait EnteredCanYouSetUpDirectDebit
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterUpfrontPaymentAnswers
-        with AfterExtremeDatesResponse
-        with AfterRetrievedAffordabilityResult
-        with AfterCanPayWithinSixMonthsAnswers
-        with AfterCheckedPaymentPlan
-        with AfterEnteredCanYouSetUpDirectDebit
-        with BeforeEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterEnteredCanYouSetUpDirectDebit.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterEnteredCanYouSetUpDirectDebit
-    }
-
-    sealed trait EnteredDirectDebitDetails
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterUpfrontPaymentAnswers
-        with AfterExtremeDatesResponse
-        with AfterRetrievedAffordabilityResult
-        with AfterCanPayWithinSixMonthsAnswers
-        with AfterCheckedPaymentPlan
-        with AfterEnteredCanYouSetUpDirectDebit
-        with AfterEnteredDirectDebitDetails
-        with BeforeConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterEnteredDirectDebitDetails.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterEnteredDirectDebitDetails
-    }
-
-    sealed trait ConfirmedDirectDebitDetails
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterUpfrontPaymentAnswers
-        with AfterExtremeDatesResponse
-        with AfterRetrievedAffordabilityResult
-        with AfterCanPayWithinSixMonthsAnswers
-        with AfterCheckedPaymentPlan
-        with AfterEnteredCanYouSetUpDirectDebit
-        with AfterEnteredDirectDebitDetails
-        with AfterConfirmedDirectDebitDetails
-        with BeforeAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterConfirmedDirectDebitDetails.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterConfirmedDirectDebitDetails
-    }
-
-    sealed trait AgreedTermsAndConditions
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterUpfrontPaymentAnswers
-        with AfterExtremeDatesResponse
-        with AfterRetrievedAffordabilityResult
-        with AfterCanPayWithinSixMonthsAnswers
-        with AfterCheckedPaymentPlan
-        with AfterEnteredCanYouSetUpDirectDebit
-        with AfterEnteredDirectDebitDetails
-        with AfterConfirmedDirectDebitDetails
-        with AfterAgreedTermsAndConditions
-        with BeforeEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterAgreedTermsAndConditions.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterAgreedTermsAndConditions
-    }
-
-    sealed trait SelectedEmailToBeVerified
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterUpfrontPaymentAnswers
-        with AfterExtremeDatesResponse
-        with AfterRetrievedAffordabilityResult
-        with AfterCanPayWithinSixMonthsAnswers
-        with AfterCheckedPaymentPlan
-        with AfterEnteredCanYouSetUpDirectDebit
-        with AfterEnteredDirectDebitDetails
-        with AfterConfirmedDirectDebitDetails
-        with AfterAgreedTermsAndConditions
-        with AfterEmailAddressSelectedToBeVerified
-        with BeforeEmailAddressVerificationResult
-        with BeforeEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterSelectedAnEmailToBeVerified.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterSelectedAnEmailToBeVerified
-    }
-
-    sealed trait EmailVerificationComplete
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterUpfrontPaymentAnswers
-        with AfterExtremeDatesResponse
-        with AfterRetrievedAffordabilityResult
-        with AfterCanPayWithinSixMonthsAnswers
-        with AfterCheckedPaymentPlan
-        with AfterEnteredCanYouSetUpDirectDebit
-        with AfterEnteredDirectDebitDetails
-        with AfterConfirmedDirectDebitDetails
-        with AfterAgreedTermsAndConditions
-        with AfterEmailAddressSelectedToBeVerified
-        with AfterEmailAddressVerificationResult
-        with AfterEmailVerificationPhase
-        with BeforeArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterEmailVerificationPhase.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterEmailVerificationPhase
-    }
-
-    sealed trait SubmittedArrangement
-        extends Journey
-        with JourneyStage
-        with AfterComputedTaxId
-        with AfterEligibilityChecked
-        with AfterWhyCannotPayInFullAnswers
-        with AfterUpfrontPaymentAnswers
-        with AfterExtremeDatesResponse
-        with AfterRetrievedAffordabilityResult
-        with AfterCanPayWithinSixMonthsAnswers
-        with AfterCheckedPaymentPlan
-        with AfterEnteredCanYouSetUpDirectDebit
-        with AfterEnteredDirectDebitDetails
-        with AfterConfirmedDirectDebitDetails
-        with AfterAgreedTermsAndConditions
-        with AfterEmailVerificationPhase
-        with AfterArrangementSubmitted {
-      Errors.sanityCheck(Stage.AfterSubmittedArrangement.values.contains(stage), sanityMessage)
-      def stage: Stage.AfterSubmittedArrangement
-    }
-
-  }
-
-  /** Marking trait for extracting Epaye [[Journey]]s
-    */
-  sealed trait Epaye extends Journey {
-    override def taxRegime: TaxRegime.Epaye.type = TaxRegime.Epaye
-    override def sjRequest: SjRequest.Epaye
-    override def origin: Origins.Epaye
-
-    override val (backUrl, returnUrl) = sjRequest match {
-      case r: SjRequest.Epaye.Simple => (Some(r.backUrl), Some(r.returnUrl))
-      case _                         => (None, None)
-    }
   }
 
   object Epaye {
@@ -874,12 +850,11 @@ object Journey {
       override val sjRequest:            SjRequest.Epaye,
       override val sessionId:            SessionId,
       override val correlationId:        CorrelationId,
-      override val stage:                Stage.AfterStarted,
       override val affordabilityEnabled: Option[Boolean],
       override val pegaCaseId:           Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.Started
-        with Journey.Epaye
+        with JourneyStageView.Started
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after computed TaxIds Epaye
       */
@@ -890,13 +865,12 @@ object Journey {
       override val sjRequest:            SjRequest.Epaye,
       override val sessionId:            SessionId,
       override val correlationId:        CorrelationId,
-      override val stage:                Stage.AfterComputedTaxId,
       override val affordabilityEnabled: Option[Boolean],
       override val taxId:                EmpRef,
       override val pegaCaseId:           Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ComputedTaxId
-        with Journey.Epaye
+        with JourneyStageView.ComputedTaxId
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after EligibilityCheck Epaye
       */
@@ -907,14 +881,13 @@ object Journey {
       override val sjRequest:              SjRequest.Epaye,
       override val sessionId:              SessionId,
       override val correlationId:          CorrelationId,
-      override val stage:                  Stage.AfterEligibilityCheck,
       override val affordabilityEnabled:   Option[Boolean],
       override val taxId:                  EmpRef,
       override val eligibilityCheckResult: EligibilityCheckResult,
       override val pegaCaseId:             Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EligibilityChecked
-        with Journey.Epaye
+        with JourneyStageView.EligibilityChecked
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after WhyCannotPayInFullAnswers Epaye
       */
@@ -925,15 +898,14 @@ object Journey {
       override val sjRequest:                 SjRequest.Epaye,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterWhyCannotPayInFullAnswers,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     EmpRef,
       override val eligibilityCheckResult:    EligibilityCheckResult,
       override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ObtainedWhyCannotPayInFullAnswers
-        with Journey.Epaye
+        with JourneyStageView.ObtainedWhyCannotPayInFullAnswers
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after CanPayUpfront Epaye
       */
@@ -944,7 +916,6 @@ object Journey {
       override val sjRequest:                 SjRequest.Epaye,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterCanPayUpfront,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     EmpRef,
       override val eligibilityCheckResult:    EligibilityCheckResult,
@@ -952,8 +923,8 @@ object Journey {
       override val canPayUpfront:             CanPayUpfront,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.AnsweredCanPayUpfront
-        with Journey.Epaye
+        with JourneyStageView.AnsweredCanPayUpfront
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after UpfrontPaymentAmount Epaye
       */
@@ -964,7 +935,6 @@ object Journey {
       override val sjRequest:                 SjRequest.Epaye,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterUpfrontPaymentAmount,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     EmpRef,
       override val eligibilityCheckResult:    EligibilityCheckResult,
@@ -973,8 +943,8 @@ object Journey {
       override val upfrontPaymentAmount:      UpfrontPaymentAmount,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredUpfrontPaymentAmount
-        with Journey.Epaye
+        with JourneyStageView.EnteredUpfrontPaymentAmount
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after Extreme dates request to esstp-dates Epaye
       */
@@ -985,7 +955,6 @@ object Journey {
       override val sjRequest:                 SjRequest.Epaye,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterExtremeDatesResponse,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     EmpRef,
       override val eligibilityCheckResult:    EligibilityCheckResult,
@@ -994,8 +963,8 @@ object Journey {
       override val extremeDatesResponse:      ExtremeDatesResponse,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.RetrievedExtremeDates
-        with Journey.Epaye
+        with JourneyStageView.RetrievedExtremeDates
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after Affordability request to tpp Epaye
       */
@@ -1006,7 +975,6 @@ object Journey {
       override val sjRequest:                 SjRequest.Epaye,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterAffordabilityResult,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     EmpRef,
       override val eligibilityCheckResult:    EligibilityCheckResult,
@@ -1016,8 +984,8 @@ object Journey {
       override val instalmentAmounts:         InstalmentAmounts,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.RetrievedAffordabilityResult
-        with Journey.Epaye
+        with JourneyStageView.RetrievedAffordabilityResult
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after answers to CanPayWithinSixMonths if needed Epaye
       */
@@ -1028,7 +996,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Epaye,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterCanPayWithinSixMonthsAnswers,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        EmpRef,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1039,8 +1006,8 @@ object Journey {
       override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ObtainedCanPayWithinSixMonthsAnswers
-        with Journey.Epaye
+        with JourneyStageView.ObtainedCanPayWithinSixMonthsAnswers
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after started a PEGA case Epaye
       */
@@ -1051,7 +1018,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Epaye,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterStartedPegaCase,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        EmpRef,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1063,8 +1029,8 @@ object Journey {
       override val startCaseResponse:            StartCaseResponse,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.StartedPegaCase
-        with Journey.Epaye
+        with JourneyStageView.StartedPegaCase
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after MonthlyPaymentAmount Epaye
       */
@@ -1075,7 +1041,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Epaye,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterMonthlyPaymentAmount,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        EmpRef,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1087,8 +1052,8 @@ object Journey {
       override val monthlyPaymentAmount:         MonthlyPaymentAmount,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredMonthlyPaymentAmount
-        with Journey.Epaye
+        with JourneyStageView.EnteredMonthlyPaymentAmount
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after Day of month Epaye
       */
@@ -1099,7 +1064,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Epaye,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterEnteredDayOfMonth,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        EmpRef,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1112,8 +1076,8 @@ object Journey {
       override val dayOfMonth:                   DayOfMonth,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredDayOfMonth
-        with Journey.Epaye
+        with JourneyStageView.EnteredDayOfMonth
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after Start dates api call Epaye
       */
@@ -1124,7 +1088,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Epaye,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterStartDatesResponse,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        EmpRef,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1138,8 +1101,8 @@ object Journey {
       override val startDatesResponse:           StartDatesResponse,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.RetrievedStartDates
-        with Journey.Epaye
+        with JourneyStageView.RetrievedStartDates
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after Affordable quotes call to ttp Epaye
       */
@@ -1150,7 +1113,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Epaye,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterAffordableQuotesResponse,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        EmpRef,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1165,8 +1127,8 @@ object Journey {
       override val affordableQuotesResponse:     AffordableQuotesResponse,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.RetrievedAffordableQuotes
-        with Journey.Epaye
+        with JourneyStageView.RetrievedAffordableQuotes
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after Payment plan has been chosen Epaye
       */
@@ -1177,7 +1139,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Epaye,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterSelectedPlan,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        EmpRef,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1193,8 +1154,8 @@ object Journey {
       override val selectedPaymentPlan:          PaymentPlan,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ChosenPaymentPlan
-        with Journey.Epaye
+        with JourneyStageView.ChosenPaymentPlan
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after Payment plan has been checked Epaye
       */
@@ -1205,7 +1166,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Epaye,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterCheckedPlan,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        EmpRef,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1217,8 +1177,8 @@ object Journey {
       override val paymentPlanAnswers:           PaymentPlanAnswers,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.CheckedPaymentPlan
-        with Journey.Epaye
+        with JourneyStageView.CheckedPaymentPlan
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after details about bank account Epaye
       */
@@ -1229,7 +1189,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Epaye,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterEnteredCanYouSetUpDirectDebit,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        EmpRef,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1242,8 +1201,8 @@ object Journey {
       override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredCanYouSetUpDirectDebit
-        with Journey.Epaye
+        with JourneyStageView.EnteredCanYouSetUpDirectDebit
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after bank details have been entered Epaye
       */
@@ -1254,7 +1213,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Epaye,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterEnteredDirectDebitDetails,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        EmpRef,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1268,8 +1226,8 @@ object Journey {
       override val directDebitDetails:           BankDetails,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredDirectDebitDetails
-        with Journey.Epaye
+        with JourneyStageView.EnteredDirectDebitDetails
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after bank details have been confirmed Epaye
       */
@@ -1280,7 +1238,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Epaye,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterConfirmedDirectDebitDetails,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        EmpRef,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1294,8 +1251,8 @@ object Journey {
       override val directDebitDetails:           BankDetails,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ConfirmedDirectDebitDetails
-        with Journey.Epaye
+        with JourneyStageView.ConfirmedDirectDebitDetails
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after Agreeing terms and conditions Epaye
       */
@@ -1306,7 +1263,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Epaye,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterAgreedTermsAndConditions,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        EmpRef,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1321,8 +1277,8 @@ object Journey {
       override val isEmailAddressRequired:       IsEmailAddressRequired,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.AgreedTermsAndConditions
-        with Journey.Epaye
+        with JourneyStageView.AgreedTermsAndConditions
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after Selecting email address to be verified Epaye
       */
@@ -1333,7 +1289,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Epaye,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterSelectedAnEmailToBeVerified,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        EmpRef,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1349,8 +1304,8 @@ object Journey {
       override val emailToBeVerified:            Email,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.SelectedEmailToBeVerified
-        with Journey.Epaye
+        with JourneyStageView.SelectedEmailToBeVerified
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after email verification status journey is complete Epaye
       */
@@ -1361,7 +1316,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Epaye,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterEmailVerificationPhase,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        EmpRef,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1379,8 +1333,8 @@ object Journey {
       override val emailVerificationAnswers:     EmailVerificationAnswers,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EmailVerificationComplete
-        with Journey.Epaye
+        with JourneyStageView.EmailVerificationComplete
+        with JourneyRegime.Epaye
 
     /** [[Journey]] after Submission of their arrangement to the enact api Epaye
       */
@@ -1391,7 +1345,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Epaye,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterSubmittedArrangement,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        EmpRef,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1408,22 +1361,9 @@ object Journey {
       override val emailVerificationAnswers:     EmailVerificationAnswers,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.SubmittedArrangement
-        with Journey.Epaye
+        with JourneyStageView.SubmittedArrangement
+        with JourneyRegime.Epaye
 
-  }
-
-  /** Marking trait for extracting Vat [[Journey]]s
-    */
-  sealed trait Vat extends Journey {
-    override def taxRegime: TaxRegime.Vat.type = TaxRegime.Vat
-    override def sjRequest: SjRequest.Vat
-    override def origin: Origins.Vat
-
-    override val (backUrl, returnUrl) = sjRequest match {
-      case r: SjRequest.Vat.Simple => (Some(r.backUrl), Some(r.returnUrl))
-      case _                       => (None, None)
-    }
   }
 
   object Vat {
@@ -1437,12 +1377,11 @@ object Journey {
       override val sjRequest:            SjRequest.Vat,
       override val sessionId:            SessionId,
       override val correlationId:        CorrelationId,
-      override val stage:                Stage.AfterStarted,
       override val affordabilityEnabled: Option[Boolean],
       override val pegaCaseId:           Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.Started
-        with Journey.Vat
+        with JourneyStageView.Started
+        with JourneyRegime.Vat
 
     /** [[Journey]] after computed TaxIds VAT
       */
@@ -1453,13 +1392,12 @@ object Journey {
       override val sjRequest:            SjRequest.Vat,
       override val sessionId:            SessionId,
       override val correlationId:        CorrelationId,
-      override val stage:                Stage.AfterComputedTaxId,
       override val affordabilityEnabled: Option[Boolean],
       override val taxId:                Vrn,
       override val pegaCaseId:           Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ComputedTaxId
-        with Journey.Vat
+        with JourneyStageView.ComputedTaxId
+        with JourneyRegime.Vat
 
     /** [[Journey]] after EligibilityCheck VAT
       */
@@ -1470,14 +1408,13 @@ object Journey {
       override val sjRequest:              SjRequest.Vat,
       override val sessionId:              SessionId,
       override val correlationId:          CorrelationId,
-      override val stage:                  Stage.AfterEligibilityCheck,
       override val affordabilityEnabled:   Option[Boolean],
       override val taxId:                  Vrn,
       override val eligibilityCheckResult: EligibilityCheckResult,
       override val pegaCaseId:             Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EligibilityChecked
-        with Journey.Vat
+        with JourneyStageView.EligibilityChecked
+        with JourneyRegime.Vat
 
     /** [[Journey]] after WhyCannotPayInFullAnswers Vat
       */
@@ -1488,15 +1425,14 @@ object Journey {
       override val sjRequest:                 SjRequest.Vat,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterWhyCannotPayInFullAnswers,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     Vrn,
       override val eligibilityCheckResult:    EligibilityCheckResult,
       override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ObtainedWhyCannotPayInFullAnswers
-        with Journey.Vat
+        with JourneyStageView.ObtainedWhyCannotPayInFullAnswers
+        with JourneyRegime.Vat
 
     /** [[Journey]] after CanPayUpfront Vat
       */
@@ -1507,7 +1443,6 @@ object Journey {
       override val sjRequest:                 SjRequest.Vat,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterCanPayUpfront,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     Vrn,
       override val eligibilityCheckResult:    EligibilityCheckResult,
@@ -1515,8 +1450,8 @@ object Journey {
       override val canPayUpfront:             CanPayUpfront,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.AnsweredCanPayUpfront
-        with Journey.Vat
+        with JourneyStageView.AnsweredCanPayUpfront
+        with JourneyRegime.Vat
 
     /** [[Journey]] after UpfrontPaymentAmount Vat
       */
@@ -1527,7 +1462,6 @@ object Journey {
       override val sjRequest:                 SjRequest.Vat,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterUpfrontPaymentAmount,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     Vrn,
       override val eligibilityCheckResult:    EligibilityCheckResult,
@@ -1536,8 +1470,8 @@ object Journey {
       override val upfrontPaymentAmount:      UpfrontPaymentAmount,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredUpfrontPaymentAmount
-        with Journey.Vat
+        with JourneyStageView.EnteredUpfrontPaymentAmount
+        with JourneyRegime.Vat
 
     /** [[Journey]] after Extreme dates request to esstp-dates Vat
       */
@@ -1548,7 +1482,6 @@ object Journey {
       override val sjRequest:                 SjRequest.Vat,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterExtremeDatesResponse,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     Vrn,
       override val eligibilityCheckResult:    EligibilityCheckResult,
@@ -1557,8 +1490,8 @@ object Journey {
       override val extremeDatesResponse:      ExtremeDatesResponse,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.RetrievedExtremeDates
-        with Journey.Vat
+        with JourneyStageView.RetrievedExtremeDates
+        with JourneyRegime.Vat
 
     /** [[Journey]] after Affordability request to tpp Vat
       */
@@ -1569,7 +1502,6 @@ object Journey {
       override val sjRequest:                 SjRequest.Vat,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterAffordabilityResult,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     Vrn,
       override val eligibilityCheckResult:    EligibilityCheckResult,
@@ -1579,8 +1511,8 @@ object Journey {
       override val instalmentAmounts:         InstalmentAmounts,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.RetrievedAffordabilityResult
-        with Journey.Vat
+        with JourneyStageView.RetrievedAffordabilityResult
+        with JourneyRegime.Vat
 
     /** [[Journey]] after answers to CanPayWithinSixMonths if needed Vat
       */
@@ -1591,7 +1523,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Vat,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterCanPayWithinSixMonthsAnswers,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Vrn,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1602,8 +1533,8 @@ object Journey {
       override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ObtainedCanPayWithinSixMonthsAnswers
-        with Journey.Vat
+        with JourneyStageView.ObtainedCanPayWithinSixMonthsAnswers
+        with JourneyRegime.Vat
 
     /** [[Journey]] after started a PEGA case Vat
       */
@@ -1614,7 +1545,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Vat,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterStartedPegaCase,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Vrn,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1626,8 +1556,8 @@ object Journey {
       override val startCaseResponse:            StartCaseResponse,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.StartedPegaCase
-        with Journey.Vat
+        with JourneyStageView.StartedPegaCase
+        with JourneyRegime.Vat
 
     /** [[Journey]] after MonthlyPaymentAmount Vat
       */
@@ -1638,7 +1568,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Vat,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterMonthlyPaymentAmount,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Vrn,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1650,8 +1579,8 @@ object Journey {
       override val monthlyPaymentAmount:         MonthlyPaymentAmount,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredMonthlyPaymentAmount
-        with Journey.Vat
+        with JourneyStageView.EnteredMonthlyPaymentAmount
+        with JourneyRegime.Vat
 
     /** [[Journey]] after Day of month Vat
       */
@@ -1662,7 +1591,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Vat,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterEnteredDayOfMonth,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Vrn,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1675,8 +1603,8 @@ object Journey {
       override val dayOfMonth:                   DayOfMonth,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredDayOfMonth
-        with Journey.Vat
+        with JourneyStageView.EnteredDayOfMonth
+        with JourneyRegime.Vat
 
     /** [[Journey]] after Start dates api call Vat
       */
@@ -1687,7 +1615,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Vat,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterStartDatesResponse,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Vrn,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1701,8 +1628,8 @@ object Journey {
       override val startDatesResponse:           StartDatesResponse,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.RetrievedStartDates
-        with Journey.Vat
+        with JourneyStageView.RetrievedStartDates
+        with JourneyRegime.Vat
 
     /** [[Journey]] after Affordable quotes call to ttp Vat
       */
@@ -1713,7 +1640,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Vat,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterAffordableQuotesResponse,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Vrn,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1728,8 +1654,8 @@ object Journey {
       override val affordableQuotesResponse:     AffordableQuotesResponse,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.RetrievedAffordableQuotes
-        with Journey.Vat
+        with JourneyStageView.RetrievedAffordableQuotes
+        with JourneyRegime.Vat
 
     /** [[Journey]] after Payment plan has been chosen Vat
       */
@@ -1740,7 +1666,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Vat,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterSelectedPlan,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Vrn,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1756,8 +1681,8 @@ object Journey {
       override val selectedPaymentPlan:          PaymentPlan,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ChosenPaymentPlan
-        with Journey.Vat
+        with JourneyStageView.ChosenPaymentPlan
+        with JourneyRegime.Vat
 
     /** [[Journey]] after Payment plan has been checked Vat
       */
@@ -1768,7 +1693,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Vat,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterCheckedPlan,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Vrn,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1780,8 +1704,8 @@ object Journey {
       override val paymentPlanAnswers:           PaymentPlanAnswers,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.CheckedPaymentPlan
-        with Journey.Vat
+        with JourneyStageView.CheckedPaymentPlan
+        with JourneyRegime.Vat
 
     /** [[Journey]] after details about bank account Vat
       */
@@ -1792,7 +1716,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Vat,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterEnteredCanYouSetUpDirectDebit,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Vrn,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1805,8 +1728,8 @@ object Journey {
       override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredCanYouSetUpDirectDebit
-        with Journey.Vat
+        with JourneyStageView.EnteredCanYouSetUpDirectDebit
+        with JourneyRegime.Vat
 
     /** [[Journey]] after bank details have been entered Vat
       */
@@ -1817,7 +1740,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Vat,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterEnteredDirectDebitDetails,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Vrn,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1831,8 +1753,8 @@ object Journey {
       override val directDebitDetails:           BankDetails,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredDirectDebitDetails
-        with Journey.Vat
+        with JourneyStageView.EnteredDirectDebitDetails
+        with JourneyRegime.Vat
 
     /** [[Journey]] after bank details have been confirmed Vat
       */
@@ -1843,7 +1765,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Vat,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterConfirmedDirectDebitDetails,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Vrn,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1857,8 +1778,8 @@ object Journey {
       override val directDebitDetails:           BankDetails,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ConfirmedDirectDebitDetails
-        with Journey.Vat
+        with JourneyStageView.ConfirmedDirectDebitDetails
+        with JourneyRegime.Vat
 
     /** [[Journey]] after Agreeing terms and conditions Vat
       */
@@ -1869,7 +1790,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Vat,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterAgreedTermsAndConditions,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Vrn,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1884,8 +1804,8 @@ object Journey {
       override val isEmailAddressRequired:       IsEmailAddressRequired,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.AgreedTermsAndConditions
-        with Journey.Vat
+        with JourneyStageView.AgreedTermsAndConditions
+        with JourneyRegime.Vat
 
     /** [[Journey]] after Selecting email address to be verified Vat
       */
@@ -1896,7 +1816,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Vat,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterSelectedAnEmailToBeVerified,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Vrn,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1912,8 +1831,8 @@ object Journey {
       override val emailToBeVerified:            Email,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.SelectedEmailToBeVerified
-        with Journey.Vat
+        with JourneyStageView.SelectedEmailToBeVerified
+        with JourneyRegime.Vat
 
     /** [[Journey]] after email verification status journey is complete Vat
       */
@@ -1924,7 +1843,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Vat,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterEmailVerificationPhase,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Vrn,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1942,8 +1860,8 @@ object Journey {
       override val emailVerificationAnswers:     EmailVerificationAnswers,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EmailVerificationComplete
-        with Journey.Vat
+        with JourneyStageView.EmailVerificationComplete
+        with JourneyRegime.Vat
 
     /** [[Journey]] after Submission of their arrangement to the enact api Vat
       */
@@ -1954,7 +1872,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Vat,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterSubmittedArrangement,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Vrn,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -1971,23 +1888,8 @@ object Journey {
       override val emailVerificationAnswers:     EmailVerificationAnswers,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.SubmittedArrangement
-        with Journey.Vat
-  }
-
-  /** Marking trait for extracting Sa [[Journey]]s
-    */
-  sealed trait Sa extends Journey {
-    override def taxRegime: TaxRegime.Sa.type = TaxRegime.Sa
-
-    override def sjRequest: SjRequest.Sa
-
-    override def origin: Origins.Sa
-
-    override val (backUrl, returnUrl) = sjRequest match {
-      case r: SjRequest.Sa.Simple => (Some(r.backUrl), Some(r.returnUrl))
-      case _                      => (None, None)
-    }
+        with JourneyStageView.SubmittedArrangement
+        with JourneyRegime.Vat
   }
 
   object Sa {
@@ -2001,12 +1903,11 @@ object Journey {
       override val sjRequest:            SjRequest.Sa,
       override val sessionId:            SessionId,
       override val correlationId:        CorrelationId,
-      override val stage:                Stage.AfterStarted,
       override val affordabilityEnabled: Option[Boolean],
       override val pegaCaseId:           Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.Started
-        with Journey.Sa
+        with JourneyStageView.Started
+        with JourneyRegime.Sa
 
     /** [[Journey]] after computed TaxIds Sa
       */
@@ -2017,13 +1918,12 @@ object Journey {
       override val sjRequest:            SjRequest.Sa,
       override val sessionId:            SessionId,
       override val correlationId:        CorrelationId,
-      override val stage:                Stage.AfterComputedTaxId,
       override val affordabilityEnabled: Option[Boolean],
       override val taxId:                SaUtr,
       override val pegaCaseId:           Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ComputedTaxId
-        with Journey.Sa
+        with JourneyStageView.ComputedTaxId
+        with JourneyRegime.Sa
 
     /** [[Journey]] after EligibilityCheck Sa
       */
@@ -2034,14 +1934,13 @@ object Journey {
       override val sjRequest:              SjRequest.Sa,
       override val sessionId:              SessionId,
       override val correlationId:          CorrelationId,
-      override val stage:                  Stage.AfterEligibilityCheck,
       override val affordabilityEnabled:   Option[Boolean],
       override val taxId:                  SaUtr,
       override val eligibilityCheckResult: EligibilityCheckResult,
       override val pegaCaseId:             Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EligibilityChecked
-        with Journey.Sa
+        with JourneyStageView.EligibilityChecked
+        with JourneyRegime.Sa
 
     /** [[Journey]] after WhyCannotPayInFullAnswers Sa
       */
@@ -2052,15 +1951,14 @@ object Journey {
       override val sjRequest:                 SjRequest.Sa,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterWhyCannotPayInFullAnswers,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     SaUtr,
       override val eligibilityCheckResult:    EligibilityCheckResult,
       override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ObtainedWhyCannotPayInFullAnswers
-        with Journey.Sa
+        with JourneyStageView.ObtainedWhyCannotPayInFullAnswers
+        with JourneyRegime.Sa
 
     /** [[Journey]] after CanPayUpfront Sa
       */
@@ -2071,7 +1969,6 @@ object Journey {
       override val sjRequest:                 SjRequest.Sa,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterCanPayUpfront,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     SaUtr,
       override val eligibilityCheckResult:    EligibilityCheckResult,
@@ -2079,8 +1976,8 @@ object Journey {
       override val canPayUpfront:             CanPayUpfront,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.AnsweredCanPayUpfront
-        with Journey.Sa
+        with JourneyStageView.AnsweredCanPayUpfront
+        with JourneyRegime.Sa
 
     /** [[Journey]] after UpfrontPaymentAmount Sa
       */
@@ -2091,7 +1988,6 @@ object Journey {
       override val sjRequest:                 SjRequest.Sa,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterUpfrontPaymentAmount,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     SaUtr,
       override val eligibilityCheckResult:    EligibilityCheckResult,
@@ -2100,8 +1996,8 @@ object Journey {
       override val upfrontPaymentAmount:      UpfrontPaymentAmount,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredUpfrontPaymentAmount
-        with Journey.Sa
+        with JourneyStageView.EnteredUpfrontPaymentAmount
+        with JourneyRegime.Sa
 
     /** [[Journey]] after Extreme dates request to esstp-dates Sa
       */
@@ -2112,7 +2008,6 @@ object Journey {
       override val sjRequest:                 SjRequest.Sa,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterExtremeDatesResponse,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     SaUtr,
       override val eligibilityCheckResult:    EligibilityCheckResult,
@@ -2121,8 +2016,8 @@ object Journey {
       override val extremeDatesResponse:      ExtremeDatesResponse,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.RetrievedExtremeDates
-        with Journey.Sa
+        with JourneyStageView.RetrievedExtremeDates
+        with JourneyRegime.Sa
 
     /** [[Journey]] after Affordability request to tpp Sa
       */
@@ -2133,7 +2028,6 @@ object Journey {
       override val sjRequest:                 SjRequest.Sa,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterAffordabilityResult,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     SaUtr,
       override val eligibilityCheckResult:    EligibilityCheckResult,
@@ -2143,8 +2037,8 @@ object Journey {
       override val instalmentAmounts:         InstalmentAmounts,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.RetrievedAffordabilityResult
-        with Journey.Sa
+        with JourneyStageView.RetrievedAffordabilityResult
+        with JourneyRegime.Sa
 
     /** [[Journey]] after answers to CanPayWithinSixMonths if needed Sa
       */
@@ -2155,7 +2049,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Sa,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterCanPayWithinSixMonthsAnswers,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        SaUtr,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2166,8 +2059,8 @@ object Journey {
       override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ObtainedCanPayWithinSixMonthsAnswers
-        with Journey.Sa
+        with JourneyStageView.ObtainedCanPayWithinSixMonthsAnswers
+        with JourneyRegime.Sa
 
     /** [[Journey]] after started a PEGA case Sa
       */
@@ -2178,7 +2071,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Sa,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterStartedPegaCase,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        SaUtr,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2190,8 +2082,8 @@ object Journey {
       override val startCaseResponse:            StartCaseResponse,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.StartedPegaCase
-        with Journey.Sa
+        with JourneyStageView.StartedPegaCase
+        with JourneyRegime.Sa
 
     /** [[Journey]] after MonthlyPaymentAmount Sa
       */
@@ -2202,7 +2094,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Sa,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterMonthlyPaymentAmount,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        SaUtr,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2214,8 +2105,8 @@ object Journey {
       override val monthlyPaymentAmount:         MonthlyPaymentAmount,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredMonthlyPaymentAmount
-        with Journey.Sa
+        with JourneyStageView.EnteredMonthlyPaymentAmount
+        with JourneyRegime.Sa
 
     /** [[Journey]] after Day of month Sa
       */
@@ -2226,7 +2117,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Sa,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterEnteredDayOfMonth,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        SaUtr,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2239,8 +2129,8 @@ object Journey {
       override val dayOfMonth:                   DayOfMonth,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredDayOfMonth
-        with Journey.Sa
+        with JourneyStageView.EnteredDayOfMonth
+        with JourneyRegime.Sa
 
     /** [[Journey]] after Start dates api call Sa
       */
@@ -2251,7 +2141,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Sa,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterStartDatesResponse,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        SaUtr,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2265,8 +2154,8 @@ object Journey {
       override val startDatesResponse:           StartDatesResponse,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.RetrievedStartDates
-        with Journey.Sa
+        with JourneyStageView.RetrievedStartDates
+        with JourneyRegime.Sa
 
     /** [[Journey]] after Affordable quotes call to ttp Sa
       */
@@ -2277,7 +2166,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Sa,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterAffordableQuotesResponse,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        SaUtr,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2292,8 +2180,8 @@ object Journey {
       override val affordableQuotesResponse:     AffordableQuotesResponse,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.RetrievedAffordableQuotes
-        with Journey.Sa
+        with JourneyStageView.RetrievedAffordableQuotes
+        with JourneyRegime.Sa
 
     /** [[Journey]] after Payment plan has been chosen Sa
       */
@@ -2304,7 +2192,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Sa,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterSelectedPlan,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        SaUtr,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2320,8 +2207,8 @@ object Journey {
       override val selectedPaymentPlan:          PaymentPlan,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ChosenPaymentPlan
-        with Journey.Sa
+        with JourneyStageView.ChosenPaymentPlan
+        with JourneyRegime.Sa
 
     /** [[Journey]] after Payment plan has been checked Sa
       */
@@ -2332,7 +2219,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Sa,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterCheckedPlan,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        SaUtr,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2344,8 +2230,8 @@ object Journey {
       override val paymentPlanAnswers:           PaymentPlanAnswers,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.CheckedPaymentPlan
-        with Journey.Sa
+        with JourneyStageView.CheckedPaymentPlan
+        with JourneyRegime.Sa
 
     /** [[Journey]] after details about bank account Sa
       */
@@ -2356,7 +2242,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Sa,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterEnteredCanYouSetUpDirectDebit,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        SaUtr,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2369,8 +2254,8 @@ object Journey {
       override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredCanYouSetUpDirectDebit
-        with Journey.Sa
+        with JourneyStageView.EnteredCanYouSetUpDirectDebit
+        with JourneyRegime.Sa
 
     /** [[Journey]] after bank details have been entered Sa
       */
@@ -2381,7 +2266,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Sa,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterEnteredDirectDebitDetails,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        SaUtr,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2395,8 +2279,8 @@ object Journey {
       override val directDebitDetails:           BankDetails,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredDirectDebitDetails
-        with Journey.Sa
+        with JourneyStageView.EnteredDirectDebitDetails
+        with JourneyRegime.Sa
 
     /** [[Journey]] after bank details have been confirmed Sa
       */
@@ -2407,7 +2291,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Sa,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterConfirmedDirectDebitDetails,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        SaUtr,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2421,8 +2304,8 @@ object Journey {
       override val directDebitDetails:           BankDetails,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ConfirmedDirectDebitDetails
-        with Journey.Sa
+        with JourneyStageView.ConfirmedDirectDebitDetails
+        with JourneyRegime.Sa
 
     /** [[Journey]] after Agreeing terms and conditions Sa
       */
@@ -2433,7 +2316,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Sa,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterAgreedTermsAndConditions,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        SaUtr,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2448,8 +2330,8 @@ object Journey {
       override val isEmailAddressRequired:       IsEmailAddressRequired,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.AgreedTermsAndConditions
-        with Journey.Sa
+        with JourneyStageView.AgreedTermsAndConditions
+        with JourneyRegime.Sa
 
     /** [[Journey]] after Selecting email address to be verified Sa
       */
@@ -2460,7 +2342,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Sa,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterSelectedAnEmailToBeVerified,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        SaUtr,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2476,8 +2357,8 @@ object Journey {
       override val emailToBeVerified:            Email,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.SelectedEmailToBeVerified
-        with Journey.Sa
+        with JourneyStageView.SelectedEmailToBeVerified
+        with JourneyRegime.Sa
 
     /** [[Journey]] after email verification status journey is complete Sa
       */
@@ -2488,7 +2369,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Sa,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterEmailVerificationPhase,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        SaUtr,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2506,8 +2386,8 @@ object Journey {
       override val emailVerificationAnswers:     EmailVerificationAnswers,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EmailVerificationComplete
-        with Journey.Sa
+        with JourneyStageView.EmailVerificationComplete
+        with JourneyRegime.Sa
 
     /** [[Journey]] after Submission of their arrangement to the enact api Sa
       */
@@ -2518,7 +2398,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Sa,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterSubmittedArrangement,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        SaUtr,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2535,21 +2414,8 @@ object Journey {
       override val emailVerificationAnswers:     EmailVerificationAnswers,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.SubmittedArrangement
-        with Journey.Sa
-  }
-
-  sealed trait Simp extends Journey {
-    override def taxRegime: TaxRegime.Simp.type = TaxRegime.Simp
-
-    override def sjRequest: SjRequest.Simp
-
-    override def origin: Origins.Simp
-
-    override val (backUrl, returnUrl) = sjRequest match {
-      case r: SjRequest.Simp.Simple => (Some(r.backUrl), Some(r.returnUrl))
-      case _                        => (None, None)
-    }
+        with JourneyStageView.SubmittedArrangement
+        with JourneyRegime.Sa
   }
 
   object Simp {
@@ -2563,12 +2429,11 @@ object Journey {
       override val sjRequest:            SjRequest.Simp,
       override val sessionId:            SessionId,
       override val correlationId:        CorrelationId,
-      override val stage:                Stage.AfterStarted,
       override val affordabilityEnabled: Option[Boolean],
       override val pegaCaseId:           Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.Started
-        with Journey.Simp
+        with JourneyStageView.Started
+        with JourneyRegime.Simp
 
     /** [[Journey]] after computed TaxIds Simp
       */
@@ -2579,13 +2444,12 @@ object Journey {
       override val sjRequest:            SjRequest.Simp,
       override val sessionId:            SessionId,
       override val correlationId:        CorrelationId,
-      override val stage:                Stage.AfterComputedTaxId,
       override val affordabilityEnabled: Option[Boolean],
       override val taxId:                Nino,
       override val pegaCaseId:           Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ComputedTaxId
-        with Journey.Simp
+        with JourneyStageView.ComputedTaxId
+        with JourneyRegime.Simp
 
     /** [[Journey]] after EligibilityCheck Simp
       */
@@ -2596,14 +2460,13 @@ object Journey {
       override val sjRequest:              SjRequest.Simp,
       override val sessionId:              SessionId,
       override val correlationId:          CorrelationId,
-      override val stage:                  Stage.AfterEligibilityCheck,
       override val affordabilityEnabled:   Option[Boolean],
       override val taxId:                  Nino,
       override val eligibilityCheckResult: EligibilityCheckResult,
       override val pegaCaseId:             Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EligibilityChecked
-        with Journey.Simp
+        with JourneyStageView.EligibilityChecked
+        with JourneyRegime.Simp
 
     /** [[Journey]] after WhyCannotPayInFullAnswers Simp
       */
@@ -2614,15 +2477,14 @@ object Journey {
       override val sjRequest:                 SjRequest.Simp,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterWhyCannotPayInFullAnswers,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     Nino,
       override val eligibilityCheckResult:    EligibilityCheckResult,
       override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ObtainedWhyCannotPayInFullAnswers
-        with Journey.Simp
+        with JourneyStageView.ObtainedWhyCannotPayInFullAnswers
+        with JourneyRegime.Simp
 
     /** [[Journey]] after CanPayUpfront Simp
       */
@@ -2633,7 +2495,6 @@ object Journey {
       override val sjRequest:                 SjRequest.Simp,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterCanPayUpfront,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     Nino,
       override val eligibilityCheckResult:    EligibilityCheckResult,
@@ -2641,8 +2502,8 @@ object Journey {
       override val canPayUpfront:             CanPayUpfront,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.AnsweredCanPayUpfront
-        with Journey.Simp
+        with JourneyStageView.AnsweredCanPayUpfront
+        with JourneyRegime.Simp
 
     /** [[Journey]] after UpfrontPaymentAmount Simp
       */
@@ -2653,7 +2514,6 @@ object Journey {
       override val sjRequest:                 SjRequest.Simp,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterUpfrontPaymentAmount,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     Nino,
       override val eligibilityCheckResult:    EligibilityCheckResult,
@@ -2662,8 +2522,8 @@ object Journey {
       override val upfrontPaymentAmount:      UpfrontPaymentAmount,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredUpfrontPaymentAmount
-        with Journey.Simp
+        with JourneyStageView.EnteredUpfrontPaymentAmount
+        with JourneyRegime.Simp
 
     /** [[Journey]] after Extreme dates request to esstp-dates Simp
       */
@@ -2674,7 +2534,6 @@ object Journey {
       override val sjRequest:                 SjRequest.Simp,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterExtremeDatesResponse,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     Nino,
       override val eligibilityCheckResult:    EligibilityCheckResult,
@@ -2683,8 +2542,8 @@ object Journey {
       override val extremeDatesResponse:      ExtremeDatesResponse,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.RetrievedExtremeDates
-        with Journey.Simp
+        with JourneyStageView.RetrievedExtremeDates
+        with JourneyRegime.Simp
 
     /** [[Journey]] after Affordability request to tpp Simp
       */
@@ -2695,7 +2554,6 @@ object Journey {
       override val sjRequest:                 SjRequest.Simp,
       override val sessionId:                 SessionId,
       override val correlationId:             CorrelationId,
-      override val stage:                     Stage.AfterAffordabilityResult,
       override val affordabilityEnabled:      Option[Boolean],
       override val taxId:                     Nino,
       override val eligibilityCheckResult:    EligibilityCheckResult,
@@ -2705,8 +2563,8 @@ object Journey {
       override val instalmentAmounts:         InstalmentAmounts,
       override val pegaCaseId:                Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.RetrievedAffordabilityResult
-        with Journey.Simp
+        with JourneyStageView.RetrievedAffordabilityResult
+        with JourneyRegime.Simp
 
     /** [[Journey]] after answers to CanPayWithinSixMonths if needed Simp
       */
@@ -2717,7 +2575,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Simp,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterCanPayWithinSixMonthsAnswers,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Nino,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2728,8 +2585,8 @@ object Journey {
       override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ObtainedCanPayWithinSixMonthsAnswers
-        with Journey.Simp
+        with JourneyStageView.ObtainedCanPayWithinSixMonthsAnswers
+        with JourneyRegime.Simp
 
     /** [[Journey]] after started a PEGA case Simp
       */
@@ -2740,7 +2597,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Simp,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterStartedPegaCase,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Nino,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2752,8 +2608,8 @@ object Journey {
       override val startCaseResponse:            StartCaseResponse,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.StartedPegaCase
-        with Journey.Simp
+        with JourneyStageView.StartedPegaCase
+        with JourneyRegime.Simp
 
     /** [[Journey]] after MonthlyPaymentAmount Simp
       */
@@ -2764,7 +2620,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Simp,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterMonthlyPaymentAmount,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Nino,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2776,8 +2631,8 @@ object Journey {
       override val monthlyPaymentAmount:         MonthlyPaymentAmount,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredMonthlyPaymentAmount
-        with Journey.Simp
+        with JourneyStageView.EnteredMonthlyPaymentAmount
+        with JourneyRegime.Simp
 
     /** [[Journey]] after Day of month Simp
       */
@@ -2788,7 +2643,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Simp,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterEnteredDayOfMonth,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Nino,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2801,8 +2655,8 @@ object Journey {
       override val dayOfMonth:                   DayOfMonth,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredDayOfMonth
-        with Journey.Simp
+        with JourneyStageView.EnteredDayOfMonth
+        with JourneyRegime.Simp
 
     /** [[Journey]] after Start dates api call Simp
       */
@@ -2813,7 +2667,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Simp,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterStartDatesResponse,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Nino,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2827,8 +2680,8 @@ object Journey {
       override val startDatesResponse:           StartDatesResponse,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.RetrievedStartDates
-        with Journey.Simp
+        with JourneyStageView.RetrievedStartDates
+        with JourneyRegime.Simp
 
     /** [[Journey]] after Affordable quotes call to ttp Simp
       */
@@ -2839,7 +2692,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Simp,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterAffordableQuotesResponse,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Nino,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2854,8 +2706,8 @@ object Journey {
       override val affordableQuotesResponse:     AffordableQuotesResponse,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.RetrievedAffordableQuotes
-        with Journey.Simp
+        with JourneyStageView.RetrievedAffordableQuotes
+        with JourneyRegime.Simp
 
     /** [[Journey]] after Payment plan has been chosen Simp
       */
@@ -2866,7 +2718,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Simp,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterSelectedPlan,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Nino,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2882,8 +2733,8 @@ object Journey {
       override val selectedPaymentPlan:          PaymentPlan,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ChosenPaymentPlan
-        with Journey.Simp
+        with JourneyStageView.ChosenPaymentPlan
+        with JourneyRegime.Simp
 
     /** [[Journey]] after Payment plan has been checked Simp
       */
@@ -2894,7 +2745,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Simp,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterCheckedPlan,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Nino,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2906,8 +2756,8 @@ object Journey {
       override val paymentPlanAnswers:           PaymentPlanAnswers,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.CheckedPaymentPlan
-        with Journey.Simp
+        with JourneyStageView.CheckedPaymentPlan
+        with JourneyRegime.Simp
 
     /** [[Journey]] after details about bank account Simp
       */
@@ -2918,7 +2768,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Simp,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterEnteredCanYouSetUpDirectDebit,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Nino,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2931,8 +2780,8 @@ object Journey {
       override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredCanYouSetUpDirectDebit
-        with Journey.Simp
+        with JourneyStageView.EnteredCanYouSetUpDirectDebit
+        with JourneyRegime.Simp
 
     /** [[Journey]] after bank details have been entered Simp
       */
@@ -2943,7 +2792,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Simp,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterEnteredDirectDebitDetails,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Nino,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2957,8 +2805,8 @@ object Journey {
       override val directDebitDetails:           BankDetails,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EnteredDirectDebitDetails
-        with Journey.Simp
+        with JourneyStageView.EnteredDirectDebitDetails
+        with JourneyRegime.Simp
 
     /** [[Journey]] after bank details have been confirmed Simp
       */
@@ -2969,7 +2817,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Simp,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterConfirmedDirectDebitDetails,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Nino,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -2983,8 +2830,8 @@ object Journey {
       override val directDebitDetails:           BankDetails,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.ConfirmedDirectDebitDetails
-        with Journey.Simp
+        with JourneyStageView.ConfirmedDirectDebitDetails
+        with JourneyRegime.Simp
 
     /** [[Journey]] after Agreeing terms and conditions Simp
       */
@@ -2995,7 +2842,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Simp,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterAgreedTermsAndConditions,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Nino,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -3010,8 +2856,8 @@ object Journey {
       override val isEmailAddressRequired:       IsEmailAddressRequired,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.AgreedTermsAndConditions
-        with Journey.Simp
+        with JourneyStageView.AgreedTermsAndConditions
+        with JourneyRegime.Simp
 
     /** [[Journey]] after Selecting email address to be verified Simp
       */
@@ -3022,7 +2868,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Simp,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterSelectedAnEmailToBeVerified,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Nino,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -3038,8 +2883,8 @@ object Journey {
       override val emailToBeVerified:            Email,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.SelectedEmailToBeVerified
-        with Journey.Simp
+        with JourneyStageView.SelectedEmailToBeVerified
+        with JourneyRegime.Simp
 
     /** [[Journey]] after email verification status journey is complete Simp
       */
@@ -3050,7 +2895,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Simp,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterEmailVerificationPhase,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Nino,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -3068,8 +2912,8 @@ object Journey {
       override val emailVerificationAnswers:     EmailVerificationAnswers,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.EmailVerificationComplete
-        with Journey.Simp
+        with JourneyStageView.EmailVerificationComplete
+        with JourneyRegime.Simp
 
     /** [[Journey]] after Submission of their arrangement to the enact api Simp
       */
@@ -3080,7 +2924,6 @@ object Journey {
       override val sjRequest:                    SjRequest.Simp,
       override val sessionId:                    SessionId,
       override val correlationId:                CorrelationId,
-      override val stage:                        Stage.AfterSubmittedArrangement,
       override val affordabilityEnabled:         Option[Boolean],
       override val taxId:                        Nino,
       override val eligibilityCheckResult:       EligibilityCheckResult,
@@ -3097,8 +2940,8 @@ object Journey {
       override val emailVerificationAnswers:     EmailVerificationAnswers,
       override val pegaCaseId:                   Option[PegaCaseId]
     ) extends Journey
-        with Journey.Stages.SubmittedArrangement
-        with Journey.Simp
+        with JourneyStageView.SubmittedArrangement
+        with JourneyRegime.Simp
   }
 
   private def journeyCirceCodec(implicit cryptoFormat: CryptoFormat): Codec.AsObject[Journey] =

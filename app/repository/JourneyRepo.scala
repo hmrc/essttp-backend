@@ -22,7 +22,7 @@ import essttp.journey.model.{Journey, JourneyId}
 import essttp.rootmodel.SessionId
 import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, Indexes}
-import repository.JourneyRepo._
+import repository.JourneyRepoUtils._
 import repository.Repo.{Id, IdExtractor}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs
@@ -55,7 +55,7 @@ final class JourneyRepo @Inject() (
 
 }
 
-object JourneyRepo {
+object JourneyRepoUtils {
 
   implicit val journeyId: Id[JourneyId] = new Id[JourneyId] {
     override def value(i: JourneyId): String = i.value

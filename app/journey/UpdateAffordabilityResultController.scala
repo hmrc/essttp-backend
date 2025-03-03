@@ -20,10 +20,10 @@ import action.Actions
 import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, Stage}
+import essttp.journey.model.{Journey, JourneyId, JourneyStage, JourneyStageView}
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.utils.Errors
-import io.scalaland.chimney.dsl.TransformationOps
+import io.scalaland.chimney.dsl._
 import play.api.mvc.{Action, ControllerComponents, Request}
 import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -42,16 +42,18 @@ class UpdateAffordabilityResultController @Inject() (
       for {
         journey    <- journeyService.get(journeyId)
         newJourney <- journey match {
-                        case j: Journey.BeforeExtremeDatesResponse        =>
+                        case j: JourneyStage.BeforeExtremeDatesResponse             =>
                           Errors.throwBadRequestExceptionF(
-                            s"UpdateAffordabilityResult update is not possible in that state: [${j.stage.toString}]"
+                            s"UpdateAffordabilityResult update is not possible in that state: [${j.stage}]"
                           )
-                        case j: Journey.Stages.RetrievedExtremeDates      => updateJourneyWithNewValue(j, request.body)
-                        case j: Journey.AfterRetrievedAffordabilityResult =>
+                        case j: JourneyStageView.RetrievedExtremeDates         =>
+                          updateJourneyWithNewValue(j, request.body)
+
+                        case j: JourneyStage.AfterRetrievedAffordabilityResult =>
                           j match {
-                            case _: Journey.BeforeArrangementSubmitted =>
+                            case _: JourneyStage.BeforeArrangementSubmitted     =>
                               updateJourneyWithExistingValue(j, request.body)
-                            case _: Journey.AfterArrangementSubmitted  =>
+                            case _: JourneyStage.AfterArrangementSubmitted =>
                               Errors.throwBadRequestExceptionF(
                                 "Cannot update AffordabilityResult when journey is in completed state"
                               )
@@ -61,10 +63,10 @@ class UpdateAffordabilityResultController @Inject() (
     }
 
   private def updateJourneyWithNewValue(
-    journey:           Journey.Stages.RetrievedExtremeDates,
+    journey:           JourneyStageView.RetrievedExtremeDates,
     instalmentAmounts: InstalmentAmounts
   )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Stages.RetrievedAffordabilityResult = journey match {
+    val newJourney: Journey = journey match {
       case j: Journey.Epaye.RetrievedExtremeDates =>
         j.into[Journey.Epaye.RetrievedAffordabilityResult]
           .withFieldConst(_.instalmentAmounts, instalmentAmounts)
@@ -86,15 +88,14 @@ class UpdateAffordabilityResultController @Inject() (
   }
 
   private def updateJourneyWithExistingValue(
-    journey:           Journey.AfterRetrievedAffordabilityResult,
+    journey: JourneyStage.AfterRetrievedAffordabilityResult ,
     instalmentAmounts: InstalmentAmounts
   )(implicit request: Request[_]): Future[Journey] = {
     if (journey.instalmentAmounts === instalmentAmounts) {
       JourneyLogger.info("Nothing to update, InstalmentAmounts is the same as the existing one in journey.")
       Future.successful(journey)
     } else {
-      val newJourney: Journey.AfterRetrievedAffordabilityResult = journey match {
-
+      val newJourney: Journey = journey match {
         case j: Journey.Epaye.RetrievedAffordabilityResult => j.copy(instalmentAmounts = instalmentAmounts)
         case j: Journey.Vat.RetrievedAffordabilityResult   => j.copy(instalmentAmounts = instalmentAmounts)
         case j: Journey.Sa.RetrievedAffordabilityResult    => j.copy(instalmentAmounts = instalmentAmounts)

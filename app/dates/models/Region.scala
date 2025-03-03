@@ -18,7 +18,7 @@ package dates.models
 
 import play.api.libs.json.{JsString, Writes}
 
-sealed trait Region
+sealed trait Region derives CanEqual
 
 object Region {
 

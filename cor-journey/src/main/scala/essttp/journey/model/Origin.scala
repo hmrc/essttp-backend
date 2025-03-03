@@ -23,7 +23,7 @@ import play.api.libs.json.Format
 
 import scala.collection.immutable
 
-sealed trait Origin extends EnumEntry with Product with Serializable {
+sealed trait Origin extends EnumEntry with Product with Serializable derives CanEqual {
 
   /** Better toString which shows portion of a package
     */

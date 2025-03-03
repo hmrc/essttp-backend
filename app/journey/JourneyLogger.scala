@@ -91,7 +91,7 @@ object JourneyLogger {
 
   private def taxRegime(implicit r: JourneyRequest[_]) = s"[${r.journey.taxRegime.toString}]"
 
-  private def stage(implicit r: JourneyRequest[_]) = s"[${r.journey.stage.toString}]"
+  private def stage(implicit r: JourneyRequest[_]) = s"[${r.journey.stage}]"
 
   private def journeyName(implicit r: JourneyRequest[_]) = s"[${r.journey.name}]"
 
@@ -105,11 +105,11 @@ object JourneyLogger {
     }
 
   private def makeRichMessage(message: => String, journeyId: JourneyId)(implicit request: RequestHeader): String = {
-    val traceId: TraceId = TraceId(journeyId)
+    val traceId: TraceId = TraceId.fromJourneyId(journeyId)
     s"$message ${traceId.toString} ${journeyId.toString} $context "
   }
 
-  private sealed trait LogLevel
+  private sealed trait LogLevel derives CanEqual
 
   private case object Debug extends LogLevel
 
