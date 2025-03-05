@@ -22,9 +22,9 @@ import play.api.mvc.PathBindable
 final case class JourneyId(value: String) extends AnyVal derives CanEqual
 
 object JourneyId {
-  implicit val format: Format[JourneyId] = Json.valueFormat
+  given Format[JourneyId] = Json.valueFormat
 
   /** Allows JourneyId final case class to be used as a query parameter in controllers
     */
-  implicit val journeyIdBinder: PathBindable[JourneyId] = essttp.utils.ValueClassBinder.valueClassBinder(_.value)
+  given PathBindable[JourneyId] = essttp.utils.ValueClassBinder.valueClassBinder(_.value)
 }

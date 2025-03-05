@@ -16,7 +16,6 @@
 
 package essttp.rootmodel
 
-import cats.Eq
 import play.api.libs.json._
 
 import java.text.NumberFormat
@@ -47,9 +46,7 @@ object AmountInPence {
 
   val zero: AmountInPence = AmountInPence(0)
 
-  implicit val eq: Eq[AmountInPence] = Eq.fromUniversalEquals
-
-  implicit val format: Format[AmountInPence] = Format(
+  given Format[AmountInPence] = Format(
     Reads {
       case JsNumber(n) if n.isWhole => JsSuccess(AmountInPence(n.toLong))
       case JsNumber(_)              => JsError("Expected positive integer but got non-integral number")

@@ -16,15 +16,13 @@
 
 package controllers
 
-import essttp.crypto.CryptoFormat
 import essttp.journey.model.Journey
 import essttp.rootmodel.IsEmailAddressRequired
 import paymentsEmailVerification.models.EmailVerificationResult
-import play.api.libs.json.Json
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateEmailVerificationResultControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-email-verification-status" - {
 
@@ -103,7 +101,7 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
             existingValue(initialJourney)
           )(
             differentVerificationResult,
-            journeyConnector.updateEmailVerificationResult(_, _)(context.request),
+            journeyConnector.updateEmailVerificationResult(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(differentVerificationResult)
           )(context)
         }
@@ -131,7 +129,7 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
             existingValue(initialJourney)
           )(
             differentVerificationResult,
-            journeyConnector.updateEmailVerificationResult(_, _)(context.request),
+            journeyConnector.updateEmailVerificationResult(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(differentVerificationResult)
           )(context)
         }
@@ -159,7 +157,7 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
             existingValue(initialJourney)
           )(
             differentVerificationResult,
-            journeyConnector.updateEmailVerificationResult(_, _)(context.request),
+            journeyConnector.updateEmailVerificationResult(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(differentVerificationResult)
           )(context)
         }
@@ -187,7 +185,7 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
             existingValue(initialJourney)
           )(
             differentVerificationResult,
-            journeyConnector.updateEmailVerificationResult(_, _)(context.request),
+            journeyConnector.updateEmailVerificationResult(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterEmailVerificationResult(differentVerificationResult)
           )(context)
         }
@@ -208,9 +206,6 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
         .copy(_id = tdAll.journeyId)
         .copy(correlationId = tdAll.correlationId)
         .copy(isEmailAddressRequired = IsEmailAddressRequired(value = true))
-
-      implicit val crypto: CryptoFormat = CryptoFormat.NoOpCryptoFormat
-      println(s"Got ${Json.prettyPrint(Json.toJson(j))}")
 
       stubCommonActions()
       insertJourneyForTest(

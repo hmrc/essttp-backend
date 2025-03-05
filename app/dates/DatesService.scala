@@ -16,7 +16,6 @@
 
 package dates
 
-import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import dates.models.{AddWorkingDaysRequest, AddWorkingDaysResponse, Region}
 import play.api.libs.json.{JsError, JsSuccess}
@@ -26,19 +25,17 @@ import java.time.{Clock, LocalDate}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class DatesService @Inject() (clock: Clock, dateCalculatorConnector: DateCalculatorConnector)(implicit
-  ec: ExecutionContext
-) {
+class DatesService @Inject() (clock: Clock, dateCalculatorConnector: DateCalculatorConnector)(using ExecutionContext) {
 
   private def today(): LocalDate = LocalDate.now(clock)
 
   def todayPlusCalendarDays(numberOfDays: Int): LocalDate = today().plusDays(numberOfDays)
 
-  def todayPlusWorkingDays(numberOfDaysToAdd: Int)(implicit hc: HeaderCarrier): Future[LocalDate] =
+  def todayPlusWorkingDays(numberOfDaysToAdd: Int)(using HeaderCarrier): Future[LocalDate] =
     dateCalculatorConnector
       .addWorkingDays(AddWorkingDaysRequest(today(), numberOfDaysToAdd, Set(Region.EnglandAndWales)))
       .map { response =>
-        if (response.status === 200) {
+        if (response.status == 200) {
           response.json.validate[AddWorkingDaysResponse] match {
             case JsSuccess(result, _) => result.result
             case JsError(_)           => throw new Exception("Could not parse date calculator response")

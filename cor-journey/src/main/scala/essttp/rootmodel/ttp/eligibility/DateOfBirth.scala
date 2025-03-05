@@ -23,5 +23,5 @@ import java.time.LocalDate
 final case class DateOfBirth(value: LocalDate) extends AnyVal
 
 object DateOfBirth {
-  implicit val format: Format[DateOfBirth] = Json.valueFormat[DateOfBirth]
+  given Format[DateOfBirth] = Json.valueFormat[DateOfBirth]
 }

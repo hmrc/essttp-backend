@@ -19,7 +19,7 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, JourneyStage, JourneyStageView}
+import essttp.journey.model.{Journey, JourneyId, JourneyStage}
 import essttp.rootmodel.bank.BankDetails
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.*
@@ -34,7 +34,7 @@ class UpdateDirectDebitDetailsController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateDirectDebitDetails(journeyId: JourneyId): Action[BankDetails] =
@@ -46,7 +46,7 @@ class UpdateDirectDebitDetailsController @Inject() (
                           Errors.throwBadRequestExceptionF(
                             s"UpdateDirectDebitDetails is not possible in that state: [${j.stage}]"
                           )
-                        case j: JourneyStageView.EnteredCanYouSetUpDirectDebit   =>
+                        case j: Journey.EnteredCanYouSetUpDirectDebit            =>
                           updateJourneyWithNewValue(j, request.body)
                         case j: JourneyStage.AfterEnteredDirectDebitDetails      =>
                           j match {
@@ -62,22 +62,22 @@ class UpdateDirectDebitDetailsController @Inject() (
     }
 
   private def updateJourneyWithNewValue(
-    journey:            JourneyStageView.EnteredCanYouSetUpDirectDebit,
+    journey:            Journey.EnteredCanYouSetUpDirectDebit,
     directDebitDetails: BankDetails
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey = journey match {
-      case j: Journey.EnteredCanYouSetUpDirectDebit =>
-        j.into[Journey.EnteredDirectDebitDetails]
-          .withFieldConst(_.directDebitDetails, directDebitDetails)
-          .transform
-    }
+  )(using Request[_]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.EnteredDirectDebitDetails]
+        .withFieldConst(_.directDebitDetails, directDebitDetails)
+        .transform
+
     journeyService.upsert(newJourney)
   }
 
   private def updateJourneyWithExistingValue(
     journey:            JourneyStage.AfterEnteredDirectDebitDetails & Journey,
     directDebitDetails: BankDetails
-  )(implicit request: Request[_]): Future[Journey] =
+  )(using Request[_]): Future[Journey] =
     if (journey.directDebitDetails == directDebitDetails) {
       JourneyLogger.info("Direct debit details haven't changed, nothing to update")
       Future.successful(journey)
@@ -106,7 +106,7 @@ class UpdateDirectDebitDetailsController @Inject() (
             .withFieldConst(_.directDebitDetails, directDebitDetails)
             .transform
 
-        case _: JourneyStageView.SubmittedArrangement =>
+        case _: Journey.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update DirectDebitDetails when journey is in completed state")
       }
 

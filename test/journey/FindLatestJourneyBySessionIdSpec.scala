@@ -62,17 +62,17 @@ class FindLatestJourneyBySessionIdSpec extends ItSpec {
 
   "find a single journey" in {
     def startJourney(sessionId: SessionId): JourneyId = {
-      implicit val request: FakeRequest[AnyContentAsEmpty.type] =
+      given FakeRequest[AnyContentAsEmpty.type] =
         TdAll.request.withSession(SessionKeys.sessionId -> sessionId.value)
-      val sjRequest                                             = TdAll.EpayeBta.sjRequest
-      val journeyId                                             = journeyConnector.Epaye.startJourneyBta(sjRequest).futureValue.journeyId
+      val sjRequest                             = TdAll.EpayeBta.sjRequest
+      val journeyId                             = journeyConnector.Epaye.startJourneyBta(sjRequest).futureValue.journeyId
       journeyId
     }
 
     stubCommonActions()
 
-    val sessionId                  = SessionId(s"session-${UUID.randomUUID().toString}")
-    implicit val hc: HeaderCarrier = makeHeaderCarrier(sessionId)
+    val sessionId       = SessionId(s"session-${UUID.randomUUID().toString}")
+    given HeaderCarrier = makeHeaderCarrier(sessionId)
 
     val previousJourneyId = startJourney(sessionId) // there is only 1 journey in mongo with the sessionId
     val result1           = journeyConnector.findLatestJourneyBySessionId().futureValue.value
@@ -89,9 +89,9 @@ class FindLatestJourneyBySessionIdSpec extends ItSpec {
   "find a single journey - Not Found" in {
     stubCommonActions()
 
-    val sessionId                  = SessionId("i-have-no-session-id")
-    implicit val hc: HeaderCarrier = makeHeaderCarrier(sessionId)
-    val journey: Option[Journey]   = journeyConnector.findLatestJourneyBySessionId().futureValue
+    val sessionId                = SessionId("i-have-no-session-id")
+    given HeaderCarrier          = makeHeaderCarrier(sessionId)
+    val journey: Option[Journey] = journeyConnector.findLatestJourneyBySessionId().futureValue
     journey shouldBe None
 
     verifyCommonActions(numberOfAuthCalls = 1)

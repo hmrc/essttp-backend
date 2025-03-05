@@ -22,7 +22,7 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateInstalmentPlanControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-selected-plan" - {
     "should throw Bad Request when Journey is in a stage" - {
@@ -129,7 +129,7 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyContro
             existingValue(initialJourney)
           )(
             differentPaymentPlan,
-            journeyConnector.updateChosenPaymentPlan(_, _)(context.request),
+            journeyConnector.updateChosenPaymentPlan(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = differentPaymentPlan)
           )(context)
 
@@ -189,7 +189,7 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyContro
             existingValue(initialJourney)
           )(
             differentPaymentPlan,
-            journeyConnector.updateChosenPaymentPlan(_, _)(context.request),
+            journeyConnector.updateChosenPaymentPlan(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = differentPaymentPlan)
           )(context)
 
@@ -249,7 +249,7 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyContro
             existingValue(initialJourney)
           )(
             differentPaymentPlan,
-            journeyConnector.updateChosenPaymentPlan(_, _)(context.request),
+            journeyConnector.updateChosenPaymentPlan(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = differentPaymentPlan)
           )(context)
 
@@ -311,7 +311,7 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyContro
             existingValue(initialJourney)
           )(
             differentPaymentPlan,
-            journeyConnector.updateChosenPaymentPlan(_, _)(context.request),
+            journeyConnector.updateChosenPaymentPlan(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = differentPaymentPlan)
           )(context)
 

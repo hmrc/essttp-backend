@@ -186,541 +186,7 @@ object JourneyStage {
 
 }
 
-sealed trait JourneyStageView { this: JourneyStage => }
-
-object JourneyStageView {
-
-  import JourneyStage._
-
-  sealed trait Started
-      extends JourneyStageView
-      with BeforeComputedTaxId
-      with BeforeEligibilityChecked
-      with BeforeWhyCannotPayInFullAnswers
-      with BeforeAnsweredCanPayUpfront
-      with BeforeEnteredUpfrontPaymentAmount
-      with BeforeUpfrontPaymentAnswers
-      with BeforeExtremeDatesResponse
-      with BeforeRetrievedAffordabilityResult
-      with BeforeCanPayWithinSixMonthsAnswers
-      with BeforeStartedPegaCase
-      with BeforeEnteredMonthlyPaymentAmount
-      with BeforeEnteredDayOfMonth
-      with BeforeStartDatesResponse
-      with BeforeAffordableQuotesResponse
-      with BeforeSelectedPaymentPlan
-      with BeforeCheckedPaymentPlan
-      with BeforeEnteredCanYouSetUpDirectDebit
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait ComputedTaxId
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with BeforeWhyCannotPayInFullAnswers
-      with BeforeEligibilityChecked
-      with BeforeAnsweredCanPayUpfront
-      with BeforeEnteredUpfrontPaymentAmount
-      with BeforeUpfrontPaymentAnswers
-      with BeforeExtremeDatesResponse
-      with BeforeRetrievedAffordabilityResult
-      with BeforeCanPayWithinSixMonthsAnswers
-      with BeforeStartedPegaCase
-      with BeforeEnteredMonthlyPaymentAmount
-      with BeforeEnteredDayOfMonth
-      with BeforeStartDatesResponse
-      with BeforeAffordableQuotesResponse
-      with BeforeSelectedPaymentPlan
-      with BeforeCheckedPaymentPlan
-      with BeforeEnteredCanYouSetUpDirectDebit
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait EligibilityChecked
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with BeforeWhyCannotPayInFullAnswers
-      with BeforeAnsweredCanPayUpfront
-      with BeforeEnteredUpfrontPaymentAmount
-      with BeforeUpfrontPaymentAnswers
-      with BeforeExtremeDatesResponse
-      with BeforeRetrievedAffordabilityResult
-      with BeforeCanPayWithinSixMonthsAnswers
-      with BeforeStartedPegaCase
-      with BeforeEnteredMonthlyPaymentAmount
-      with BeforeEnteredDayOfMonth
-      with BeforeStartDatesResponse
-      with BeforeAffordableQuotesResponse
-      with BeforeSelectedPaymentPlan
-      with BeforeCheckedPaymentPlan
-      with BeforeEnteredCanYouSetUpDirectDebit
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait ObtainedWhyCannotPayInFullAnswers
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with BeforeAnsweredCanPayUpfront
-      with BeforeEnteredUpfrontPaymentAmount
-      with BeforeUpfrontPaymentAnswers
-      with BeforeExtremeDatesResponse
-      with BeforeRetrievedAffordabilityResult
-      with BeforeCanPayWithinSixMonthsAnswers
-      with BeforeStartedPegaCase
-      with BeforeEnteredMonthlyPaymentAmount
-      with BeforeEnteredDayOfMonth
-      with BeforeStartDatesResponse
-      with BeforeAffordableQuotesResponse
-      with BeforeSelectedPaymentPlan
-      with BeforeCheckedPaymentPlan
-      with BeforeEnteredCanYouSetUpDirectDebit
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait AnsweredCanPayUpfront
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterAnsweredCanPayUpfront
-      with BeforeEnteredUpfrontPaymentAmount
-      with BeforeUpfrontPaymentAnswers
-      with BeforeExtremeDatesResponse
-      with BeforeRetrievedAffordabilityResult
-      with BeforeCanPayWithinSixMonthsAnswers
-      with BeforeStartedPegaCase
-      with BeforeEnteredMonthlyPaymentAmount
-      with BeforeEnteredDayOfMonth
-      with BeforeStartDatesResponse
-      with BeforeAffordableQuotesResponse
-      with BeforeSelectedPaymentPlan
-      with BeforeCheckedPaymentPlan
-      with BeforeEnteredCanYouSetUpDirectDebit
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait EnteredUpfrontPaymentAmount
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterAnsweredCanPayUpfront
-      with AfterEnteredUpfrontPaymentAmount
-      with BeforeUpfrontPaymentAnswers
-      with BeforeExtremeDatesResponse
-      with BeforeRetrievedAffordabilityResult
-      with BeforeCanPayWithinSixMonthsAnswers
-      with BeforeStartedPegaCase
-      with BeforeEnteredMonthlyPaymentAmount
-      with BeforeEnteredDayOfMonth
-      with BeforeStartDatesResponse
-      with BeforeAffordableQuotesResponse
-      with BeforeSelectedPaymentPlan
-      with BeforeCheckedPaymentPlan
-      with BeforeEnteredCanYouSetUpDirectDebit
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait RetrievedExtremeDates
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterUpfrontPaymentAnswers
-      with AfterExtremeDatesResponse
-      with BeforeRetrievedAffordabilityResult
-      with BeforeCanPayWithinSixMonthsAnswers
-      with BeforeEnteredMonthlyPaymentAmount
-      with BeforeEnteredDayOfMonth
-      with BeforeStartDatesResponse
-      with BeforeAffordableQuotesResponse
-      with BeforeSelectedPaymentPlan
-      with BeforeCheckedPaymentPlan
-      with BeforeEnteredCanYouSetUpDirectDebit
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait RetrievedAffordabilityResult
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterUpfrontPaymentAnswers
-      with AfterExtremeDatesResponse
-      with AfterRetrievedAffordabilityResult
-      with BeforeCanPayWithinSixMonthsAnswers
-      with BeforeEnteredMonthlyPaymentAmount
-      with BeforeStartedPegaCase
-      with BeforeEnteredDayOfMonth
-      with BeforeStartDatesResponse
-      with BeforeAffordableQuotesResponse
-      with BeforeSelectedPaymentPlan
-      with BeforeCheckedPaymentPlan
-      with BeforeEnteredCanYouSetUpDirectDebit
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait ObtainedCanPayWithinSixMonthsAnswers
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterUpfrontPaymentAnswers
-      with AfterExtremeDatesResponse
-      with AfterRetrievedAffordabilityResult
-      with AfterCanPayWithinSixMonthsAnswers
-      with BeforeEnteredMonthlyPaymentAmount
-      with BeforeStartedPegaCase
-      with BeforeEnteredDayOfMonth
-      with BeforeStartDatesResponse
-      with BeforeAffordableQuotesResponse
-      with BeforeSelectedPaymentPlan
-      with BeforeCheckedPaymentPlan
-      with BeforeEnteredCanYouSetUpDirectDebit
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait StartedPegaCase
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterUpfrontPaymentAnswers
-      with AfterExtremeDatesResponse
-      with AfterRetrievedAffordabilityResult
-      with AfterCanPayWithinSixMonthsAnswers
-      with AfterStartedPegaCase
-      with BeforeCheckedPaymentPlan
-      with BeforeEnteredCanYouSetUpDirectDebit
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait EnteredMonthlyPaymentAmount
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterUpfrontPaymentAnswers
-      with AfterExtremeDatesResponse
-      with AfterRetrievedAffordabilityResult
-      with AfterCanPayWithinSixMonthsAnswers
-      with AfterEnteredMonthlyPaymentAmount
-      with BeforeEnteredDayOfMonth
-      with BeforeStartDatesResponse
-      with BeforeAffordableQuotesResponse
-      with BeforeSelectedPaymentPlan
-      with BeforeCheckedPaymentPlan
-      with BeforeEnteredCanYouSetUpDirectDebit
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait EnteredDayOfMonth
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterUpfrontPaymentAnswers
-      with AfterExtremeDatesResponse
-      with AfterRetrievedAffordabilityResult
-      with AfterCanPayWithinSixMonthsAnswers
-      with AfterEnteredMonthlyPaymentAmount
-      with AfterEnteredDayOfMonth
-      with BeforeStartDatesResponse
-      with BeforeAffordableQuotesResponse
-      with BeforeSelectedPaymentPlan
-      with BeforeCheckedPaymentPlan
-      with BeforeEnteredCanYouSetUpDirectDebit
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait RetrievedStartDates
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterUpfrontPaymentAnswers
-      with AfterExtremeDatesResponse
-      with AfterRetrievedAffordabilityResult
-      with AfterCanPayWithinSixMonthsAnswers
-      with AfterEnteredMonthlyPaymentAmount
-      with AfterEnteredDayOfMonth
-      with AfterStartDatesResponse
-      with BeforeAffordableQuotesResponse
-      with BeforeSelectedPaymentPlan
-      with BeforeCheckedPaymentPlan
-      with BeforeEnteredCanYouSetUpDirectDebit
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait RetrievedAffordableQuotes
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterUpfrontPaymentAnswers
-      with AfterExtremeDatesResponse
-      with AfterRetrievedAffordabilityResult
-      with AfterCanPayWithinSixMonthsAnswers
-      with AfterEnteredMonthlyPaymentAmount
-      with AfterEnteredDayOfMonth
-      with AfterStartDatesResponse
-      with AfterAffordableQuotesResponse
-      with BeforeSelectedPaymentPlan
-      with BeforeCheckedPaymentPlan
-      with BeforeEnteredCanYouSetUpDirectDebit
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait ChosenPaymentPlan
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterUpfrontPaymentAnswers
-      with AfterExtremeDatesResponse
-      with AfterRetrievedAffordabilityResult
-      with AfterCanPayWithinSixMonthsAnswers
-      with AfterEnteredMonthlyPaymentAmount
-      with AfterEnteredDayOfMonth
-      with AfterStartDatesResponse
-      with AfterAffordableQuotesResponse
-      with AfterSelectedPaymentPlan
-      with BeforeCheckedPaymentPlan
-      with BeforeEnteredCanYouSetUpDirectDebit
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait CheckedPaymentPlan
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterUpfrontPaymentAnswers
-      with AfterExtremeDatesResponse
-      with AfterRetrievedAffordabilityResult
-      with AfterCanPayWithinSixMonthsAnswers
-      with AfterCheckedPaymentPlan
-      with BeforeEnteredCanYouSetUpDirectDebit
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait EnteredCanYouSetUpDirectDebit
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterUpfrontPaymentAnswers
-      with AfterExtremeDatesResponse
-      with AfterRetrievedAffordabilityResult
-      with AfterCanPayWithinSixMonthsAnswers
-      with AfterCheckedPaymentPlan
-      with AfterEnteredCanYouSetUpDirectDebit
-      with BeforeEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait EnteredDirectDebitDetails
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterUpfrontPaymentAnswers
-      with AfterExtremeDatesResponse
-      with AfterRetrievedAffordabilityResult
-      with AfterCanPayWithinSixMonthsAnswers
-      with AfterCheckedPaymentPlan
-      with AfterEnteredCanYouSetUpDirectDebit
-      with AfterEnteredDirectDebitDetails
-      with BeforeConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait ConfirmedDirectDebitDetails
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterUpfrontPaymentAnswers
-      with AfterExtremeDatesResponse
-      with AfterRetrievedAffordabilityResult
-      with AfterCanPayWithinSixMonthsAnswers
-      with AfterCheckedPaymentPlan
-      with AfterEnteredCanYouSetUpDirectDebit
-      with AfterEnteredDirectDebitDetails
-      with AfterConfirmedDirectDebitDetails
-      with BeforeAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait AgreedTermsAndConditions
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterUpfrontPaymentAnswers
-      with AfterExtremeDatesResponse
-      with AfterRetrievedAffordabilityResult
-      with AfterCanPayWithinSixMonthsAnswers
-      with AfterCheckedPaymentPlan
-      with AfterEnteredCanYouSetUpDirectDebit
-      with AfterEnteredDirectDebitDetails
-      with AfterConfirmedDirectDebitDetails
-      with AfterAgreedTermsAndConditions
-      with BeforeEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait SelectedEmailToBeVerified
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterUpfrontPaymentAnswers
-      with AfterExtremeDatesResponse
-      with AfterRetrievedAffordabilityResult
-      with AfterCanPayWithinSixMonthsAnswers
-      with AfterCheckedPaymentPlan
-      with AfterEnteredCanYouSetUpDirectDebit
-      with AfterEnteredDirectDebitDetails
-      with AfterConfirmedDirectDebitDetails
-      with AfterAgreedTermsAndConditions
-      with AfterEmailAddressSelectedToBeVerified
-      with BeforeEmailAddressVerificationResult
-      with BeforeEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait EmailVerificationComplete
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterUpfrontPaymentAnswers
-      with AfterExtremeDatesResponse
-      with AfterRetrievedAffordabilityResult
-      with AfterCanPayWithinSixMonthsAnswers
-      with AfterCheckedPaymentPlan
-      with AfterEnteredCanYouSetUpDirectDebit
-      with AfterEnteredDirectDebitDetails
-      with AfterConfirmedDirectDebitDetails
-      with AfterAgreedTermsAndConditions
-      with AfterEmailAddressSelectedToBeVerified
-      with AfterEmailAddressVerificationResult
-      with AfterEmailVerificationPhase
-      with BeforeArrangementSubmitted
-
-  sealed trait SubmittedArrangement
-      extends JourneyStageView
-      with AfterComputedTaxId
-      with AfterEligibilityChecked
-      with AfterWhyCannotPayInFullAnswers
-      with AfterUpfrontPaymentAnswers
-      with AfterExtremeDatesResponse
-      with AfterRetrievedAffordabilityResult
-      with AfterCanPayWithinSixMonthsAnswers
-      with AfterCheckedPaymentPlan
-      with AfterEnteredCanYouSetUpDirectDebit
-      with AfterEnteredDirectDebitDetails
-      with AfterConfirmedDirectDebitDetails
-      with AfterAgreedTermsAndConditions
-      with AfterEmailVerificationPhase
-      with AfterArrangementSubmitted
-
-}
-
-sealed trait Journey derives CanEqual { this: JourneyStageView =>
+sealed trait Journey derives CanEqual {
   def _id: JourneyId
   def origin: Origin
   def createdOn: Instant
@@ -760,17 +226,17 @@ sealed trait Journey derives CanEqual { this: JourneyStageView =>
 
 object Journey {
 
-  implicit class JourneyOps[T <: TaxRegime](private val j: Journey) extends AnyVal {
+  import JourneyStage._
+
+  extension (j: Journey) {
 
     def json(implicit cryptoFormat: CryptoFormat): JsValue = Json.toJson(j)
 
-    def stage: String = j match {
-      case stage: JourneyStageView => stage.getClass.getSimpleName
-    }
+    def stage: String = j.getClass.getSimpleName
 
   }
 
-  /** [[Journey]] after started Epaye
+  /** [[Journey]] after started
     */
   final case class Started(
     override val _id:                  JourneyId,
@@ -781,10 +247,33 @@ object Journey {
     override val correlationId:        CorrelationId,
     override val affordabilityEnabled: Option[Boolean],
     override val pegaCaseId:           Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.Started
+  ) extends Journey,
+        BeforeComputedTaxId,
+        BeforeEligibilityChecked,
+        BeforeWhyCannotPayInFullAnswers,
+        BeforeAnsweredCanPayUpfront,
+        BeforeEnteredUpfrontPaymentAmount,
+        BeforeUpfrontPaymentAnswers,
+        BeforeExtremeDatesResponse,
+        BeforeRetrievedAffordabilityResult,
+        BeforeCanPayWithinSixMonthsAnswers,
+        BeforeStartedPegaCase,
+        BeforeEnteredMonthlyPaymentAmount,
+        BeforeEnteredDayOfMonth,
+        BeforeStartDatesResponse,
+        BeforeAffordableQuotesResponse,
+        BeforeSelectedPaymentPlan,
+        BeforeCheckedPaymentPlan,
+        BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after computed TaxIds Epaye
+  /** [[Journey]] after computed TaxIds
     */
   final case class ComputedTaxId(
     override val _id:                  JourneyId,
@@ -796,10 +285,33 @@ object Journey {
     override val affordabilityEnabled: Option[Boolean],
     override val taxId:                TaxId,
     override val pegaCaseId:           Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.ComputedTaxId
+  ) extends Journey,
+        AfterComputedTaxId,
+        BeforeWhyCannotPayInFullAnswers,
+        BeforeEligibilityChecked,
+        BeforeAnsweredCanPayUpfront,
+        BeforeEnteredUpfrontPaymentAmount,
+        BeforeUpfrontPaymentAnswers,
+        BeforeExtremeDatesResponse,
+        BeforeRetrievedAffordabilityResult,
+        BeforeCanPayWithinSixMonthsAnswers,
+        BeforeStartedPegaCase,
+        BeforeEnteredMonthlyPaymentAmount,
+        BeforeEnteredDayOfMonth,
+        BeforeStartDatesResponse,
+        BeforeAffordableQuotesResponse,
+        BeforeSelectedPaymentPlan,
+        BeforeCheckedPaymentPlan,
+        BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after EligibilityCheck Epaye
+  /** [[Journey]] after EligibilityCheck
     */
   final case class EligibilityChecked(
     override val _id:                    JourneyId,
@@ -812,10 +324,33 @@ object Journey {
     override val taxId:                  TaxId,
     override val eligibilityCheckResult: EligibilityCheckResult,
     override val pegaCaseId:             Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.EligibilityChecked
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        BeforeWhyCannotPayInFullAnswers,
+        BeforeAnsweredCanPayUpfront,
+        BeforeEnteredUpfrontPaymentAmount,
+        BeforeUpfrontPaymentAnswers,
+        BeforeExtremeDatesResponse,
+        BeforeRetrievedAffordabilityResult,
+        BeforeCanPayWithinSixMonthsAnswers,
+        BeforeStartedPegaCase,
+        BeforeEnteredMonthlyPaymentAmount,
+        BeforeEnteredDayOfMonth,
+        BeforeStartDatesResponse,
+        BeforeAffordableQuotesResponse,
+        BeforeSelectedPaymentPlan,
+        BeforeCheckedPaymentPlan,
+        BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after WhyCannotPayInFullAnswers Epaye
+  /** [[Journey]] after WhyCannotPayInFullAnswers
     */
   final case class ObtainedWhyCannotPayInFullAnswers(
     override val _id:                       JourneyId,
@@ -829,10 +364,33 @@ object Journey {
     override val eligibilityCheckResult:    EligibilityCheckResult,
     override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
     override val pegaCaseId:                Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.ObtainedWhyCannotPayInFullAnswers
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        BeforeAnsweredCanPayUpfront,
+        BeforeEnteredUpfrontPaymentAmount,
+        BeforeUpfrontPaymentAnswers,
+        BeforeExtremeDatesResponse,
+        BeforeRetrievedAffordabilityResult,
+        BeforeCanPayWithinSixMonthsAnswers,
+        BeforeStartedPegaCase,
+        BeforeEnteredMonthlyPaymentAmount,
+        BeforeEnteredDayOfMonth,
+        BeforeStartDatesResponse,
+        BeforeAffordableQuotesResponse,
+        BeforeSelectedPaymentPlan,
+        BeforeCheckedPaymentPlan,
+        BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after CanPayUpfront Epaye
+  /** [[Journey]] after CanPayUpfront
     */
   final case class AnsweredCanPayUpfront(
     override val _id:                       JourneyId,
@@ -847,10 +405,33 @@ object Journey {
     override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
     override val canPayUpfront:             CanPayUpfront,
     override val pegaCaseId:                Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.AnsweredCanPayUpfront
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterAnsweredCanPayUpfront,
+        BeforeEnteredUpfrontPaymentAmount,
+        BeforeUpfrontPaymentAnswers,
+        BeforeExtremeDatesResponse,
+        BeforeRetrievedAffordabilityResult,
+        BeforeCanPayWithinSixMonthsAnswers,
+        BeforeStartedPegaCase,
+        BeforeEnteredMonthlyPaymentAmount,
+        BeforeEnteredDayOfMonth,
+        BeforeStartDatesResponse,
+        BeforeAffordableQuotesResponse,
+        BeforeSelectedPaymentPlan,
+        BeforeCheckedPaymentPlan,
+        BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after UpfrontPaymentAmount Epaye
+  /** [[Journey]] after UpfrontPaymentAmount
     */
   final case class EnteredUpfrontPaymentAmount(
     override val _id:                       JourneyId,
@@ -866,10 +447,33 @@ object Journey {
     override val canPayUpfront:             CanPayUpfront,
     override val upfrontPaymentAmount:      UpfrontPaymentAmount,
     override val pegaCaseId:                Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.EnteredUpfrontPaymentAmount
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterAnsweredCanPayUpfront,
+        AfterEnteredUpfrontPaymentAmount,
+        BeforeUpfrontPaymentAnswers,
+        BeforeExtremeDatesResponse,
+        BeforeRetrievedAffordabilityResult,
+        BeforeCanPayWithinSixMonthsAnswers,
+        BeforeStartedPegaCase,
+        BeforeEnteredMonthlyPaymentAmount,
+        BeforeEnteredDayOfMonth,
+        BeforeStartDatesResponse,
+        BeforeAffordableQuotesResponse,
+        BeforeSelectedPaymentPlan,
+        BeforeCheckedPaymentPlan,
+        BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after Extreme dates request to esstp-dates Epaye
+  /** [[Journey]] after Extreme dates request to esstp-dates
     */
   final case class RetrievedExtremeDates(
     override val _id:                       JourneyId,
@@ -885,10 +489,30 @@ object Journey {
     override val upfrontPaymentAnswers:     UpfrontPaymentAnswers,
     override val extremeDatesResponse:      ExtremeDatesResponse,
     override val pegaCaseId:                Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.RetrievedExtremeDates
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        BeforeRetrievedAffordabilityResult,
+        BeforeCanPayWithinSixMonthsAnswers,
+        BeforeEnteredMonthlyPaymentAmount,
+        BeforeEnteredDayOfMonth,
+        BeforeStartDatesResponse,
+        BeforeAffordableQuotesResponse,
+        BeforeSelectedPaymentPlan,
+        BeforeCheckedPaymentPlan,
+        BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after Affordability request to tpp Epaye
+  /** [[Journey]] after Affordability request to tpp
     */
   final case class RetrievedAffordabilityResult(
     override val _id:                       JourneyId,
@@ -905,10 +529,31 @@ object Journey {
     override val extremeDatesResponse:      ExtremeDatesResponse,
     override val instalmentAmounts:         InstalmentAmounts,
     override val pegaCaseId:                Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.RetrievedAffordabilityResult
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        AfterRetrievedAffordabilityResult,
+        BeforeCanPayWithinSixMonthsAnswers,
+        BeforeEnteredMonthlyPaymentAmount,
+        BeforeStartedPegaCase,
+        BeforeEnteredDayOfMonth,
+        BeforeStartDatesResponse,
+        BeforeAffordableQuotesResponse,
+        BeforeSelectedPaymentPlan,
+        BeforeCheckedPaymentPlan,
+        BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after answers to CanPayWithinSixMonths if needed Epaye
+  /** [[Journey]] after answers to CanPayWithinSixMonths if needed
     */
   final case class ObtainedCanPayWithinSixMonthsAnswers(
     override val _id:                          JourneyId,
@@ -926,10 +571,31 @@ object Journey {
     override val instalmentAmounts:            InstalmentAmounts,
     override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
     override val pegaCaseId:                   Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.ObtainedCanPayWithinSixMonthsAnswers
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        AfterRetrievedAffordabilityResult,
+        AfterCanPayWithinSixMonthsAnswers,
+        BeforeEnteredMonthlyPaymentAmount,
+        BeforeStartedPegaCase,
+        BeforeEnteredDayOfMonth,
+        BeforeStartDatesResponse,
+        BeforeAffordableQuotesResponse,
+        BeforeSelectedPaymentPlan,
+        BeforeCheckedPaymentPlan,
+        BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after started a PEGA case Epaye
+  /** [[Journey]] after started a PEGA case
     */
   final case class StartedPegaCase(
     override val _id:                          JourneyId,
@@ -948,10 +614,26 @@ object Journey {
     override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
     override val startCaseResponse:            StartCaseResponse,
     override val pegaCaseId:                   Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.StartedPegaCase
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        AfterRetrievedAffordabilityResult,
+        AfterCanPayWithinSixMonthsAnswers,
+        AfterStartedPegaCase,
+        BeforeCheckedPaymentPlan,
+        BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after MonthlyPaymentAmount Epaye
+  /** [[Journey]] after MonthlyPaymentAmount
     */
   final case class EnteredMonthlyPaymentAmount(
     override val _id:                          JourneyId,
@@ -970,10 +652,30 @@ object Journey {
     override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
     override val monthlyPaymentAmount:         MonthlyPaymentAmount,
     override val pegaCaseId:                   Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.EnteredMonthlyPaymentAmount
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        AfterRetrievedAffordabilityResult,
+        AfterCanPayWithinSixMonthsAnswers,
+        AfterEnteredMonthlyPaymentAmount,
+        BeforeEnteredDayOfMonth,
+        BeforeStartDatesResponse,
+        BeforeAffordableQuotesResponse,
+        BeforeSelectedPaymentPlan,
+        BeforeCheckedPaymentPlan,
+        BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after Day of month Epaye
+  /** [[Journey]] after Day of month
     */
   final case class EnteredDayOfMonth(
     override val _id:                          JourneyId,
@@ -993,10 +695,30 @@ object Journey {
     override val monthlyPaymentAmount:         MonthlyPaymentAmount,
     override val dayOfMonth:                   DayOfMonth,
     override val pegaCaseId:                   Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.EnteredDayOfMonth
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        AfterRetrievedAffordabilityResult,
+        AfterCanPayWithinSixMonthsAnswers,
+        AfterEnteredMonthlyPaymentAmount,
+        AfterEnteredDayOfMonth,
+        BeforeStartDatesResponse,
+        BeforeAffordableQuotesResponse,
+        BeforeSelectedPaymentPlan,
+        BeforeCheckedPaymentPlan,
+        BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after Start dates api call Epaye
+  /** [[Journey]] after Start dates api call
     */
   final case class RetrievedStartDates(
     override val _id:                          JourneyId,
@@ -1017,10 +739,30 @@ object Journey {
     override val dayOfMonth:                   DayOfMonth,
     override val startDatesResponse:           StartDatesResponse,
     override val pegaCaseId:                   Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.RetrievedStartDates
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        AfterRetrievedAffordabilityResult,
+        AfterCanPayWithinSixMonthsAnswers,
+        AfterEnteredMonthlyPaymentAmount,
+        AfterEnteredDayOfMonth,
+        AfterStartDatesResponse,
+        BeforeAffordableQuotesResponse,
+        BeforeSelectedPaymentPlan,
+        BeforeCheckedPaymentPlan,
+        BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after Affordable quotes call to ttp Epaye
+  /** [[Journey]] after Affordable quotes call to ttp
     */
   final case class RetrievedAffordableQuotes(
     override val _id:                          JourneyId,
@@ -1042,10 +784,30 @@ object Journey {
     override val startDatesResponse:           StartDatesResponse,
     override val affordableQuotesResponse:     AffordableQuotesResponse,
     override val pegaCaseId:                   Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.RetrievedAffordableQuotes
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        AfterRetrievedAffordabilityResult,
+        AfterCanPayWithinSixMonthsAnswers,
+        AfterEnteredMonthlyPaymentAmount,
+        AfterEnteredDayOfMonth,
+        AfterStartDatesResponse,
+        AfterAffordableQuotesResponse,
+        BeforeSelectedPaymentPlan,
+        BeforeCheckedPaymentPlan,
+        BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after Payment plan has been chosen Epaye
+  /** [[Journey]] after Payment plan has been chosen
     */
   final case class ChosenPaymentPlan(
     override val _id:                          JourneyId,
@@ -1068,10 +830,30 @@ object Journey {
     override val affordableQuotesResponse:     AffordableQuotesResponse,
     override val selectedPaymentPlan:          PaymentPlan,
     override val pegaCaseId:                   Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.ChosenPaymentPlan
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        AfterRetrievedAffordabilityResult,
+        AfterCanPayWithinSixMonthsAnswers,
+        AfterEnteredMonthlyPaymentAmount,
+        AfterEnteredDayOfMonth,
+        AfterStartDatesResponse,
+        AfterAffordableQuotesResponse,
+        AfterSelectedPaymentPlan,
+        BeforeCheckedPaymentPlan,
+        BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after Payment plan has been checked Epaye
+  /** [[Journey]] after Payment plan has been checked
     */
   final case class CheckedPaymentPlan(
     override val _id:                          JourneyId,
@@ -1090,10 +872,25 @@ object Journey {
     override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
     override val paymentPlanAnswers:           PaymentPlanAnswers,
     override val pegaCaseId:                   Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.CheckedPaymentPlan
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        AfterRetrievedAffordabilityResult,
+        AfterCanPayWithinSixMonthsAnswers,
+        AfterCheckedPaymentPlan,
+        BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after details about bank account Epaye
+  /** [[Journey]] after details about bank account
     */
   final case class EnteredCanYouSetUpDirectDebit(
     override val _id:                          JourneyId,
@@ -1113,10 +910,25 @@ object Journey {
     override val paymentPlanAnswers:           PaymentPlanAnswers,
     override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
     override val pegaCaseId:                   Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.EnteredCanYouSetUpDirectDebit
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        AfterRetrievedAffordabilityResult,
+        AfterCanPayWithinSixMonthsAnswers,
+        AfterCheckedPaymentPlan,
+        AfterEnteredCanYouSetUpDirectDebit,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after bank details have been entered Epaye
+  /** [[Journey]] after bank details have been entered
     */
   final case class EnteredDirectDebitDetails(
     override val _id:                          JourneyId,
@@ -1137,10 +949,25 @@ object Journey {
     override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
     override val directDebitDetails:           BankDetails,
     override val pegaCaseId:                   Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.EnteredDirectDebitDetails
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        AfterRetrievedAffordabilityResult,
+        AfterCanPayWithinSixMonthsAnswers,
+        AfterCheckedPaymentPlan,
+        AfterEnteredCanYouSetUpDirectDebit,
+        AfterEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after bank details have been confirmed Epaye
+  /** [[Journey]] after bank details have been confirmed
     */
   final case class ConfirmedDirectDebitDetails(
     override val _id:                          JourneyId,
@@ -1161,10 +988,25 @@ object Journey {
     override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
     override val directDebitDetails:           BankDetails,
     override val pegaCaseId:                   Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.ConfirmedDirectDebitDetails
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        AfterRetrievedAffordabilityResult,
+        AfterCanPayWithinSixMonthsAnswers,
+        AfterCheckedPaymentPlan,
+        AfterEnteredCanYouSetUpDirectDebit,
+        AfterEnteredDirectDebitDetails,
+        AfterConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after Agreeing terms and conditions Epaye
+  /** [[Journey]] after Agreeing terms and conditions
     */
   final case class AgreedTermsAndConditions(
     override val _id:                          JourneyId,
@@ -1186,10 +1028,25 @@ object Journey {
     override val directDebitDetails:           BankDetails,
     override val isEmailAddressRequired:       IsEmailAddressRequired,
     override val pegaCaseId:                   Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.AgreedTermsAndConditions
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        AfterRetrievedAffordabilityResult,
+        AfterCanPayWithinSixMonthsAnswers,
+        AfterCheckedPaymentPlan,
+        AfterEnteredCanYouSetUpDirectDebit,
+        AfterEnteredDirectDebitDetails,
+        AfterConfirmedDirectDebitDetails,
+        AfterAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after Selecting email address to be verified Epaye
+  /** [[Journey]] after Selecting email address to be verified
     */
   final case class SelectedEmailToBeVerified(
     override val _id:                          JourneyId,
@@ -1212,10 +1069,25 @@ object Journey {
     override val isEmailAddressRequired:       IsEmailAddressRequired,
     override val emailToBeVerified:            Email,
     override val pegaCaseId:                   Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.SelectedEmailToBeVerified
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        AfterRetrievedAffordabilityResult,
+        AfterCanPayWithinSixMonthsAnswers,
+        AfterCheckedPaymentPlan,
+        AfterEnteredCanYouSetUpDirectDebit,
+        AfterEnteredDirectDebitDetails,
+        AfterConfirmedDirectDebitDetails,
+        AfterAgreedTermsAndConditions,
+        AfterEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after email verification status journey is complete Epaye
+  /** [[Journey]] after email verification status journey is complete
     */
   final case class EmailVerificationComplete(
     override val _id:                          JourneyId,
@@ -1240,10 +1112,25 @@ object Journey {
     override val emailVerificationResult:      EmailVerificationResult,
     override val emailVerificationAnswers:     EmailVerificationAnswers,
     override val pegaCaseId:                   Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.EmailVerificationComplete
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        AfterRetrievedAffordabilityResult,
+        AfterCanPayWithinSixMonthsAnswers,
+        AfterCheckedPaymentPlan,
+        AfterEnteredCanYouSetUpDirectDebit,
+        AfterEnteredDirectDebitDetails,
+        AfterConfirmedDirectDebitDetails,
+        AfterAgreedTermsAndConditions,
+        AfterEmailAddressSelectedToBeVerified,
+        AfterEmailAddressVerificationResult,
+        AfterEmailVerificationPhase,
+        BeforeArrangementSubmitted
 
-  /** [[Journey]] after Submission of their arrangement to the enact api Epaye
+  /** [[Journey]] after Submission of their arrangement to the enact api
     */
   final case class SubmittedArrangement(
     override val _id:                          JourneyId,
@@ -1267,16 +1154,26 @@ object Journey {
     override val arrangementResponse:          ArrangementResponse,
     override val emailVerificationAnswers:     EmailVerificationAnswers,
     override val pegaCaseId:                   Option[PegaCaseId]
-  ) extends Journey
-      with JourneyStageView.SubmittedArrangement
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        AfterRetrievedAffordabilityResult,
+        AfterCanPayWithinSixMonthsAnswers,
+        AfterCheckedPaymentPlan,
+        AfterEnteredCanYouSetUpDirectDebit,
+        AfterEnteredDirectDebitDetails,
+        AfterConfirmedDirectDebitDetails,
+        AfterAgreedTermsAndConditions,
+        AfterEmailVerificationPhase,
+        AfterArrangementSubmitted
 
-  private def journeyCirceCodec(implicit cryptoFormat: CryptoFormat): Codec.AsObject[Journey] =
-    deriveCodec[Journey]
-
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[Journey] = {
+  given format(using cryptoFormat: CryptoFormat): OFormat[Journey] = {
 
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    val defaultFormat: OFormat[Journey] = DerivedJson.Circe.format(journeyCirceCodec)
+    val defaultFormat: OFormat[Journey] = DerivedJson.Circe.format(deriveCodec[Journey])
 
     // we need to write some extra fields on the top of the structure so it's
     // possible to index on them and use them in queries

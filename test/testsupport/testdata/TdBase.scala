@@ -28,7 +28,7 @@ import essttp.rootmodel.ttp.affordablequotes._
 import essttp.rootmodel.ttp.eligibility.{ChargeReference, EligibilityCheckResult, EligibilityPass, EligibilityRules, EligibilityRulesPart1, EligibilityRulesPart2, EligibilityStatus}
 import models.pega.{PegaOauthToken, PegaStartCaseResponse}
 import paymentsEmailVerification.models.EmailVerificationResult
-import testsupport.TdSupport.FakeRequestOps
+import testsupport.TdSupport._
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString

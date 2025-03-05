@@ -23,6 +23,6 @@ final case class CanSetUpDirectDebit(isAccountHolder: Boolean) derives CanEqual
 object CanSetUpDirectDebit {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[CanSetUpDirectDebit] = Json.format
+  given OFormat[CanSetUpDirectDebit] = Json.format
 
 }

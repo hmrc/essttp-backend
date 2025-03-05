@@ -17,10 +17,9 @@
 package journey
 
 import action.Actions
-import cats.syntax.eq.*
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, JourneyStage, JourneyStageView}
+import essttp.journey.model.{Journey, JourneyId, JourneyStage}
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.*
@@ -35,7 +34,7 @@ class UpdateAffordabilityResultController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
   def updateAffordabilityResult(journeyId: JourneyId): Action[InstalmentAmounts] =
     actions.authenticatedAction.async(parse.json[InstalmentAmounts]) { implicit request =>
@@ -46,7 +45,7 @@ class UpdateAffordabilityResultController @Inject() (
                           Errors.throwBadRequestExceptionF(
                             s"UpdateAffordabilityResult update is not possible in that state: [${j.stage}]"
                           )
-                        case j: JourneyStageView.RetrievedExtremeDates  =>
+                        case j: Journey.RetrievedExtremeDates           =>
                           updateJourneyWithNewValue(j, request.body)
 
                         case j: JourneyStage.AfterRetrievedAffordabilityResult =>
@@ -63,23 +62,23 @@ class UpdateAffordabilityResultController @Inject() (
     }
 
   private def updateJourneyWithNewValue(
-    journey:           JourneyStageView.RetrievedExtremeDates,
+    journey:           Journey.RetrievedExtremeDates,
     instalmentAmounts: InstalmentAmounts
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey = journey match {
-      case j: Journey.RetrievedExtremeDates =>
-        j.into[Journey.RetrievedAffordabilityResult]
-          .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-          .transform
-    }
+  )(using Request[_]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.RetrievedAffordabilityResult]
+        .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+        .transform
+
     journeyService.upsert(newJourney)
   }
 
   private def updateJourneyWithExistingValue(
     journey:           JourneyStage.AfterRetrievedAffordabilityResult & Journey,
     instalmentAmounts: InstalmentAmounts
-  )(implicit request: Request[_]): Future[Journey] =
-    if (journey.instalmentAmounts === instalmentAmounts) {
+  )(using Request[_]): Future[Journey] =
+    if (journey.instalmentAmounts == instalmentAmounts) {
       JourneyLogger.info("Nothing to update, InstalmentAmounts is the same as the existing one in journey.")
       Future.successful(journey)
     } else {
@@ -156,7 +155,7 @@ class UpdateAffordabilityResultController @Inject() (
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
 
-        case _: JourneyStageView.SubmittedArrangement =>
+        case _: Journey.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update AffordabilityResult when journey is in completed state")
       }
       journeyService.upsert(newJourney)

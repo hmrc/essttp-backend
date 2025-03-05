@@ -39,7 +39,7 @@ trait RichMatchers
     with IntegrationPatience
     with JsonSyntax {
 
-  implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+  given ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
   @SuppressWarnings(Array("org.wartremover.warts.ExplicitImplicitTypes", "org.wartremover.warts.PublicInference"))
   implicit def toLoggedRequestOps(lr: LoggedRequest): Object { def getBodyAsJson: JsValue } = new {

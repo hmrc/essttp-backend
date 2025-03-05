@@ -22,5 +22,5 @@ final case class RegularCollection(dueDate: DueDate, amountDue: AmountDue)
 
 object RegularCollection {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[RegularCollection] = Json.format[RegularCollection]
+  given OFormat[RegularCollection] = Json.format[RegularCollection]
 }

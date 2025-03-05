@@ -38,7 +38,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class PegaConnector @Inject() (
   httpClient: HttpClientV2,
   config:     ServicesConfig
-)(implicit ec: ExecutionContext)
+)(using ExecutionContext)
     extends Logging {
 
   private val startCaseUrl: URL = url"${config.baseUrl("pega")}/prweb/api/payments/v1/aa/createorupdatecase"
@@ -61,7 +61,7 @@ class PegaConnector @Inject() (
 
   private val correlationIdHeaderName: String = "correlationid"
 
-  def getToken()(implicit hc: HeaderCarrier): Future[PegaOauthToken] =
+  def getToken()(using HeaderCarrier): Future[PegaOauthToken] =
     httpClient
       .post(oauthUrl)
       .withProxy

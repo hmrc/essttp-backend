@@ -16,7 +16,7 @@
 
 package bars
 
-import bars.BarsVerifyStatusRepoUtils._
+import bars.BarsVerifyStatusRepoUtils.{taxId, taxIdExtractor}
 import config.AppConfig
 import essttp.bars.model.{BarsVerifyStatus, TaxIdIndex}
 import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
@@ -33,7 +33,7 @@ import scala.concurrent.ExecutionContext
 final class BarsVerifyStatusRepo @Inject() (
   mongoComponent: MongoComponent,
   config:         AppConfig
-)(implicit ec: ExecutionContext)
+)(using ec: ExecutionContext)
     extends Repo[TaxIdIndex, BarsVerifyStatus](
       collectionName = "bars",
       mongoComponent = mongoComponent,
@@ -43,8 +43,8 @@ final class BarsVerifyStatusRepo @Inject() (
     )
 
 object BarsVerifyStatusRepoUtils {
-  implicit val taxId: Id[TaxIdIndex]                                     = (i: TaxIdIndex) => i.value
-  implicit val taxIdExtractor: IdExtractor[BarsVerifyStatus, TaxIdIndex] = (b: BarsVerifyStatus) => b._id
+  given taxId: Id[TaxIdIndex]                                     = (i: TaxIdIndex) => i.value
+  given taxIdExtractor: IdExtractor[BarsVerifyStatus, TaxIdIndex] = (b: BarsVerifyStatus) => b._id
 
   def indexes(cacheTtlInSeconds: Long): Seq[IndexModel] = Seq(
     IndexModel(

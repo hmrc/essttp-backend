@@ -23,10 +23,10 @@ final case class IsInterestBearingCharge(value: Boolean) extends AnyVal
 
 object IsInterestBearingCharge {
 
-  implicit val eq: Eq[IsInterestBearingCharge] = Eq.fromUniversalEquals
+  given Eq[IsInterestBearingCharge] = Eq.fromUniversalEquals
 
   implicit def asBoolean(e: IsInterestBearingCharge): Boolean = e.value
 
-  implicit val format: Format[IsInterestBearingCharge] = Json.valueFormat
+  given Format[IsInterestBearingCharge] = Json.valueFormat
 
 }

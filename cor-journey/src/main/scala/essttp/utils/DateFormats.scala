@@ -29,7 +29,7 @@ object DateFormats {
     */
   val dateTimeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
 
-  implicit val localDateTimeRead: Reads[LocalDateTime] = new Reads[LocalDateTime] {
+  given localDateTimeRead: Reads[LocalDateTime] = new Reads[LocalDateTime] {
     override def reads(json: JsValue): JsResult[LocalDateTime] =
       json match {
         case JsString(s) =>
@@ -44,9 +44,9 @@ object DateFormats {
       }
   }
 
-  implicit val localDateTimeWrite: Writes[LocalDateTime] = new Writes[LocalDateTime] {
+  given localDateTimeWrite: Writes[LocalDateTime] = new Writes[LocalDateTime] {
     def writes(dateTime: LocalDateTime): JsValue = JsString(dateTimeFormatter.format(dateTime.atZone(ZoneOffset.UTC)))
   }
 
-  implicit val localDateTimeFormat: Format[LocalDateTime] = Format(localDateTimeRead, localDateTimeWrite)
+  given Format[LocalDateTime] = Format(localDateTimeRead, localDateTimeWrite)
 }

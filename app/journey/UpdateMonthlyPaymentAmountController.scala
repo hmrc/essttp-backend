@@ -17,10 +17,9 @@
 package journey
 
 import action.Actions
-import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, JourneyStage, JourneyStageView, PaymentPlanAnswers}
+import essttp.journey.model.{Journey, JourneyId, JourneyStage, PaymentPlanAnswers}
 import essttp.rootmodel.MonthlyPaymentAmount
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.*
@@ -35,7 +34,7 @@ class UpdateMonthlyPaymentAmountController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateMonthlyPaymentAmount(journeyId: JourneyId): Action[MonthlyPaymentAmount] =
@@ -43,34 +42,34 @@ class UpdateMonthlyPaymentAmountController @Inject() (
       for {
         journey    <- journeyService.get(journeyId)
         newJourney <- journey match {
-                        case j: JourneyStage.BeforeCanPayWithinSixMonthsAnswers       =>
+                        case j: JourneyStage.BeforeCanPayWithinSixMonthsAnswers =>
                           Errors.throwBadRequestExceptionF(
                             s"UpdateMonthlyPaymentAmount update is not possible in that state: [${j.stage}]"
                           )
-                        case j: JourneyStageView.ObtainedCanPayWithinSixMonthsAnswers =>
+                        case j: Journey.ObtainedCanPayWithinSixMonthsAnswers    =>
                           updateJourneyWithNewValue(j, request.body)
-                        case j: JourneyStage.AfterEnteredMonthlyPaymentAmount         =>
+                        case j: JourneyStage.AfterEnteredMonthlyPaymentAmount   =>
                           updateJourneyWithExistingValue(Left(j), request.body)
-                        case _: JourneyStage.AfterStartedPegaCase                     =>
+                        case _: JourneyStage.AfterStartedPegaCase               =>
                           Errors.throwBadRequestExceptionF(
                             "Not expecting monthly payment amount to be updated after PEGA case started"
                           )
-                        case j: JourneyStage.AfterCheckedPaymentPlan                  =>
+                        case j: JourneyStage.AfterCheckedPaymentPlan            =>
                           updateJourneyWithExistingValue(Right(j), request.body)
                       }
       } yield Ok(newJourney.json)
     }
 
   private def updateJourneyWithNewValue(
-    journey:              JourneyStageView.ObtainedCanPayWithinSixMonthsAnswers,
+    journey:              Journey.ObtainedCanPayWithinSixMonthsAnswers,
     monthlyPaymentAmount: MonthlyPaymentAmount
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey = journey match {
-      case j: Journey.ObtainedCanPayWithinSixMonthsAnswers =>
-        j.into[Journey.EnteredMonthlyPaymentAmount]
-          .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
-          .transform
-    }
+  )(using Request[_]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.EnteredMonthlyPaymentAmount]
+        .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+        .transform
+
     journeyService.upsert(newJourney)
   }
 
@@ -80,7 +79,7 @@ class UpdateMonthlyPaymentAmountController @Inject() (
       JourneyStage.AfterCheckedPaymentPlan & Journey
     ],
     monthlyPaymentAmount: MonthlyPaymentAmount
-  )(implicit request: Request[_]): Future[Journey] =
+  )(using Request[_]): Future[Journey] =
     journey match {
       case Left(afterEnteredMonthlyPaymentAmount) =>
         updateJourneyWithExistingValue(
@@ -160,7 +159,7 @@ class UpdateMonthlyPaymentAmountController @Inject() (
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
 
-                case _: JourneyStageView.SubmittedArrangement =>
+                case _: Journey.SubmittedArrangement =>
                   Errors.throwBadRequestException("Cannot update MonthlyAmount when journey is in completed state")
               }
             )
@@ -172,8 +171,8 @@ class UpdateMonthlyPaymentAmountController @Inject() (
     existingJourney: Journey,
     newValue:        MonthlyPaymentAmount,
     newJourney:      Journey
-  )(implicit request: Request[_]): Future[Journey] =
-    if (existingValue.value === newValue.value) {
+  )(using Request[_]): Future[Journey] =
+    if (existingValue.value == newValue.value) {
       JourneyLogger.info("Nothing to update, selected MonthlyPaymentAmount is the same as the existing one in journey.")
       Future.successful(existingJourney)
     } else {

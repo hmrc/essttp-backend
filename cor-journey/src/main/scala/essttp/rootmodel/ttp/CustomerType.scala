@@ -28,7 +28,7 @@ sealed trait CustomerType extends EnumEntry {
 
 object CustomerType {
 
-  implicit val format: Format[CustomerType] = EnumFormat(CustomerTypes)
+  given Format[CustomerType] = EnumFormat(CustomerTypes)
 }
 
 object CustomerTypes extends Enum[CustomerType] {

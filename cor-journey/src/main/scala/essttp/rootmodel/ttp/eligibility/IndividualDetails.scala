@@ -31,5 +31,5 @@ final case class IndividualDetails(
 
 object IndividualDetails {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format: Format[IndividualDetails] = Json.format[IndividualDetails]
+  given Format[IndividualDetails] = Json.format[IndividualDetails]
 }

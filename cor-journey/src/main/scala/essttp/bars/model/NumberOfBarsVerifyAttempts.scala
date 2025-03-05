@@ -24,12 +24,12 @@ object NumberOfBarsVerifyAttempts {
 
   val zero: NumberOfBarsVerifyAttempts = NumberOfBarsVerifyAttempts(0)
 
-  implicit class NumberOfBarsVerifyAttemptsOps(private val n: NumberOfBarsVerifyAttempts) {
+  extension (n: NumberOfBarsVerifyAttempts) {
 
     def increment: NumberOfBarsVerifyAttempts = NumberOfBarsVerifyAttempts(n.value + 1)
 
   }
 
-  implicit val format: Format[NumberOfBarsVerifyAttempts] = Json.valueFormat
+  given Format[NumberOfBarsVerifyAttempts] = Json.valueFormat
 
 }

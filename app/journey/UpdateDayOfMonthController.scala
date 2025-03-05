@@ -19,7 +19,7 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, JourneyStage, JourneyStageView, PaymentPlanAnswers}
+import essttp.journey.model.{Journey, JourneyId, JourneyStage, PaymentPlanAnswers}
 import essttp.rootmodel.DayOfMonth
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.*
@@ -34,7 +34,7 @@ class UpdateDayOfMonthController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateDayOfMonth(journeyId: JourneyId): Action[DayOfMonth] =
@@ -46,7 +46,7 @@ class UpdateDayOfMonthController @Inject() (
                           Errors.throwBadRequestExceptionF(
                             s"UpdateDayOfMonth update is not possible in that state: [${j.stage}]"
                           )
-                        case j: JourneyStageView.EnteredMonthlyPaymentAmount   =>
+                        case j: Journey.EnteredMonthlyPaymentAmount            =>
                           updateJourneyWithNewValue(j, request.body)
                         case j: JourneyStage.AfterEnteredDayOfMonth            =>
                           updateJourneyWithExistingValue(Left(j), request.body)
@@ -68,22 +68,22 @@ class UpdateDayOfMonthController @Inject() (
     }
 
   private def updateJourneyWithNewValue(
-    journey:    JourneyStageView.EnteredMonthlyPaymentAmount,
+    journey:    Journey.EnteredMonthlyPaymentAmount,
     dayOfMonth: DayOfMonth
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey = journey match {
-      case j: Journey.EnteredMonthlyPaymentAmount =>
-        j.into[Journey.EnteredDayOfMonth]
-          .withFieldConst(_.dayOfMonth, dayOfMonth)
-          .transform
-    }
+  )(using Request[_]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.EnteredDayOfMonth]
+        .withFieldConst(_.dayOfMonth, dayOfMonth)
+        .transform
+
     journeyService.upsert(newJourney)
   }
 
   private def updateJourneyWithExistingValue(
     journey:    Either[JourneyStage.AfterEnteredDayOfMonth & Journey, JourneyStage.AfterCheckedPaymentPlan & Journey],
     dayOfMonth: DayOfMonth
-  )(implicit request: Request[_]): Future[Journey] =
+  )(using Request[_]): Future[Journey] =
     journey match {
       case Left(afterEnteredDayOfMonth) =>
         updateJourneyWithExistingValue(
@@ -163,7 +163,7 @@ class UpdateDayOfMonthController @Inject() (
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
 
-                case _: JourneyStageView.SubmittedArrangement =>
+                case _: Journey.SubmittedArrangement =>
                   Errors.throwBadRequestException("Cannot update DayOfMonth when journey is in completed state")
               }
             )
@@ -176,7 +176,7 @@ class UpdateDayOfMonthController @Inject() (
     existingJourney: Journey,
     newValue:        DayOfMonth,
     newJourney:      Journey
-  )(implicit request: Request[_]): Future[Journey] =
+  )(using Request[_]): Future[Journey] =
     if (existingValue == newValue) {
       JourneyLogger.info("Nothing to update, DayOfMonth is the same as the existing one in journey.")
       Future.successful(existingJourney)

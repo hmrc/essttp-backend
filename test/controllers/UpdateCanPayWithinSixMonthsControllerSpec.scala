@@ -38,7 +38,7 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-monthly-payment-amount" - {
     "should throw Bad Request when Journey is in a stage [BeforeObtainedCanPayWithinSixMonths]" in new JourneyItTest {
@@ -111,7 +111,7 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             existingValue(initialJourney)
           )(
             TdAll.canPayWithinSixMonthsNo,
-            journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
+            journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired.copy(
               canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo
             )
@@ -125,7 +125,7 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             existingValue(initialJourney)
           )(
             TdAll.canPayWithinSixMonthsNo,
-            journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
+            journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired.copy(
               canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo,
               pegaCaseId = Some(PegaCaseId("case-id"))
@@ -214,7 +214,7 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             existingValue(initialJourney)
           )(
             TdAll.canPayWithinSixMonthsNo,
-            journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
+            journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired.copy(
               canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo
             )
@@ -228,7 +228,7 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             existingValue(initialJourney)
           )(
             TdAll.canPayWithinSixMonthsNo,
-            journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
+            journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired.copy(
               canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo,
               pegaCaseId = Some(PegaCaseId("case-id"))
@@ -313,7 +313,7 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             existingValue(initialJourney)
           )(
             TdAll.canPayWithinSixMonthsNo,
-            journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
+            journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterCanPayWithinSixMonths.copy(
               canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo
             )
@@ -327,7 +327,7 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             existingValue(initialJourney)
           )(
             TdAll.canPayWithinSixMonthsNo,
-            journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
+            journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterCanPayWithinSixMonths.copy(
               canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo,
               pegaCaseId = Some(PegaCaseId("case-id"))
@@ -412,7 +412,7 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             existingValue(initialJourney)
           )(
             TdAll.canPayWithinSixMonthsNo,
-            journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
+            journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterCanPayWithinSixMonths.copy(
               canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo
             )
@@ -426,7 +426,7 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             existingValue(initialJourney)
           )(
             TdAll.canPayWithinSixMonthsNo,
-            journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
+            journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterCanPayWithinSixMonths.copy(
               canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo,
               pegaCaseId = Some(PegaCaseId("case-id"))

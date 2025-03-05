@@ -34,7 +34,7 @@ class UpdateEligibilityCheckResultController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateEligibilityResult(journeyId: JourneyId): Action[EligibilityCheckResult] =
@@ -46,7 +46,7 @@ class UpdateEligibilityCheckResultController @Inject() (
                           Errors.throwBadRequestExceptionF(
                             "EligibilityCheckResult update is not possible in that state."
                           )
-                        case j: JourneyStageView.ComputedTaxId       =>
+                        case j: Journey.ComputedTaxId                =>
                           updateJourneyWithNewValue(j, request.body)
                         case j: JourneyStage.AfterEligibilityChecked =>
                           j match {
@@ -62,22 +62,21 @@ class UpdateEligibilityCheckResultController @Inject() (
     }
 
   private def updateJourneyWithNewValue(
-    journey:                JourneyStageView.ComputedTaxId & Journey,
+    journey:                Journey.ComputedTaxId & Journey,
     eligibilityCheckResult: EligibilityCheckResult
-  )(implicit request: Request[_]): Future[Journey] =
-    journey match {
-      case j: Journey.ComputedTaxId =>
-        val newJourney = j
-          .into[Journey.EligibilityChecked]
-          .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
-          .transform
-        journeyService.upsert(newJourney)
-    }
+  )(using Request[_]): Future[Journey] = {
+    val newJourney = journey
+      .into[Journey.EligibilityChecked]
+      .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+      .transform
+
+    journeyService.upsert(newJourney)
+  }
 
   private def updateJourneyWithExistingValue(
     journey:                JourneyStage.AfterEligibilityChecked & Journey,
     eligibilityCheckResult: EligibilityCheckResult
-  )(implicit request: Request[_]): Future[Journey] = {
+  )(using Request[_]): Future[Journey] = {
     if (journey.eligibilityCheckResult == eligibilityCheckResult) {
       JourneyLogger.info("Nothing to update, EligibilityCheckResult is the same as the existing one in journey.")
       Future.successful(journey)
@@ -181,7 +180,7 @@ class UpdateEligibilityCheckResultController @Inject() (
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
 
-        case _: JourneyStageView.SubmittedArrangement =>
+        case _: Journey.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update Eligibility when journey is in completed state")
       }
 

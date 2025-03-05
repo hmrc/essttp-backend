@@ -16,7 +16,6 @@
 
 package services
 
-import cats.syntax.eq._
 import com.google.inject.{ImplementedBy, Inject, Singleton}
 import essttp.rootmodel.TaxRegime
 import play.api.Configuration
@@ -62,9 +61,9 @@ class AffordabilityEnablerServiceImpl @Inject() (config: Configuration) extends 
     if (affordabilityEnabledFor.contains(taxRegime)) {
       val percentage = passThroughPercentages(taxRegime)
 
-      if (percentage === 0)
+      if (percentage == 0)
         false
-      else if (percentage === 100)
+      else if (percentage == 100)
         true
       else {
         val timeNowMillis = LocalTime.now().get(ChronoField.MILLI_OF_SECOND)

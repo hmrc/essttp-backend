@@ -31,7 +31,7 @@ sealed trait SjRequest
 object SjRequest {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[SjRequest] =
+  given OFormat[SjRequest] =
     DerivedJson.Circe.format(deriveCodec[SjRequest])
 
   def isAbsoluteUrl(urlStr: String): Boolean = Try(java.net.URI.create(urlStr).isAbsolute).getOrElse(false)
@@ -45,7 +45,7 @@ object SjRequest {
   object Epaye {
 
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[SjRequest.Epaye] =
+    given OFormat[SjRequest.Epaye] =
       DerivedJson.Circe.format(deriveCodec[SjRequest.Epaye])
 
     /** Start Journey (Sj) Request for Epaye (Employers' Pay as you earn) used by [[Origin]]s which provide only back
@@ -59,7 +59,7 @@ object SjRequest {
 
     object Simple {
       @SuppressWarnings(Array("org.wartremover.warts.Any"))
-      implicit val format: OFormat[Simple] = Json.format
+      given OFormat[Simple] = Json.format
     }
 
     /** Start Journey (Sj) Request for Epaye (Employers' Pay as you earn) It is used by origins which doesn't provide
@@ -68,7 +68,7 @@ object SjRequest {
     final case class Empty() extends SjRequest with Epaye
 
     object Empty {
-      implicit val format: OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
+      given OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
     }
   }
 
@@ -81,7 +81,7 @@ object SjRequest {
   object Vat {
 
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[SjRequest.Vat] =
+    given OFormat[SjRequest.Vat] =
       DerivedJson.Circe.format(deriveCodec[SjRequest.Vat])
 
     /** Start Journey (Sj) Request for Value Added Tax (Vat)
@@ -94,7 +94,7 @@ object SjRequest {
 
     object Simple {
       @SuppressWarnings(Array("org.wartremover.warts.Any"))
-      implicit val format: OFormat[Simple] = Json.format
+      given OFormat[Simple] = Json.format
     }
 
     /** Start Journey (Sj) Request for VAT (Value Added Tax) It is used by origins which doesn't provide any data
@@ -102,7 +102,7 @@ object SjRequest {
     final case class Empty() extends SjRequest with Vat
 
     object Empty {
-      implicit val format: OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
+      given OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
     }
   }
 
@@ -117,7 +117,7 @@ object SjRequest {
   object Sa {
 
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[SjRequest.Sa] =
+    given OFormat[SjRequest.Sa] =
       DerivedJson.Circe.format(deriveCodec[SjRequest.Sa])
 
     /** Start Journey (Sj) Request for Sa (self assessment) used by [[Origin]]s which provide only back and return urls
@@ -130,7 +130,7 @@ object SjRequest {
 
     object Simple {
       @SuppressWarnings(Array("org.wartremover.warts.Any"))
-      implicit val format: OFormat[Simple] = Json.format
+      given OFormat[Simple] = Json.format
     }
 
     /** Start Journey (Sj) Request for Sa (self assessment) It is used by origins which doesn't provide any data
@@ -138,7 +138,7 @@ object SjRequest {
     final case class Empty() extends SjRequest with Sa
 
     object Empty {
-      implicit val format: OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
+      given OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
     }
   }
 
@@ -153,7 +153,7 @@ object SjRequest {
   object Simp {
 
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val format: OFormat[SjRequest.Simp] =
+    given OFormat[SjRequest.Simp] =
       DerivedJson.Circe.format(deriveCodec[SjRequest.Simp])
 
     /** Start Journey (Sj) Request for Simp (simple assessment) used by [[Origin]]s which provide only back and return
@@ -167,7 +167,7 @@ object SjRequest {
 
     object Simple {
       @SuppressWarnings(Array("org.wartremover.warts.Any"))
-      implicit val format: OFormat[Simple] = Json.format
+      given OFormat[Simple] = Json.format
     }
 
     /** Start Journey (Sj) Request for Simp (simple assessment) It is used by origins which doesn't provide any data
@@ -175,7 +175,7 @@ object SjRequest {
     final case class Empty() extends SjRequest with Simp
 
     object Empty {
-      implicit val format: OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
+      given OFormat[Empty] = OFormat[Empty]((_: JsValue) => JsSuccess(Empty()), (_: Empty) => Json.obj())
     }
   }
 

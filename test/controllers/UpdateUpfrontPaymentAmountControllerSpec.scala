@@ -23,9 +23,9 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
-  import UpdateUpfrontPaymentAmountControllerSpec.UpfrontPaymentAnswersOps
+  import UpdateUpfrontPaymentAmountControllerSpec._
 
   "POST /journey/:journeyId/update-upfront-payment-amount" - {
     "should throw Bad Request when Journey is in a stage [BeforeAnsweredCanPayUpfront]" in new JourneyItTest {
@@ -100,7 +100,7 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
             existingValue(initialJourney)
           )(
             differentUpfrontPaymentAmount,
-            journeyConnector.updateUpfrontPaymentAmount(_, _)(context.request),
+            journeyConnector.updateUpfrontPaymentAmount(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
               .copy(upfrontPaymentAmount = differentUpfrontPaymentAmount)
           )(context)
@@ -113,7 +113,7 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
             existingValue(initialJourney)
           )(
             differentUpfrontPaymentAmount,
-            journeyConnector.updateUpfrontPaymentAmount(_, _)(context.request),
+            journeyConnector.updateUpfrontPaymentAmount(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
               .copy(upfrontPaymentAmount = differentUpfrontPaymentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
           )(context)
@@ -226,7 +226,7 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
             existingValue(initialJourney)
           )(
             differentUpfrontPaymentAmount,
-            journeyConnector.updateUpfrontPaymentAmount(_, _)(context.request),
+            journeyConnector.updateUpfrontPaymentAmount(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterUpfrontPaymentAmount
               .copy(upfrontPaymentAmount = differentUpfrontPaymentAmount)
           )(context)
@@ -239,7 +239,7 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
             existingValue(initialJourney)
           )(
             differentUpfrontPaymentAmount,
-            journeyConnector.updateUpfrontPaymentAmount(_, _)(context.request),
+            journeyConnector.updateUpfrontPaymentAmount(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterUpfrontPaymentAmount
               .copy(upfrontPaymentAmount = differentUpfrontPaymentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
           )(context)
@@ -346,7 +346,7 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
             existingValue(initialJourney)
           )(
             differentUpfrontPaymentAmount,
-            journeyConnector.updateUpfrontPaymentAmount(_, _)(context.request),
+            journeyConnector.updateUpfrontPaymentAmount(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterUpfrontPaymentAmount
               .copy(upfrontPaymentAmount = differentUpfrontPaymentAmount)
           )(context)
@@ -359,7 +359,7 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
             existingValue(initialJourney)
           )(
             differentUpfrontPaymentAmount,
-            journeyConnector.updateUpfrontPaymentAmount(_, _)(context.request),
+            journeyConnector.updateUpfrontPaymentAmount(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterUpfrontPaymentAmount
               .copy(upfrontPaymentAmount = differentUpfrontPaymentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
           )(context)
@@ -464,7 +464,7 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
             existingValue(initialJourney)
           )(
             differentUpfrontPaymentAmount,
-            journeyConnector.updateUpfrontPaymentAmount(_, _)(context.request),
+            journeyConnector.updateUpfrontPaymentAmount(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterUpfrontPaymentAmount
               .copy(upfrontPaymentAmount = differentUpfrontPaymentAmount)
           )(context)
@@ -477,7 +477,7 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
             existingValue(initialJourney)
           )(
             differentUpfrontPaymentAmount,
-            journeyConnector.updateUpfrontPaymentAmount(_, _)(context.request),
+            journeyConnector.updateUpfrontPaymentAmount(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterUpfrontPaymentAmount
               .copy(upfrontPaymentAmount = differentUpfrontPaymentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
           )(context)
@@ -652,7 +652,7 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec with UpdateJourney
 
 object UpdateUpfrontPaymentAmountControllerSpec {
 
-  implicit class UpfrontPaymentAnswersOps(val u: UpfrontPaymentAnswers) extends AnyVal {
+  extension (u: UpfrontPaymentAnswers) {
     def upfrontPaymentAmount: UpfrontPaymentAmount = u match {
       case UpfrontPaymentAnswers.NoUpfrontPayment               => sys.error("No upfront payment amount available")
       case UpfrontPaymentAnswers.DeclaredUpfrontPayment(amount) => amount

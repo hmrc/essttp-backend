@@ -23,7 +23,7 @@ final case class DayOfMonth(value: Int) extends AnyVal derives CanEqual
 
 object DayOfMonth {
 
-  implicit val format: Format[DayOfMonth] = Json.valueFormat
+  given Format[DayOfMonth] = Json.valueFormat
 
   def apply(value: Int): DayOfMonth = {
     Errors.require(value >= 1 && value <= 28, "Day of month has to be between 1 and 28")

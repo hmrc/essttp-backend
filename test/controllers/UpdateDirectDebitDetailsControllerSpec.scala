@@ -23,7 +23,7 @@ import testsupport.ItSpec
 import testsupport.testdata.TdAll
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
-class UpdateDirectDebitDetailsControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateDirectDebitDetailsControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-direct-debit-details" - {
     "should throw Bad Request when Journey is in a stage [BeforeChosenTypeOfBankAccount]" in new JourneyItTest {
@@ -99,7 +99,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec with UpdateJourneyCo
             existingValue(initialJourney)
           )(
             differentBankDetails,
-            journeyConnector.updateDirectDebitDetails(_, _)(context.request),
+            journeyConnector.updateDirectDebitDetails(_, _)(using context.request),
             context.tdAll.EpayeBta
               .journeyAfterEnteredDirectDebitDetailsNoAffordability()
               .copy(directDebitDetails = differentBankDetails)
@@ -143,7 +143,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec with UpdateJourneyCo
             existingValue(initialJourney)
           )(
             differentBankDetails,
-            journeyConnector.updateDirectDebitDetails(_, _)(context.request),
+            journeyConnector.updateDirectDebitDetails(_, _)(using context.request),
             context.tdAll.VatBta
               .journeyAfterEnteredDirectDebitDetailsNoAffordability()
               .copy(directDebitDetails = differentBankDetails)
@@ -183,7 +183,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec with UpdateJourneyCo
             existingValue(initialJourney)
           )(
             differentBankDetails,
-            journeyConnector.updateDirectDebitDetails(_, _)(context.request),
+            journeyConnector.updateDirectDebitDetails(_, _)(using context.request),
             context.tdAll.SaBta
               .journeyAfterEnteredDirectDebitDetailsNoAffordability()
               .copy(directDebitDetails = differentBankDetails)
@@ -225,7 +225,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec with UpdateJourneyCo
             existingValue(initialJourney)
           )(
             differentBankDetails,
-            journeyConnector.updateDirectDebitDetails(_, _)(context.request),
+            journeyConnector.updateDirectDebitDetails(_, _)(using context.request),
             context.tdAll.SimpPta
               .journeyAfterEnteredDirectDebitDetailsNoAffordability()
               .copy(directDebitDetails = differentBankDetails)

@@ -26,7 +26,7 @@ import testsupport.testdata.TdAll
 class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
-  def putJourneyIntoObtainedWhyCannotPayInFullState(tdAll: TdAll)(implicit request: Request[_]): Unit = {
+  def putJourneyIntoObtainedWhyCannotPayInFullState(tdAll: TdAll)(using Request[_]): Unit = {
     journeyConnector.updateTaxId(tdAll.journeyId, tdAll.EpayeBta.updateTaxIdRequest()).futureValue
     journeyConnector
       .updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest())
@@ -43,8 +43,8 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
 
-    implicit val request: Request[_] = tdAll.request
-    val response: SjResponse         = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
+    given Request[_]         = tdAll.request
+    val response: SjResponse = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
     response shouldBe tdAll.EpayeBta.sjResponse
     putJourneyIntoObtainedWhyCannotPayInFullState(tdAll)
 
@@ -71,8 +71,8 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
 
-    implicit val request: Request[_] = tdAll.request
-    val response: SjResponse         = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
+    given Request[_]         = tdAll.request
+    val response: SjResponse = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
     response shouldBe tdAll.EpayeBta.sjResponse
     putJourneyIntoObtainedWhyCannotPayInFullState(tdAll)
 
@@ -101,8 +101,8 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
 
-    implicit val request: Request[_] = tdAll.request
-    val response: SjResponse         = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
+    given Request[_]         = tdAll.request
+    val response: SjResponse = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
     response shouldBe tdAll.EpayeBta.sjResponse
     putJourneyIntoObtainedWhyCannotPayInFullState(tdAll)
 

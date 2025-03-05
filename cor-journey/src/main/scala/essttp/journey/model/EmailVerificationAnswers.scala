@@ -35,7 +35,7 @@ object EmailVerificationAnswers {
       extends EmailVerificationAnswers
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[EmailVerificationAnswers] =
+  implicit def format(using CryptoFormat): OFormat[EmailVerificationAnswers] =
     DerivedJson.Circe.format(deriveCodec[EmailVerificationAnswers])
 
 }

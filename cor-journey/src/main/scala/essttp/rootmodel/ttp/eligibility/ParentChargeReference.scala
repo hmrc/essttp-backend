@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class ParentChargeReference(value: String) extends AnyVal
 
 object ParentChargeReference {
-  implicit val format: Format[ParentChargeReference] = Json.valueFormat[ParentChargeReference]
+  given Format[ParentChargeReference] = Json.valueFormat[ParentChargeReference]
 }

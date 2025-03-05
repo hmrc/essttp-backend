@@ -19,7 +19,7 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{EmailVerificationAnswers, Journey, JourneyId, JourneyStage, JourneyStageView}
+import essttp.journey.model.{EmailVerificationAnswers, Journey, JourneyId, JourneyStage}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.*
@@ -35,7 +35,7 @@ class UpdateSubmittedArrangementController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateArrangement(journeyId: JourneyId): Action[ArrangementResponse] =
@@ -48,7 +48,7 @@ class UpdateSubmittedArrangementController @Inject() (
                             s"UpdateArrangement is not possible if the user hasn't agreed to the terms and conditions, state: [${j.stage.toString}]"
                           )
 
-                        case j: JourneyStageView.AgreedTermsAndConditions =>
+                        case j: Journey.AgreedTermsAndConditions =>
                           if (j.isEmailAddressRequired)
                             Errors.throwBadRequestExceptionF(
                               s"UpdateArrangement is not possible if the user still requires and email address, state: [${j.stage.toString}]"
@@ -56,12 +56,12 @@ class UpdateSubmittedArrangementController @Inject() (
                           else
                             updateJourneyWithNewValue(Left(j), request.body)
 
-                        case j: JourneyStageView.SelectedEmailToBeVerified =>
+                        case j: Journey.SelectedEmailToBeVerified =>
                           Errors.throwBadRequestExceptionF(
                             s"UpdateArrangement is not possible if the user has not verified their email address yet, state: [${j.stage.toString}]"
                           )
 
-                        case j: JourneyStageView.EmailVerificationComplete =>
+                        case j: Journey.EmailVerificationComplete =>
                           j.emailVerificationResult match {
                             case EmailVerificationResult.Locked =>
                               Errors.throwBadRequestExceptionF(
@@ -81,9 +81,9 @@ class UpdateSubmittedArrangementController @Inject() (
     }
 
   private def updateJourneyWithNewValue(
-    journey:             Either[JourneyStageView.AgreedTermsAndConditions, JourneyStageView.EmailVerificationComplete],
+    journey:             Either[Journey.AgreedTermsAndConditions, Journey.EmailVerificationComplete],
     arrangementResponse: ArrangementResponse
-  )(implicit request: Request[_]): Future[Journey] = {
+  )(using Request[_]): Future[Journey] = {
     val newJourney: Journey = journey match {
       case Left(j: Journey.AgreedTermsAndConditions) =>
         j.into[Journey.SubmittedArrangement]

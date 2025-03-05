@@ -23,5 +23,5 @@ import java.time.LocalDate
 final case class EarliestPaymentPlanStartDate(value: LocalDate) extends AnyVal
 
 object EarliestPaymentPlanStartDate {
-  implicit val format: Format[EarliestPaymentPlanStartDate] = Json.valueFormat
+  given Format[EarliestPaymentPlanStartDate] = Json.valueFormat
 }

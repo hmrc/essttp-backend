@@ -28,6 +28,6 @@ final case class ExtremeDatesResponse(
 object ExtremeDatesResponse {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: Format[ExtremeDatesResponse] = Json.format[ExtremeDatesResponse]
+  given Format[ExtremeDatesResponse] = Json.format[ExtremeDatesResponse]
 
 }

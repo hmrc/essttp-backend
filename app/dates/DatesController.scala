@@ -32,7 +32,7 @@ class DatesController @Inject() (
   startDatesService:   StartDatesService,
   extremeDatesService: ExtremeDatesService,
   cc:                  ControllerComponents
-)(implicit ec: ExecutionContext)
+)(using ExecutionContext)
     extends BackendController(cc) {
 
   val startDates: Action[StartDatesRequest] =

@@ -37,7 +37,7 @@ class JourneyController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def getJourney(journeyId: JourneyId): Action[AnyContent] = actions.authenticatedAction.async {
@@ -52,7 +52,7 @@ class JourneyController @Inject() (
 
   val findLatestJourneyBySessionId: Action[AnyContent] = actions.authenticatedAction.async { implicit request =>
     val sessionId: SessionId =
-      implicitly[HeaderCarrier].sessionId
+      summon[HeaderCarrier].sessionId
         .map(x => SessionId(x.value))
         .getOrElse(throw new RuntimeException("Missing required 'SessionId'"))
 
@@ -69,7 +69,7 @@ class JourneyController @Inject() (
         .map(_ => Created)
     }
 
-  private def notFound[Key](key: Key)(implicit request: RequestHeader): Result = {
+  private def notFound[Key](key: Key)(using RequestHeader): Result = {
     JourneyLogger.warn(s"Journey not found [${key.toString}]")
     val response = ErrorResponse(NOT_FOUND, s"Journey not found [${key.toString}]")
     NotFound(Json.toJson(response))

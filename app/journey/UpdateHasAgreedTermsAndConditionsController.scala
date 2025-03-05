@@ -19,7 +19,7 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, JourneyStage, JourneyStageView}
+import essttp.journey.model.{Journey, JourneyId, JourneyStage}
 import essttp.rootmodel.IsEmailAddressRequired
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.*
@@ -34,7 +34,7 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateAgreedTermsAndConditions(journeyId: JourneyId): Action[IsEmailAddressRequired] =
@@ -46,7 +46,7 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
                           Errors.throwBadRequestExceptionF(
                             s"UpdateAgreedTermsAndConditions is not possible in that state: [${j.stage}]"
                           )
-                        case j: JourneyStageView.ConfirmedDirectDebitDetails   =>
+                        case j: Journey.ConfirmedDirectDebitDetails            =>
                           updateJourneyWithNewValue(j, request.body)
                         case j: JourneyStage.AfterAgreedTermsAndConditions     =>
                           updateJourneyWithExistingValue(j, request.body)
@@ -55,24 +55,24 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
     }
 
   private def updateJourneyWithNewValue(
-    journey:                JourneyStageView.ConfirmedDirectDebitDetails,
+    journey:                Journey.ConfirmedDirectDebitDetails,
     isEmailAddressRequired: IsEmailAddressRequired
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey = journey match {
-      case j: Journey.ConfirmedDirectDebitDetails =>
-        j.into[Journey.AgreedTermsAndConditions]
-          .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired)
-          .transform
-    }
+  )(using Request[_]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.AgreedTermsAndConditions]
+        .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired)
+        .transform
+
     journeyService.upsert(newJourney)
   }
 
   private def updateJourneyWithExistingValue(
     journey:                JourneyStage.AfterAgreedTermsAndConditions & Journey,
     isEmailAddressRequired: IsEmailAddressRequired
-  )(implicit request: Request[_]): Future[Journey] =
+  )(using Request[_]): Future[Journey] =
     journey match {
-      case _: JourneyStageView.SubmittedArrangement =>
+      case _: Journey.SubmittedArrangement =>
         Errors.throwBadRequestException("Cannot update AgreedTermsAndConditions when journey is in completed state")
 
       case j: Journey.AgreedTermsAndConditions =>
@@ -107,9 +107,7 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
     j:                      JourneyStage.AfterAgreedTermsAndConditions & Journey,
     isEmailAddressRequired: IsEmailAddressRequired,
     updatedJourney:         => JourneyStage.AfterAgreedTermsAndConditions & Journey
-  )(implicit
-    r:                      Request[_]
-  ): Future[Journey] =
+  )(using Request[_]): Future[Journey] =
     if (j.isEmailAddressRequired == isEmailAddressRequired) Future.successful(j)
     else journeyService.upsert(updatedJourney)
 

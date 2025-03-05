@@ -17,10 +17,9 @@
 package journey
 
 import action.Actions
-import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, JourneyStage, JourneyStageView, UpfrontPaymentAnswers}
+import essttp.journey.model.{Journey, JourneyId, JourneyStage, UpfrontPaymentAnswers}
 import essttp.rootmodel.{CanPayUpfront, UpfrontPaymentAmount}
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.*
@@ -35,7 +34,7 @@ class UpdateUpfrontPaymentAmountController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateUpfrontPaymentAmount(journeyId: JourneyId): Action[UpfrontPaymentAmount] =
@@ -47,7 +46,7 @@ class UpdateUpfrontPaymentAmountController @Inject() (
                           Errors.throwBadRequestExceptionF(
                             s"UpdateUpfrontPaymentAmount update is not possible in that state: [${j.stage}]"
                           )
-                        case j: JourneyStageView.AnsweredCanPayUpfront        => updateJourneyWithNewValue(j, request.body)
+                        case j: Journey.AnsweredCanPayUpfront                 => updateJourneyWithNewValue(j, request.body)
                         case j: JourneyStage.AfterEnteredUpfrontPaymentAmount =>
                           updateJourneyWithExistingValue(Left(j), request.body)
                         case j: JourneyStage.AfterUpfrontPaymentAnswers       =>
@@ -64,16 +63,16 @@ class UpdateUpfrontPaymentAmountController @Inject() (
     }
 
   private def updateJourneyWithNewValue(
-    journey:              JourneyStageView.AnsweredCanPayUpfront & Journey,
+    journey:              Journey.AnsweredCanPayUpfront,
     upfrontPaymentAmount: UpfrontPaymentAmount
-  )(implicit request: Request[_]): Future[Journey] =
+  )(using Request[_]): Future[Journey] =
     if (journey.canPayUpfront.value) {
-      val updatedJourney: Journey = journey match {
-        case j: Journey.AnsweredCanPayUpfront =>
-          j.into[Journey.EnteredUpfrontPaymentAmount]
-            .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
-            .transform
-      }
+      val updatedJourney: Journey =
+        journey
+          .into[Journey.EnteredUpfrontPaymentAmount]
+          .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
+          .transform
+
       journeyService.upsert(updatedJourney)
     } else {
       Errors.throwBadRequestExceptionF(
@@ -87,7 +86,7 @@ class UpdateUpfrontPaymentAmountController @Inject() (
       JourneyStage.AfterUpfrontPaymentAnswers & Journey
     ],
     upfrontPaymentAmount: UpfrontPaymentAmount
-  )(implicit request: Request[_]): Future[Journey] = {
+  )(using Request[_]): Future[Journey] = {
 
     journey match {
       case Left(j) =>
@@ -103,7 +102,7 @@ class UpdateUpfrontPaymentAmountController @Inject() (
 
       case Right(j) =>
         withUpfrontPaymentAmount(j, j.upfrontPaymentAnswers) { existingAmount =>
-          if (existingAmount.value === upfrontPaymentAmount.value) {
+          if (existingAmount.value == upfrontPaymentAmount.value) {
             JourneyLogger.info("Nothing to update, UpfrontPaymentAmount is the same as the existing one in journey.")
             Future.successful(j)
           } else {
@@ -205,7 +204,7 @@ class UpdateUpfrontPaymentAmountController @Inject() (
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
 
-              case _: JourneyStageView.SubmittedArrangement =>
+              case _: Journey.SubmittedArrangement =>
                 Errors.throwBadRequestException("Cannot update UpfrontPaymentAmount when journey is in completed state")
             }
 

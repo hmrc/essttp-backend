@@ -20,7 +20,7 @@ import action.Actions
 import com.google.inject.Inject
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import paymentsEmailVerification.models.EmailVerificationResult
-import essttp.journey.model.{EmailVerificationAnswers, Journey, JourneyId, JourneyStage, JourneyStageView}
+import essttp.journey.model.{EmailVerificationAnswers, Journey, JourneyId, JourneyStage}
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.*
 import play.api.mvc.{Action, ControllerComponents, Request}
@@ -33,7 +33,7 @@ class UpdateEmailVerificationResultController @Inject() (
   journeyService: JourneyService,
   cc:             ControllerComponents,
   actions:        Actions
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateEmailVerificationResult(journeyId: JourneyId): Action[EmailVerificationResult] =
@@ -53,9 +53,9 @@ class UpdateEmailVerificationResultController @Inject() (
 
                         case j: JourneyStage.AfterEmailAddressSelectedToBeVerified =>
                           j match {
-                            case j1: JourneyStageView.SelectedEmailToBeVerified =>
+                            case j1: Journey.SelectedEmailToBeVerified =>
                               updateJourneyWithNewValue(j1, request.body)
-                            case j1: JourneyStageView.EmailVerificationComplete =>
+                            case j1: Journey.EmailVerificationComplete =>
                               updateJourneyWithExistingValue(j1, request.body)
                           }
 
@@ -64,26 +64,26 @@ class UpdateEmailVerificationResultController @Inject() (
     }
 
   private def updateJourneyWithNewValue(
-    journey: JourneyStageView.SelectedEmailToBeVerified,
+    journey: Journey.SelectedEmailToBeVerified,
     status:  EmailVerificationResult
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey = journey match {
-      case j: Journey.SelectedEmailToBeVerified =>
-        j.into[Journey.EmailVerificationComplete]
-          .withFieldConst(
-            _.emailVerificationAnswers,
-            EmailVerificationAnswers.EmailVerified(j.emailToBeVerified, status)
-          )
-          .withFieldConst(_.emailVerificationResult, status)
-          .transform
-    }
+  )(using Request[_]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.EmailVerificationComplete]
+        .withFieldConst(
+          _.emailVerificationAnswers,
+          EmailVerificationAnswers.EmailVerified(journey.emailToBeVerified, status)
+        )
+        .withFieldConst(_.emailVerificationResult, status)
+        .transform
+
     journeyService.upsert(newJourney)
   }
 
   private def updateJourneyWithExistingValue(
-    journey: JourneyStageView.EmailVerificationComplete & Journey,
+    journey: Journey.EmailVerificationComplete & Journey,
     result:  EmailVerificationResult
-  )(implicit request: Request[_]): Future[Journey] =
+  )(using Request[_]): Future[Journey] =
     if (journey.emailVerificationResult == result) {
       Future.successful(journey)
     } else {

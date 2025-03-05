@@ -31,6 +31,6 @@ final case class GetCaseResponse(
 object GetCaseResponse {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[GetCaseResponse] = Json.format
+  given OFormat[GetCaseResponse] = Json.format
 
 }

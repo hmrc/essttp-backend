@@ -29,14 +29,14 @@ import uk.gov.hmrc.http.{Authorization, HeaderCarrier, UpstreamErrorResponse}
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class DatesControllerSpec extends ItSpec with TableDrivenPropertyChecks {
+class DatesControllerSpec extends ItSpec, TableDrivenPropertyChecks {
 
   def connector: TestDatesConnector = app.injector.instanceOf[TestDatesConnector]
 
   "POST /start-dates" - {
 
     behave like unauthenticatedBehaviour(
-      connector.startDates(DatesTdAll.startDatesRequest(InitialPayment(value = true), PreferredDayOfMonth(28)))(_)
+      connector.startDates(DatesTdAll.startDatesRequest(InitialPayment(value = true), PreferredDayOfMonth(28)))(using _)
     )
 
     val testDataTable = Table(
@@ -98,7 +98,7 @@ class DatesControllerSpec extends ItSpec with TableDrivenPropertyChecks {
         earliestInstalmentStartDate: String
       ) =>
         s"[CurrentDay: $currentDate][PreferredDayOfMonth: ${preferredDayOfMonth.toString}][InitialPayment:${initialPayment.toString}][ExpectedStartDate: $earliestInstalmentStartDate]" in {
-          implicit val hc: HeaderCarrier = HeaderCarrier(Some(Authorization("Bearer abc")))
+          given HeaderCarrier = HeaderCarrier(Some(Authorization("Bearer abc")))
           stubCommonActions()
           DateCalculatorStub.stubAddWorkingDays(LocalDate.parse(currentDate).plusDays(10))
 
@@ -119,11 +119,11 @@ class DatesControllerSpec extends ItSpec with TableDrivenPropertyChecks {
   "POST /extreme-dates should" - {
 
     behave like unauthenticatedBehaviour(
-      connector.extremeDates(ExtremeDatesRequest(InitialPayment(value = false)))(_)
+      connector.extremeDates(ExtremeDatesRequest(InitialPayment(value = false)))(using _)
     )
 
     "return earliestPlanStartDate(+6 working days), latestPlanStartDate(+40 calendar days), when initialPayment=false, " in {
-      implicit val hc: HeaderCarrier = HeaderCarrier(Some(Authorization("Bearer abc")))
+      given HeaderCarrier = HeaderCarrier(Some(Authorization("Bearer abc")))
       stubCommonActions()
       DateCalculatorStub.stubAddWorkingDays(LocalDate.parse(TdDates.`1stJan2022`).plusDays(10))
 
@@ -142,7 +142,7 @@ class DatesControllerSpec extends ItSpec with TableDrivenPropertyChecks {
     }
 
     "return Some(initialPaymentDate(+6 working days)), earliestPlanStartDate(+30 calendar days), latestPlanStartDate(+60 calendar days), when initialPayment=true" in {
-      implicit val hc: HeaderCarrier = HeaderCarrier(Some(Authorization("Bearer abc")))
+      given HeaderCarrier = HeaderCarrier(Some(Authorization("Bearer abc")))
       stubCommonActions()
       DateCalculatorStub.stubAddWorkingDays(LocalDate.parse(TdDates.`1stJan2022`).plusDays(10))
 

@@ -22,7 +22,7 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-has-agreed-terms-and-conditions" - {
 
@@ -98,7 +98,7 @@ class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec with Update
             existingValue(initialJourney)
           )(
             differentValue,
-            journeyConnector.updateHasAgreedTermsAndConditions(_, _)(context.request),
+            journeyConnector.updateHasAgreedTermsAndConditions(_, _)(using context.request),
             context.tdAll.EpayeBta
               .journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = differentValue.value)
           )(context)

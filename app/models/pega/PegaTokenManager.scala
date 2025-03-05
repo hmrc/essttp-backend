@@ -28,16 +28,16 @@ import scala.concurrent.{ExecutionContext, Future}
 class PegaTokenManager @Inject() (
   cache:         AsyncCacheApi,
   pegaConnector: PegaConnector
-)(implicit ec: ExecutionContext) {
+)(using ExecutionContext) {
 
   private val tokenCacheKey = "pega-Oauth-token"
 
-  def getToken()(implicit hc: HeaderCarrier): Future[String] =
+  def getToken()(using HeaderCarrier): Future[String] =
     cache.getOrElseUpdate[String](tokenCacheKey) {
       fetchNewToken()
     }
 
-  def fetchNewToken()(implicit hc: HeaderCarrier): Future[String] =
+  def fetchNewToken()(using HeaderCarrier): Future[String] =
     pegaConnector.getToken().flatMap { pegaToken =>
       cache.set(tokenCacheKey, pegaToken.accessToken, pegaToken.expiresIn.seconds).map(_ => pegaToken.accessToken)
     }

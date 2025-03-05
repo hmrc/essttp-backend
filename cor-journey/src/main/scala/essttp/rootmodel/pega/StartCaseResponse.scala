@@ -23,6 +23,6 @@ final case class StartCaseResponse(caseId: PegaCaseId, pegaCorrelationId: String
 object StartCaseResponse {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[StartCaseResponse] = Json.format
+  given OFormat[StartCaseResponse] = Json.format
 
 }

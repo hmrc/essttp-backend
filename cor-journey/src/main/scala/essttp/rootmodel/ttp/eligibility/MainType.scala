@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class MainType(value: String) extends AnyVal
 
 object MainType {
-  implicit val format: Format[MainType] = Json.valueFormat
+  given Format[MainType] = Json.valueFormat
 }

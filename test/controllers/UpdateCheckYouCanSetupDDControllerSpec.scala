@@ -22,7 +22,7 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateCheckYouCanSetupDDControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateCheckYouCanSetupDDControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-can-set-up-direct-debit" - {
     "should throw Bad Request when Journey is in a stage [BeforeCheckedPaymentPlan]" in new JourneyItTest {
@@ -97,7 +97,7 @@ class UpdateCheckYouCanSetupDDControllerSpec extends ItSpec with UpdateJourneyCo
             existingValue(initialJourney)
           )(
             differentAnswerToCanSetUpDirectDebit,
-            journeyConnector.updateCanSetUpDirectDebit(_, _)(context.request),
+            journeyConnector.updateCanSetUpDirectDebit(_, _)(using context.request),
             context.tdAll.EpayeBta
               .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = false)
               .copy(canSetUpDirectDebitAnswer = differentAnswerToCanSetUpDirectDebit)
@@ -149,7 +149,7 @@ class UpdateCheckYouCanSetupDDControllerSpec extends ItSpec with UpdateJourneyCo
             existingValue(initialJourney)
           )(
             differentAnswerToCanSetUpDirectDebit,
-            journeyConnector.updateCanSetUpDirectDebit(_, _)(context.request),
+            journeyConnector.updateCanSetUpDirectDebit(_, _)(using context.request),
             context.tdAll.VatBta
               .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = false)
               .copy(canSetUpDirectDebitAnswer = differentAnswerToCanSetUpDirectDebit)
@@ -201,7 +201,7 @@ class UpdateCheckYouCanSetupDDControllerSpec extends ItSpec with UpdateJourneyCo
             existingValue(initialJourney)
           )(
             differentAnswerToCanSetUpDirectDebit,
-            journeyConnector.updateCanSetUpDirectDebit(_, _)(context.request),
+            journeyConnector.updateCanSetUpDirectDebit(_, _)(using context.request),
             context.tdAll.SaBta
               .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = false)
               .copy(canSetUpDirectDebitAnswer = differentAnswerToCanSetUpDirectDebit)
@@ -253,7 +253,7 @@ class UpdateCheckYouCanSetupDDControllerSpec extends ItSpec with UpdateJourneyCo
             existingValue(initialJourney)
           )(
             differentAnswerToCanSetUpDirectDebit,
-            journeyConnector.updateCanSetUpDirectDebit(_, _)(context.request),
+            journeyConnector.updateCanSetUpDirectDebit(_, _)(using context.request),
             context.tdAll.SimpPta
               .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = false)
               .copy(canSetUpDirectDebitAnswer = differentAnswerToCanSetUpDirectDebit)

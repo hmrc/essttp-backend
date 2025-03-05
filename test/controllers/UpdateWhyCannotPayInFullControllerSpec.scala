@@ -22,7 +22,7 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateWhyCannotPayInFullControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-why-cannot-pay-in-full" - {
 
@@ -108,7 +108,7 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
             existingValue(initialJourney)
           )(
             differentWhyCannotPayInFullReasons,
-            journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(context.request),
+            journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(using context.request),
             expectedUpdateInitialJourneyTransformation(initialJourney)
           )(context)
 
@@ -273,7 +273,7 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
             existingValue(initialJourney)
           )(
             differentWhyCannotPayInFullReasons,
-            journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(context.request),
+            journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(using context.request),
             expectedUpdateInitialJourneyTransformation(initialJourney)
           )(context)
 
@@ -434,7 +434,7 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
             existingValue(initialJourney)
           )(
             differentWhyCannotPayInFullReasons,
-            journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(context.request),
+            journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(using context.request),
             expectedUpdateInitialJourneyTransformation(initialJourney)
           )(context)
 
@@ -595,7 +595,7 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
             existingValue(initialJourney)
           )(
             differentWhyCannotPayInFullReasons,
-            journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(context.request),
+            journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(using context.request),
             expectedUpdateInitialJourneyTransformation(initialJourney)
           )(context)
 

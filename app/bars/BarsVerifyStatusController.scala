@@ -30,7 +30,7 @@ class BarsVerifyStatusController @Inject() (
   actions:     Actions,
   barsService: BarsVerifyStatusService,
   cc:          ControllerComponents
-)(implicit exec: ExecutionContext)
+)(using exec: ExecutionContext)
     extends BackendController(cc) {
 
   val status: Action[BarsUpdateVerifyStatusParams] =

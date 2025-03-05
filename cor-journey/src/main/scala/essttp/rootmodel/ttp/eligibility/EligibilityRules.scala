@@ -53,7 +53,7 @@ final case class EligibilityRules(
   part2: EligibilityRulesPart2
 ) derives CanEqual {
 
-  private implicit val canEqualBoolean: CanEqual[Boolean, Any] = CanEqual.derived
+  private given CanEqual[Boolean, Any] = CanEqual.derived
 
   @SuppressWarnings(Array("org.wartremover.warts.Any", "org.wartremover.warts.Product"))
   private def extractErrors(obj: Product): List[String] = {
@@ -78,11 +78,11 @@ final case class EligibilityRules(
 object EligibilityRules {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val part1Format: OFormat[EligibilityRulesPart1] = Json.format[EligibilityRulesPart1]
+  given part1Format: OFormat[EligibilityRulesPart1] = Json.format[EligibilityRulesPart1]
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val part2Format: OFormat[EligibilityRulesPart2] = Json.format[EligibilityRulesPart2]
+  given part2Format: OFormat[EligibilityRulesPart2] = Json.format[EligibilityRulesPart2]
 
-  implicit val customFormat: OFormat[EligibilityRules] = new OFormat[EligibilityRules] {
+  given OFormat[EligibilityRules] = new OFormat[EligibilityRules] {
 
     override def reads(json: JsValue): JsResult[EligibilityRules] =
       for {

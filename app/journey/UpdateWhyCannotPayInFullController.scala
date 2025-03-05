@@ -17,12 +17,9 @@
 package journey
 
 import action.Actions
-import cats.Eq
-import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, JourneyStage, JourneyStageView, WhyCannotPayInFullAnswers}
-import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
+import essttp.journey.model.{Journey, JourneyId, JourneyStage, WhyCannotPayInFullAnswers}
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.*
 import play.api.mvc.{Action, ControllerComponents, Request}
@@ -36,10 +33,8 @@ class UpdateWhyCannotPayInFullController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
-
-  implicit val eq: Eq[EligibilityCheckResult] = Eq.fromUniversalEquals
 
   def updateWhyCannotPayinFull(journeyId: JourneyId): Action[WhyCannotPayInFullAnswers] =
     actions.authenticatedAction.async(parse.json[WhyCannotPayInFullAnswers]) { implicit request =>
@@ -51,7 +46,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
                             "WhyCannotPayInFullAnswers update is not possible in that state."
                           )
 
-                        case j: JourneyStageView.EligibilityChecked =>
+                        case j: Journey.EligibilityChecked =>
                           updateJourneyWithNewValue(j, request.body)
 
                         case j: JourneyStage.AfterWhyCannotPayInFullAnswers =>
@@ -68,15 +63,15 @@ class UpdateWhyCannotPayInFullController @Inject() (
     }
 
   private def updateJourneyWithNewValue(
-    journey:                   JourneyStageView.EligibilityChecked,
+    journey:                   Journey.EligibilityChecked,
     whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey = journey match {
-      case j: Journey.EligibilityChecked =>
-        j.into[Journey.ObtainedWhyCannotPayInFullAnswers]
-          .withFieldConst(_.whyCannotPayInFullAnswers, whyCannotPayInFullAnswers)
-          .transform
-    }
+  )(using Request[_]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.ObtainedWhyCannotPayInFullAnswers]
+        .withFieldConst(_.whyCannotPayInFullAnswers, whyCannotPayInFullAnswers)
+        .transform
+
     journeyService.upsert(newJourney)
   }
 
@@ -84,8 +79,8 @@ class UpdateWhyCannotPayInFullController @Inject() (
   private def updateJourneyWithExistingValue(
     journey:                   JourneyStage.AfterWhyCannotPayInFullAnswers & Journey,
     whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers
-  )(implicit request: Request[_]): Future[Journey] =
-    if (journey.whyCannotPayInFullAnswers === whyCannotPayInFullAnswers) {
+  )(using Request[_]): Future[Journey] =
+    if (journey.whyCannotPayInFullAnswers == whyCannotPayInFullAnswers) {
       Future.successful(journey)
     } else {
       val newJourney: Journey = journey match {
@@ -146,7 +141,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
         case j: Journey.EmailVerificationComplete =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case _: JourneyStageView.SubmittedArrangement =>
+        case _: Journey.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update WhyCannotPayInFullAnswers when journey is in completed state")
       }
 

@@ -22,7 +22,7 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateAffordableQuotesControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateAffordableQuotesControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-affordable-quotes" - {
 
@@ -131,7 +131,7 @@ class UpdateAffordableQuotesControllerSpec extends ItSpec with UpdateJourneyCont
             existingValue(initialJourney)
           )(
             differentAffordableQuotes,
-            journeyConnector.updateAffordableQuotes(_, _)(context.request),
+            journeyConnector.updateAffordableQuotes(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterAffordableQuotesResponse
               .copy(affordableQuotesResponse = differentAffordableQuotes)
           )(context)
@@ -198,7 +198,7 @@ class UpdateAffordableQuotesControllerSpec extends ItSpec with UpdateJourneyCont
             existingValue(initialJourney)
           )(
             differentAffordableQuotes,
-            journeyConnector.updateAffordableQuotes(_, _)(context.request),
+            journeyConnector.updateAffordableQuotes(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterAffordableQuotesResponse
               .copy(affordableQuotesResponse = differentAffordableQuotes)
           )(context)
@@ -265,7 +265,7 @@ class UpdateAffordableQuotesControllerSpec extends ItSpec with UpdateJourneyCont
             existingValue(initialJourney)
           )(
             differentAffordableQuotes,
-            journeyConnector.updateAffordableQuotes(_, _)(context.request),
+            journeyConnector.updateAffordableQuotes(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterAffordableQuotesResponse
               .copy(affordableQuotesResponse = differentAffordableQuotes)
           )(context)
@@ -332,7 +332,7 @@ class UpdateAffordableQuotesControllerSpec extends ItSpec with UpdateJourneyCont
             existingValue(initialJourney)
           )(
             differentAffordableQuotes,
-            journeyConnector.updateAffordableQuotes(_, _)(context.request),
+            journeyConnector.updateAffordableQuotes(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterAffordableQuotesResponse
               .copy(affordableQuotesResponse = differentAffordableQuotes)
           )(context)

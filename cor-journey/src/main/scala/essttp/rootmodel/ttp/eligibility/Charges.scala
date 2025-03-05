@@ -57,7 +57,7 @@ final case class Charges2(
 
 object Charges {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val writes: Writes[Charges] = Writes { charge =>
+  given Writes[Charges] = Writes { charge =>
     Json.obj(
       "chargeType"                    -> charge.charges1.chargeType,
       "mainType"                      -> charge.charges1.mainType,
@@ -87,7 +87,7 @@ object Charges {
     )
   }
 
-  implicit val reads: Reads[Charges] = { json =>
+  given Reads[Charges] = { json =>
     for {
       chargeType                    <- (json \ "chargeType").validate[ChargeType]
       mainType                      <- (json \ "mainType").validate[MainType]
@@ -151,10 +151,10 @@ object Charges {
 
 object Charges1 {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[Charges1] = Json.format[Charges1]
+  given OFormat[Charges1] = Json.format[Charges1]
 }
 
 object Charges2 {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[Charges2] = Json.format[Charges2]
+  given OFormat[Charges2] = Json.format[Charges2]
 }

@@ -16,7 +16,6 @@
 
 package essttp.rootmodel
 
-import cats.Eq
 import essttp.rootmodel.epaye.{TaxOfficeNumber, TaxOfficeReference}
 import essttp.utils.DerivedJson
 import io.circe.generic.semiauto.deriveCodec
@@ -28,9 +27,7 @@ sealed trait TaxId derives CanEqual {
 
 object TaxId {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[TaxId] = DerivedJson.Circe.format(deriveCodec[TaxId])
-
-  implicit val eq: Eq[TaxId] = Eq.fromUniversalEquals
+  given OFormat[TaxId] = DerivedJson.Circe.format(deriveCodec[TaxId])
 
 }
 
@@ -40,7 +37,7 @@ final case class EmpRef(value: String) extends TaxId
   */
 object EmpRef {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[EmpRef] = Json.format
+  given OFormat[EmpRef] = Json.format
 
   def makeEmpRef(taxOfficeNumber: TaxOfficeNumber, taxOfficeReference: TaxOfficeReference): EmpRef = EmpRef(
     s"${taxOfficeNumber.value}${taxOfficeReference.value}"
@@ -54,7 +51,7 @@ final case class Vrn(value: String) extends TaxId
 
 object Vrn {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[Vrn] = Json.format
+  given OFormat[Vrn] = Json.format
 }
 
 /** Self Assessment Unique Tax Reference (SaUtr) Tax Id for Sa.
@@ -63,7 +60,7 @@ final case class SaUtr(value: String) extends TaxId
 
 object SaUtr {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[SaUtr] = Json.format
+  given OFormat[SaUtr] = Json.format
 }
 
 /** Simple Self Assessment Unique Tax Reference (Nino) Tax Id for Simp.
@@ -72,5 +69,5 @@ final case class Nino(value: String) extends TaxId
 
 object Nino {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[Nino] = Json.format
+  given OFormat[Nino] = Json.format
 }

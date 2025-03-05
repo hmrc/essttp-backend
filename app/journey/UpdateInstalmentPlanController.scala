@@ -35,7 +35,7 @@ class UpdateInstalmentPlanController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateChosenInstalmentPlan(journeyId: JourneyId): Action[PaymentPlan] =
@@ -43,11 +43,11 @@ class UpdateInstalmentPlanController @Inject() (
       for {
         journey    <- journeyService.get(journeyId)
         newJourney <- journey match {
-                        case j: JourneyStage.BeforeAffordableQuotesResponse      =>
+                        case j: JourneyStage.BeforeAffordableQuotesResponse =>
                           Errors.throwBadRequestExceptionF(
                             s"UpdateSelectedPaymentPlan is not possible in that state: [${j.stage}]"
                           )
-                        case j: model.JourneyStageView.RetrievedAffordableQuotes =>
+                        case j: model.Journey.RetrievedAffordableQuotes     =>
                           updateJourneyWithNewValue(j, request.body)
 
                         case j: JourneyStage.AfterSelectedPaymentPlan =>
@@ -72,22 +72,22 @@ class UpdateInstalmentPlanController @Inject() (
     }
 
   private def updateJourneyWithNewValue(
-    journey:     model.JourneyStageView.RetrievedAffordableQuotes,
+    journey:     Journey.RetrievedAffordableQuotes,
     paymentPlan: PaymentPlan
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey = journey match {
-      case j: Journey.RetrievedAffordableQuotes =>
-        j.into[Journey.ChosenPaymentPlan]
-          .withFieldConst(_.selectedPaymentPlan, paymentPlan)
-          .transform
-    }
+  )(using Request[_]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.ChosenPaymentPlan]
+        .withFieldConst(_.selectedPaymentPlan, paymentPlan)
+        .transform
+
     journeyService.upsert(newJourney)
   }
 
   private def updateJourneyWithExistingValue(
     journey:     Either[JourneyStage.AfterSelectedPaymentPlan & Journey, JourneyStage.AfterCheckedPaymentPlan & Journey],
     paymentPlan: PaymentPlan
-  )(implicit request: Request[_]): Future[Journey] =
+  )(using Request[_]): Future[Journey] =
     journey match {
       case Left(afterSelectedPaymentPlan) =>
         updateJourneyWithExistingValue(
@@ -174,7 +174,7 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
 
-                case _: model.JourneyStageView.SubmittedArrangement =>
+                case _: model.Journey.SubmittedArrangement =>
                   Errors.throwBadRequestException("Cannot update ChosenPlan when journey is in completed state")
               }
             )
@@ -186,7 +186,7 @@ class UpdateInstalmentPlanController @Inject() (
     existingJourney: Journey,
     newValue:        PaymentPlan,
     newJourney:      Journey
-  )(implicit request: Request[_]): Future[Journey] =
+  )(using Request[_]): Future[Journey] =
     if (existingValue == newValue) {
       JourneyLogger.info("Nothing to update, selected PaymentPlan is the same as the existing one in journey.")
       Future.successful(existingJourney)

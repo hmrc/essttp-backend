@@ -29,6 +29,6 @@ final case class BankDetails(
 object BankDetails {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[BankDetails] = Json.format[BankDetails]
+  implicit def format(using CryptoFormat): OFormat[BankDetails] = Json.format[BankDetails]
 
 }

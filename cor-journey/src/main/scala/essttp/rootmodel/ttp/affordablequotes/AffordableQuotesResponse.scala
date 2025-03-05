@@ -22,6 +22,6 @@ final case class AffordableQuotesResponse(paymentPlans: List[PaymentPlan]) deriv
 
 object AffordableQuotesResponse {
 
-  implicit val format: OFormat[AffordableQuotesResponse] = Json.format[AffordableQuotesResponse]
+  given OFormat[AffordableQuotesResponse] = Json.format[AffordableQuotesResponse]
 
 }

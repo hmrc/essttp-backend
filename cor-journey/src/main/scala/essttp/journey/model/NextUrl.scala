@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class NextUrl(value: String) extends AnyVal
 
 object NextUrl {
-  implicit val format: Format[NextUrl] = Json.valueFormat
+  given Format[NextUrl] = Json.valueFormat
 }

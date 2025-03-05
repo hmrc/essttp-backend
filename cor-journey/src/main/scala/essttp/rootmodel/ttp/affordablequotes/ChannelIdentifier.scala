@@ -26,7 +26,7 @@ sealed trait ChannelIdentifier extends EnumEntry derives CanEqual
 
 object ChannelIdentifier {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: Format[ChannelIdentifier] = EnumFormat(ChannelIdentifiers)
+  given Format[ChannelIdentifier] = EnumFormat(ChannelIdentifiers)
 }
 
 object ChannelIdentifiers extends Enum[ChannelIdentifier] {

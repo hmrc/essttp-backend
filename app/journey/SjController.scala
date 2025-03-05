@@ -38,7 +38,7 @@ class SjController @Inject() (
   journeyConfig:  JourneyConfig,
   journeyFactory: JourneyFactory,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext)
+)(using ExecutionContext)
     extends BackendController(cc) {
 
   val startJourneyEpayeFromBta: Action[SjRequest.Epaye.Simple] =
@@ -117,7 +117,7 @@ class SjController @Inject() (
 
   private def doJourneyStart(
     originatedRequest: OriginatedSjRequest
-  )(implicit request: Request[_]): Future[Result] = {
+  )(using Request[_]): Future[Result] = {
     val journey: Journey = journeyFactory.makeJourney(originatedRequest, RequestSupport.getSessionId())
 
     journeyService.upsert(journey).map { _ =>

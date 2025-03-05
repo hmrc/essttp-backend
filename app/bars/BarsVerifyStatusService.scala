@@ -31,7 +31,7 @@ class BarsVerifyStatusService @Inject() (
   barsRepo:  BarsVerifyStatusRepo,
   appConfig: AppConfig,
   clock:     Clock
-)(implicit ec: ExecutionContext) {
+)(using ExecutionContext) {
 
   /*
    * get current count of calls to verify endpoint for this taxId

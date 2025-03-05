@@ -19,7 +19,7 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, JourneyStage, JourneyStageView, PaymentPlanAnswers}
+import essttp.journey.model.{Journey, JourneyId, JourneyStage, PaymentPlanAnswers}
 import essttp.rootmodel.pega.StartCaseResponse
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.*
@@ -34,7 +34,7 @@ class UpdatePegaStartCaseResponseController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateStartCaseResponse(journeyId: JourneyId): Action[StartCaseResponse] =
@@ -42,42 +42,42 @@ class UpdatePegaStartCaseResponseController @Inject() (
       for {
         journey    <- journeyService.get(journeyId)
         newJourney <- journey match {
-                        case j: JourneyStage.BeforeCanPayWithinSixMonthsAnswers       =>
+                        case j: JourneyStage.BeforeCanPayWithinSixMonthsAnswers =>
                           Errors.throwBadRequestExceptionF(
                             s"UpdatePegaStartCaseResponse update is not possible in that state: [${j.stage}]"
                           )
-                        case j: JourneyStageView.ObtainedCanPayWithinSixMonthsAnswers =>
+                        case j: Journey.ObtainedCanPayWithinSixMonthsAnswers    =>
                           updateJourneyWithNewValue(j, request.body)
-                        case j: JourneyStage.AfterStartedPegaCase                     =>
+                        case j: JourneyStage.AfterStartedPegaCase               =>
                           updateJourneyWithExistingValue(Left(j), request.body)
-                        case _: JourneyStage.AfterEnteredMonthlyPaymentAmount         =>
+                        case _: JourneyStage.AfterEnteredMonthlyPaymentAmount   =>
                           Errors.throwBadRequestExceptionF(
                             "update PEGA start case response not expected after entered monthly payment amount"
                           )
-                        case j: JourneyStage.AfterCheckedPaymentPlan                  =>
+                        case j: JourneyStage.AfterCheckedPaymentPlan            =>
                           updateJourneyWithExistingValue(Right(j), request.body)
                       }
       } yield Ok(newJourney.json)
     }
 
   private def updateJourneyWithNewValue(
-    journey:           JourneyStageView.ObtainedCanPayWithinSixMonthsAnswers,
+    journey:           Journey.ObtainedCanPayWithinSixMonthsAnswers,
     startCaseResponse: StartCaseResponse
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey = journey match {
-      case j: Journey.ObtainedCanPayWithinSixMonthsAnswers =>
-        j.into[Journey.StartedPegaCase]
-          .withFieldConst(_.startCaseResponse, startCaseResponse)
-          .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
-          .transform
-    }
+  )(using Request[_]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.StartedPegaCase]
+        .withFieldConst(_.startCaseResponse, startCaseResponse)
+        .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
+        .transform
+
     journeyService.upsert(newJourney)
   }
 
   private def updateJourneyWithExistingValue(
     journey:           Either[JourneyStage.AfterStartedPegaCase & Journey, JourneyStage.AfterCheckedPaymentPlan & Journey],
     startCaseResponse: StartCaseResponse
-  )(implicit request: Request[_]): Future[Journey] =
+  )(using Request[_]): Future[Journey] =
     journey match {
       case Left(afterStartedPegaCase) =>
         updateJourneyWithExistingValue(
@@ -142,7 +142,7 @@ class UpdatePegaStartCaseResponseController @Inject() (
                     .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
 
-                case _: JourneyStageView.SubmittedArrangement =>
+                case _: Journey.SubmittedArrangement =>
                   Errors.throwBadRequestException(
                     "Cannot update PEGA StartCaseResponse when journey is in completed state"
                   )
@@ -156,7 +156,7 @@ class UpdatePegaStartCaseResponseController @Inject() (
     existingJourney: Journey,
     newValue:        StartCaseResponse,
     newJourney:      Journey
-  )(implicit request: Request[_]): Future[Journey] =
+  )(using Request[_]): Future[Journey] =
     if (existingValue == newValue) {
       JourneyLogger.info("Nothing to update, PEGA StartCaseResponse is the same as the existing one in journey.")
       Future.successful(existingJourney)

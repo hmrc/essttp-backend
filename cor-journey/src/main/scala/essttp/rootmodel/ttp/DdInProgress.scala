@@ -22,9 +22,9 @@ import play.api.libs.json.{Format, Json}
 final case class DdInProgress(value: Boolean) extends AnyVal
 
 object DdInProgress {
-  implicit val format: Format[DdInProgress] = Json.valueFormat
+  given Format[DdInProgress] = Json.valueFormat
 
-  implicit val eq: Eq[DdInProgress] = Eq.fromUniversalEquals
+  given Eq[DdInProgress] = Eq.fromUniversalEquals
 
   implicit def asBoolean(e: DdInProgress): Boolean = e.value
 }

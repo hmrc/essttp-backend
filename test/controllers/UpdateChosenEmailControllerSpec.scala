@@ -25,7 +25,7 @@ import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
 import scala.concurrent.Future
 
-class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateChosenEmailControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-chosen-email" - {
     "should throw Bad Request when Journey is in a stage [BeforeAgreedTermsAndConditions]" in new JourneyItTest {
@@ -119,7 +119,7 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
         def testEpayeBta[J <: Journey](initialJourney: J)(value: J => Email)(context: JourneyItTest): Unit =
           testUpdate(initialJourney, value(initialJourney))(
             _.journeyId,
-            journeyConnector.updateSelectedEmailToBeVerified(_, _)(context.request),
+            journeyConnector.updateSelectedEmailToBeVerified(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability
               .copy(emailToBeVerified = value(initialJourney))
           )(context)
@@ -165,7 +165,7 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
         def testVatBta[J <: Journey](initialJourney: J)(value: J => Email)(context: JourneyItTest): Unit =
           testUpdate(initialJourney, value(initialJourney))(
             _.journeyId,
-            journeyConnector.updateSelectedEmailToBeVerified(_, _)(context.request),
+            journeyConnector.updateSelectedEmailToBeVerified(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterSelectedEmailNoAffordability
               .copy(emailToBeVerified = value(initialJourney))
           )(context)
@@ -211,7 +211,7 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
         def testSaBta[J <: Journey](initialJourney: J)(value: J => Email)(context: JourneyItTest): Unit =
           testUpdate(initialJourney, value(initialJourney))(
             _.journeyId,
-            journeyConnector.updateSelectedEmailToBeVerified(_, _)(context.request),
+            journeyConnector.updateSelectedEmailToBeVerified(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterSelectedEmailNoAffordability.copy(emailToBeVerified = value(initialJourney))
           )(context)
 
@@ -256,7 +256,7 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
         def testSimpPta[J <: Journey](initialJourney: J)(value: J => Email)(context: JourneyItTest): Unit =
           testUpdate(initialJourney, value(initialJourney))(
             _.journeyId,
-            journeyConnector.updateSelectedEmailToBeVerified(_, _)(context.request),
+            journeyConnector.updateSelectedEmailToBeVerified(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterSelectedEmail.copy(emailToBeVerified = value(initialJourney))
           )(context)
 

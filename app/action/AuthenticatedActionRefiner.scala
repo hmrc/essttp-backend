@@ -31,11 +31,11 @@ import scala.concurrent.{ExecutionContext, Future}
 class AuthenticatedActionRefiner @Inject() (
   val authConnector: AuthConnector,
   cc:                MessagesControllerComponents
-)(implicit
+)(using
   ec:                ExecutionContext
-) extends ActionRefiner[Request, AuthenticatedRequest]
-    with BackendHeaderCarrierProvider
-    with AuthorisedFunctions {
+) extends ActionRefiner[Request, AuthenticatedRequest],
+      BackendHeaderCarrierProvider,
+      AuthorisedFunctions {
 
   private val logger = Logger(getClass)
 

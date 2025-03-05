@@ -28,6 +28,6 @@ final case class AddWorkingDaysRequest(
 
 object AddWorkingDaysRequest {
 
-  implicit val writes: OWrites[AddWorkingDaysRequest] = Json.writes
+  given OWrites[AddWorkingDaysRequest] = Json.writes
 
 }

@@ -24,5 +24,5 @@ final case class StartDatesRequest(initialPayment: InitialPayment, preferredDayO
 
 object StartDatesRequest {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: Format[StartDatesRequest] = Json.format[StartDatesRequest]
+  given Format[StartDatesRequest] = Json.format[StartDatesRequest]
 }

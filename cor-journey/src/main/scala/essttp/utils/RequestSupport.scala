@@ -32,15 +32,15 @@ import javax.inject.Inject
   */
 class RequestSupport @Inject() (override val messagesApi: MessagesApi) extends I18nSupport {
 
-  implicit def hc(implicit request: RequestHeader): HeaderCarrier = RequestSupport.hc
+  given hc(using RequestHeader): HeaderCarrier = RequestSupport.hc
 }
 
 object RequestSupport {
 
-  implicit def hc(implicit request: RequestHeader): HeaderCarrier =
+  given hc(using request: RequestHeader): HeaderCarrier =
     HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-  def getSessionId()(implicit request: Request[_]): SessionId =
+  def getSessionId()(using Request[_]): SessionId =
     hc.sessionId
       .map(s => SessionId(s.value))
       .getOrElse(

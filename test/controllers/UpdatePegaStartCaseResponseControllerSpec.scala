@@ -21,7 +21,7 @@ import essttp.rootmodel.pega.{PegaCaseId, StartCaseResponse}
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdatePegaStartCaseResponseControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-pega-start-case-response" - {
     "should throw Bad Request when Journey is in a stage" - {
@@ -110,7 +110,7 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
             existingValue(initialJourney)
           )(
             differentResponse,
-            journeyConnector.updatePegaStartCaseResponse(_, _)(context.request),
+            journeyConnector.updatePegaStartCaseResponse(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterStartedPegaCase.copy(startCaseResponse = differentResponse)
           )(context)
 
@@ -130,7 +130,7 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
             existingValue(initialJourney)
           )(
             differentResponse,
-            journeyConnector.updatePegaStartCaseResponse(_, _)(context.request),
+            journeyConnector.updatePegaStartCaseResponse(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterStartedPegaCase.copy(startCaseResponse = differentResponse)
           )(context)
 
@@ -150,7 +150,7 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
             existingValue(initialJourney)
           )(
             differentResponse,
-            journeyConnector.updatePegaStartCaseResponse(_, _)(context.request),
+            journeyConnector.updatePegaStartCaseResponse(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterStartedPegaCase.copy(startCaseResponse = differentResponse)
           )(context)
 
@@ -170,7 +170,7 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
             existingValue(initialJourney)
           )(
             differentResponse,
-            journeyConnector.updatePegaStartCaseResponse(_, _)(context.request),
+            journeyConnector.updatePegaStartCaseResponse(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterStartedPegaCase.copy(startCaseResponse = differentResponse)
           )(context)
 

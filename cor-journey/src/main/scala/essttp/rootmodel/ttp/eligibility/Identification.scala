@@ -22,5 +22,5 @@ final case class Identification(idType: IdType, idValue: IdValue)
 
 object Identification {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[Identification] = Json.format
+  given OFormat[Identification] = Json.format
 }

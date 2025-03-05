@@ -33,9 +33,9 @@ final case class BarsVerifyStatus(
 
 object BarsVerifyStatus {
 
-  implicit val instantFormat: Format[Instant]    = MongoJavatimeFormats.instantFormat
+  given format: Format[Instant]   = MongoJavatimeFormats.instantFormat
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[BarsVerifyStatus] = Json.format
+  given OFormat[BarsVerifyStatus] = Json.format
 
   def apply(taxId: TaxId): BarsVerifyStatus =
     BarsVerifyStatus(TaxIdIndex(taxId), taxId, verifyCalls = NumberOfBarsVerifyAttempts(1))

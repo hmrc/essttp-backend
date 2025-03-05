@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class NoMtditsaEnrollment(value: Boolean) extends AnyVal
 
 object NoMtditsaEnrollment {
-  implicit val format: Format[NoMtditsaEnrollment] = Json.valueFormat
+  given Format[NoMtditsaEnrollment] = Json.valueFormat
 }

@@ -27,7 +27,7 @@ final case class BarsVerifyStatusResponse(
 
 object BarsVerifyStatusResponse {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[BarsVerifyStatusResponse] = Json.format
+  given OFormat[BarsVerifyStatusResponse] = Json.format
 
   def apply(status: BarsVerifyStatus): BarsVerifyStatusResponse =
     BarsVerifyStatusResponse(status.verifyCalls, status.lockoutExpiryDateTime)

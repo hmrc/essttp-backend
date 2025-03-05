@@ -26,5 +26,5 @@ final case class InvalidSignals(
 
 object InvalidSignals {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format: Format[InvalidSignals] = Json.format[InvalidSignals]
+  given Format[InvalidSignals] = Json.format[InvalidSignals]
 }

@@ -28,6 +28,6 @@ final case class CustomerDetail(
 
 object CustomerDetail {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): Format[CustomerDetail] = Json.format[CustomerDetail]
+  given (using CryptoFormat): Format[CustomerDetail] = Json.format[CustomerDetail]
 
 }

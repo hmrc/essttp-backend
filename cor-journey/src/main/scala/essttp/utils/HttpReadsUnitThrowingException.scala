@@ -34,7 +34,7 @@ object HttpReadsUnitThrowingException {
     *   import essttp.utils.HttpReadsUnitThrowingException.readUnit
     * }}}
     */
-  implicit val readUnit: HttpReads[Unit] = {
+  given HttpReads[Unit] = {
     val eitherHttpResponseReads: HttpReads[Either[UpstreamErrorResponse, HttpResponse]] = readEitherOf[HttpResponse]
     val eitherUnitReads: HttpReads[Either[UpstreamErrorResponse, Unit]]                 =
       eitherHttpResponseReads.map(x => x.map(_ => ()))

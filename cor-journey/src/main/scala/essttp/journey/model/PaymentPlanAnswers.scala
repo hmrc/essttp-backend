@@ -16,7 +16,6 @@
 
 package essttp.journey.model
 
-import cats.Eq
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.pega.StartCaseResponse
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
@@ -26,11 +25,9 @@ import essttp.utils.DerivedJson.Circe.formatToCodec
 import io.circe.generic.semiauto.deriveCodec
 import play.api.libs.json.OFormat
 
-sealed trait PaymentPlanAnswers
+sealed trait PaymentPlanAnswers derives CanEqual
 
 object PaymentPlanAnswers {
-
-  implicit val eq: Eq[PaymentPlanAnswers] = Eq.fromUniversalEquals
 
   final case class PaymentPlanNoAffordability(
     monthlyPaymentAmount:     MonthlyPaymentAmount,
@@ -46,7 +43,7 @@ object PaymentPlanAnswers {
     selectedPaymentPlan: PaymentPlan
   ) extends PaymentPlanAnswers
 
-  implicit class PaymentPlanAnswersOps(val answers: PaymentPlanAnswers) extends AnyVal {
+  extension (answers: PaymentPlanAnswers) {
 
     def selectedPaymentPlan: PaymentPlan = answers match {
       case p: PaymentPlanNoAffordability    => p.selectedPaymentPlan
@@ -61,7 +58,7 @@ object PaymentPlanAnswers {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[PaymentPlanAnswers] =
+  given OFormat[PaymentPlanAnswers] =
     DerivedJson.Circe.format(deriveCodec[PaymentPlanAnswers])
 
 }

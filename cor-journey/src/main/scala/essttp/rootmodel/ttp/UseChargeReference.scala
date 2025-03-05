@@ -23,10 +23,10 @@ final case class UseChargeReference(value: Boolean) extends AnyVal
 
 object UseChargeReference {
 
-  implicit val eq: Eq[UseChargeReference] = Eq.fromUniversalEquals
+  given Eq[UseChargeReference] = Eq.fromUniversalEquals
 
   implicit def asBoolean(e: UseChargeReference): Boolean = e.value
 
-  implicit val format: Format[UseChargeReference] = Json.valueFormat
+  given Format[UseChargeReference] = Json.valueFormat
 
 }

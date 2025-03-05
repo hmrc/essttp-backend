@@ -33,16 +33,16 @@ class TestDatesConnector @Inject() (httpClient: HttpClientV2)(implicit execution
 
   private val essttpBackendBaseUrl = s"http://localhost:${ItSpec.testServerPort.toString}/essttp-backend"
 
-  implicit val readResponse: HttpReads[HttpResponse] =
+  given HttpReads[HttpResponse] =
     HttpReadsInstances.throwOnFailure(HttpReadsInstances.readEitherOf(HttpReadsInstances.readRaw))
 
-  def startDates(startDatesRequest: StartDatesRequest)(implicit hc: HeaderCarrier): Future[StartDatesResponse] =
+  def startDates(startDatesRequest: StartDatesRequest)(using HeaderCarrier): Future[StartDatesResponse] =
     httpClient
       .post(url"$essttpBackendBaseUrl/start-dates")
       .withBody(Json.toJson(startDatesRequest))
       .execute[StartDatesResponse]
 
-  def extremeDates(extremeDatesRequest: ExtremeDatesRequest)(implicit hc: HeaderCarrier): Future[ExtremeDatesResponse] =
+  def extremeDates(extremeDatesRequest: ExtremeDatesRequest)(using HeaderCarrier): Future[ExtremeDatesResponse] =
     httpClient
       .post(url"$essttpBackendBaseUrl/extreme-dates")
       .withBody(Json.toJson(extremeDatesRequest))

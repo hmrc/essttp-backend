@@ -24,6 +24,6 @@ object IsEmailAddressRequired {
 
   implicit def asBoolean(e: IsEmailAddressRequired): Boolean = e.value
 
-  implicit val format: Format[IsEmailAddressRequired] = Json.valueFormat
+  given Format[IsEmailAddressRequired] = Json.valueFormat
 
 }

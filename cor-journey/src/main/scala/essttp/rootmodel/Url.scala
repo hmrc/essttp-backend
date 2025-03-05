@@ -21,11 +21,11 @@ import play.api.libs.json.{Format, Json}
 final case class BackUrl(value: String) extends AnyVal
 
 object BackUrl {
-  implicit val format: Format[BackUrl] = Json.valueFormat
+  given Format[BackUrl] = Json.valueFormat
 }
 
 final case class ReturnUrl(value: String) extends AnyVal
 
 object ReturnUrl {
-  implicit val format: Format[ReturnUrl] = Json.valueFormat
+  given Format[ReturnUrl] = Json.valueFormat
 }

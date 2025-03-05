@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class InitialPayment(value: Boolean) extends AnyVal derives CanEqual
 
 object InitialPayment {
-  implicit val format: Format[InitialPayment] = Json.valueFormat
+  given Format[InitialPayment] = Json.valueFormat
 }

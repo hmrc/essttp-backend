@@ -40,9 +40,9 @@ sealed trait Origin extends EnumEntry with Product with Serializable derives Can
 
 object Origin {
 
-  implicit val format: Format[Origin] = EnumFormat(Origins)
+  given format: Format[Origin] = EnumFormat(Origins)
 
-  inline def individualFormat[O <: Origin: Typeable]: Format[O] = Format[O](
+  inline def subtypeFormat[O <: Origin: Typeable]: Format[O] = Format[O](
     Reads[O](json =>
       format.reads(json).flatMap {
         case o: O  => JsSuccess(o)
@@ -54,7 +54,7 @@ object Origin {
     )
   )
 
-  implicit class OriginOps(private val o: Origin) extends AnyVal {
+  extension (o: Origin) {
 
     def taxRegime: TaxRegime = o match {
       case _: Origins.Epaye => TaxRegime.Epaye
@@ -74,7 +74,7 @@ object Origins extends Enum[Origin] {
   sealed trait Epaye extends Origin
 
   object Epaye extends Enum[Epaye] {
-    implicit val format: Format[Epaye] = Origin.individualFormat[Epaye]
+    given Format[Epaye] = Origin.subtypeFormat[Epaye]
 
     case object Bta          extends Origin with Epaye with BetterName
     case object EpayeService extends Origin with Epaye with BetterName
@@ -93,7 +93,7 @@ object Origins extends Enum[Origin] {
   sealed trait Vat extends Origin
 
   object Vat extends Enum[Vat] {
-    implicit val format: Format[Vat] = Origin.individualFormat[Vat]
+    given Format[Vat] = Origin.subtypeFormat[Vat]
 
     case object Bta          extends Origin with Vat with BetterName
     case object VatService   extends Origin with Vat with BetterName
@@ -111,7 +111,7 @@ object Origins extends Enum[Origin] {
   sealed trait Simp extends Origin
 
   object Simp extends Enum[Simp] {
-    implicit val format: Format[Simp] = Origin.individualFormat[Simp]
+    given Format[Simp] = Origin.subtypeFormat[Simp]
 
     case object Pta extends Origin with Simp with BetterName
 
@@ -132,7 +132,7 @@ object Origins extends Enum[Origin] {
   sealed trait Sa extends Origin
 
   object Sa extends Enum[Sa] {
-    implicit val format: Format[Sa] = Origin.individualFormat[Sa]
+    given Format[Sa] = Origin.subtypeFormat[Sa]
 
     case object Bta extends Origin with Sa with BetterName
 

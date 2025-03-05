@@ -18,7 +18,7 @@ import essttp.journey.model.PaymentPlanAnswers
 
 package object controllers {
 
-  implicit class PaymentPlanAnswersOps(val p: PaymentPlanAnswers) extends AnyVal {
+  extension (p: PaymentPlanAnswers) {
 
     def affordabilityAnswers = p match {
       case p: PaymentPlanAnswers.PaymentPlanNoAffordability    =>

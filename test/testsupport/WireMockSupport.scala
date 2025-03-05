@@ -22,12 +22,12 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite}
 import play.api.Logger
 
-trait WireMockSupport extends BeforeAndAfterAll with BeforeAndAfterEach {
+trait WireMockSupport extends BeforeAndAfterAll, BeforeAndAfterEach {
   self: Suite =>
 
   private val logger = Logger(getClass)
 
-  implicit val wireMockServer: WireMockServer = new WireMockServer(
+  given wireMockServer: WireMockServer = new WireMockServer(
     WireMockConfiguration.wireMockConfig().port(WireMockSupport.port)
   )
 

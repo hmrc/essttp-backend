@@ -40,7 +40,7 @@ object PegaStartCaseRequest {
   )
 
   object Content {
-    implicit val writes: OWrites[Content] = Json.writes
+    given OWrites[Content] = Json.writes
   }
 
   final case class AA(
@@ -51,13 +51,13 @@ object PegaStartCaseRequest {
   )
 
   object AA {
-    implicit val writes: OWrites[AA] = Json.writes
+    given OWrites[AA] = Json.writes
   }
 
   final case class UnableToPayReason(reason: String)
 
   object UnableToPayReason {
-    implicit val writes: OWrites[UnableToPayReason] = Json.writes
+    given OWrites[UnableToPayReason] = Json.writes
   }
 
   final case class MDTPropertyMapping(
@@ -71,13 +71,13 @@ object PegaStartCaseRequest {
   )
 
   object MDTPropertyMapping {
-    implicit val writes: OWrites[MDTPropertyMapping] = {
-      implicit val cryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
+    given OWrites[MDTPropertyMapping] = {
+      given CryptoFormat = CryptoFormat.NoOpCryptoFormat
       Json.writes
     }
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val writes: OWrites[PegaStartCaseRequest] = Json.writes
+  given OWrites[PegaStartCaseRequest] = Json.writes
 
 }

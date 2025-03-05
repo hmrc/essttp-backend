@@ -49,7 +49,7 @@ final case class EligibilityCheckResult(
 
 object EligibilityCheckResult {
 
-  implicit class EligibilityCheckResultOps(private val e: EligibilityCheckResult) extends AnyVal {
+  extension (e: EligibilityCheckResult) {
 
     def isEligible: Boolean = e.eligibilityStatus.eligibilityPass.value
 
@@ -76,7 +76,7 @@ object EligibilityCheckResult {
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[EligibilityCheckResult] =
+  given (using CryptoFormat): OFormat[EligibilityCheckResult] =
     Json.format[EligibilityCheckResult]
 
 }

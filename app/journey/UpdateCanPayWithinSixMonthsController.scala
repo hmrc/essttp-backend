@@ -19,7 +19,7 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey, JourneyId, JourneyStage, JourneyStageView}
+import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey, JourneyId, JourneyStage}
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.*
 import play.api.mvc.{Action, ControllerComponents, Request}
@@ -33,7 +33,7 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateCanPayWithinSixMonthsAnswers(journeyId: JourneyId): Action[CanPayWithinSixMonthsAnswers] =
@@ -45,7 +45,7 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
                           Errors.throwBadRequestExceptionF(
                             s"UpdateCanPayWithinSixMonthsAnswers update is not possible in that state: [${j.stage}]"
                           )
-                        case j: JourneyStageView.RetrievedAffordabilityResult   =>
+                        case j: Journey.RetrievedAffordabilityResult            =>
                           updateJourneyWithNewValue(j, request.body)
                         case j: JourneyStage.AfterCanPayWithinSixMonthsAnswers  =>
                           updateJourneyWithExistingValue(j, request.body)
@@ -54,22 +54,22 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
     }
 
   private def updateJourneyWithNewValue(
-    journey: JourneyStageView.RetrievedAffordabilityResult,
+    journey: Journey.RetrievedAffordabilityResult,
     answers: CanPayWithinSixMonthsAnswers
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey = journey match {
-      case j: Journey.RetrievedAffordabilityResult =>
-        j.into[Journey.ObtainedCanPayWithinSixMonthsAnswers]
-          .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
-          .transform
-    }
+  )(using Request[_]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.ObtainedCanPayWithinSixMonthsAnswers]
+        .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
+        .transform
+
     journeyService.upsert(newJourney)
   }
 
   private def updateJourneyWithExistingValue(
     journey: JourneyStage.AfterCanPayWithinSixMonthsAnswers & Journey,
     answers: CanPayWithinSixMonthsAnswers
-  )(implicit request: Request[_]): Future[Journey] =
+  )(using Request[_]): Future[Journey] =
     if (journey.canPayWithinSixMonthsAnswers == answers) {
       Future.successful(journey)
     } else {
@@ -142,7 +142,7 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
 
-        case _: JourneyStageView.SubmittedArrangement =>
+        case _: Journey.SubmittedArrangement =>
           Errors.throwBadRequestException(
             "Cannot update CanPayWithinSixMonthsAnswers when journey is in completed state"
           )

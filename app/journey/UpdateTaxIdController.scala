@@ -36,7 +36,7 @@ class UpdateTaxIdController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateTaxId(journeyId: JourneyId): Action[TaxId] = actions.authenticatedAction.async(parse.json[TaxId]) {
@@ -47,7 +47,7 @@ class UpdateTaxIdController @Inject() (
       } yield Ok(newJourney.json)
   }
 
-  private def updateJourney(journey: Journey, taxId: TaxId)(implicit request: Request[_]): Future[Journey] =
+  private def updateJourney(journey: Journey, taxId: TaxId)(using Request[_]): Future[Journey] =
     journey match {
       case j: Journey.Started =>
         val validatedId: Validated[String, TaxId] = (j.origin.taxRegime, taxId) match {

@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class ChargeReference(value: String) extends AnyVal
 
 object ChargeReference {
-  implicit val format: Format[ChargeReference] = Json.valueFormat
+  given Format[ChargeReference] = Json.valueFormat
 }

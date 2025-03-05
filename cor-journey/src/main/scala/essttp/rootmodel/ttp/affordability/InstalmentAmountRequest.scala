@@ -42,6 +42,6 @@ final case class InstalmentAmountRequest(
 
 object InstalmentAmountRequest {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[InstalmentAmountRequest] =
+  given (using CryptoFormat): OFormat[InstalmentAmountRequest] =
     Json.format[InstalmentAmountRequest]
 }

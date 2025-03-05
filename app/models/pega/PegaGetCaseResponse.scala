@@ -35,7 +35,7 @@ object PegaGetCaseResponse {
 
   object AA {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val reads: Reads[AA] =
+    given Reads[AA] =
       Reads(json =>
         for {
           paymentDay  <- (json \ "paymentDay")
@@ -61,7 +61,7 @@ object PegaGetCaseResponse {
 
   object ExpenditureItem {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val reads: Reads[ExpenditureItem] = Json.reads
+    given Reads[ExpenditureItem] = Json.reads
   }
 
   final case class IncomeItem(
@@ -71,7 +71,7 @@ object PegaGetCaseResponse {
 
   object IncomeItem {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val reads: Reads[IncomeItem] = Json.reads
+    given Reads[IncomeItem] = Json.reads
   }
 
   final case class PegaPaymentPlan(
@@ -87,7 +87,7 @@ object PegaGetCaseResponse {
 
   object PegaPaymentPlan {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val reads: Reads[PegaPaymentPlan] = Json.reads[PegaPaymentPlan]
+    given Reads[PegaPaymentPlan] = Json.reads[PegaPaymentPlan]
   }
 
   final case class PegaCollections(
@@ -97,14 +97,14 @@ object PegaGetCaseResponse {
 
   object PegaCollections {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val reads: Reads[PegaCollections] = Json.reads[PegaCollections]
+    given Reads[PegaCollections] = Json.reads[PegaCollections]
   }
 
   final case class PegaCollection(dueDate: LocalDate, amountDue: Long)
 
   object PegaCollection {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val reads: Reads[PegaCollection] = Json.reads[PegaCollection]
+    given Reads[PegaCollection] = Json.reads[PegaCollection]
   }
 
   final case class PegaInstalment(
@@ -119,10 +119,10 @@ object PegaGetCaseResponse {
 
   object PegaInstalment {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val reads: Reads[PegaInstalment] = Json.reads[PegaInstalment]
+    given Reads[PegaInstalment] = Json.reads[PegaInstalment]
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val reads: Reads[PegaGetCaseResponse] = Json.reads
+  given Reads[PegaGetCaseResponse] = Json.reads
 
 }

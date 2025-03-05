@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class NumberOfInstalments(value: Int) extends AnyVal
 
 object NumberOfInstalments {
-  implicit val format: Format[NumberOfInstalments] = Json.valueFormat[NumberOfInstalments]
+  given Format[NumberOfInstalments] = Json.valueFormat[NumberOfInstalments]
 }

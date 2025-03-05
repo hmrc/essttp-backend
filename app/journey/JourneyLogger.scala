@@ -16,16 +16,13 @@
 
 package journey
 
-import cats.syntax.eq._
-import cats.instances.string._
-
 import essttp.journey.model.JourneyId
 import essttp.rootmodel.TraceId
 import action.model._
 import play.api.Logger
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.CookieNames
-import essttp.utils.RequestSupport._
+import essttp.utils.RequestSupport.hc
 
 /** Journey Logger is a contextual logger. It will append to the message some extra bits of information like journeyId
   * origin, path method, etc. Use it everywhere
@@ -34,56 +31,56 @@ object JourneyLogger {
 
   private val log: Logger = Logger("journey")
 
-  def debug(message: => String)(implicit request: RequestHeader): Unit = logMessage(message, Debug)
+  def debug(message: => String)(using RequestHeader): Unit = logMessage(message, Debug)
 
-  def info(message: => String)(implicit request: RequestHeader): Unit = logMessage(message, Info)
+  def info(message: => String)(using RequestHeader): Unit = logMessage(message, Info)
 
-  def warn(message: => String)(implicit request: RequestHeader): Unit = logMessage(message, Warn)
+  def warn(message: => String)(using RequestHeader): Unit = logMessage(message, Warn)
 
-  def error(message: => String)(implicit request: RequestHeader): Unit = logMessage(message, Error)
+  def error(message: => String)(using RequestHeader): Unit = logMessage(message, Error)
 
-  def debug(message: => String, journeyId: JourneyId)(implicit request: RequestHeader): Unit =
+  def debug(message: => String, journeyId: JourneyId)(using RequestHeader): Unit =
     logMessage(message, Debug, journeyId)
 
-  def info(message: => String, journeyId: JourneyId)(implicit request: RequestHeader): Unit =
+  def info(message: => String, journeyId: JourneyId)(using RequestHeader): Unit =
     logMessage(message, Info, journeyId)
 
-  def warn(message: => String, journeyId: JourneyId)(implicit request: RequestHeader): Unit =
+  def warn(message: => String, journeyId: JourneyId)(using RequestHeader): Unit =
     logMessage(message, Warn, journeyId)
 
-  def error(message: => String, journeyId: JourneyId)(implicit request: RequestHeader): Unit =
+  def error(message: => String, journeyId: JourneyId)(using RequestHeader): Unit =
     logMessage(message, Error, journeyId)
 
-  def debug(message: => String, ex: Throwable)(implicit request: RequestHeader): Unit = logMessage(message, ex, Debug)
+  def debug(message: => String, ex: Throwable)(using RequestHeader): Unit = logMessage(message, ex, Debug)
 
-  def info(message: => String, ex: Throwable)(implicit request: RequestHeader): Unit = logMessage(message, ex, Info)
+  def info(message: => String, ex: Throwable)(using RequestHeader): Unit = logMessage(message, ex, Info)
 
-  def warn(message: => String, ex: Throwable)(implicit request: RequestHeader): Unit = logMessage(message, ex, Warn)
+  def warn(message: => String, ex: Throwable)(using RequestHeader): Unit = logMessage(message, ex, Warn)
 
-  def error(message: => String, ex: Throwable)(implicit request: RequestHeader): Unit = logMessage(message, ex, Error)
+  def error(message: => String, ex: Throwable)(using RequestHeader): Unit = logMessage(message, ex, Error)
 
-  def debug(message: => String, ex: Throwable, journeyId: JourneyId)(implicit request: RequestHeader): Unit =
+  def debug(message: => String, ex: Throwable, journeyId: JourneyId)(using RequestHeader): Unit =
     logMessage(message, ex, Debug, journeyId)
 
-  def info(message: => String, ex: Throwable, journeyId: JourneyId)(implicit request: RequestHeader): Unit =
+  def info(message: => String, ex: Throwable, journeyId: JourneyId)(using RequestHeader): Unit =
     logMessage(message, ex, Info, journeyId)
 
-  def warn(message: => String, ex: Throwable, journeyId: JourneyId)(implicit request: RequestHeader): Unit =
+  def warn(message: => String, ex: Throwable, journeyId: JourneyId)(using RequestHeader): Unit =
     logMessage(message, ex, Warn, journeyId)
 
-  def error(message: => String, ex: Throwable, journeyId: JourneyId)(implicit request: RequestHeader): Unit =
+  def error(message: => String, ex: Throwable, journeyId: JourneyId)(using RequestHeader): Unit =
     logMessage(message, ex, Error, journeyId)
 
-  private def context(implicit request: RequestHeader) =
+  private def context(using request: RequestHeader) =
     s"[context: ${request.method} ${request.path}] $sessionId $referer $deviceId"
 
-  private def sessionId(implicit request: RequestHeader) = s"[${hc.sessionId.toString}]"
+  private def sessionId(using RequestHeader) = s"[${hc.sessionId.toString}]"
 
-  private def referer(implicit r: RequestHeader) =
-    s"[Referer: ${r.headers.headers.find(_._1 === "Referer").map(_._2).getOrElse("")}]"
+  private def referer(using r: RequestHeader) =
+    s"[Referer: ${r.headers.headers.find(_._1 == "Referer").map(_._2).getOrElse("")}]"
 
-  private def deviceId(implicit r: RequestHeader) =
-    s"[deviceId: ${r.cookies.find(_.name === CookieNames.deviceID).map(_.value).getOrElse("")}]"
+  private def deviceId(using r: RequestHeader) =
+    s"[deviceId: ${r.cookies.find(_.name == CookieNames.deviceID).map(_.value).getOrElse("")}]"
 
   private def origin(implicit r: JourneyRequest[_]) = s"[${r.journey.origin.toString}]"
 
@@ -95,16 +92,16 @@ object JourneyLogger {
 
   private def journeyName(implicit r: JourneyRequest[_]) = s"[${r.journey.name}]"
 
-  private def makeRichMessage(message: String)(implicit request: RequestHeader): String =
+  private def makeRichMessage(message: String)(using request: RequestHeader): String =
     request match {
       case r: JourneyRequest[_] =>
-        implicit val req: JourneyRequest[_] = r
+        given JourneyRequest[_] = r
         s"$message $taxRegime $origin $journeyName $stage $journeyId $context"
       case _                    =>
         s"$message $context "
     }
 
-  private def makeRichMessage(message: => String, journeyId: JourneyId)(implicit request: RequestHeader): String = {
+  private def makeRichMessage(message: => String, journeyId: JourneyId)(using RequestHeader): String = {
     val traceId: TraceId = TraceId.fromJourneyId(journeyId)
     s"$message ${traceId.toString} ${journeyId.toString} $context "
   }
@@ -139,7 +136,7 @@ object JourneyLogger {
       case Error => log.error(makeRichMessage(message, journeyId))
     }
 
-  private def logMessage(message: => String, level: LogLevel)(implicit request: RequestHeader): Unit = {
+  private def logMessage(message: => String, level: LogLevel)(using RequestHeader): Unit = {
     lazy val richMessage = makeRichMessage(message)
     level match {
       case Debug => log.debug(richMessage)
@@ -149,7 +146,7 @@ object JourneyLogger {
     }
   }
 
-  private def logMessage(message: => String, ex: Throwable, level: LogLevel)(implicit request: RequestHeader): Unit = {
+  private def logMessage(message: => String, ex: Throwable, level: LogLevel)(using RequestHeader): Unit = {
     lazy val richMessage = makeRichMessage(message)
     level match {
       case Debug => log.debug(richMessage, ex)

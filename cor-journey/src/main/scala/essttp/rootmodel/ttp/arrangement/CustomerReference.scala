@@ -22,6 +22,6 @@ final case class CustomerReference(value: String) extends AnyVal
 
 object CustomerReference {
 
-  implicit val format: Format[CustomerReference] = Json.valueFormat
+  given Format[CustomerReference] = Json.valueFormat
 
 }

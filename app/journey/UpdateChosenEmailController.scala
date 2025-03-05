@@ -19,7 +19,7 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, JourneyStage, JourneyStageView}
+import essttp.journey.model.{Journey, JourneyId, JourneyStage}
 import essttp.rootmodel.Email
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.*
@@ -34,7 +34,7 @@ class UpdateChosenEmailController @Inject() (
   journeyService: JourneyService,
   cc:             ControllerComponents,
   actions:        Actions
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateChosenEmail(journeyId: JourneyId): Action[Email] = actions.authenticatedAction.async(parse.json[Email]) {
@@ -48,17 +48,17 @@ class UpdateChosenEmailController @Inject() (
                           )
                         case j: JourneyStage.AfterAgreedTermsAndConditions  =>
                           j match {
-                            case j1: JourneyStageView.AgreedTermsAndConditions  =>
+                            case j1: Journey.AgreedTermsAndConditions  =>
                               if (j.isEmailAddressRequired) updateJourneyWithNewValue(j1, request.body)
                               else
                                 Errors.throwBadRequestExceptionF(
                                   s"Cannot update selected email address when isEmailAddressRequired is false for journey."
                                 )
-                            case j1: JourneyStageView.SelectedEmailToBeVerified =>
+                            case j1: Journey.SelectedEmailToBeVerified =>
                               updateJourneyWithExistingValue(j1, request.body)
-                            case j1: JourneyStageView.EmailVerificationComplete =>
+                            case j1: Journey.EmailVerificationComplete =>
                               updateJourneyWithExistingValue(j1, request.body)
-                            case _: JourneyStageView.SubmittedArrangement       =>
+                            case _: Journey.SubmittedArrangement       =>
                               Errors.throwBadRequestExceptionF(
                                 s"Cannot update ChosenEmail when journey is in completed state."
                               )
@@ -68,22 +68,22 @@ class UpdateChosenEmailController @Inject() (
   }
 
   private def updateJourneyWithNewValue(
-    journey: JourneyStageView.AgreedTermsAndConditions,
+    journey: Journey.AgreedTermsAndConditions,
     email:   Email
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey = journey match {
-      case j: Journey.AgreedTermsAndConditions =>
-        j.into[Journey.SelectedEmailToBeVerified]
-          .withFieldConst(_.emailToBeVerified, email)
-          .transform
-    }
+  )(using Request[_]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.SelectedEmailToBeVerified]
+        .withFieldConst(_.emailToBeVerified, email)
+        .transform
+
     journeyService.upsert(newJourney)
   }
 
   private def updateJourneyWithExistingValue(
     journey: JourneyStage.AfterEmailAddressSelectedToBeVerified & Journey,
     email:   Email
-  )(implicit request: Request[_]): Future[Journey] = {
+  )(using Request[_]): Future[Journey] = {
     // don't check to see if email is same to allow for passcodes to be requested again for same email
     val newJourney: Journey = journey match {
       case j: Journey.SelectedEmailToBeVerified =>

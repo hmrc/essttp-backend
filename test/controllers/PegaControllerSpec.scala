@@ -35,7 +35,7 @@ import uk.gov.hmrc.http.UpstreamErrorResponse
 
 import java.time.{Clock, Instant}
 
-class PegaControllerSpec extends ItSpec with TdBase {
+class PegaControllerSpec extends ItSpec, TdBase {
 
   lazy val journeyByTaxIdRepo = app.injector.instanceOf[JourneyByTaxIdRepo]
 
@@ -43,9 +43,9 @@ class PegaControllerSpec extends ItSpec with TdBase {
 
   lazy val cacheApi: AsyncCacheApi = app.injector.instanceOf[AsyncCacheApi]
 
-  implicit lazy val mat: Materializer = app.injector.instanceOf[Materializer]
+  given Materializer = app.injector.instanceOf[Materializer]
 
-  implicit lazy val cryptoFormat: CryptoFormat = CryptoFormat.OperationalCryptoFormat(testCrypto)
+  given CryptoFormat = CryptoFormat.OperationalCryptoFormat(testCrypto)
 
   override def beforeEach(): Unit = {
     super.beforeEach()

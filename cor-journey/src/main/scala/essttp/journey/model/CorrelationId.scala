@@ -26,5 +26,5 @@ import java.util.UUID
 final case class CorrelationId(value: UUID) extends AnyVal
 
 object CorrelationId {
-  implicit val format: Format[CorrelationId] = Json.valueFormat
+  given Format[CorrelationId] = Json.valueFormat
 }

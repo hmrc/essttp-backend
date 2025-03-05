@@ -34,8 +34,8 @@ object TraceId {
     TraceId(eightDigitAbsoluteMod)
   }
 
-  implicit val format: Format[TraceId]                                = Json.valueFormat
-  implicit val traceIdPathBinder: PathBindable[TraceId]               = essttp.utils.ValueClassBinder.valueClassBinder(_.value)
-  implicit val traceIdQueryStringBinder: QueryStringBindable[TraceId] =
+  given Format[TraceId]              = Json.valueFormat
+  given PathBindable[TraceId]        = essttp.utils.ValueClassBinder.valueClassBinder(_.value)
+  given QueryStringBindable[TraceId] =
     essttp.utils.ValueClassBinder.queryStringValueBinder(_.value)
 }

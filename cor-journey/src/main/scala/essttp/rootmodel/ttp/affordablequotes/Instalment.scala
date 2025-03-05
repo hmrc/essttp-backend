@@ -31,5 +31,5 @@ final case class Instalment(
 
 object Instalment {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[Instalment] = Json.format[Instalment]
+  given OFormat[Instalment] = Json.format[Instalment]
 }

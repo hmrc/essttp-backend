@@ -22,7 +22,7 @@ import essttp.journey.model.{Journey, JourneyId}
 import essttp.rootmodel.SessionId
 import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, Indexes}
-import repository.JourneyRepoUtils._
+import repository.JourneyRepoUtils.{id, idExtractor}
 import repository.Repo.{Id, IdExtractor}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs
@@ -36,7 +36,7 @@ import scala.concurrent.{ExecutionContext, Future}
 final class JourneyRepo @Inject() (
   mongoComponent: MongoComponent,
   config:         AppConfig
-)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends Repo[JourneyId, Journey](
       collectionName = "journey",
       mongoComponent = mongoComponent,
@@ -57,11 +57,11 @@ final class JourneyRepo @Inject() (
 
 object JourneyRepoUtils {
 
-  implicit val journeyId: Id[JourneyId] = new Id[JourneyId] {
+  given id: Id[JourneyId] = new Id[JourneyId] {
     override def value(i: JourneyId): String = i.value
   }
 
-  implicit val journeyIdExtractor: IdExtractor[Journey, JourneyId] = new IdExtractor[Journey, JourneyId] {
+  given idExtractor: IdExtractor[Journey, JourneyId] = new IdExtractor[Journey, JourneyId] {
     override def id(j: Journey): JourneyId = j.journeyId
   }
 

@@ -47,9 +47,9 @@ import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Singleton
 import scala.util.Random
 
-trait ItSpec extends AnyFreeSpecLike with RichMatchers with GuiceOneServerPerSuite with WireMockSupport { self =>
+trait ItSpec extends AnyFreeSpecLike, RichMatchers, GuiceOneServerPerSuite, WireMockSupport { self =>
 
-  implicit val testCrypto: Encrypter with Decrypter = new AesCrypto {
+  given testCrypto: (Encrypter with Decrypter) = new AesCrypto {
     override protected val encryptionKey: String = "P5xsJ9Nt+quxGZzB4DeLfw=="
   }
 
@@ -116,7 +116,7 @@ trait ItSpec extends AnyFreeSpecLike with RichMatchers with GuiceOneServerPerSui
   def correlationIdGenerator: TestCorrelationIdGenerator         = app.injector.instanceOf[TestCorrelationIdGenerator]
   val pegaCorrelationIdGenerator: TestPegaCorrelationIdGenerator = new TestPegaCorrelationIdGenerator
 
-  implicit def hc: HeaderCarrier = HeaderCarrier()
+  given hc: HeaderCarrier = HeaderCarrier()
 
   val baseUrl: String      = s"http://localhost:${ItSpec.testServerPort.toString}"
   val databaseName: String = "essttp-backend-it"
@@ -154,11 +154,11 @@ trait ItSpec extends AnyFreeSpecLike with RichMatchers with GuiceOneServerPerSui
     TestServerFactory.start(app)
 
   trait JourneyItTest {
-    val tdAll: TdAll                          = new TdAll {
+    val tdAll: TdAll                   = new TdAll {
       override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
-    implicit val request: Request[AnyContent] = tdAll.request.withHeaders("Authorization" -> TdAll.authorization.value)
+    given request: Request[AnyContent] = tdAll.request.withHeaders("Authorization" -> TdAll.authorization.value)
 
     lazy val journeyRepo: JourneyRepo = app.injector.instanceOf[JourneyRepo]
 
@@ -168,7 +168,7 @@ trait ItSpec extends AnyFreeSpecLike with RichMatchers with GuiceOneServerPerSui
   trait BarsVerifyStatusItTest {
     import testsupport.TdSupport._
 
-    implicit val request: Request[_] = FakeRequest()
+    given Request[_] = FakeRequest()
       .withSessionId()
       .withAuthToken()
       .withAkamaiReputationHeader()

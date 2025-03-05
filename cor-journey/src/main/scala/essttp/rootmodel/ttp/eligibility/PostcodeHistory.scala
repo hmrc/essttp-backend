@@ -27,5 +27,5 @@ final case class PostcodeHistory(
 
 object PostcodeHistory {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): Format[PostcodeHistory] = Json.format[PostcodeHistory]
+  given (using CryptoFormat): Format[PostcodeHistory] = Json.format[PostcodeHistory]
 }

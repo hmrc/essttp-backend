@@ -29,7 +29,7 @@ object CanPayWithinSixMonthsAnswers {
   final case class CanPayWithinSixMonths(value: Boolean) extends CanPayWithinSixMonthsAnswers
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[CanPayWithinSixMonthsAnswers] =
+  given OFormat[CanPayWithinSixMonthsAnswers] =
     DerivedJson.Circe.format(deriveCodec[CanPayWithinSixMonthsAnswers])
 
 }

@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class OriginalTieBreaker(value: String) extends AnyVal
 
 object OriginalTieBreaker {
-  implicit val format: Format[OriginalTieBreaker] = Json.valueFormat[OriginalTieBreaker]
+  given Format[OriginalTieBreaker] = Json.valueFormat[OriginalTieBreaker]
 }

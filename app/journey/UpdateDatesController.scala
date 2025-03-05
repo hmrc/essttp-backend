@@ -19,7 +19,7 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, JourneyStage, JourneyStageView, PaymentPlanAnswers, UpfrontPaymentAnswers}
+import essttp.journey.model.{Journey, JourneyId, JourneyStage, PaymentPlanAnswers, UpfrontPaymentAnswers}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.utils.Errors
@@ -35,7 +35,7 @@ class UpdateDatesController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateExtremeDates(journeyId: JourneyId): Action[ExtremeDatesResponse] =
@@ -43,11 +43,11 @@ class UpdateDatesController @Inject() (
       for {
         journey    <- journeyService.get(journeyId)
         newJourney <- journey match {
-                        case j: JourneyStageView.EnteredUpfrontPaymentAmount =>
+                        case j: Journey.EnteredUpfrontPaymentAmount      =>
                           updateJourneyWithNewExtremeDatesValue(Right(j), request.body)
-                        case j: JourneyStageView.AnsweredCanPayUpfront       =>
+                        case j: Journey.AnsweredCanPayUpfront            =>
                           updateJourneyWithNewExtremeDatesValue(Left(j), request.body)
-                        case j: JourneyStage.AfterExtremeDatesResponse       =>
+                        case j: JourneyStage.AfterExtremeDatesResponse   =>
                           j match {
                             case _: JourneyStage.BeforeArrangementSubmitted =>
                               updateJourneyWithExistingExtremeDatesValue(j, request.body)
@@ -56,7 +56,7 @@ class UpdateDatesController @Inject() (
                                 "Cannot update ExtremeDates when journey is in completed state"
                               )
                           }
-                        case j: JourneyStage.BeforeUpfrontPaymentAnswers     =>
+                        case j: JourneyStage.BeforeUpfrontPaymentAnswers =>
                           Errors.throwBadRequestExceptionF(
                             s"UpdateExtremeDatesResponse update is not possible in that state: [${j.stage}]"
                           )
@@ -65,9 +65,9 @@ class UpdateDatesController @Inject() (
     }
 
   private def updateJourneyWithNewExtremeDatesValue(
-    journey:              Either[JourneyStageView.AnsweredCanPayUpfront, JourneyStageView.EnteredUpfrontPaymentAmount],
+    journey:              Either[Journey.AnsweredCanPayUpfront, Journey.EnteredUpfrontPaymentAmount],
     extremeDatesResponse: ExtremeDatesResponse
-  )(implicit request: Request[_]): Future[Journey] = {
+  )(using Request[_]): Future[Journey] = {
     val newJourney: Journey = journey match {
       case Left(j: Journey.AnsweredCanPayUpfront) =>
         j.into[Journey.RetrievedExtremeDates]
@@ -87,7 +87,7 @@ class UpdateDatesController @Inject() (
   private def updateJourneyWithExistingExtremeDatesValue(
     journey:              JourneyStage.AfterExtremeDatesResponse & Journey,
     extremeDatesResponse: ExtremeDatesResponse
-  )(implicit request: Request[_]): Future[Journey] =
+  )(using Request[_]): Future[Journey] =
     if (journey.extremeDatesResponse == extremeDatesResponse) {
       JourneyLogger.info("Nothing to update, ExtremeDatesResponse is the same as the existing one in journey.")
       Future.successful(journey)
@@ -170,7 +170,7 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
 
-        case _: JourneyStageView.SubmittedArrangement =>
+        case _: Journey.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update ExtremeDates when journey is in completed state")
       }
       journeyService.upsert(newJourney)
@@ -185,7 +185,7 @@ class UpdateDatesController @Inject() (
                           Errors.throwBadRequestExceptionF(
                             s"UpdateStartDates is not possible when we don't have a chosen day of month, stage: [ ${j.stage} ]"
                           )
-                        case j: JourneyStageView.EnteredDayOfMonth   =>
+                        case j: Journey.EnteredDayOfMonth            =>
                           updateJourneyWithNewStartDatesValue(j, request.body)
 
                         case j: JourneyStage.AfterStartDatesResponse =>
@@ -209,22 +209,22 @@ class UpdateDatesController @Inject() (
     }
 
   private def updateJourneyWithNewStartDatesValue(
-    journey:            JourneyStageView.EnteredDayOfMonth,
+    journey:            Journey.EnteredDayOfMonth,
     startDatesResponse: StartDatesResponse
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey = journey match {
-      case j: Journey.EnteredDayOfMonth =>
-        j.into[Journey.RetrievedStartDates]
-          .withFieldConst(_.startDatesResponse, startDatesResponse)
-          .transform
-    }
+  )(using Request[_]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.RetrievedStartDates]
+        .withFieldConst(_.startDatesResponse, startDatesResponse)
+        .transform
+
     journeyService.upsert(newJourney)
   }
 
   private def updateJourneyWithExistingStartDatesValue(
     journey:            Either[JourneyStage.AfterStartDatesResponse & Journey, JourneyStage.AfterCheckedPaymentPlan & Journey],
     startDatesResponse: StartDatesResponse
-  )(implicit request: Request[_]): Future[Journey] =
+  )(using Request[_]): Future[Journey] =
     journey match {
       case Left(afterStartDatesResponse) =>
         updateJourneyWithExistingValue(
@@ -306,7 +306,7 @@ class UpdateDatesController @Inject() (
                     .withFieldConst(_.startDatesResponse, startDatesResponse)
                     .transform
 
-                case _: JourneyStageView.SubmittedArrangement =>
+                case _: Journey.SubmittedArrangement =>
                   Errors.throwBadRequestException("Cannot update StartDates when journey is in completed state")
               }
             )
@@ -318,7 +318,7 @@ class UpdateDatesController @Inject() (
     existingJourney: Journey,
     newValue:        StartDatesResponse,
     newJourney:      Journey
-  )(implicit request: Request[_]): Future[Journey] =
+  )(using Request[_]): Future[Journey] =
     if (existingValue == newValue) {
       JourneyLogger.info("Nothing to update, StartDatesResponse is the same as the existing one in journey.")
       Future.successful(existingJourney)

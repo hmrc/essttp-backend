@@ -24,7 +24,7 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateAffordabilityResultControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-affordability-result" - {
     "should throw Bad Request when Journey is in a stage [BeforeExtremeDatesResponse]" in new JourneyItTest {
@@ -99,7 +99,7 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
             existingValue(initialJourney)
           )(
             differentInstalmentAmount,
-            journeyConnector.updateAffordabilityResult(_, _)(context.request),
+            journeyConnector.updateAffordabilityResult(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = differentInstalmentAmount)
           )(context)
 
@@ -111,7 +111,7 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
             existingValue(initialJourney)
           )(
             differentInstalmentAmount,
-            journeyConnector.updateAffordabilityResult(_, _)(context.request),
+            journeyConnector.updateAffordabilityResult(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterInstalmentAmounts
               .copy(instalmentAmounts = differentInstalmentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
           )(context)
@@ -194,7 +194,7 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
             existingValue(initialJourney)
           )(
             differentInstalmentAmount,
-            journeyConnector.updateAffordabilityResult(_, _)(context.request),
+            journeyConnector.updateAffordabilityResult(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = differentInstalmentAmount)
           )(context)
 
@@ -206,7 +206,7 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
             existingValue(initialJourney)
           )(
             differentInstalmentAmount,
-            journeyConnector.updateAffordabilityResult(_, _)(context.request),
+            journeyConnector.updateAffordabilityResult(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterInstalmentAmounts
               .copy(instalmentAmounts = differentInstalmentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
           )(context)
@@ -289,7 +289,7 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
             existingValue(initialJourney)
           )(
             differentInstalmentAmount,
-            journeyConnector.updateAffordabilityResult(_, _)(context.request),
+            journeyConnector.updateAffordabilityResult(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = differentInstalmentAmount)
           )(context)
 
@@ -301,7 +301,7 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
             existingValue(initialJourney)
           )(
             differentInstalmentAmount,
-            journeyConnector.updateAffordabilityResult(_, _)(context.request),
+            journeyConnector.updateAffordabilityResult(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterInstalmentAmounts
               .copy(instalmentAmounts = differentInstalmentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
           )(context)
@@ -384,7 +384,7 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
             existingValue(initialJourney)
           )(
             differentInstalmentAmount,
-            journeyConnector.updateAffordabilityResult(_, _)(context.request),
+            journeyConnector.updateAffordabilityResult(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterInstalmentAmounts.copy(instalmentAmounts = differentInstalmentAmount)
           )(context)
 
@@ -396,7 +396,7 @@ class UpdateAffordabilityResultControllerSpec extends ItSpec with UpdateJourneyC
             existingValue(initialJourney)
           )(
             differentInstalmentAmount,
-            journeyConnector.updateAffordabilityResult(_, _)(context.request),
+            journeyConnector.updateAffordabilityResult(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterInstalmentAmounts
               .copy(instalmentAmounts = differentInstalmentAmount, pegaCaseId = Some(PegaCaseId("case-id")))
           )(context)

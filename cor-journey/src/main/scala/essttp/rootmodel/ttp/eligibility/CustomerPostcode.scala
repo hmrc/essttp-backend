@@ -26,5 +26,5 @@ final case class CustomerPostcode(
 
 object CustomerPostcode {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[CustomerPostcode] = Json.format[CustomerPostcode]
+  given (using CryptoFormat): OFormat[CustomerPostcode] = Json.format[CustomerPostcode]
 }

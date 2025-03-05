@@ -22,6 +22,6 @@ final case class PegaCaseId(value: String) extends AnyVal
 
 object PegaCaseId {
 
-  implicit val format: Format[PegaCaseId] = Json.valueFormat
+  given Format[PegaCaseId] = Json.valueFormat
 
 }

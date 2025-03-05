@@ -44,5 +44,5 @@ final case class DebtItemCharges(
 
 object DebtItemCharges {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: Format[DebtItemCharges] = Json.format[DebtItemCharges]
+  given Format[DebtItemCharges] = Json.format[DebtItemCharges]
 }

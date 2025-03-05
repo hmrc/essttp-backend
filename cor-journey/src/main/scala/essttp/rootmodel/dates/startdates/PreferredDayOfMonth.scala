@@ -22,7 +22,7 @@ final case class PreferredDayOfMonth(value: Int) extends AnyVal derives CanEqual
 
 object PreferredDayOfMonth {
 
-  implicit val format: Format[PreferredDayOfMonth] =
+  given Format[PreferredDayOfMonth] =
     Json
       .valueFormat[PreferredDayOfMonth]
       .bimap(

@@ -41,6 +41,6 @@ final case class ArrangementRequest(
 
 object ArrangementRequest {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[ArrangementRequest] = Json.format
+  given (using CryptoFormat): OFormat[ArrangementRequest] = Json.format
 
 }

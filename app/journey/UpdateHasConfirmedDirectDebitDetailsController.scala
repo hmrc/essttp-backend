@@ -20,7 +20,7 @@ import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model
-import essttp.journey.model.{Journey, JourneyId, JourneyStage, JourneyStageView}
+import essttp.journey.model.{Journey, JourneyId, JourneyStage}
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.*
 import play.api.mvc.{Action, AnyContent, ControllerComponents, Request}
@@ -34,7 +34,7 @@ class UpdateHasConfirmedDirectDebitDetailsController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateConfirmedDirectDebitDetails(journeyId: JourneyId): Action[AnyContent] = actions.authenticatedAction.async {
@@ -42,13 +42,13 @@ class UpdateHasConfirmedDirectDebitDetailsController @Inject() (
       for {
         journey    <- journeyService.get(journeyId)
         newJourney <- journey match {
-                        case j: JourneyStage.BeforeEnteredDirectDebitDetails     =>
+                        case j: JourneyStage.BeforeEnteredDirectDebitDetails  =>
                           Errors.throwBadRequestExceptionF(
                             s"UpdateHasConfirmedDirectDebitDetails is not possible in that state: [${j.stage}]"
                           )
-                        case j: model.JourneyStageView.EnteredDirectDebitDetails =>
+                        case j: model.Journey.EnteredDirectDebitDetails       =>
                           updateJourneyWithNewValue(j)
-                        case j: JourneyStage.AfterConfirmedDirectDebitDetails    =>
+                        case j: JourneyStage.AfterConfirmedDirectDebitDetails =>
                           j match {
                             case _: JourneyStage.BeforeArrangementSubmitted => Future.successful(j)
                             case _: JourneyStage.AfterArrangementSubmitted  =>
@@ -61,12 +61,10 @@ class UpdateHasConfirmedDirectDebitDetailsController @Inject() (
   }
 
   private def updateJourneyWithNewValue(
-    journey: JourneyStageView.EnteredDirectDebitDetails
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey = journey match {
-      case j: Journey.EnteredDirectDebitDetails =>
-        j.into[Journey.ConfirmedDirectDebitDetails].transform
-    }
+    journey: Journey.EnteredDirectDebitDetails
+  )(using Request[_]): Future[Journey] = {
+    val newJourney: Journey = journey.into[Journey.ConfirmedDirectDebitDetails].transform
+
     journeyService.upsert(newJourney)
   }
 }

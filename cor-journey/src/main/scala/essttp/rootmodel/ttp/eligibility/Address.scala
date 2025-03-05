@@ -35,5 +35,5 @@ final case class Address(
 
 object Address {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): Format[Address] = Json.format[Address]
+  given (using CryptoFormat): Format[Address] = Json.format[Address]
 }

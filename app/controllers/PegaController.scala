@@ -33,7 +33,7 @@ class PegaController @Inject() (
   pegaService: PegaService,
   actions:     Actions,
   cc:          ControllerComponents
-)(implicit ec: ExecutionContext, operationalCryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def startCase(journeyId: JourneyId, recalculationNeeded: Boolean): Action[AnyContent] =

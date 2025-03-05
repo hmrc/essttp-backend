@@ -24,11 +24,11 @@ import uk.gov.hmrc.http.HeaderCarrier
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ExtremeDatesService @Inject() (datesService: DatesService)(implicit ec: ExecutionContext) {
+class ExtremeDatesService @Inject() (datesService: DatesService)(using ExecutionContext) {
 
   def calculateExtremeDates(
     extremeDatesRequest: ExtremeDatesRequest
-  )(implicit hc: HeaderCarrier): Future[ExtremeDatesResponse] = {
+  )(using HeaderCarrier): Future[ExtremeDatesResponse] = {
     val earliestDatePaymentCanBeTakenF = datesService.todayPlusWorkingDays(6)
 
     earliestDatePaymentCanBeTakenF.map { earliestDatePaymentCanBeTaken =>

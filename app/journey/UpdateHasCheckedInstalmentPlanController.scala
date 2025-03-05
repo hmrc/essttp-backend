@@ -17,11 +17,10 @@
 package journey
 
 import action.Actions
-import cats.syntax.eq.*
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model
-import essttp.journey.model.{Journey, JourneyId, JourneyStage, JourneyStageView, PaymentPlanAnswers}
+import essttp.journey.model.{Journey, JourneyId, JourneyStage, PaymentPlanAnswers}
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.*
 import play.api.mvc.{Action, ControllerComponents, Request}
@@ -35,7 +34,7 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateHasCheckedInstalmentPlan(journeyId: JourneyId): Action[PaymentPlanAnswers] =
@@ -43,15 +42,15 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
       for {
         journey    <- journeyService.get(journeyId)
         newJourney <- journey match {
-                        case j: JourneyStage.BeforeSelectedPaymentPlan   =>
+                        case j: JourneyStage.BeforeSelectedPaymentPlan =>
                           Errors.throwBadRequestExceptionF(
                             s"UpdateHasCheckedInstalmentPlan is not possible in that state: [${j.stage}]"
                           )
-                        case j: model.JourneyStageView.ChosenPaymentPlan =>
+                        case j: model.Journey.ChosenPaymentPlan        =>
                           updateJourneyWithNewValue(Right(j), request.body)
-                        case j: model.JourneyStageView.StartedPegaCase   =>
+                        case j: model.Journey.StartedPegaCase          =>
                           updateJourneyWithNewValue(Left(j), request.body)
-                        case j: JourneyStage.AfterCheckedPaymentPlan     =>
+                        case j: JourneyStage.AfterCheckedPaymentPlan   =>
                           j match {
                             case _: JourneyStage.BeforeArrangementSubmitted =>
                               updateJourneyWithExistingValue(j, request.body)
@@ -66,9 +65,9 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
     }
 
   private def updateJourneyWithNewValue(
-    journey: Either[model.JourneyStageView.StartedPegaCase, model.JourneyStageView.ChosenPaymentPlan],
+    journey: Either[model.Journey.StartedPegaCase, model.Journey.ChosenPaymentPlan],
     answers: PaymentPlanAnswers
-  )(implicit request: Request[_]): Future[Journey] = {
+  )(using Request[_]): Future[Journey] = {
     val newJourney: Journey = journey match {
       case Left(j: Journey.StartedPegaCase) =>
         j.into[Journey.CheckedPaymentPlan]
@@ -86,8 +85,8 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
   private def updateJourneyWithExistingValue(
     journey: JourneyStage.AfterCheckedPaymentPlan & Journey,
     answers: PaymentPlanAnswers
-  )(implicit request: Request[_]): Future[Journey] =
-    if (journey.paymentPlanAnswers === answers)
+  )(using Request[_]): Future[Journey] =
+    if (journey.paymentPlanAnswers == answers)
       Future.successful(journey)
     else {
       val updatedJourney: Journey = journey match {
@@ -124,7 +123,7 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
 
-        case _: JourneyStageView.SubmittedArrangement =>
+        case _: Journey.SubmittedArrangement =>
           Errors.throwBadRequestException(
             "Cannot update UpdateHasCheckedInstalmentPlan when journey is in completed state"
           )

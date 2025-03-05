@@ -26,7 +26,7 @@ sealed trait PaymentPlanFrequency extends EnumEntry derives CanEqual
 
 object PaymentPlanFrequency {
 
-  implicit val format: Format[PaymentPlanFrequency] = EnumFormat(PaymentPlanFrequencies)
+  given Format[PaymentPlanFrequency] = EnumFormat(PaymentPlanFrequencies)
 
 }
 

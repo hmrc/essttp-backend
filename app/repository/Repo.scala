@@ -33,7 +33,7 @@ abstract class Repo[ID, A: ClassTag](
   indexes:          Seq[IndexModel],
   extraCodecs:      Seq[Codec[_]],
   replaceIndexes:   Boolean = false
-)(implicit
+)(using
   domainFormat:     OFormat[A],
   executionContext: ExecutionContext,
   id:               Id[ID],

@@ -16,7 +16,6 @@
 
 package services
 
-import cats.implicits.catsSyntaxEq
 import connectors.PegaConnector
 import essttp.enrolments.{EnrolmentDef, EnrolmentDefResult}
 import essttp.journey.model.*
@@ -50,9 +49,9 @@ class PegaService @Inject() (
   journeyService:         JourneyService,
   tokenManager:           PegaTokenManager,
   correlationIdGenerator: PegaCorrelationIdGenerator
-)(implicit ec: ExecutionContext) {
+)(using ExecutionContext) {
 
-  def startCase(journeyId: JourneyId, recalculationNeeded: Boolean)(implicit r: Request[_]): Future[StartCaseResponse] =
+  def startCase(journeyId: JourneyId, recalculationNeeded: Boolean)(using Request[_]): Future[StartCaseResponse] =
     for {
       journey          <- journeyService.get(journeyId)
       request           = toPegaStartCaseRequest(journey, recalculationNeeded)
@@ -60,7 +59,7 @@ class PegaService @Inject() (
       response         <- doPegaCall(pegaConnector.startCase(request, _, pegaCorrelationId))
     } yield toStartCaseResponse(response, pegaCorrelationId)
 
-  def getCase(journeyId: JourneyId)(implicit r: Request[_]): Future[GetCaseResponse] =
+  def getCase(journeyId: JourneyId)(using Request[_]): Future[GetCaseResponse] =
     for {
       journey          <- journeyService.get(journeyId)
       caseId            = getCaseId(journey)
@@ -68,10 +67,10 @@ class PegaService @Inject() (
       response         <- doPegaCall(pegaConnector.getCase(caseId, _, pegaCorrelationId))
     } yield toGetCaseResponse(response, pegaCorrelationId)
 
-  private def doPegaCall[A](callAPI: String => Future[A])(implicit hc: HeaderCarrier): Future[A] =
+  private def doPegaCall[A](callAPI: String => Future[A])(using HeaderCarrier): Future[A] =
     tokenManager.getToken().flatMap { originalToken =>
       callAPI(originalToken).recoverWith {
-        case u: UpstreamErrorResponse if u.statusCode === 401 =>
+        case u: UpstreamErrorResponse if u.statusCode == 401 =>
           // Handle 401 Unauthorized, refresh token and retry once
           tokenManager.fetchNewToken().flatMap { newToken =>
             callAPI(newToken)
@@ -79,7 +78,7 @@ class PegaService @Inject() (
       }
     }
 
-  def saveJourney(journeyId: JourneyId)(implicit r: Request[_]): Future[Unit] =
+  def saveJourney(journeyId: JourneyId)(using Request[_]): Future[Unit] =
     journeyService.get(journeyId).flatMap {
       case _: JourneyStage.BeforeComputedTaxId =>
         Errors.throwBadRequestExceptionF("Cannot save journey when no tax ID has been computed yet")
@@ -88,7 +87,7 @@ class PegaService @Inject() (
         journeyByTaxIdRepo.upsert(JourneyWithTaxId(j.taxId, j, now))
     }
 
-  def recreateSession(taxRegime: TaxRegime, enrolments: Enrolments)(implicit r: Request[_]): Future[Journey] = {
+  def recreateSession(taxRegime: TaxRegime, enrolments: Enrolments)(using Request[_]): Future[Journey] = {
     def toEmpRef(taxOfficeNumber: TaxOfficeNumber, taxOfficeReference: TaxOfficeReference): EmpRef =
       EmpRef(s"${taxOfficeNumber.value}${taxOfficeReference.value}")
 
@@ -333,7 +332,7 @@ class PegaService @Inject() (
     }
 
   private def toBigDecimal(s: String): BigDecimal = {
-    val trimmed = s.trim.filter(c => c.isDigit || c === '.')
+    val trimmed = s.trim.filter(c => c.isDigit || c == '.')
     if (trimmed.isEmpty) BigDecimal(0)
     else BigDecimal(trimmed)
   }

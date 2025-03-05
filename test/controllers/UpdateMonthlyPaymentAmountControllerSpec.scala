@@ -22,7 +22,7 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-monthly-payment-amount" - {
     "should throw Bad Request when Journey is in a stage" - {
@@ -129,7 +129,7 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
             existingValue(initialJourney)
           )(
             differentAmount,
-            journeyConnector.updateMonthlyPaymentAmount(_, _)(context.request),
+            journeyConnector.updateMonthlyPaymentAmount(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount.copy(monthlyPaymentAmount = differentAmount)
           )(context)
 
@@ -209,7 +209,7 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
             existingValue(initialJourney)
           )(
             differentAmount,
-            journeyConnector.updateMonthlyPaymentAmount(_, _)(context.request),
+            journeyConnector.updateMonthlyPaymentAmount(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterMonthlyPaymentAmount.copy(monthlyPaymentAmount = differentAmount)
           )(context)
 
@@ -289,7 +289,7 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
             existingValue(initialJourney)
           )(
             differentAmount,
-            journeyConnector.updateMonthlyPaymentAmount(_, _)(context.request),
+            journeyConnector.updateMonthlyPaymentAmount(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterMonthlyPaymentAmount.copy(monthlyPaymentAmount = differentAmount)
           )(context)
 
@@ -369,7 +369,7 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
             existingValue(initialJourney)
           )(
             differentAmount,
-            journeyConnector.updateMonthlyPaymentAmount(_, _)(context.request),
+            journeyConnector.updateMonthlyPaymentAmount(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterMonthlyPaymentAmount.copy(monthlyPaymentAmount = differentAmount)
           )(context)
 

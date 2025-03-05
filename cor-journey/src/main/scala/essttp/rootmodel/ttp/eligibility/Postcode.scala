@@ -24,8 +24,8 @@ final case class Postcode(value: SensitiveString) extends AnyVal
 
 object Postcode {
 
-  implicit def format(implicit cryptoFormat: CryptoFormat): Format[Postcode] = {
-    implicit val sensitiveStringFormat: Format[SensitiveString] = essttp.crypto.sensitiveStringFormat(cryptoFormat)
+  given (using cryptoFormat: CryptoFormat): Format[Postcode] = {
+    given Format[SensitiveString] = essttp.crypto.sensitiveStringFormat(cryptoFormat)
     Json.valueFormat
   }
 

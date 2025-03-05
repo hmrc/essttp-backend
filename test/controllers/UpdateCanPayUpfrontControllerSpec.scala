@@ -23,9 +23,9 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateCanPayUpfrontControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
-  import UpdateCanPayUpfrontControllerSpec.UpfrontPaymentAnswersOps
+  import UpdateCanPayUpfrontControllerSpec._
 
   "POST /journey/:journeyId/update-can-pay-upfront" - {
     "should throw Bad Request when Journey is in a stage [BeforeObtainedWhyCannotPayInFull]" in new JourneyItTest {
@@ -109,7 +109,7 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
             existingValue(initialJourney)
           )(
             differentValue,
-            journeyConnector.updateCanPayUpfront(_, _)(context.request),
+            journeyConnector.updateCanPayUpfront(_, _)(using context.request),
             expectedUpdatedJourney
           )(context)
         }
@@ -129,7 +129,7 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
             existingValue(initialJourney)
           )(
             differentValue,
-            journeyConnector.updateCanPayUpfront(_, _)(context.request),
+            journeyConnector.updateCanPayUpfront(_, _)(using context.request),
             expectedUpdatedJourney
           )(context)
         }
@@ -244,7 +244,7 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
             existingValue(initialJourney)
           )(
             differentValue,
-            journeyConnector.updateCanPayUpfront(_, _)(context.request),
+            journeyConnector.updateCanPayUpfront(_, _)(using context.request),
             expectedUpdatedJourney
           )(context)
         }
@@ -264,7 +264,7 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
             existingValue(initialJourney)
           )(
             differentValue,
-            journeyConnector.updateCanPayUpfront(_, _)(context.request),
+            journeyConnector.updateCanPayUpfront(_, _)(using context.request),
             expectedUpdatedJourney
           )(context)
         }
@@ -375,7 +375,7 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
             existingValue(initialJourney)
           )(
             differentValue,
-            journeyConnector.updateCanPayUpfront(_, _)(context.request),
+            journeyConnector.updateCanPayUpfront(_, _)(using context.request),
             expectedUpdatedJourney
           )(context)
         }
@@ -395,7 +395,7 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
             existingValue(initialJourney)
           )(
             differentValue,
-            journeyConnector.updateCanPayUpfront(_, _)(context.request),
+            journeyConnector.updateCanPayUpfront(_, _)(using context.request),
             expectedUpdatedJourney
           )(context)
         }
@@ -502,7 +502,7 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
             existingValue(initialJourney)
           )(
             differentValue,
-            journeyConnector.updateCanPayUpfront(_, _)(context.request),
+            journeyConnector.updateCanPayUpfront(_, _)(using context.request),
             expectedUpdatedJourney
           )(context)
         }
@@ -522,7 +522,7 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
             existingValue(initialJourney)
           )(
             differentValue,
-            journeyConnector.updateCanPayUpfront(_, _)(context.request),
+            journeyConnector.updateCanPayUpfront(_, _)(using context.request),
             expectedUpdatedJourney
           )(context)
         }
@@ -642,7 +642,7 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec with UpdateJourneyControl
 
 object UpdateCanPayUpfrontControllerSpec {
 
-  implicit class UpfrontPaymentAnswersOps(val u: UpfrontPaymentAnswers) extends AnyVal {
+  extension (u: UpfrontPaymentAnswers) {
     def asCanPayUpfront: CanPayUpfront = CanPayUpfront(u match {
       case UpfrontPaymentAnswers.NoUpfrontPayment          => false
       case _: UpfrontPaymentAnswers.DeclaredUpfrontPayment => true

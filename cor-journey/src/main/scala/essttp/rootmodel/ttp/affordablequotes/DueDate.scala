@@ -23,5 +23,5 @@ import java.time.LocalDate
 final case class DueDate(value: LocalDate) extends AnyVal
 
 object DueDate {
-  implicit val format: Format[DueDate] = Json.valueFormat[DueDate]
+  given Format[DueDate] = Json.valueFormat[DueDate]
 }

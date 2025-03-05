@@ -24,5 +24,5 @@ final case class SjResponse(nextUrl: NextUrl, journeyId: JourneyId) derives CanE
 
 object SjResponse {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[SjResponse] = Json.format[SjResponse]
+  given OFormat[SjResponse] = Json.format[SjResponse]
 }

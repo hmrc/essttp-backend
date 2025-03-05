@@ -25,7 +25,7 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateDatesControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-extreme-dates" - {
     "should throw Bad Request when Journey is in a stage [BeforeUpfrontPaymentAnswers]" in new JourneyItTest {
@@ -155,7 +155,7 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             existingValue(initialJourney)
           )(
             differentExtremeDates,
-            journeyConnector.updateExtremeDates(_, _)(context.request),
+            journeyConnector.updateExtremeDates(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
           )(context)
 
@@ -167,7 +167,7 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             existingValue(initialJourney)
           )(
             differentExtremeDates,
-            journeyConnector.updateExtremeDates(_, _)(context.request),
+            journeyConnector.updateExtremeDates(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterExtremeDates
               .copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
           )(context)
@@ -258,7 +258,7 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             existingValue(initialJourney)
           )(
             differentExtremeDates,
-            journeyConnector.updateExtremeDates(_, _)(context.request),
+            journeyConnector.updateExtremeDates(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
           )(context)
 
@@ -270,7 +270,7 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             existingValue(initialJourney)
           )(
             differentExtremeDates,
-            journeyConnector.updateExtremeDates(_, _)(context.request),
+            journeyConnector.updateExtremeDates(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterExtremeDates
               .copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
           )(context)
@@ -357,7 +357,7 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             existingValue(initialJourney)
           )(
             differentExtremeDates,
-            journeyConnector.updateExtremeDates(_, _)(context.request),
+            journeyConnector.updateExtremeDates(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
           )(context)
 
@@ -369,7 +369,7 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             existingValue(initialJourney)
           )(
             differentExtremeDates,
-            journeyConnector.updateExtremeDates(_, _)(context.request),
+            journeyConnector.updateExtremeDates(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterExtremeDates
               .copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
           )(context)
@@ -456,7 +456,7 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             existingValue(initialJourney)
           )(
             differentExtremeDates,
-            journeyConnector.updateExtremeDates(_, _)(context.request),
+            journeyConnector.updateExtremeDates(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
           )(context)
 
@@ -468,7 +468,7 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             existingValue(initialJourney)
           )(
             differentExtremeDates,
-            journeyConnector.updateExtremeDates(_, _)(context.request),
+            journeyConnector.updateExtremeDates(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterExtremeDates
               .copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
           )(context)
@@ -702,7 +702,7 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             existingValue(initialJourney)
           )(
             differentStartDates,
-            journeyConnector.updateStartDates(_, _)(context.request),
+            journeyConnector.updateStartDates(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterStartDatesResponse.copy(startDatesResponse = differentStartDates)
           )(context)
 
@@ -772,7 +772,7 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             existingValue(initialJourney)
           )(
             differentStartDates,
-            journeyConnector.updateStartDates(_, _)(context.request),
+            journeyConnector.updateStartDates(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterStartDatesResponse.copy(startDatesResponse = differentStartDates)
           )(context)
 
@@ -842,7 +842,7 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             existingValue(initialJourney)
           )(
             differentStartDates,
-            journeyConnector.updateStartDates(_, _)(context.request),
+            journeyConnector.updateStartDates(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterStartDatesResponse.copy(startDatesResponse = differentStartDates)
           )(context)
 
@@ -912,7 +912,7 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             existingValue(initialJourney)
           )(
             differentStartDates,
-            journeyConnector.updateStartDates(_, _)(context.request),
+            journeyConnector.updateStartDates(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterStartDatesResponse.copy(startDatesResponse = differentStartDates)
           )(context)
 

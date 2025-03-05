@@ -22,7 +22,7 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateDayOfMonthControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateDayOfMonthControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-day-of-month" - {
     "should throw Bad Request when Journey is in a stage" - {
@@ -129,7 +129,7 @@ class UpdateDayOfMonthControllerSpec extends ItSpec with UpdateJourneyController
             existingValue(initialJourney)
           )(
             differentDayOfMonth,
-            journeyConnector.updateDayOfMonth(_, _)(context.request),
+            journeyConnector.updateDayOfMonth(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterDayOfMonth.copy(dayOfMonth = differentDayOfMonth)
           )(context)
 
@@ -197,7 +197,7 @@ class UpdateDayOfMonthControllerSpec extends ItSpec with UpdateJourneyController
             existingValue(initialJourney)
           )(
             differentDayOfMonth,
-            journeyConnector.updateDayOfMonth(_, _)(context.request),
+            journeyConnector.updateDayOfMonth(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterDayOfMonth.copy(dayOfMonth = differentDayOfMonth)
           )(context)
 
@@ -265,7 +265,7 @@ class UpdateDayOfMonthControllerSpec extends ItSpec with UpdateJourneyController
             existingValue(initialJourney)
           )(
             differentDayOfMonth,
-            journeyConnector.updateDayOfMonth(_, _)(context.request),
+            journeyConnector.updateDayOfMonth(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterDayOfMonth.copy(dayOfMonth = differentDayOfMonth)
           )(context)
 
@@ -333,7 +333,7 @@ class UpdateDayOfMonthControllerSpec extends ItSpec with UpdateJourneyController
             existingValue(initialJourney)
           )(
             differentDayOfMonth,
-            journeyConnector.updateDayOfMonth(_, _)(context.request),
+            journeyConnector.updateDayOfMonth(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterDayOfMonth.copy(dayOfMonth = differentDayOfMonth)
           )(context)
 

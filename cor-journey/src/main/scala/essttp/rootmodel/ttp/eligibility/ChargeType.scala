@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class ChargeType(value: String) extends AnyVal
 
 object ChargeType {
-  implicit val format: Format[ChargeType] = Json.valueFormat
+  given Format[ChargeType] = Json.valueFormat
 }

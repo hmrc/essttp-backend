@@ -25,7 +25,7 @@ import testsupport.testdata.TdAll
 
 import java.time.Instant
 
-class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateEligibilityCheckResultControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-eligibility-result" - {
     "should throw Bad Request when Journey is in a stage [BeforeComputedTaxId]" in new JourneyItTest {
@@ -103,7 +103,7 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
             existingValue(initialJourney)
           )(
             differentEligibilityCheckResult,
-            journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+            journeyConnector.updateEligibilityCheckResult(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
               .copy(eligibilityCheckResult = differentEligibilityCheckResult)
           )(context)
@@ -116,7 +116,7 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
             existingValue(initialJourney)
           )(
             differentEligibilityCheckResult,
-            journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+            journeyConnector.updateEligibilityCheckResult(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterEligibilityCheckEligible.copy(
               eligibilityCheckResult = differentEligibilityCheckResult,
               pegaCaseId = Some(PegaCaseId("case-id"))
@@ -230,7 +230,7 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
             existingValue(initialJourney)
           )(
             differentEligibilityCheckResult,
-            journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+            journeyConnector.updateEligibilityCheckResult(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterEligibilityCheckEligible
               .copy(eligibilityCheckResult = differentEligibilityCheckResult)
           )(context)
@@ -243,7 +243,7 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
             existingValue(initialJourney)
           )(
             differentEligibilityCheckResult,
-            journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+            journeyConnector.updateEligibilityCheckResult(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterEligibilityCheckEligible.copy(
               eligibilityCheckResult = differentEligibilityCheckResult,
               pegaCaseId = Some(PegaCaseId("case-id"))
@@ -355,7 +355,7 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
             existingValue(initialJourney)
           )(
             differentEligibilityCheckResult,
-            journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+            journeyConnector.updateEligibilityCheckResult(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterEligibilityCheckEligible
               .copy(eligibilityCheckResult = differentEligibilityCheckResult)
           )(context)
@@ -368,7 +368,7 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
             existingValue(initialJourney)
           )(
             differentEligibilityCheckResult,
-            journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+            journeyConnector.updateEligibilityCheckResult(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterEligibilityCheckEligible.copy(
               eligibilityCheckResult = differentEligibilityCheckResult,
               pegaCaseId = Some(PegaCaseId("case-id"))
@@ -476,7 +476,7 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
             existingValue(initialJourney)
           )(
             differentEligibilityCheckResult,
-            journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+            journeyConnector.updateEligibilityCheckResult(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterEligibilityCheckEligible
               .copy(eligibilityCheckResult = differentEligibilityCheckResult)
           )(context)
@@ -489,7 +489,7 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
             existingValue(initialJourney)
           )(
             differentEligibilityCheckResult,
-            journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+            journeyConnector.updateEligibilityCheckResult(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterEligibilityCheckEligible.copy(
               eligibilityCheckResult = differentEligibilityCheckResult,
               pegaCaseId = Some(PegaCaseId("case-id"))

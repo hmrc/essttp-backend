@@ -19,7 +19,7 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, JourneyStage, JourneyStageView, PaymentPlanAnswers}
+import essttp.journey.model.{Journey, JourneyId, JourneyStage, PaymentPlanAnswers}
 import essttp.rootmodel.ttp.affordablequotes.AffordableQuotesResponse
 import essttp.utils.Errors
 import io.scalaland.chimney.dsl.*
@@ -34,7 +34,7 @@ class UpdateAffordableQuotesController @Inject() (
   actions:        Actions,
   journeyService: JourneyService,
   cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
+)(using ExecutionContext, OperationalCryptoFormat)
     extends BackendController(cc) {
 
   def updateAffordableQuotes(journeyId: JourneyId): Action[AffordableQuotesResponse] =
@@ -46,7 +46,7 @@ class UpdateAffordableQuotesController @Inject() (
                           Errors.throwBadRequestExceptionF(
                             s"UpdateAffordableQuotes is not possible in that state: [${j.stage}]"
                           )
-                        case j: JourneyStageView.RetrievedStartDates       =>
+                        case j: Journey.RetrievedStartDates                =>
                           updateJourneyWithNewValue(j, request.body)
                         case j: JourneyStage.AfterAffordableQuotesResponse =>
                           updateJourneyWithExistingValue(Left(j), request.body)
@@ -68,15 +68,14 @@ class UpdateAffordableQuotesController @Inject() (
     }
 
   private def updateJourneyWithNewValue(
-    journey:                  JourneyStageView.RetrievedStartDates,
+    journey:                  Journey.RetrievedStartDates,
     affordableQuotesResponse: AffordableQuotesResponse
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey = journey match {
-      case j: Journey.RetrievedStartDates =>
-        j.into[Journey.RetrievedAffordableQuotes]
-          .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
-          .transform
-    }
+  )(using Request[_]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.RetrievedAffordableQuotes]
+        .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+        .transform
     journeyService.upsert(newJourney)
   }
 
@@ -86,7 +85,7 @@ class UpdateAffordableQuotesController @Inject() (
       JourneyStage.AfterCheckedPaymentPlan & Journey
     ],
     affordableQuotesResponse: AffordableQuotesResponse
-  )(implicit request: Request[_]): Future[Journey] = journey match {
+  )(using Request[_]): Future[Journey] = journey match {
     case Left(afterAffordableQuotesResponse) =>
       updateJourneyWithExistingValue(
         afterAffordableQuotesResponse.affordableQuotesResponse,
@@ -170,7 +169,7 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
 
-              case _: JourneyStageView.SubmittedArrangement =>
+              case _: Journey.SubmittedArrangement =>
                 Errors.throwBadRequestException("Cannot update AffordableQuotes when journey is in completed state")
             }
           )
@@ -183,7 +182,7 @@ class UpdateAffordableQuotesController @Inject() (
     existingJourney: Journey,
     newValue:        AffordableQuotesResponse,
     newJourney:      Journey
-  )(implicit request: Request[_]): Future[Journey] =
+  )(using Request[_]): Future[Journey] =
     if (existingValue == newValue) {
       JourneyLogger.info("Nothing to update, AffordableQuotesResponse is the same as the existing one in journey.")
       Future.successful(existingJourney)

@@ -25,7 +25,7 @@ import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class StartDatesService @Inject() (datesService: DatesService)(implicit ec: ExecutionContext) {
+class StartDatesService @Inject() (datesService: DatesService)(using ExecutionContext) {
 
   private def calculateInstalmentStartDate(
     preferredDayOfMonth: PreferredDayOfMonth,
@@ -40,7 +40,7 @@ class StartDatesService @Inject() (datesService: DatesService)(implicit ec: Exec
 
   def calculateStartDates(
     startDatesRequest: StartDatesRequest
-  )(implicit hc: HeaderCarrier): Future[StartDatesResponse] = {
+  )(using HeaderCarrier): Future[StartDatesResponse] = {
     val earliestDatePaymentCanBeTakenF = datesService.todayPlusWorkingDays(6)
 
     earliestDatePaymentCanBeTakenF.map { earliestDatePaymentCanBeTaken =>

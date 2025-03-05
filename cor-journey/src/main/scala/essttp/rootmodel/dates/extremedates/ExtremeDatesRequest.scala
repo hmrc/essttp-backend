@@ -22,5 +22,5 @@ import play.api.libs.json.{Format, Json}
 final case class ExtremeDatesRequest(initialPayment: InitialPayment) derives CanEqual
 
 object ExtremeDatesRequest {
-  implicit val format: Format[ExtremeDatesRequest] = Json.format[ExtremeDatesRequest]
+  given Format[ExtremeDatesRequest] = Json.format[ExtremeDatesRequest]
 }

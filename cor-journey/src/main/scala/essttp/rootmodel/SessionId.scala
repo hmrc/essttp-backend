@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class SessionId(value: String) extends AnyVal
 
 object SessionId {
-  implicit val format: Format[SessionId] = Json.valueFormat
+  given Format[SessionId] = Json.valueFormat
 }

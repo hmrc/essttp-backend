@@ -23,7 +23,7 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateHasCheckedInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateHasCheckedInstalmentPlanControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-has-checked-plan" - {
     "should throw Bad Request when Journey is in a stage [BeforeSelectedPaymentPlan]" in new JourneyItTest {
@@ -133,7 +133,7 @@ class UpdateHasCheckedInstalmentPlanControllerSpec extends ItSpec with UpdateJou
             existingValue(initialJourney)
           )(
             differentAnswers,
-            journeyConnector.updateHasCheckedPaymentPlan(_, _)(context.request),
+            journeyConnector.updateHasCheckedPaymentPlan(_, _)(using context.request),
             context.tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability.copy(
               paymentPlanAnswers = differentAnswers
             )
@@ -189,7 +189,7 @@ class UpdateHasCheckedInstalmentPlanControllerSpec extends ItSpec with UpdateJou
             existingValue(initialJourney)
           )(
             differentAnswers,
-            journeyConnector.updateHasCheckedPaymentPlan(_, _)(context.request),
+            journeyConnector.updateHasCheckedPaymentPlan(_, _)(using context.request),
             context.tdAll.VatBta.journeyAfterCheckedPaymentPlanNonAffordability.copy(
               paymentPlanAnswers = differentAnswers
             )
@@ -241,7 +241,7 @@ class UpdateHasCheckedInstalmentPlanControllerSpec extends ItSpec with UpdateJou
             existingValue(initialJourney)
           )(
             differentAnswers,
-            journeyConnector.updateHasCheckedPaymentPlan(_, _)(context.request),
+            journeyConnector.updateHasCheckedPaymentPlan(_, _)(using context.request),
             context.tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability.copy(
               paymentPlanAnswers = differentAnswers
             )
@@ -293,7 +293,7 @@ class UpdateHasCheckedInstalmentPlanControllerSpec extends ItSpec with UpdateJou
             existingValue(initialJourney)
           )(
             differentAnswers,
-            journeyConnector.updateHasCheckedPaymentPlan(_, _)(context.request),
+            journeyConnector.updateHasCheckedPaymentPlan(_, _)(using context.request),
             context.tdAll.SimpPta.journeyAfterCheckedPaymentPlanNonAffordability.copy(
               paymentPlanAnswers = differentAnswers
             )

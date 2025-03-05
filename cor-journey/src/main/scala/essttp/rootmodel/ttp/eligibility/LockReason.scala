@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class LockReason(value: String) extends AnyVal
 
 object LockReason {
-  implicit val format: Format[LockReason] = Json.valueFormat
+  given Format[LockReason] = Json.valueFormat
 }
