@@ -26,7 +26,7 @@ final case class GetCaseResponse(
   expenditure:       Map[String, BigDecimal],
   income:            Map[String, BigDecimal],
   pegaCorrelationId: String
-)
+) derives CanEqual
 
 object GetCaseResponse {
 

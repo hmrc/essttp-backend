@@ -51,7 +51,7 @@ final case class EligibilityRulesPart2(
 final case class EligibilityRules(
   part1: EligibilityRulesPart1,
   part2: EligibilityRulesPart2
-) {
+) derives CanEqual {
 
   private implicit val canEqualBoolean: CanEqual[Boolean, Any] = CanEqual.derived
 

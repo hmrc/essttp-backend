@@ -17,7 +17,7 @@ lazy val playSettings : Seq[Setting[_]] = Seq.empty
 
 lazy val scalaCompilerOptions = Seq(
   "-Xfatal-warnings",
-  "-Xmax-inlines:1000",
+  "-Xmax-inlines:100",
   "-Wvalue-discard",
   "-deprecation",
   "-feature",

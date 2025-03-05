@@ -18,7 +18,7 @@ package essttp.bars.model
 
 import play.api.libs.json.{Format, Json}
 
-final case class NumberOfBarsVerifyAttempts(value: Int) extends AnyVal
+final case class NumberOfBarsVerifyAttempts(value: Int) extends AnyVal derives CanEqual
 
 object NumberOfBarsVerifyAttempts {
 

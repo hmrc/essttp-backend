@@ -19,7 +19,7 @@ package essttp.journey.model
 import play.api.libs.json.{Format, Json}
 import play.api.mvc.PathBindable
 
-final case class JourneyId(value: String) extends AnyVal
+final case class JourneyId(value: String) extends AnyVal derives CanEqual
 
 object JourneyId {
   implicit val format: Format[JourneyId] = Json.valueFormat

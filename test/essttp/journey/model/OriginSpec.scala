@@ -18,6 +18,7 @@ package essttp.journey.model
 
 import play.api.libs.json.{JsString, Json}
 import testsupport.UnitSpec
+import testsupport.Givens.canEqualJsValue
 
 class OriginSpec extends UnitSpec {
   "serialise from Origin" - {

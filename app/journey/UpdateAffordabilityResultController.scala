@@ -17,13 +17,13 @@
 package journey
 
 import action.Actions
-import cats.syntax.eq._
+import cats.syntax.eq.*
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{Journey, JourneyId, JourneyStage, JourneyStageView}
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.utils.Errors
-import io.scalaland.chimney.dsl._
+import io.scalaland.chimney.dsl.*
 import play.api.mvc.{Action, ControllerComponents, Request}
 import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -42,18 +42,18 @@ class UpdateAffordabilityResultController @Inject() (
       for {
         journey    <- journeyService.get(journeyId)
         newJourney <- journey match {
-                        case j: JourneyStage.BeforeExtremeDatesResponse             =>
+                        case j: JourneyStage.BeforeExtremeDatesResponse =>
                           Errors.throwBadRequestExceptionF(
                             s"UpdateAffordabilityResult update is not possible in that state: [${j.stage}]"
                           )
-                        case j: JourneyStageView.RetrievedExtremeDates         =>
+                        case j: JourneyStageView.RetrievedExtremeDates  =>
                           updateJourneyWithNewValue(j, request.body)
 
                         case j: JourneyStage.AfterRetrievedAffordabilityResult =>
                           j match {
-                            case _: JourneyStage.BeforeArrangementSubmitted     =>
+                            case _: JourneyStage.BeforeArrangementSubmitted =>
                               updateJourneyWithExistingValue(j, request.body)
-                            case _: JourneyStage.AfterArrangementSubmitted =>
+                            case _: JourneyStage.AfterArrangementSubmitted  =>
                               Errors.throwBadRequestExceptionF(
                                 "Cannot update AffordabilityResult when journey is in completed state"
                               )
@@ -67,20 +67,8 @@ class UpdateAffordabilityResultController @Inject() (
     instalmentAmounts: InstalmentAmounts
   )(implicit request: Request[_]): Future[Journey] = {
     val newJourney: Journey = journey match {
-      case j: Journey.Epaye.RetrievedExtremeDates =>
-        j.into[Journey.Epaye.RetrievedAffordabilityResult]
-          .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-          .transform
-      case j: Journey.Vat.RetrievedExtremeDates   =>
-        j.into[Journey.Vat.RetrievedAffordabilityResult]
-          .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-          .transform
-      case j: Journey.Sa.RetrievedExtremeDates    =>
-        j.into[Journey.Sa.RetrievedAffordabilityResult]
-          .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-          .transform
-      case j: Journey.Simp.RetrievedExtremeDates  =>
-        j.into[Journey.Simp.RetrievedAffordabilityResult]
+      case j: Journey.RetrievedExtremeDates =>
+        j.into[Journey.RetrievedAffordabilityResult]
           .withFieldConst(_.instalmentAmounts, instalmentAmounts)
           .transform
     }
@@ -88,262 +76,90 @@ class UpdateAffordabilityResultController @Inject() (
   }
 
   private def updateJourneyWithExistingValue(
-    journey: JourneyStage.AfterRetrievedAffordabilityResult ,
+    journey:           JourneyStage.AfterRetrievedAffordabilityResult & Journey,
     instalmentAmounts: InstalmentAmounts
-  )(implicit request: Request[_]): Future[Journey] = {
+  )(implicit request: Request[_]): Future[Journey] =
     if (journey.instalmentAmounts === instalmentAmounts) {
       JourneyLogger.info("Nothing to update, InstalmentAmounts is the same as the existing one in journey.")
       Future.successful(journey)
     } else {
       val newJourney: Journey = journey match {
-        case j: Journey.Epaye.RetrievedAffordabilityResult => j.copy(instalmentAmounts = instalmentAmounts)
-        case j: Journey.Vat.RetrievedAffordabilityResult   => j.copy(instalmentAmounts = instalmentAmounts)
-        case j: Journey.Sa.RetrievedAffordabilityResult    => j.copy(instalmentAmounts = instalmentAmounts)
-        case j: Journey.Simp.RetrievedAffordabilityResult  => j.copy(instalmentAmounts = instalmentAmounts)
+        case j: Journey.RetrievedAffordabilityResult => j.copy(instalmentAmounts = instalmentAmounts)
 
-        case j: Journey.Epaye.ObtainedCanPayWithinSixMonthsAnswers =>
-          j.into[Journey.Epaye.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Vat.ObtainedCanPayWithinSixMonthsAnswers   =>
-          j.into[Journey.Vat.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Sa.ObtainedCanPayWithinSixMonthsAnswers    =>
-          j.into[Journey.Sa.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Simp.ObtainedCanPayWithinSixMonthsAnswers  =>
-          j.into[Journey.Simp.RetrievedAffordabilityResult]
+        case j: Journey.ObtainedCanPayWithinSixMonthsAnswers =>
+          j.into[Journey.RetrievedAffordabilityResult]
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
 
-        case j: Journey.Epaye.StartedPegaCase =>
-          j.into[Journey.Epaye.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Vat.StartedPegaCase   =>
-          j.into[Journey.Vat.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Sa.StartedPegaCase    =>
-          j.into[Journey.Sa.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Simp.StartedPegaCase  =>
-          j.into[Journey.Simp.RetrievedAffordabilityResult]
+        case j: Journey.StartedPegaCase =>
+          j.into[Journey.RetrievedAffordabilityResult]
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
 
-        case j: Journey.Epaye.EnteredMonthlyPaymentAmount =>
-          j.into[Journey.Epaye.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Vat.EnteredMonthlyPaymentAmount   =>
-          j.into[Journey.Vat.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Sa.EnteredMonthlyPaymentAmount    =>
-          j.into[Journey.Sa.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Simp.EnteredMonthlyPaymentAmount  =>
-          j.into[Journey.Simp.RetrievedAffordabilityResult]
+        case j: Journey.EnteredMonthlyPaymentAmount =>
+          j.into[Journey.RetrievedAffordabilityResult]
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
 
-        case j: Journey.Epaye.EnteredDayOfMonth =>
-          j.into[Journey.Epaye.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Vat.EnteredDayOfMonth   =>
-          j.into[Journey.Vat.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Sa.EnteredDayOfMonth    =>
-          j.into[Journey.Sa.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Simp.EnteredDayOfMonth  =>
-          j.into[Journey.Simp.RetrievedAffordabilityResult]
+        case j: Journey.EnteredDayOfMonth =>
+          j.into[Journey.RetrievedAffordabilityResult]
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
 
-        case j: Journey.Epaye.RetrievedStartDates =>
-          j.into[Journey.Epaye.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Vat.RetrievedStartDates   =>
-          j.into[Journey.Vat.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Sa.RetrievedStartDates    =>
-          j.into[Journey.Sa.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Simp.RetrievedStartDates  =>
-          j.into[Journey.Simp.RetrievedAffordabilityResult]
+        case j: Journey.RetrievedStartDates =>
+          j.into[Journey.RetrievedAffordabilityResult]
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
 
-        case j: Journey.Epaye.RetrievedAffordableQuotes =>
-          j.into[Journey.Epaye.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Vat.RetrievedAffordableQuotes   =>
-          j.into[Journey.Vat.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Sa.RetrievedAffordableQuotes    =>
-          j.into[Journey.Sa.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Simp.RetrievedAffordableQuotes  =>
-          j.into[Journey.Simp.RetrievedAffordabilityResult]
+        case j: Journey.RetrievedAffordableQuotes =>
+          j.into[Journey.RetrievedAffordabilityResult]
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
 
-        case j: Journey.Epaye.ChosenPaymentPlan =>
-          j.into[Journey.Epaye.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Vat.ChosenPaymentPlan   =>
-          j.into[Journey.Vat.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Sa.ChosenPaymentPlan    =>
-          j.into[Journey.Sa.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Simp.ChosenPaymentPlan  =>
-          j.into[Journey.Simp.RetrievedAffordabilityResult]
+        case j: Journey.ChosenPaymentPlan =>
+          j.into[Journey.RetrievedAffordabilityResult]
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
 
-        case j: Journey.Epaye.CheckedPaymentPlan =>
-          j.into[Journey.Epaye.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Vat.CheckedPaymentPlan   =>
-          j.into[Journey.Vat.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Sa.CheckedPaymentPlan    =>
-          j.into[Journey.Sa.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Simp.CheckedPaymentPlan  =>
-          j.into[Journey.Simp.RetrievedAffordabilityResult]
+        case j: Journey.CheckedPaymentPlan =>
+          j.into[Journey.RetrievedAffordabilityResult]
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
 
-        case j: Journey.Epaye.EnteredCanYouSetUpDirectDebit =>
-          j.into[Journey.Epaye.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Vat.EnteredCanYouSetUpDirectDebit   =>
-          j.into[Journey.Vat.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Sa.EnteredCanYouSetUpDirectDebit    =>
-          j.into[Journey.Sa.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Simp.EnteredCanYouSetUpDirectDebit  =>
-          j.into[Journey.Simp.RetrievedAffordabilityResult]
+        case j: Journey.EnteredCanYouSetUpDirectDebit =>
+          j.into[Journey.RetrievedAffordabilityResult]
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
 
-        case j: Journey.Epaye.EnteredDirectDebitDetails =>
-          j.into[Journey.Epaye.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Vat.EnteredDirectDebitDetails   =>
-          j.into[Journey.Vat.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Sa.EnteredDirectDebitDetails    =>
-          j.into[Journey.Sa.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Simp.EnteredDirectDebitDetails  =>
-          j.into[Journey.Simp.RetrievedAffordabilityResult]
+        case j: Journey.EnteredDirectDebitDetails =>
+          j.into[Journey.RetrievedAffordabilityResult]
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
 
-        case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
-          j.into[Journey.Epaye.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Vat.ConfirmedDirectDebitDetails   =>
-          j.into[Journey.Vat.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Sa.ConfirmedDirectDebitDetails    =>
-          j.into[Journey.Sa.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Simp.ConfirmedDirectDebitDetails  =>
-          j.into[Journey.Simp.RetrievedAffordabilityResult]
+        case j: Journey.ConfirmedDirectDebitDetails =>
+          j.into[Journey.RetrievedAffordabilityResult]
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
 
-        case j: Journey.Epaye.AgreedTermsAndConditions =>
-          j.into[Journey.Epaye.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Vat.AgreedTermsAndConditions   =>
-          j.into[Journey.Vat.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Sa.AgreedTermsAndConditions    =>
-          j.into[Journey.Sa.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Simp.AgreedTermsAndConditions  =>
-          j.into[Journey.Simp.RetrievedAffordabilityResult]
+        case j: Journey.AgreedTermsAndConditions =>
+          j.into[Journey.RetrievedAffordabilityResult]
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
 
-        case j: Journey.Epaye.SelectedEmailToBeVerified =>
-          j.into[Journey.Epaye.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Vat.SelectedEmailToBeVerified   =>
-          j.into[Journey.Vat.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Sa.SelectedEmailToBeVerified    =>
-          j.into[Journey.Sa.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Simp.SelectedEmailToBeVerified  =>
-          j.into[Journey.Simp.RetrievedAffordabilityResult]
+        case j: Journey.SelectedEmailToBeVerified =>
+          j.into[Journey.RetrievedAffordabilityResult]
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
 
-        case j: Journey.Epaye.EmailVerificationComplete =>
-          j.into[Journey.Epaye.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Vat.EmailVerificationComplete   =>
-          j.into[Journey.Vat.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Sa.EmailVerificationComplete    =>
-          j.into[Journey.Sa.RetrievedAffordabilityResult]
-            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
-            .transform
-        case j: Journey.Simp.EmailVerificationComplete  =>
-          j.into[Journey.Simp.RetrievedAffordabilityResult]
+        case j: Journey.EmailVerificationComplete =>
+          j.into[Journey.RetrievedAffordabilityResult]
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
 
-        case _: Journey.Stages.SubmittedArrangement =>
+        case _: JourneyStageView.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update AffordabilityResult when journey is in completed state")
       }
       journeyService.upsert(newJourney)
     }
 
-  }
 }

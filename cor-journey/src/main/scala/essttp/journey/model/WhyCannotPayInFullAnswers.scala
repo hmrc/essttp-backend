@@ -23,7 +23,7 @@ import essttp.utils.DerivedJson.Circe.formatToCodec
 import io.circe.generic.semiauto.deriveCodec
 import play.api.libs.json.OFormat
 
-sealed trait WhyCannotPayInFullAnswers
+sealed trait WhyCannotPayInFullAnswers derives CanEqual
 
 object WhyCannotPayInFullAnswers {
 

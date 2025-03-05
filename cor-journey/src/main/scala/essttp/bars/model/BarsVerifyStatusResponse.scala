@@ -20,7 +20,10 @@ import play.api.libs.json.{Json, OFormat}
 
 import java.time.Instant
 
-final case class BarsVerifyStatusResponse(attempts: NumberOfBarsVerifyAttempts, lockoutExpiryDateTime: Option[Instant])
+final case class BarsVerifyStatusResponse(
+  attempts:              NumberOfBarsVerifyAttempts,
+  lockoutExpiryDateTime: Option[Instant]
+) derives CanEqual
 
 object BarsVerifyStatusResponse {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))

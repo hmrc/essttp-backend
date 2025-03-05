@@ -22,7 +22,7 @@ import play.api.libs.json.Format
 
 import scala.collection.immutable
 
-sealed trait PaymentPlanFrequency extends EnumEntry
+sealed trait PaymentPlanFrequency extends EnumEntry derives CanEqual
 
 object PaymentPlanFrequency {
 

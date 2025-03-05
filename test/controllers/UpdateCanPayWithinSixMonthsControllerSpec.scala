@@ -32,7 +32,7 @@ package controllers
  * limitations under the License.
  */
 
-import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey, Stage}
+import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey}
 import essttp.rootmodel.pega.PegaCaseId
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
@@ -113,8 +113,7 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             TdAll.canPayWithinSixMonthsNo,
             journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
             context.tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired.copy(
-              canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo,
-              stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired
+              canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo
             )
           )(context)
 
@@ -129,7 +128,6 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
             context.tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired.copy(
               canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo,
-              stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired,
               pegaCaseId = Some(PegaCaseId("case-id"))
             )
           )(context)
@@ -218,8 +216,7 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             TdAll.canPayWithinSixMonthsNo,
             journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
             context.tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired.copy(
-              canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo,
-              stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired
+              canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo
             )
           )(context)
 
@@ -234,7 +231,6 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
             context.tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired.copy(
               canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo,
-              stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired,
               pegaCaseId = Some(PegaCaseId("case-id"))
             )
           )(context)
@@ -319,8 +315,7 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             TdAll.canPayWithinSixMonthsNo,
             journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
             context.tdAll.SaBta.journeyAfterCanPayWithinSixMonths.copy(
-              canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo,
-              stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired
+              canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo
             )
           )(context)
 
@@ -335,7 +330,6 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
             context.tdAll.SaBta.journeyAfterCanPayWithinSixMonths.copy(
               canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo,
-              stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired,
               pegaCaseId = Some(PegaCaseId("case-id"))
             )
           )(context)
@@ -420,8 +414,7 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             TdAll.canPayWithinSixMonthsNo,
             journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
             context.tdAll.SimpPta.journeyAfterCanPayWithinSixMonths.copy(
-              canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo,
-              stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired
+              canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo
             )
           )(context)
 
@@ -436,7 +429,6 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec with UpdateJourne
             journeyConnector.updateCanPayWithinSixMonthsAnswers(_, _)(context.request),
             context.tdAll.SimpPta.journeyAfterCanPayWithinSixMonths.copy(
               canPayWithinSixMonthsAnswers = TdAll.canPayWithinSixMonthsNo,
-              stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired,
               pegaCaseId = Some(PegaCaseId("case-id"))
             )
           )(context)

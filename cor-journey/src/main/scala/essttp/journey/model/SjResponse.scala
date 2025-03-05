@@ -20,7 +20,7 @@ import play.api.libs.json.{Json, OFormat}
 
 /** Start Journey Response
   */
-final case class SjResponse(nextUrl: NextUrl, journeyId: JourneyId)
+final case class SjResponse(nextUrl: NextUrl, journeyId: JourneyId) derives CanEqual
 
 object SjResponse {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))

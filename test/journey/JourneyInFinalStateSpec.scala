@@ -23,6 +23,7 @@ import essttp.rootmodel.AmountInPence
 import journey.JourneyInFinalStateSpec.TestScenario
 import org.scalatest.Assertion
 import play.api.libs.json.{JsNull, Writes}
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
@@ -150,7 +151,7 @@ class JourneyInFinalStateSpec extends ItSpec {
           """{"statusCode":400,"message":"Cannot update CanSetUpDirectDebit when journey is in completed state"}"""
       ),
       TestScenario(
-        httpResponse = makeUpdate("/update-direct-debit-details", tdAll.EpayeBta.updateDirectDebitDetailsRequest),
+        httpResponse = makeUpdate("/update-direct-debit-details", tdAll.EpayeBta.updateDirectDebitDetailsRequest()),
         expectedStatusCode = 400,
         expectedMessage =
           """{"statusCode":400,"message":"Cannot update DirectDebitDetails when journey is in completed state"}"""

@@ -16,12 +16,11 @@
 
 package essttp.journey.model
 
-import cats.Eq
 import io.circe.generic.semiauto.deriveCodec
 import play.api.libs.json.OFormat
 import essttp.utils.DerivedJson
 
-sealed trait CanPayWithinSixMonthsAnswers
+sealed trait CanPayWithinSixMonthsAnswers derives CanEqual
 
 object CanPayWithinSixMonthsAnswers {
 
@@ -32,7 +31,5 @@ object CanPayWithinSixMonthsAnswers {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit val format: OFormat[CanPayWithinSixMonthsAnswers] =
     DerivedJson.Circe.format(deriveCodec[CanPayWithinSixMonthsAnswers])
-
-  implicit val eq: Eq[CanPayWithinSixMonthsAnswers] = Eq.fromUniversalEquals[CanPayWithinSixMonthsAnswers]
 
 }

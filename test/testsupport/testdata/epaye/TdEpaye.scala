@@ -16,7 +16,7 @@
 
 package testsupport.testdata.epaye
 
-import essttp.rootmodel.epaye.{Aor, TaxOfficeNumber, TaxOfficeReference}
+import essttp.rootmodel.epaye.{TaxOfficeNumber, TaxOfficeReference}
 import essttp.rootmodel.ttp._
 import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.ttp.arrangement.{ArrangementResponse, CustomerReference}
@@ -35,8 +35,6 @@ trait TdEpaye {
   val taxOfficeReference: TaxOfficeReference = TaxOfficeReference("GZ00064")
 
   val empRef: EmpRef = EmpRef("864FZ00049")
-
-  val aor: Aor = Aor("123PA44545546")
 
   val eligibleEligibilityCheckResultEpaye: EligibilityCheckResult = eligibility.EligibilityCheckResult(
     processingDateTime = ProcessingDateTime(reusableDateAsString),
@@ -124,6 +122,6 @@ trait TdEpaye {
   )
 
   val arrangementResponseEpaye: ArrangementResponse =
-    ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(aor.value))
+    ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference("123PA44545546"))
 
 }

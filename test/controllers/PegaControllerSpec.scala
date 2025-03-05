@@ -20,16 +20,16 @@ import essttp.crypto.CryptoFormat
 import essttp.journey.model.{Journey, UpfrontPaymentAnswers, WhyCannotPayInFullAnswers}
 import essttp.rootmodel._
 import essttp.rootmodel.pega.{GetCaseResponse, StartCaseResponse}
-import org.apache.pekko.Done
 import org.apache.pekko.stream.Materializer
+import org.mongodb.scala.SingleObservableFuture
 import play.api.cache.AsyncCacheApi
-import play.api.http.Status.CREATED
 import play.api.test.Helpers._
 import repository.JourneyByTaxIdRepo.JourneyWithTaxId
 import repository.{JourneyByTaxIdRepo, JourneyRepo}
 import testsupport.ItSpec
 import testsupport.stubs.PegaStub
 import testsupport.testdata.TdBase
+import testsupport.Givens.canEqualUnit
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments}
 import uk.gov.hmrc.http.UpstreamErrorResponse
 
@@ -240,7 +240,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
         }
 
         "there are two consecutive 401 errors when calling the start case API, when there is already a PEGA token in the cache" in new JourneyItTest {
-          cacheApi.set("pega-Oauth-token", "tokenInCache").futureValue shouldBe Done
+          cacheApi.set("pega-Oauth-token", "tokenInCache").map(_ => ()).futureValue shouldBe ()
 
           insertJourneyForTest(
             tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo
@@ -723,7 +723,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
           insertJourneyForTest(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo)
 
           testException(this)(
-            "Could not find PEGA case id in journey in state essttp.journey.model.Journey.Epaye.ObtainedCanPayWithinSixMonthsAnswers"
+            "Could not find PEGA case id in journey in state essttp.journey.model.Journey.ObtainedCanPayWithinSixMonthsAnswers"
           )
         }
 
@@ -762,7 +762,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
         }
 
         "there are two consecutive 401 errors when calling the get case API, when there is already a PEGA token in the cache" in new JourneyItTest {
-          cacheApi.set("pega-Oauth-token", "tokenInCache").futureValue shouldBe Done
+          cacheApi.set("pega-Oauth-token", "tokenInCache").map(_ => ()).futureValue shouldBe ()
 
           insertJourneyForTest(
             tdAll.EpayeBta.journeyAfterStartedPegaCase

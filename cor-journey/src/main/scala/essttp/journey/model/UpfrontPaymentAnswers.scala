@@ -22,7 +22,7 @@ import essttp.utils.DerivedJson.Circe.formatToCodec
 import io.circe.generic.semiauto.deriveCodec
 import play.api.libs.json.OFormat
 
-sealed trait UpfrontPaymentAnswers
+sealed trait UpfrontPaymentAnswers derives CanEqual
 
 object UpfrontPaymentAnswers {
   case object NoUpfrontPayment extends UpfrontPaymentAnswers

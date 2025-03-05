@@ -18,10 +18,11 @@ package essttp.journey.model
 
 import enumeratum.{Enum, EnumEntry}
 import essttp.rootmodel.TaxRegime
-import essttp.utils.EnumFormat
-import play.api.libs.json.Format
+import essttp.utils.{EnumFormat, TypeName}
+import play.api.libs.json.{Format, JsError, JsSuccess, Reads, Writes}
 
 import scala.collection.immutable
+import scala.reflect.Typeable
 
 sealed trait Origin extends EnumEntry with Product with Serializable derives CanEqual {
 
@@ -41,6 +42,18 @@ object Origin {
 
   implicit val format: Format[Origin] = EnumFormat(Origins)
 
+  inline def individualFormat[O <: Origin: Typeable]: Format[O] = Format[O](
+    Reads[O](json =>
+      format.reads(json).flatMap {
+        case o: O  => JsSuccess(o)
+        case other => JsError(s"Expected type ${TypeName.of[O]} but got ${other.entryName}")
+      }
+    ),
+    Writes[O](
+      format.writes(_)
+    )
+  )
+
   implicit class OriginOps(private val o: Origin) extends AnyVal {
 
     def taxRegime: TaxRegime = o match {
@@ -58,10 +71,10 @@ object Origins extends Enum[Origin] {
 
   /** Marking trait aggregating all Epaye [[Origin]]s
     */
-  sealed trait Epaye extends Origin { self: Origin => }
+  sealed trait Epaye extends Origin
 
   object Epaye extends Enum[Epaye] {
-    implicit val format: Format[Epaye] = EnumFormat(Epaye)
+    implicit val format: Format[Epaye] = Origin.individualFormat[Epaye]
 
     case object Bta          extends Origin with Epaye with BetterName
     case object EpayeService extends Origin with Epaye with BetterName
@@ -77,10 +90,10 @@ object Origins extends Enum[Origin] {
 
   /** Marking trait aggregating all Vat [[Origin]]s
     */
-  sealed trait Vat extends Origin { self: Origin => }
+  sealed trait Vat extends Origin
 
   object Vat extends Enum[Vat] {
-    implicit val format: Format[Vat] = EnumFormat(Vat)
+    implicit val format: Format[Vat] = Origin.individualFormat[Vat]
 
     case object Bta          extends Origin with Vat with BetterName
     case object VatService   extends Origin with Vat with BetterName
@@ -95,14 +108,31 @@ object Origins extends Enum[Origin] {
     override def values: immutable.IndexedSeq[Vat] = findValues
   }
 
-  /** Marking trait aggregating all Sa [[Origin]]s
-    */
-  sealed trait Sa extends Origin {
-    self: Origin =>
+  sealed trait Simp extends Origin
+
+  object Simp extends Enum[Simp] {
+    implicit val format: Format[Simp] = Origin.individualFormat[Simp]
+
+    case object Pta extends Origin with Simp with BetterName
+
+    case object Mobile extends Origin with Simp with BetterName
+
+    case object GovUk extends Origin with Simp with BetterName
+
+    /** This represents situation when user receives link to the application in whatsapp/email/etc and it's not clear
+      * where the journey actually started from.
+      */
+    case object DetachedUrl extends Origin with Simp with BetterName
+
+    override def values: immutable.IndexedSeq[Simp] = findValues
   }
 
+  /** Marking trait aggregating all Sa [[Origin]]s
+    */
+  sealed trait Sa extends Origin
+
   object Sa extends Enum[Sa] {
-    implicit val format: Format[Sa] = EnumFormat(Sa)
+    implicit val format: Format[Sa] = Origin.individualFormat[Sa]
 
     case object Bta extends Origin with Sa with BetterName
 
@@ -120,27 +150,6 @@ object Origins extends Enum[Origin] {
     case object DetachedUrl extends Origin with Sa with BetterName
 
     override def values: immutable.IndexedSeq[Sa] = findValues
-  }
-
-  sealed trait Simp extends Origin {
-    self: Origin =>
-  }
-
-  object Simp extends Enum[Simp] {
-    implicit val format: Format[Simp] = EnumFormat(Simp)
-
-    case object Pta extends Origin with Simp with BetterName
-
-    case object Mobile extends Origin with Simp with BetterName
-
-    case object GovUk extends Origin with Simp with BetterName
-
-    /** This represents situation when user receives link to the application in whatsapp/email/etc and it's not clear
-      * where the journey actually started from.
-      */
-    case object DetachedUrl extends Origin with Simp with BetterName
-
-    override def values: immutable.IndexedSeq[Simp] = findValues
   }
 
   override def values: immutable.IndexedSeq[Origin] = Epaye.values ++ Vat.values ++ Sa.values ++ Simp.values

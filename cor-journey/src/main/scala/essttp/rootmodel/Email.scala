@@ -21,7 +21,7 @@ import essttp.crypto.CryptoFormat
 import play.api.libs.json._
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
-final case class Email(value: SensitiveString) extends AnyVal
+final case class Email(value: SensitiveString) extends AnyVal derives CanEqual
 
 object Email {
   implicit val eq: Eq[Email] = Eq.fromUniversalEquals

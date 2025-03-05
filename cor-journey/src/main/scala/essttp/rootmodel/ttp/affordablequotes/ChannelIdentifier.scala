@@ -22,7 +22,7 @@ import essttp.utils.EnumFormat
 
 import scala.collection.immutable
 
-sealed trait ChannelIdentifier extends EnumEntry
+sealed trait ChannelIdentifier extends EnumEntry derives CanEqual
 
 object ChannelIdentifier {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))

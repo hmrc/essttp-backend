@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.epaye
+package testsupport
 
-/** Accounts Office Reference (Aor)
-  *
-  * Another Epaye identifier which can be obtained based on the EmpRef from master data API from EPAYE Hod.
-  */
-final case class Aor(value: String)
+import play.api.libs.json.{JsResult, JsValue}
+
+import java.time.Instant
+
+object Givens {
+
+  given canEqualUnit: CanEqual[Unit, Unit] = CanEqual.derived
+
+  given canEqualInstant: CanEqual[Instant, Instant] = CanEqual.derived
+
+  given canEqualJsValue: CanEqual[JsValue, JsValue] = CanEqual.derived
+
+  given canEqualJsResult[A]: CanEqual[JsResult[A], JsResult[A]] = CanEqual.derived
+
+}

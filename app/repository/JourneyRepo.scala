@@ -40,7 +40,7 @@ final class JourneyRepo @Inject() (
     extends Repo[JourneyId, Journey](
       collectionName = "journey",
       mongoComponent = mongoComponent,
-      indexes = JourneyRepo.indexes(config.journeyRepoTtl),
+      indexes = JourneyRepoUtils.indexes(config.journeyRepoTtl),
       extraCodecs = Codecs.playFormatSumCodecs(Journey.format),
       replaceIndexes = true
     ) {

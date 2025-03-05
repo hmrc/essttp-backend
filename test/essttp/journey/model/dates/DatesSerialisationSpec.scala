@@ -21,6 +21,7 @@ import essttp.rootmodel.dates.extremedates.{ExtremeDatesRequest, ExtremeDatesRes
 import essttp.rootmodel.dates.startdates.{PreferredDayOfMonth, StartDatesRequest, StartDatesResponse}
 import play.api.libs.json.Json
 import testsupport.UnitSpec
+import testsupport.Givens.canEqualJsValue
 import testsupport.testdata.dates.DatesTdAll
 
 class DatesSerialisationSpec extends UnitSpec {
@@ -51,7 +52,7 @@ class DatesSerialisationSpec extends UnitSpec {
     "input of greater than 28 throws IllegalArgumentException" in {
       intercept[IllegalArgumentException] {
         Json.parse("29").as[PreferredDayOfMonth]
-      }.getMessage should include("Day of month can't be grater then 28")
+      }.getMessage should include("Day of month can't be greater then 28")
     }
     "negative input throws IllegalArgumentException" in {
       intercept[IllegalArgumentException] {

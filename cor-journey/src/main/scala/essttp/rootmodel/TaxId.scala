@@ -22,7 +22,7 @@ import essttp.utils.DerivedJson
 import io.circe.generic.semiauto.deriveCodec
 import play.api.libs.json.{Json, OFormat}
 
-sealed trait TaxId {
+sealed trait TaxId derives CanEqual {
   val value: String
 }
 

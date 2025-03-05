@@ -16,7 +16,6 @@
 
 package essttp.rootmodel.bank
 
-import cats.Eq
 import essttp.crypto.CryptoFormat
 import play.api.libs.json.{Json, OFormat}
 
@@ -25,11 +24,9 @@ final case class BankDetails(
   name:              AccountName,
   sortCode:          SortCode,
   accountNumber:     AccountNumber
-)
+) derives CanEqual
 
 object BankDetails {
-
-  implicit val eq: Eq[BankDetails] = Eq.fromUniversalEquals
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
   implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[BankDetails] = Json.format[BankDetails]

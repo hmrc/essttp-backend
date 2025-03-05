@@ -17,14 +17,12 @@
 package journey
 
 import action.Actions
-import cats.syntax.eq._
 import com.google.inject.Inject
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import paymentsEmailVerification.models.EmailVerificationResult
-import essttp.journey.model.Journey.{Epaye, Sa, Simp, Stages, Vat}
-import essttp.journey.model.{EmailVerificationAnswers, Journey, JourneyId, Stage}
+import essttp.journey.model.{EmailVerificationAnswers, Journey, JourneyId, JourneyStage, JourneyStageView}
 import essttp.utils.Errors
-import io.scalaland.chimney.dsl.TransformationOps
+import io.scalaland.chimney.dsl.*
 import play.api.mvc.{Action, ControllerComponents, Request}
 import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -43,21 +41,21 @@ class UpdateEmailVerificationResultController @Inject() (
       for {
         journey    <- journeyService.get(journeyId)
         newJourney <- journey match {
-                        case j: Journey.BeforeEmailAddressSelectedToBeVerified =>
+                        case j: JourneyStage.BeforeEmailAddressSelectedToBeVerified =>
                           Errors.throwBadRequestExceptionF(
-                            s"UpdateEmailVerificationResult is not possible in that state: [${j.stage.toString}]"
+                            s"UpdateEmailVerificationResult is not possible in that state: [${j.stage}]"
                           )
 
-                        case _: Journey.AfterArrangementSubmitted =>
+                        case _: JourneyStage.AfterArrangementSubmitted =>
                           Errors.throwBadRequestExceptionF(
                             "Cannot update EmailVerificationResult when journey is in completed state."
                           )
 
-                        case j: Journey.AfterEmailAddressSelectedToBeVerified =>
+                        case j: JourneyStage.AfterEmailAddressSelectedToBeVerified =>
                           j match {
-                            case j1: Journey.Stages.SelectedEmailToBeVerified =>
+                            case j1: JourneyStageView.SelectedEmailToBeVerified =>
                               updateJourneyWithNewValue(j1, request.body)
-                            case j1: Journey.Stages.EmailVerificationComplete =>
+                            case j1: JourneyStageView.EmailVerificationComplete =>
                               updateJourneyWithExistingValue(j1, request.body)
                           }
 
@@ -66,40 +64,12 @@ class UpdateEmailVerificationResultController @Inject() (
     }
 
   private def updateJourneyWithNewValue(
-    journey: Journey.Stages.SelectedEmailToBeVerified,
+    journey: JourneyStageView.SelectedEmailToBeVerified,
     status:  EmailVerificationResult
   )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Stages.EmailVerificationComplete = journey match {
-      case j: Epaye.SelectedEmailToBeVerified =>
-        j.into[Epaye.EmailVerificationComplete]
-          .withFieldConst(_.stage, determineStage(status))
-          .withFieldConst(
-            _.emailVerificationAnswers,
-            EmailVerificationAnswers.EmailVerified(j.emailToBeVerified, status)
-          )
-          .withFieldConst(_.emailVerificationResult, status)
-          .transform
-      case j: Vat.SelectedEmailToBeVerified   =>
-        j.into[Vat.EmailVerificationComplete]
-          .withFieldConst(_.stage, determineStage(status))
-          .withFieldConst(
-            _.emailVerificationAnswers,
-            EmailVerificationAnswers.EmailVerified(j.emailToBeVerified, status)
-          )
-          .withFieldConst(_.emailVerificationResult, status)
-          .transform
-      case j: Sa.SelectedEmailToBeVerified    =>
-        j.into[Sa.EmailVerificationComplete]
-          .withFieldConst(_.stage, determineStage(status))
-          .withFieldConst(
-            _.emailVerificationAnswers,
-            EmailVerificationAnswers.EmailVerified(j.emailToBeVerified, status)
-          )
-          .withFieldConst(_.emailVerificationResult, status)
-          .transform
-      case j: Simp.SelectedEmailToBeVerified  =>
-        j.into[Simp.EmailVerificationComplete]
-          .withFieldConst(_.stage, determineStage(status))
+    val newJourney: Journey = journey match {
+      case j: Journey.SelectedEmailToBeVerified =>
+        j.into[Journey.EmailVerificationComplete]
           .withFieldConst(
             _.emailVerificationAnswers,
             EmailVerificationAnswers.EmailVerified(j.emailToBeVerified, status)
@@ -110,40 +80,16 @@ class UpdateEmailVerificationResultController @Inject() (
     journeyService.upsert(newJourney)
   }
 
-  private def determineStage(status: EmailVerificationResult): Stage.AfterEmailVerificationPhase = status match {
-    case EmailVerificationResult.Verified => Stage.AfterEmailVerificationPhase.VerificationSuccess
-    case EmailVerificationResult.Locked   => Stage.AfterEmailVerificationPhase.Locked
-  }
-
   private def updateJourneyWithExistingValue(
-    journey: Journey.Stages.EmailVerificationComplete,
+    journey: JourneyStageView.EmailVerificationComplete & Journey,
     result:  EmailVerificationResult
   )(implicit request: Request[_]): Future[Journey] =
-    if (journey.emailVerificationResult === result) {
+    if (journey.emailVerificationResult == result) {
       Future.successful(journey)
     } else {
-      val newJourney: Stages.EmailVerificationComplete = journey match {
-        case j: Epaye.EmailVerificationComplete =>
+      val newJourney: Journey = journey match {
+        case j: Journey.EmailVerificationComplete =>
           j.copy(
-            stage = determineStage(result),
-            emailVerificationResult = result,
-            emailVerificationAnswers = EmailVerificationAnswers.EmailVerified(j.emailToBeVerified, result)
-          )
-        case j: Vat.EmailVerificationComplete   =>
-          j.copy(
-            stage = determineStage(result),
-            emailVerificationResult = result,
-            emailVerificationAnswers = EmailVerificationAnswers.EmailVerified(j.emailToBeVerified, result)
-          )
-        case j: Sa.EmailVerificationComplete    =>
-          j.copy(
-            stage = determineStage(result),
-            emailVerificationResult = result,
-            emailVerificationAnswers = EmailVerificationAnswers.EmailVerified(j.emailToBeVerified, result)
-          )
-        case j: Simp.EmailVerificationComplete  =>
-          j.copy(
-            stage = determineStage(result),
             emailVerificationResult = result,
             emailVerificationAnswers = EmailVerificationAnswers.EmailVerified(j.emailToBeVerified, result)
           )

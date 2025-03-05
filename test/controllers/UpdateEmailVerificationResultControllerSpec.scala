@@ -16,9 +16,11 @@
 
 package controllers
 
+import essttp.crypto.CryptoFormat
 import essttp.journey.model.Journey
 import essttp.rootmodel.IsEmailAddressRequired
 import paymentsEmailVerification.models.EmailVerificationResult
+import play.api.libs.json.Json
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
@@ -201,6 +203,15 @@ class UpdateEmailVerificationResultControllerSpec extends ItSpec with UpdateJour
     }
 
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
+      val j: Journey = TdAll.EpayeBta
+        .journeyAfterSubmittedArrangementNoAffordability()
+        .copy(_id = tdAll.journeyId)
+        .copy(correlationId = tdAll.correlationId)
+        .copy(isEmailAddressRequired = IsEmailAddressRequired(value = true))
+
+      implicit val crypto: CryptoFormat = CryptoFormat.NoOpCryptoFormat
+      println(s"Got ${Json.prettyPrint(Json.toJson(j))}")
+
       stubCommonActions()
       insertJourneyForTest(
         TdAll.EpayeBta

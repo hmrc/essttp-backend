@@ -19,6 +19,7 @@ package essttp.journey.model.ttp
 import essttp.rootmodel.ttp.eligibility.{EligibilityRules, EligibilityRulesPart1, EligibilityRulesPart2}
 import play.api.libs.json.Json
 import testsupport.UnitSpec
+import testsupport.Givens.canEqualJsValue
 
 class EligibilityRulesSpec extends UnitSpec {
 

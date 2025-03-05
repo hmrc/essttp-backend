@@ -32,7 +32,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec with UpdateJourneyCo
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
 
       val result: Throwable = journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, TdAll.EpayeBta.updateDirectDebitDetailsRequest)
+        .updateDirectDebitDetails(tdAll.journeyId, TdAll.EpayeBta.updateDirectDebitDetailsRequest())
         .failed
         .futureValue
       result.getMessage should include(
@@ -47,7 +47,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec with UpdateJourneyCo
       "Epaye" in new JourneyItTest {
         testUpdateWithoutExistingValue(
           tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true),
-          TdAll.EpayeBta.updateDirectDebitDetailsRequest
+          TdAll.EpayeBta.updateDirectDebitDetailsRequest()
         )(
           journeyConnector.updateDirectDebitDetails,
           tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -57,7 +57,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec with UpdateJourneyCo
       "Vat" in new JourneyItTest {
         testUpdateWithoutExistingValue(
           tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true),
-          TdAll.VatBta.updateDirectDebitDetailsRequest
+          TdAll.VatBta.updateDirectDebitDetailsRequest()
         )(
           journeyConnector.updateDirectDebitDetails,
           tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -67,7 +67,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec with UpdateJourneyCo
       "Sa" in new JourneyItTest {
         testUpdateWithoutExistingValue(
           tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true),
-          TdAll.SaBta.updateDirectDebitDetailsRequest
+          TdAll.SaBta.updateDirectDebitDetailsRequest()
         )(
           journeyConnector.updateDirectDebitDetails,
           tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -77,7 +77,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec with UpdateJourneyCo
       "Simp" in new JourneyItTest {
         testUpdateWithoutExistingValue(
           tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true),
-          TdAll.SimpPta.updateDirectDebitDetailsRequest
+          TdAll.SimpPta.updateDirectDebitDetailsRequest()
         )(
           journeyConnector.updateDirectDebitDetails,
           tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -269,7 +269,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec with UpdateJourneyCo
           .copy(correlationId = tdAll.correlationId)
       )
       val result: Throwable = journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeBta.updateDirectDebitDetailsRequest)
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeBta.updateDirectDebitDetailsRequest())
         .failed
         .futureValue
       result.getMessage should include(

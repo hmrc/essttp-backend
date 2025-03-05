@@ -21,6 +21,7 @@ import essttp.rootmodel.bank.AccountName
 import play.api.Configuration
 import play.api.libs.json.{JsString, Json}
 import testsupport.UnitSpec
+import testsupport.Givens.canEqualJsValue
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
 class CryptoFormatsSpec extends UnitSpec {

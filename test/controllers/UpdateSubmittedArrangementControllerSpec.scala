@@ -78,7 +78,7 @@ class UpdateSubmittedArrangementControllerSpec extends ItSpec {
         .failed
         .futureValue
       result.getMessage should include(
-        """{"statusCode":400,"message":"UpdateArrangement is not possible if the user still requires and email address, state: [EmailAddressRequired]"}"""
+        """{"statusCode":400,"message":"UpdateArrangement is not possible if the user still requires and email address, state: [AgreedTermsAndConditions]"}"""
       )
 
       verifyCommonActions(numberOfAuthCalls = 1)

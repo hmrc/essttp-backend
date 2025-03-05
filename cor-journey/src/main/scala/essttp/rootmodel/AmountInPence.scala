@@ -22,7 +22,7 @@ import play.api.libs.json._
 import java.text.NumberFormat
 import java.util.Locale
 
-final case class AmountInPence(value: Long) {
+final case class AmountInPence(value: Long) derives CanEqual {
   def formatInPounds: String = NumberFormat.getCurrencyInstance(Locale.UK).format(inPounds)
 
   // removes trailing decimal and zeros, i.e. if £x.00

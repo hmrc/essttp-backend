@@ -20,7 +20,7 @@ import enumeratum.{Enum, EnumEntry}
 import essttp.utils.EnumFormat
 import play.api.libs.json.Format
 
-sealed trait CannotPayReason extends EnumEntry with Product with Serializable
+sealed trait CannotPayReason extends EnumEntry with Product with Serializable derives CanEqual
 
 object CannotPayReason extends Enum[CannotPayReason] {
 

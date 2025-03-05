@@ -22,6 +22,7 @@ import com.google.inject.{AbstractModule, Provides}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{CorrelationId, Journey, JourneyId}
 import org.mongodb.scala.bson.BsonDocument
+import org.mongodb.scala.SingleObservableFuture
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -44,7 +45,6 @@ import java.time.Clock
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Singleton
-import scala.annotation.nowarn
 import scala.util.Random
 
 trait ItSpec extends AnyFreeSpecLike with RichMatchers with GuiceOneServerPerSuite with WireMockSupport { self =>
@@ -65,12 +65,10 @@ trait ItSpec extends AnyFreeSpecLike with RichMatchers with GuiceOneServerPerSui
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def operationalCryptoFormat: OperationalCryptoFormat = OperationalCryptoFormat(testCrypto)
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def clock: Clock =
       overrideClock.getOrElse {
         FrozenTime.reset()
@@ -82,12 +80,10 @@ trait ItSpec extends AnyFreeSpecLike with RichMatchers with GuiceOneServerPerSui
       */
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def journeyIdGenerator(testJourneyIdGenerator: TestJourneyIdGenerator): JourneyIdGenerator = testJourneyIdGenerator
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def testJourneyIdGenerator(): TestJourneyIdGenerator = {
       val randomPart: String                   = Random.alphanumeric.take(5).mkString
       val journeyIdPrefix: TestJourneyIdPrefix = TestJourneyIdPrefix(s"TestJourneyId-$randomPart-")
@@ -96,13 +92,11 @@ trait ItSpec extends AnyFreeSpecLike with RichMatchers with GuiceOneServerPerSui
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def testCorrelationIdGenerator(testCorrelationIdGenerator: TestCorrelationIdGenerator): CorrelationIdGenerator =
       testCorrelationIdGenerator
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def testCorrelationIdGenerator(): TestCorrelationIdGenerator = {
       val randomPart: String                           = UUID.randomUUID().toString.take(8)
       val correlationIdPrefix: TestCorrelationIdPrefix = TestCorrelationIdPrefix(
@@ -113,7 +107,6 @@ trait ItSpec extends AnyFreeSpecLike with RichMatchers with GuiceOneServerPerSui
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def testPegaCorrelationIdGenerator(): PegaCorrelationIdGenerator = pegaCorrelationIdGenerator
   }
 

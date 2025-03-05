@@ -47,13 +47,12 @@ trait TdJourneySaMobile {
 
     def postPath: String = "/sa/mobile/journey/start"
 
-    def journeyAfterStarted: Journey.Sa.Started = Journey.Sa.Started(
+    def journeyAfterStarted: Journey.Started = Journey.Started(
       _id = dependencies.journeyId,
       origin = Origins.Sa.Mobile,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
-      stage = Stage.AfterStarted.Started,
       affordabilityEnabled = Some(false),
       correlationId = dependencies.correlationId,
       pegaCaseId = None
@@ -61,13 +60,12 @@ trait TdJourneySaMobile {
 
     def updateTaxIdRequest(): TaxId = saUtr
 
-    def journeyAfterDetermineTaxIds: Journey.Sa.ComputedTaxId = Journey.Sa.ComputedTaxId(
+    def journeyAfterDetermineTaxIds: Journey.ComputedTaxId = Journey.ComputedTaxId(
       _id = dependencies.journeyId,
       origin = Origins.Sa.Mobile,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
-      stage = Stage.AfterComputedTaxId.ComputedTaxId,
       affordabilityEnabled = Some(false),
       correlationId = dependencies.correlationId,
       taxId = saUtr,
@@ -76,13 +74,12 @@ trait TdJourneySaMobile {
 
     def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResultSa
 
-    def journeyAfterEligibilityCheckEligible: Journey.Sa.EligibilityChecked = Journey.Sa.EligibilityChecked(
+    def journeyAfterEligibilityCheckEligible: Journey.EligibilityChecked = Journey.EligibilityChecked(
       _id = dependencies.journeyId,
       origin = Origins.Sa.Mobile,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
-      stage = Stage.AfterEligibilityCheck.Eligible,
       affordabilityEnabled = Some(false),
       correlationId = dependencies.correlationId,
       taxId = saUtr,
@@ -90,13 +87,12 @@ trait TdJourneySaMobile {
       pegaCaseId = None
     )
 
-    def journeyAfterEligibilityCheckNotEligible: Journey.Sa.EligibilityChecked = Journey.Sa.EligibilityChecked(
+    def journeyAfterEligibilityCheckNotEligible: Journey.EligibilityChecked = Journey.EligibilityChecked(
       _id = dependencies.journeyId,
       origin = Origins.Sa.Mobile,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
-      stage = Stage.AfterEligibilityCheck.Ineligible,
       affordabilityEnabled = Some(false),
       correlationId = dependencies.correlationId,
       taxId = saUtr,
@@ -104,14 +100,13 @@ trait TdJourneySaMobile {
       pegaCaseId = None
     )
 
-    def journeyAfterWhyCannotPayInFullNotRequired: Journey.Sa.ObtainedWhyCannotPayInFullAnswers =
-      Journey.Sa.ObtainedWhyCannotPayInFullAnswers(
+    def journeyAfterWhyCannotPayInFullNotRequired: Journey.ObtainedWhyCannotPayInFullAnswers =
+      Journey.ObtainedWhyCannotPayInFullAnswers(
         _id = dependencies.journeyId,
         origin = Origins.Sa.Mobile,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
-        stage = Stage.AfterWhyCannotPayInFullAnswers.AnswerNotRequired,
         affordabilityEnabled = Some(false),
         correlationId = dependencies.correlationId,
         taxId = saUtr,
@@ -124,13 +119,12 @@ trait TdJourneySaMobile {
 
     def updateCanPayUpfrontNoRequest(): CanPayUpfront = canPayUpfrontNo
 
-    def journeyAfterCanPayUpfrontYes: Journey.Sa.AnsweredCanPayUpfront = Journey.Sa.AnsweredCanPayUpfront(
+    def journeyAfterCanPayUpfrontYes: Journey.AnsweredCanPayUpfront = Journey.AnsweredCanPayUpfront(
       _id = dependencies.journeyId,
       origin = Origins.Sa.Mobile,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
-      stage = Stage.AfterCanPayUpfront.Yes,
       affordabilityEnabled = Some(false),
       correlationId = dependencies.correlationId,
       taxId = saUtr,
@@ -140,13 +134,12 @@ trait TdJourneySaMobile {
       pegaCaseId = None
     )
 
-    def journeyAfterCanPayUpfrontNo: Journey.Sa.AnsweredCanPayUpfront = Journey.Sa.AnsweredCanPayUpfront(
+    def journeyAfterCanPayUpfrontNo: Journey.AnsweredCanPayUpfront = Journey.AnsweredCanPayUpfront(
       _id = dependencies.journeyId,
       origin = Origins.Sa.Mobile,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
-      stage = Stage.AfterCanPayUpfront.No,
       affordabilityEnabled = Some(false),
       correlationId = dependencies.correlationId,
       taxId = saUtr,
@@ -158,14 +151,13 @@ trait TdJourneySaMobile {
 
     def updateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.upfrontPaymentAmount
 
-    def journeyAfterUpfrontPaymentAmount: Journey.Sa.EnteredUpfrontPaymentAmount =
-      Journey.Sa.EnteredUpfrontPaymentAmount(
+    def journeyAfterUpfrontPaymentAmount: Journey.EnteredUpfrontPaymentAmount =
+      Journey.EnteredUpfrontPaymentAmount(
         _id = dependencies.journeyId,
         origin = Origins.Sa.Mobile,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
-        stage = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
         affordabilityEnabled = Some(false),
         correlationId = dependencies.correlationId,
         taxId = saUtr,
@@ -178,13 +170,12 @@ trait TdJourneySaMobile {
 
     def updateExtremeDatesRequest(): ExtremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment
 
-    def journeyAfterExtremeDates: Journey.Sa.RetrievedExtremeDates = Journey.Sa.RetrievedExtremeDates(
+    def journeyAfterExtremeDates: Journey.RetrievedExtremeDates = Journey.RetrievedExtremeDates(
       _id = dependencies.journeyId,
       origin = Origins.Sa.Mobile,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
-      stage = Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved,
       affordabilityEnabled = Some(false),
       correlationId = dependencies.correlationId,
       taxId = saUtr,
@@ -197,14 +188,13 @@ trait TdJourneySaMobile {
 
     def updateInstalmentAmountsRequest(): InstalmentAmounts = dependencies.instalmentAmounts
 
-    def journeyAfterInstalmentAmounts: Journey.Sa.RetrievedAffordabilityResult =
-      Journey.Sa.RetrievedAffordabilityResult(
+    def journeyAfterInstalmentAmounts: Journey.RetrievedAffordabilityResult =
+      Journey.RetrievedAffordabilityResult(
         _id = dependencies.journeyId,
         origin = Origins.Sa.Mobile,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
-        stage = Stage.AfterAffordabilityResult.RetrievedAffordabilityResult,
         affordabilityEnabled = Some(false),
         correlationId = dependencies.correlationId,
         taxId = saUtr,
@@ -218,14 +208,13 @@ trait TdJourneySaMobile {
 
     def updateMonthlyPaymentAmountRequest(): MonthlyPaymentAmount = dependencies.monthlyPaymentAmount
 
-    def journeyAfterMonthlyPaymentAmount: Journey.Sa.EnteredMonthlyPaymentAmount =
-      Journey.Sa.EnteredMonthlyPaymentAmount(
+    def journeyAfterMonthlyPaymentAmount: Journey.EnteredMonthlyPaymentAmount =
+      Journey.EnteredMonthlyPaymentAmount(
         _id = dependencies.journeyId,
         origin = Origins.Sa.Mobile,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
-        stage = Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount,
         affordabilityEnabled = Some(false),
         correlationId = dependencies.correlationId,
         taxId = saUtr,
@@ -239,14 +228,13 @@ trait TdJourneySaMobile {
         pegaCaseId = None
       )
 
-    def journeyAfterCanPayWithinSixMonths: Journey.Sa.ObtainedCanPayWithinSixMonthsAnswers =
-      Journey.Sa.ObtainedCanPayWithinSixMonthsAnswers(
+    def journeyAfterCanPayWithinSixMonths: Journey.ObtainedCanPayWithinSixMonthsAnswers =
+      Journey.ObtainedCanPayWithinSixMonthsAnswers(
         _id = dependencies.journeyId,
         origin = Origins.Sa.Mobile,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
-        stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerNotRequired,
         affordabilityEnabled = Some(false),
         correlationId = dependencies.correlationId,
         taxId = saUtr,
@@ -261,13 +249,12 @@ trait TdJourneySaMobile {
 
     def updateDayOfMonthRequest(): DayOfMonth = dependencies.dayOfMonth
 
-    def journeyAfterDayOfMonth: Journey.Sa.EnteredDayOfMonth = Journey.Sa.EnteredDayOfMonth(
+    def journeyAfterDayOfMonth: Journey.EnteredDayOfMonth = Journey.EnteredDayOfMonth(
       _id = dependencies.journeyId,
       origin = Origins.Sa.Mobile,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
-      stage = Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth,
       affordabilityEnabled = Some(false),
       correlationId = dependencies.correlationId,
       taxId = saUtr,
@@ -284,13 +271,12 @@ trait TdJourneySaMobile {
 
     def updateStartDatesResponse(): StartDatesResponse = dependencies.startDatesResponseWithInitialPayment
 
-    def journeyAfterStartDatesResponse: Journey.AfterStartDatesResponse = Journey.Sa.RetrievedStartDates(
+    def journeyAfterStartDatesResponse: Journey & JourneyStage.AfterStartDatesResponse = Journey.RetrievedStartDates(
       _id = dependencies.journeyId,
       origin = Origins.Sa.Mobile,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
-      stage = Stage.AfterStartDatesResponse.StartDatesResponseRetrieved,
       affordabilityEnabled = Some(false),
       correlationId = dependencies.correlationId,
       taxId = saUtr,
@@ -308,14 +294,13 @@ trait TdJourneySaMobile {
 
     def updateAffordableQuotesResponse(): AffordableQuotesResponse = dependencies.affordableQuotesResponse
 
-    def journeyAfterAffordableQuotesResponse: Journey.AfterAffordableQuotesResponse =
-      Journey.Sa.RetrievedAffordableQuotes(
+    def journeyAfterAffordableQuotesResponse: Journey & JourneyStage.AfterAffordableQuotesResponse =
+      Journey.RetrievedAffordableQuotes(
         _id = dependencies.journeyId,
         origin = Origins.Sa.Mobile,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
-        stage = Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved,
         affordabilityEnabled = Some(false),
         correlationId = dependencies.correlationId,
         taxId = saUtr,
@@ -334,13 +319,12 @@ trait TdJourneySaMobile {
 
     def updateSelectedPaymentPlanRequest(): PaymentPlan = dependencies.paymentPlan(1)
 
-    def journeyAfterSelectedPaymentPlan: Journey.AfterSelectedPaymentPlan = Journey.Sa.ChosenPaymentPlan(
+    def journeyAfterSelectedPaymentPlan: Journey & JourneyStage.AfterSelectedPaymentPlan = Journey.ChosenPaymentPlan(
       _id = dependencies.journeyId,
       origin = Origins.Sa.Mobile,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
-      stage = Stage.AfterSelectedPlan.SelectedPlan,
       affordabilityEnabled = Some(false),
       correlationId = dependencies.correlationId,
       taxId = saUtr,
@@ -360,40 +344,37 @@ trait TdJourneySaMobile {
 
     def updateCheckedPaymentPlanRequest(): JsNull.type = JsNull
 
-    def journeyAfterCheckedPaymentPlanNonAffordability: Journey.AfterCheckedPaymentPlan = Journey.Sa.CheckedPaymentPlan(
-      _id = dependencies.journeyId,
-      origin = Origins.Sa.Mobile,
-      createdOn = dependencies.createdOn,
-      sjRequest = sjRequest,
-      sessionId = dependencies.sessionId,
-      stage = Stage.AfterCheckedPlan.AcceptedPlan,
-      affordabilityEnabled = Some(false),
-      correlationId = dependencies.correlationId,
-      taxId = saUtr,
-      eligibilityCheckResult = eligibleEligibilityCheckResultSa,
-      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts = dependencies.instalmentAmounts,
-      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      paymentPlanAnswers = dependencies.paymentPlanAnswersNoAffordability,
-      pegaCaseId = None
-    )
+    def journeyAfterCheckedPaymentPlanNonAffordability: Journey & JourneyStage.AfterCheckedPaymentPlan =
+      Journey.CheckedPaymentPlan(
+        _id = dependencies.journeyId,
+        origin = Origins.Sa.Mobile,
+        createdOn = dependencies.createdOn,
+        sjRequest = sjRequest,
+        sessionId = dependencies.sessionId,
+        affordabilityEnabled = Some(false),
+        correlationId = dependencies.correlationId,
+        taxId = saUtr,
+        eligibilityCheckResult = eligibleEligibilityCheckResultSa,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts = dependencies.instalmentAmounts,
+        canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+        paymentPlanAnswers = dependencies.paymentPlanAnswersNoAffordability,
+        pegaCaseId = None
+      )
 
     def updateCanSetUpDirectDebitRequest(isAccountHolder: Boolean): CanSetUpDirectDebit =
       CanSetUpDirectDebit(isAccountHolder)
 
     def journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(
       isAccountHolder: Boolean
-    ): Journey.AfterEnteredCanYouSetUpDirectDebit = Journey.Sa.EnteredCanYouSetUpDirectDebit(
+    ): Journey & JourneyStage.AfterEnteredCanYouSetUpDirectDebit = Journey.EnteredCanYouSetUpDirectDebit(
       _id = dependencies.journeyId,
       origin = Origins.Sa.Mobile,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
-      stage =
-        if (isAccountHolder) Stage.AfterEnteredCanYouSetUpDirectDebit.CanSetUpDirectDebit
-        else Stage.AfterEnteredCanYouSetUpDirectDebit.CannotSetUpDirectDebit,
       affordabilityEnabled = Some(false),
       correlationId = dependencies.correlationId,
       taxId = saUtr,
@@ -410,14 +391,13 @@ trait TdJourneySaMobile {
 
     def updateDirectDebitDetailsRequest(): BankDetails = dependencies.directDebitDetails
 
-    def journeyAfterEnteredDirectDebitDetailsNoAffordability(): Journey.AfterEnteredDirectDebitDetails =
-      Journey.Sa.EnteredDirectDebitDetails(
+    def journeyAfterEnteredDirectDebitDetailsNoAffordability(): Journey & JourneyStage.AfterEnteredDirectDebitDetails =
+      Journey.EnteredDirectDebitDetails(
         _id = dependencies.journeyId,
         origin = Origins.Sa.Mobile,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
-        stage = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails,
         affordabilityEnabled = Some(false),
         correlationId = dependencies.correlationId,
         taxId = saUtr,
@@ -435,14 +415,14 @@ trait TdJourneySaMobile {
 
     def updateConfirmedDirectDebitDetailsRequest(): JsNull.type = JsNull
 
-    def journeyAfterConfirmedDirectDebitDetailsNoAffordability: Journey.AfterConfirmedDirectDebitDetails =
-      Journey.Sa.ConfirmedDirectDebitDetails(
+    def journeyAfterConfirmedDirectDebitDetailsNoAffordability
+      : Journey & JourneyStage.AfterConfirmedDirectDebitDetails =
+      Journey.ConfirmedDirectDebitDetails(
         _id = dependencies.journeyId,
         origin = Origins.Sa.Mobile,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
-        stage = Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails,
         affordabilityEnabled = Some(false),
         correlationId = dependencies.correlationId,
         taxId = saUtr,
@@ -463,18 +443,13 @@ trait TdJourneySaMobile {
 
     def journeyAfterAgreedTermsAndConditionsNoAffordability(
       isEmailAddressRequired: Boolean
-    ): Journey.AfterAgreedTermsAndConditions = {
-      val stage =
-        if (isEmailAddressRequired) Stage.AfterAgreedTermsAndConditions.EmailAddressRequired
-        else Stage.AfterAgreedTermsAndConditions.EmailAddressNotRequired
-
-      Journey.Sa.AgreedTermsAndConditions(
+    ): Journey & JourneyStage.AfterAgreedTermsAndConditions =
+      Journey.AgreedTermsAndConditions(
         _id = dependencies.journeyId,
         origin = Origins.Sa.Mobile,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
-        stage = stage,
         affordabilityEnabled = Some(false),
         correlationId = dependencies.correlationId,
         taxId = saUtr,
@@ -490,17 +465,15 @@ trait TdJourneySaMobile {
         isEmailAddressRequired = IsEmailAddressRequired(isEmailAddressRequired),
         pegaCaseId = None
       )
-    }
 
     def updateSelectedEmailRequest(): Email = dependencies.email
 
-    def journeyAfterSelectedEmail: Journey.Sa.SelectedEmailToBeVerified = Journey.Sa.SelectedEmailToBeVerified(
+    def journeyAfterSelectedEmail: Journey.SelectedEmailToBeVerified = Journey.SelectedEmailToBeVerified(
       _id = dependencies.journeyId,
       origin = Origins.Sa.Mobile,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
-      stage = Stage.AfterSelectedAnEmailToBeVerified.EmailChosen,
       affordabilityEnabled = Some(false),
       correlationId = dependencies.correlationId,
       taxId = saUtr,
@@ -518,17 +491,13 @@ trait TdJourneySaMobile {
       pegaCaseId = None
     )
 
-    def journeyAfterEmailVerificationResult(result: EmailVerificationResult): Journey.Sa.EmailVerificationComplete =
-      Journey.Sa.EmailVerificationComplete(
+    def journeyAfterEmailVerificationResult(result: EmailVerificationResult): Journey.EmailVerificationComplete =
+      Journey.EmailVerificationComplete(
         _id = dependencies.journeyId,
         origin = Origins.Sa.Mobile,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
-        stage = result match {
-          case EmailVerificationResult.Verified => Stage.AfterEmailVerificationPhase.VerificationSuccess
-          case EmailVerificationResult.Locked   => Stage.AfterEmailVerificationPhase.Locked
-        },
         affordabilityEnabled = Some(false),
         correlationId = dependencies.correlationId,
         taxId = saUtr,
@@ -552,13 +521,12 @@ trait TdJourneySaMobile {
 
     def journeyAfterSubmittedArrangementNoAffordability(
       isEmailAddressRequired: Boolean
-    ): Journey.AfterArrangementSubmitted = Journey.Sa.SubmittedArrangement(
+    ): Journey & JourneyStage.AfterArrangementSubmitted = Journey.SubmittedArrangement(
       _id = dependencies.journeyId,
       origin = Origins.Sa.Mobile,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
-      stage = Stage.AfterSubmittedArrangement.Submitted,
       affordabilityEnabled = Some(false),
       correlationId = dependencies.correlationId,
       taxId = saUtr,

@@ -18,6 +18,7 @@ package essttp.rootmodel
 
 import essttp.rootmodel.ttp.RegimeType
 import play.api.libs.json.{JsString, Json}
+import testsupport.Givens.canEqualJsValue
 import testsupport.UnitSpec
 
 class RegimeTypeSpec extends UnitSpec {

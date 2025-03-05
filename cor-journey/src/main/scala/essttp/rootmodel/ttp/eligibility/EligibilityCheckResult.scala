@@ -45,7 +45,7 @@ final case class EligibilityCheckResult(
   // TODO OPS-12584 - Clean this up when TTP has implemented the changes to the Eligibility API - customerType and transitionToCDCS have moved in customerDetails/individualDetails
   customerType:                    Option[CustomerType],
   transitionToCDCS:                Option[TransitionToCDCS]
-)
+) derives CanEqual
 
 object EligibilityCheckResult {
 

@@ -20,6 +20,7 @@ import essttp.rootmodel.AmountInPence
 import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.ttp.eligibility._
 import play.api.libs.json.{JsSuccess, Json}
+import testsupport.Givens.{canEqualJsResult, canEqualJsValue}
 import testsupport.UnitSpec
 
 import java.time.LocalDate

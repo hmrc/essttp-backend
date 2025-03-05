@@ -44,28 +44,26 @@ trait TdJourneyEpayeGovUk {
 
     def postPath: String = "/epaye/gov-uk/journey/start"
 
-    def journeyAfterStarted: Journey.Epaye.Started = Journey.Epaye.Started(
+    def journeyAfterStarted: Journey.Started = Journey.Started(
       _id = dependencies.journeyId,
       origin = Origins.Epaye.GovUk,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
       correlationId = dependencies.correlationId,
-      stage = Stage.AfterStarted.Started,
       affordabilityEnabled = Some(false),
       pegaCaseId = None
     )
 
     def updateTaxIdRequest(): TaxId = empRef
 
-    def journeyAfterDetermineTaxIds: Journey.Epaye.ComputedTaxId = Journey.Epaye.ComputedTaxId(
+    def journeyAfterDetermineTaxIds: Journey.ComputedTaxId = Journey.ComputedTaxId(
       _id = dependencies.journeyId,
       origin = Origins.Epaye.GovUk,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
       correlationId = dependencies.correlationId,
-      stage = Stage.AfterComputedTaxId.ComputedTaxId,
       affordabilityEnabled = Some(false),
       taxId = empRef,
       pegaCaseId = None
@@ -73,42 +71,39 @@ trait TdJourneyEpayeGovUk {
 
     def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResultEpaye
 
-    def journeyAfterEligibilityCheckEligible: Journey.Epaye.EligibilityChecked = Journey.Epaye.EligibilityChecked(
+    def journeyAfterEligibilityCheckEligible: Journey.EligibilityChecked = Journey.EligibilityChecked(
       _id = dependencies.journeyId,
       origin = Origins.Epaye.GovUk,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
       correlationId = dependencies.correlationId,
-      stage = Stage.AfterEligibilityCheck.Eligible,
       affordabilityEnabled = Some(false),
       taxId = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
       pegaCaseId = None
     )
 
-    def journeyAfterEligibilityCheckNotEligible: Journey.Epaye.EligibilityChecked = Journey.Epaye.EligibilityChecked(
+    def journeyAfterEligibilityCheckNotEligible: Journey.EligibilityChecked = Journey.EligibilityChecked(
       _id = dependencies.journeyId,
       origin = Origins.Epaye.GovUk,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
       correlationId = dependencies.correlationId,
-      stage = Stage.AfterEligibilityCheck.Ineligible,
       affordabilityEnabled = Some(false),
       taxId = empRef,
       eligibilityCheckResult = ineligibleEligibilityCheckResultEpaye,
       pegaCaseId = None
     )
 
-    def journeyAfterWhyCannotPayInFullNotRequired: Journey.Epaye.ObtainedWhyCannotPayInFullAnswers =
-      Journey.Epaye.ObtainedWhyCannotPayInFullAnswers(
+    def journeyAfterWhyCannotPayInFullNotRequired: Journey.ObtainedWhyCannotPayInFullAnswers =
+      Journey.ObtainedWhyCannotPayInFullAnswers(
         _id = dependencies.journeyId,
         origin = Origins.Epaye.GovUk,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
-        stage = Stage.AfterWhyCannotPayInFullAnswers.AnswerNotRequired,
         affordabilityEnabled = Some(false),
         correlationId = dependencies.correlationId,
         taxId = empRef,
@@ -121,14 +116,13 @@ trait TdJourneyEpayeGovUk {
 
     def updateCanPayUpfrontNoRequest(): CanPayUpfront = canPayUpfrontNo
 
-    def journeyAfterCanPayUpfrontYes: Journey.Epaye.AnsweredCanPayUpfront = Journey.Epaye.AnsweredCanPayUpfront(
+    def journeyAfterCanPayUpfrontYes: Journey.AnsweredCanPayUpfront = Journey.AnsweredCanPayUpfront(
       _id = dependencies.journeyId,
       origin = Origins.Epaye.GovUk,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
       correlationId = dependencies.correlationId,
-      stage = Stage.AfterCanPayUpfront.Yes,
       affordabilityEnabled = Some(false),
       taxId = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -137,14 +131,13 @@ trait TdJourneyEpayeGovUk {
       pegaCaseId = None
     )
 
-    def journeyAfterCanPayUpfrontNo: Journey.Epaye.AnsweredCanPayUpfront = Journey.Epaye.AnsweredCanPayUpfront(
+    def journeyAfterCanPayUpfrontNo: Journey.AnsweredCanPayUpfront = Journey.AnsweredCanPayUpfront(
       _id = dependencies.journeyId,
       origin = Origins.Epaye.GovUk,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
       correlationId = dependencies.correlationId,
-      stage = Stage.AfterCanPayUpfront.No,
       affordabilityEnabled = Some(false),
       taxId = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -155,15 +148,14 @@ trait TdJourneyEpayeGovUk {
 
     override def updateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.upfrontPaymentAmount
 
-    override def journeyAfterUpfrontPaymentAmount: Journey.Epaye.EnteredUpfrontPaymentAmount =
-      Journey.Epaye.EnteredUpfrontPaymentAmount(
+    override def journeyAfterUpfrontPaymentAmount: Journey.EnteredUpfrontPaymentAmount =
+      Journey.EnteredUpfrontPaymentAmount(
         _id = dependencies.journeyId,
         origin = Origins.Epaye.GovUk,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
         correlationId = dependencies.correlationId,
-        stage = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
         affordabilityEnabled = Some(false),
         taxId = empRef,
         eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -175,14 +167,13 @@ trait TdJourneyEpayeGovUk {
 
     def updateExtremeDatesRequest(): ExtremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment
 
-    def journeyAfterExtremeDates: Journey.Epaye.RetrievedExtremeDates = Journey.Epaye.RetrievedExtremeDates(
+    def journeyAfterExtremeDates: Journey.RetrievedExtremeDates = Journey.RetrievedExtremeDates(
       _id = dependencies.journeyId,
       origin = Origins.Epaye.GovUk,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
       correlationId = dependencies.correlationId,
-      stage = Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved,
       affordabilityEnabled = Some(false),
       taxId = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -194,15 +185,14 @@ trait TdJourneyEpayeGovUk {
 
     def updateInstalmentAmountsRequest(): InstalmentAmounts = dependencies.instalmentAmounts
 
-    def journeyAfterInstalmentAmounts: Journey.Epaye.RetrievedAffordabilityResult =
-      Journey.Epaye.RetrievedAffordabilityResult(
+    def journeyAfterInstalmentAmounts: Journey.RetrievedAffordabilityResult =
+      Journey.RetrievedAffordabilityResult(
         _id = dependencies.journeyId,
         origin = Origins.Epaye.GovUk,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
         correlationId = dependencies.correlationId,
-        stage = Stage.AfterAffordabilityResult.RetrievedAffordabilityResult,
         affordabilityEnabled = Some(false),
         taxId = empRef,
         eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -213,14 +203,13 @@ trait TdJourneyEpayeGovUk {
         pegaCaseId = None
       )
 
-    def journeyAfterCanPayWithinSixMonths: Journey.Epaye.ObtainedCanPayWithinSixMonthsAnswers =
-      Journey.Epaye.ObtainedCanPayWithinSixMonthsAnswers(
+    def journeyAfterCanPayWithinSixMonths: Journey.ObtainedCanPayWithinSixMonthsAnswers =
+      Journey.ObtainedCanPayWithinSixMonthsAnswers(
         _id = dependencies.journeyId,
         origin = Origins.Epaye.GovUk,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
-        stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerNotRequired,
         affordabilityEnabled = Some(false),
         correlationId = dependencies.correlationId,
         taxId = empRef,
@@ -235,15 +224,14 @@ trait TdJourneyEpayeGovUk {
 
     def updateMonthlyPaymentAmountRequest(): MonthlyPaymentAmount = dependencies.monthlyPaymentAmount
 
-    def journeyAfterMonthlyPaymentAmount: Journey.Epaye.EnteredMonthlyPaymentAmount =
-      Journey.Epaye.EnteredMonthlyPaymentAmount(
+    def journeyAfterMonthlyPaymentAmount: Journey.EnteredMonthlyPaymentAmount =
+      Journey.EnteredMonthlyPaymentAmount(
         _id = dependencies.journeyId,
         origin = Origins.Epaye.GovUk,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
         correlationId = dependencies.correlationId,
-        stage = Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount,
         affordabilityEnabled = Some(false),
         taxId = empRef,
         eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -258,14 +246,13 @@ trait TdJourneyEpayeGovUk {
 
     def updateDayOfMonthRequest(): DayOfMonth = dependencies.dayOfMonth
 
-    def journeyAfterDayOfMonth: Journey.Epaye.EnteredDayOfMonth = Journey.Epaye.EnteredDayOfMonth(
+    def journeyAfterDayOfMonth: Journey.EnteredDayOfMonth = Journey.EnteredDayOfMonth(
       _id = dependencies.journeyId,
       origin = Origins.Epaye.GovUk,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
       correlationId = dependencies.correlationId,
-      stage = Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth,
       affordabilityEnabled = Some(false),
       taxId = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -281,39 +268,38 @@ trait TdJourneyEpayeGovUk {
 
     def updateStartDatesResponse(): StartDatesResponse = dependencies.startDatesResponseWithInitialPayment
 
-    def journeyAfterStartDatesResponse: Journey.AfterStartDatesResponse = Journey.Epaye.RetrievedStartDates(
-      _id = dependencies.journeyId,
-      origin = Origins.Epaye.GovUk,
-      createdOn = dependencies.createdOn,
-      sjRequest = sjRequest,
-      sessionId = dependencies.sessionId,
-      correlationId = dependencies.correlationId,
-      stage = Stage.AfterStartDatesResponse.StartDatesResponseRetrieved,
-      affordabilityEnabled = Some(false),
-      taxId = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
-      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts = dependencies.instalmentAmounts,
-      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      monthlyPaymentAmount = dependencies.monthlyPaymentAmount,
-      dayOfMonth = dependencies.dayOfMonth,
-      startDatesResponse = dependencies.startDatesResponseWithInitialPayment,
-      pegaCaseId = None
-    )
-
-    def updateAffordableQuotesResponse(): AffordableQuotesResponse = dependencies.affordableQuotesResponse
-
-    def journeyAfterAffordableQuotesResponse: Journey.AfterAffordableQuotesResponse =
-      Journey.Epaye.RetrievedAffordableQuotes(
+    def journeyAfterStartDatesResponse: Journey & JourneyStage.AfterStartDatesResponse =
+      Journey.RetrievedStartDates(
         _id = dependencies.journeyId,
         origin = Origins.Epaye.GovUk,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
         correlationId = dependencies.correlationId,
-        stage = Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved,
+        affordabilityEnabled = Some(false),
+        taxId = empRef,
+        eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts = dependencies.instalmentAmounts,
+        canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+        monthlyPaymentAmount = dependencies.monthlyPaymentAmount,
+        dayOfMonth = dependencies.dayOfMonth,
+        startDatesResponse = dependencies.startDatesResponseWithInitialPayment,
+        pegaCaseId = None
+      )
+
+    def updateAffordableQuotesResponse(): AffordableQuotesResponse = dependencies.affordableQuotesResponse
+
+    def journeyAfterAffordableQuotesResponse: Journey & JourneyStage.AfterAffordableQuotesResponse =
+      Journey.RetrievedAffordableQuotes(
+        _id = dependencies.journeyId,
+        origin = Origins.Epaye.GovUk,
+        createdOn = dependencies.createdOn,
+        sjRequest = sjRequest,
+        sessionId = dependencies.sessionId,
+        correlationId = dependencies.correlationId,
         affordabilityEnabled = Some(false),
         taxId = empRef,
         eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -331,41 +317,40 @@ trait TdJourneyEpayeGovUk {
 
     def updateSelectedPaymentPlanRequest(): PaymentPlan = dependencies.paymentPlan(1)
 
-    def journeyAfterSelectedPaymentPlan: Journey.AfterSelectedPaymentPlan = Journey.Epaye.ChosenPaymentPlan(
-      _id = dependencies.journeyId,
-      origin = Origins.Epaye.GovUk,
-      createdOn = dependencies.createdOn,
-      sjRequest = sjRequest,
-      sessionId = dependencies.sessionId,
-      correlationId = dependencies.correlationId,
-      stage = Stage.AfterSelectedPlan.SelectedPlan,
-      affordabilityEnabled = Some(false),
-      taxId = empRef,
-      eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
-      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts = dependencies.instalmentAmounts,
-      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      monthlyPaymentAmount = dependencies.monthlyPaymentAmount,
-      dayOfMonth = dependencies.dayOfMonth,
-      startDatesResponse = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan = dependencies.paymentPlan(1),
-      pegaCaseId = None
-    )
-
-    def updateCheckedPaymentPlanRequest(): JsNull.type = JsNull
-
-    def journeyAfterCheckedPaymentPlanNonAffordability: Journey.AfterCheckedPaymentPlan =
-      Journey.Epaye.CheckedPaymentPlan(
+    def journeyAfterSelectedPaymentPlan: Journey & JourneyStage.AfterSelectedPaymentPlan =
+      Journey.ChosenPaymentPlan(
         _id = dependencies.journeyId,
         origin = Origins.Epaye.GovUk,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
         correlationId = dependencies.correlationId,
-        stage = Stage.AfterCheckedPlan.AcceptedPlan,
+        affordabilityEnabled = Some(false),
+        taxId = empRef,
+        eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts = dependencies.instalmentAmounts,
+        canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+        monthlyPaymentAmount = dependencies.monthlyPaymentAmount,
+        dayOfMonth = dependencies.dayOfMonth,
+        startDatesResponse = dependencies.startDatesResponseWithInitialPayment,
+        affordableQuotesResponse = dependencies.affordableQuotesResponse,
+        selectedPaymentPlan = dependencies.paymentPlan(1),
+        pegaCaseId = None
+      )
+
+    def updateCheckedPaymentPlanRequest(): JsNull.type = JsNull
+
+    def journeyAfterCheckedPaymentPlanNonAffordability: Journey & JourneyStage.AfterCheckedPaymentPlan =
+      Journey.CheckedPaymentPlan(
+        _id = dependencies.journeyId,
+        origin = Origins.Epaye.GovUk,
+        createdOn = dependencies.createdOn,
+        sjRequest = sjRequest,
+        sessionId = dependencies.sessionId,
+        correlationId = dependencies.correlationId,
         affordabilityEnabled = Some(false),
         taxId = empRef,
         eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -383,16 +368,13 @@ trait TdJourneyEpayeGovUk {
 
     def journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(
       isAccountHolder: Boolean
-    ): Journey.AfterEnteredCanYouSetUpDirectDebit = Journey.Epaye.EnteredCanYouSetUpDirectDebit(
+    ): Journey & JourneyStage.AfterEnteredCanYouSetUpDirectDebit = Journey.EnteredCanYouSetUpDirectDebit(
       _id = dependencies.journeyId,
       origin = Origins.Epaye.GovUk,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
       correlationId = dependencies.correlationId,
-      stage =
-        if (isAccountHolder) Stage.AfterEnteredCanYouSetUpDirectDebit.CanSetUpDirectDebit
-        else Stage.AfterEnteredCanYouSetUpDirectDebit.CannotSetUpDirectDebit,
       affordabilityEnabled = Some(false),
       taxId = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -408,15 +390,14 @@ trait TdJourneyEpayeGovUk {
 
     def updateDirectDebitDetailsRequest(): BankDetails = dependencies.directDebitDetails
 
-    def journeyAfterEnteredDirectDebitDetailsNoAffordability(): Journey.AfterEnteredDirectDebitDetails =
-      Journey.Epaye.EnteredDirectDebitDetails(
+    def journeyAfterEnteredDirectDebitDetailsNoAffordability(): Journey & JourneyStage.AfterEnteredDirectDebitDetails =
+      Journey.EnteredDirectDebitDetails(
         _id = dependencies.journeyId,
         origin = Origins.Epaye.GovUk,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
         correlationId = dependencies.correlationId,
-        stage = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails,
         affordabilityEnabled = Some(false),
         taxId = empRef,
         eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -433,15 +414,15 @@ trait TdJourneyEpayeGovUk {
 
     override def updateConfirmedDirectDebitDetailsRequest(): JsNull.type = JsNull
 
-    override def journeyAfterConfirmedDirectDebitDetailsNoAffordability: Journey.AfterConfirmedDirectDebitDetails =
-      Journey.Epaye.ConfirmedDirectDebitDetails(
+    override def journeyAfterConfirmedDirectDebitDetailsNoAffordability
+      : Journey & JourneyStage.AfterConfirmedDirectDebitDetails =
+      Journey.ConfirmedDirectDebitDetails(
         _id = dependencies.journeyId,
         origin = Origins.Epaye.GovUk,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
         correlationId = dependencies.correlationId,
-        stage = Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails,
         affordabilityEnabled = Some(false),
         taxId = empRef,
         eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -461,19 +442,14 @@ trait TdJourneyEpayeGovUk {
 
     def journeyAfterAgreedTermsAndConditionsNoAffordability(
       isEmailAddressRequired: Boolean
-    ): Journey.AfterAgreedTermsAndConditions = {
-      val stage =
-        if (isEmailAddressRequired) Stage.AfterAgreedTermsAndConditions.EmailAddressRequired
-        else Stage.AfterAgreedTermsAndConditions.EmailAddressNotRequired
-
-      Journey.Epaye.AgreedTermsAndConditions(
+    ): Journey & JourneyStage.AfterAgreedTermsAndConditions =
+      Journey.AgreedTermsAndConditions(
         _id = dependencies.journeyId,
         origin = Origins.Epaye.GovUk,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
         correlationId = dependencies.correlationId,
-        stage = stage,
         affordabilityEnabled = Some(false),
         taxId = empRef,
         eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,
@@ -488,17 +464,15 @@ trait TdJourneyEpayeGovUk {
         isEmailAddressRequired = IsEmailAddressRequired(isEmailAddressRequired),
         pegaCaseId = None
       )
-    }
 
     def updateSelectedEmailRequest(): Email = dependencies.email
 
-    def journeyAfterSelectedEmail: Journey.Epaye.SelectedEmailToBeVerified = Journey.Epaye.SelectedEmailToBeVerified(
+    def journeyAfterSelectedEmail: Journey.SelectedEmailToBeVerified = Journey.SelectedEmailToBeVerified(
       _id = dependencies.journeyId,
       origin = Origins.Epaye.GovUk,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
-      stage = Stage.AfterSelectedAnEmailToBeVerified.EmailChosen,
       affordabilityEnabled = Some(false),
       correlationId = dependencies.correlationId,
       taxId = empRef,
@@ -516,17 +490,13 @@ trait TdJourneyEpayeGovUk {
       pegaCaseId = None
     )
 
-    def journeyAfterEmailVerificationResult(result: EmailVerificationResult): Journey.Epaye.EmailVerificationComplete =
-      Journey.Epaye.EmailVerificationComplete(
+    def journeyAfterEmailVerificationResult(result: EmailVerificationResult): Journey.EmailVerificationComplete =
+      Journey.EmailVerificationComplete(
         _id = dependencies.journeyId,
         origin = Origins.Epaye.GovUk,
         createdOn = dependencies.createdOn,
         sjRequest = sjRequest,
         sessionId = dependencies.sessionId,
-        stage = result match {
-          case EmailVerificationResult.Verified => Stage.AfterEmailVerificationPhase.VerificationSuccess
-          case EmailVerificationResult.Locked   => Stage.AfterEmailVerificationPhase.Locked
-        },
         affordabilityEnabled = Some(false),
         correlationId = dependencies.correlationId,
         taxId = empRef,
@@ -550,14 +520,13 @@ trait TdJourneyEpayeGovUk {
 
     def journeyAfterSubmittedArrangementNoAffordability(
       isEmailAddressRequired: Boolean
-    ): Journey.AfterArrangementSubmitted = Journey.Epaye.SubmittedArrangement(
+    ): Journey & JourneyStage.AfterArrangementSubmitted = Journey.SubmittedArrangement(
       _id = dependencies.journeyId,
       origin = Origins.Epaye.GovUk,
       createdOn = dependencies.createdOn,
       sjRequest = sjRequest,
       sessionId = dependencies.sessionId,
       correlationId = dependencies.correlationId,
-      stage = Stage.AfterSubmittedArrangement.Submitted,
       affordabilityEnabled = Some(false),
       taxId = empRef,
       eligibilityCheckResult = eligibleEligibilityCheckResultEpaye,

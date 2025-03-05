@@ -37,7 +37,7 @@ class UpdateTaxIdControllerSpec extends ItSpec {
       val result: Throwable =
         journeyConnector.updateTaxId(tdAll.journeyId, tdAll.EpayeBta.updateTaxIdRequest()).failed.futureValue
       result.getMessage should include(
-        """{"statusCode":400,"message":"UpdateTaxId is not possible in this stage, why is it happening? Debug me... [Eligible]"}"""
+        """{"statusCode":400,"message":"UpdateTaxId is not possible in this stage, why is it happening? Debug me... [EligibilityChecked]"}"""
       )
 
       verifyCommonActions(numberOfAuthCalls = 1)
@@ -52,7 +52,7 @@ class UpdateTaxIdControllerSpec extends ItSpec {
         )
         val result: Throwable =
           journeyConnector.updateTaxId(tdAll.journeyId, Vrn("thisshouldfailthetest")).failed.futureValue
-        result.getMessage should include("""{"statusCode":400,"message":"Why is there a Vrn, this is for EPAYE..."}""")
+        result.getMessage should include("""{"statusCode":400,"message":"Why is there a Vrn, this is for Epaye..."}""")
 
         verifyCommonActions(numberOfAuthCalls = 1)
       }
@@ -65,7 +65,7 @@ class UpdateTaxIdControllerSpec extends ItSpec {
         val result: Throwable =
           journeyConnector.updateTaxId(tdAll.journeyId, SaUtr("thisshouldfailthetest")).failed.futureValue
         result.getMessage should include(
-          """{"statusCode":400,"message":"Why is there a SaUtr, this is for EPAYE..."}"""
+          """{"statusCode":400,"message":"Why is there a SaUtr, this is for Epaye..."}"""
         )
 
         verifyCommonActions(numberOfAuthCalls = 1)
@@ -78,7 +78,7 @@ class UpdateTaxIdControllerSpec extends ItSpec {
         )
         val result: Throwable =
           journeyConnector.updateTaxId(tdAll.journeyId, Nino("thisshouldfailthetest")).failed.futureValue
-        result.getMessage should include("""{"statusCode":400,"message":"Why is there a Nino, this is for EPAYE..."}""")
+        result.getMessage should include("""{"statusCode":400,"message":"Why is there a Nino, this is for Epaye..."}""")
 
         verifyCommonActions(numberOfAuthCalls = 1)
       }

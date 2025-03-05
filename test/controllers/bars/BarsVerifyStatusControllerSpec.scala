@@ -20,6 +20,7 @@ import essttp.bars.BarsVerifyStatusConnector
 import essttp.bars.model.{BarsVerifyStatusResponse, NumberOfBarsVerifyAttempts}
 import essttp.rootmodel.EmpRef
 import testsupport.{FrozenTime, ItSpec}
+import testsupport.Givens.{canEqualInstant, canEqualJsValue}
 
 import java.time.temporal.ChronoUnit
 

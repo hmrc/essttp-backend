@@ -3,7 +3,7 @@ import sbt.*
 
 object AppDependencies {
 
-  val bootstrapVersion = "9.10.0"
+  val bootstrapVersion = "9.11.0"
   val hmrcMongoVersion = "2.5.0"
   val chimneyVersion = "1.7.3"
   val catsVersion = "2.13.0"
@@ -48,7 +48,7 @@ object AppDependencies {
     "uk.gov.hmrc.mongo"     %% "hmrc-mongo-play-30"              % hmrcMongoVersion,
     "uk.gov.hmrc"           %% "crypto-json-play-30"             % cryptoVersion,
     "uk.gov.hmrc"           %% "payments-email-verification-cor-play-30" % "4.2.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo")),
-   "com.evolution" %% "play-json-circe" % "1.1.1"
+    "com.evolution"         %% "play-json-circe"                 % "1.1.1"
   )
 
 }

@@ -95,33 +95,33 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
             ProcessingDateTime(Instant.now().toString)
           )
 
-          def testEpayeBta[J <: Journey](
-            initialJourney: J
-          )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-              differentEligibilityCheckResult,
-              journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-              context.tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
-                .copy(eligibilityCheckResult = differentEligibilityCheckResult)
-            )(context)
+        def testEpayeBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentEligibilityCheckResult,
+            journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+            context.tdAll.EpayeBta.journeyAfterEligibilityCheckEligible
+              .copy(eligibilityCheckResult = differentEligibilityCheckResult)
+          )(context)
 
-          def testEpayeBtaWithCaseId[J <: Journey](
-            initialJourney: J
-          )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-              differentEligibilityCheckResult,
-              journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-              context.tdAll.EpayeBta.journeyAfterEligibilityCheckEligible.copy(
-                eligibilityCheckResult = differentEligibilityCheckResult,
-                pegaCaseId = Some(PegaCaseId("case-id"))
-              )
-            )(context)
+        def testEpayeBtaWithCaseId[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentEligibilityCheckResult,
+            journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+            context.tdAll.EpayeBta.journeyAfterEligibilityCheckEligible.copy(
+              eligibilityCheckResult = differentEligibilityCheckResult,
+              pegaCaseId = Some(PegaCaseId("case-id"))
+            )
+          )(context)
 
         "EligibilityChecked" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)
@@ -222,33 +222,33 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
             .eligibleEligibilityCheckResultVat()
             .copy(processingDateTime = ProcessingDateTime(Instant.now().toString))
 
-          def testVatBta[J <: Journey](
-            initialJourney: J
-          )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-              differentEligibilityCheckResult,
-              journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-              context.tdAll.VatBta.journeyAfterEligibilityCheckEligible
-                .copy(eligibilityCheckResult = differentEligibilityCheckResult)
-            )(context)
+        def testVatBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentEligibilityCheckResult,
+            journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+            context.tdAll.VatBta.journeyAfterEligibilityCheckEligible
+              .copy(eligibilityCheckResult = differentEligibilityCheckResult)
+          )(context)
 
-          def testVatBtaWithCaseId[J <: Journey](
-            initialJourney: J
-          )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-              differentEligibilityCheckResult,
-              journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-              context.tdAll.VatBta.journeyAfterEligibilityCheckEligible.copy(
-                eligibilityCheckResult = differentEligibilityCheckResult,
-                pegaCaseId = Some(PegaCaseId("case-id"))
-              )
-            )(context)
+        def testVatBtaWithCaseId[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentEligibilityCheckResult,
+            journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+            context.tdAll.VatBta.journeyAfterEligibilityCheckEligible.copy(
+              eligibilityCheckResult = differentEligibilityCheckResult,
+              pegaCaseId = Some(PegaCaseId("case-id"))
+            )
+          )(context)
 
         "EligibilityChecked" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)
@@ -347,33 +347,33 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         val differentEligibilityCheckResult =
           TdAll.eligibleEligibilityCheckResultSa.copy(processingDateTime = ProcessingDateTime(Instant.now().toString))
 
-          def testSaBta[J <: Journey](
-            initialJourney: J
-          )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-              differentEligibilityCheckResult,
-              journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-              context.tdAll.SaBta.journeyAfterEligibilityCheckEligible
-                .copy(eligibilityCheckResult = differentEligibilityCheckResult)
-            )(context)
+        def testSaBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentEligibilityCheckResult,
+            journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+            context.tdAll.SaBta.journeyAfterEligibilityCheckEligible
+              .copy(eligibilityCheckResult = differentEligibilityCheckResult)
+          )(context)
 
-          def testSaBtaWithcaseId[J <: Journey](
-            initialJourney: J
-          )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-              differentEligibilityCheckResult,
-              journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-              context.tdAll.SaBta.journeyAfterEligibilityCheckEligible.copy(
-                eligibilityCheckResult = differentEligibilityCheckResult,
-                pegaCaseId = Some(PegaCaseId("case-id"))
-              )
-            )(context)
+        def testSaBtaWithcaseId[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentEligibilityCheckResult,
+            journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+            context.tdAll.SaBta.journeyAfterEligibilityCheckEligible.copy(
+              eligibilityCheckResult = differentEligibilityCheckResult,
+              pegaCaseId = Some(PegaCaseId("case-id"))
+            )
+          )(context)
 
         "EligibilityChecked" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)
@@ -468,33 +468,33 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec with UpdateJourn
         val differentEligibilityCheckResult =
           TdAll.eligibleEligibilityCheckResultSa.copy(processingDateTime = ProcessingDateTime(Instant.now().toString))
 
-          def testSimpPta[J <: Journey](
-            initialJourney: J
-          )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-              differentEligibilityCheckResult,
-              journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-              context.tdAll.SimpPta.journeyAfterEligibilityCheckEligible
-                .copy(eligibilityCheckResult = differentEligibilityCheckResult)
-            )(context)
+        def testSimpPta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentEligibilityCheckResult,
+            journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+            context.tdAll.SimpPta.journeyAfterEligibilityCheckEligible
+              .copy(eligibilityCheckResult = differentEligibilityCheckResult)
+          )(context)
 
-          def testSimpPtaWithCaseid[J <: Journey](
-            initialJourney: J
-          )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-              differentEligibilityCheckResult,
-              journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
-              context.tdAll.SimpPta.journeyAfterEligibilityCheckEligible.copy(
-                eligibilityCheckResult = differentEligibilityCheckResult,
-                pegaCaseId = Some(PegaCaseId("case-id"))
-              )
-            )(context)
+        def testSimpPtaWithCaseid[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => EligibilityCheckResult)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentEligibilityCheckResult,
+            journeyConnector.updateEligibilityCheckResult(_, _)(context.request),
+            context.tdAll.SimpPta.journeyAfterEligibilityCheckEligible.copy(
+              eligibilityCheckResult = differentEligibilityCheckResult,
+              pegaCaseId = Some(PegaCaseId("case-id"))
+            )
+          )(context)
 
         "EligibilityChecked" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterEligibilityCheckEligible)(_.eligibilityCheckResult)(this)

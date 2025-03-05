@@ -16,7 +16,7 @@
 
 package testsupport.testdata
 
-import essttp.journey.model.{Journey, SjRequest, SjResponse}
+import essttp.journey.model.{Journey, JourneyStage, SjRequest, SjResponse}
 import essttp.rootmodel.bank.{BankDetails, CanSetUpDirectDebit}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
@@ -79,44 +79,44 @@ trait TdJourneyStructure {
 
   def updateStartDatesResponse(): StartDatesResponse
 
-  def journeyAfterStartDatesResponse: Journey.AfterStartDatesResponse
+  def journeyAfterStartDatesResponse: Journey & JourneyStage.AfterStartDatesResponse
 
   def updateAffordableQuotesResponse(): AffordableQuotesResponse
 
-  def journeyAfterAffordableQuotesResponse: Journey.AfterAffordableQuotesResponse
+  def journeyAfterAffordableQuotesResponse: Journey & JourneyStage.AfterAffordableQuotesResponse
 
   def updateSelectedPaymentPlanRequest(): PaymentPlan
 
-  def journeyAfterSelectedPaymentPlan: Journey.AfterSelectedPaymentPlan
+  def journeyAfterSelectedPaymentPlan: Journey & JourneyStage.AfterSelectedPaymentPlan
 
   def updateCheckedPaymentPlanRequest(): JsNull.type
 
-  def journeyAfterCheckedPaymentPlanNonAffordability: Journey.AfterCheckedPaymentPlan
+  def journeyAfterCheckedPaymentPlanNonAffordability: Journey & JourneyStage.AfterCheckedPaymentPlan
 
   def updateCanSetUpDirectDebitRequest(isAccountHolder: Boolean): CanSetUpDirectDebit
 
   def journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(
     isAccountHolder: Boolean
-  ): Journey.AfterEnteredCanYouSetUpDirectDebit
+  ): Journey & JourneyStage.AfterEnteredCanYouSetUpDirectDebit
 
   def updateDirectDebitDetailsRequest(): BankDetails
 
-  def journeyAfterEnteredDirectDebitDetailsNoAffordability(): Journey.AfterEnteredDirectDebitDetails
+  def journeyAfterEnteredDirectDebitDetailsNoAffordability(): Journey & JourneyStage.AfterEnteredDirectDebitDetails
 
   def updateConfirmedDirectDebitDetailsRequest(): JsNull.type
 
-  def journeyAfterConfirmedDirectDebitDetailsNoAffordability: Journey.AfterConfirmedDirectDebitDetails
+  def journeyAfterConfirmedDirectDebitDetailsNoAffordability: Journey & JourneyStage.AfterConfirmedDirectDebitDetails
 
   def updateAgreedTermsAndConditionsRequest(isEmailAddressRequired: Boolean): IsEmailAddressRequired
 
   def journeyAfterAgreedTermsAndConditionsNoAffordability(
     isEmailAddressRequired: Boolean
-  ): Journey.AfterAgreedTermsAndConditions
+  ): Journey & JourneyStage.AfterAgreedTermsAndConditions
 
   def updateArrangementRequest(): ArrangementResponse
 
   def journeyAfterSubmittedArrangementNoAffordability(
     isEmailAddressRequired: Boolean = false
-  ): Journey.AfterArrangementSubmitted
+  ): Journey & JourneyStage.AfterArrangementSubmitted
 
 }

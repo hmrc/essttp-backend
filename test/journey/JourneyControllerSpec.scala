@@ -18,7 +18,7 @@ package journey
 
 import play.api.inject.bind
 import essttp.journey.JourneyConnector
-import essttp.journey.model.{CorrelationId, JourneyId, SjResponse, Stage}
+import essttp.journey.model.{CorrelationId, JourneyId, SjResponse}
 import essttp.rootmodel.{IsEmailAddressRequired, TaxRegime}
 import journey.JourneyControllerAffordabilityEnabledSpec.TestAffordabilityEnablerService
 import paymentsEmailVerification.models.EmailVerificationResult
@@ -168,7 +168,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeBta.updateDirectDebitDetailsRequest)
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeBta.updateDirectDebitDetailsRequest())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -318,7 +318,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeGovUk.updateDirectDebitDetailsRequest())
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeGovUk.updateDirectDebitDetailsRequest()())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -479,7 +479,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateDirectDebitDetailsRequest())
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateDirectDebitDetailsRequest()())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -640,7 +640,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeEpayeService.updateDirectDebitDetailsRequest())
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeEpayeService.updateDirectDebitDetailsRequest()())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -806,7 +806,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.VatBta.updateDirectDebitDetailsRequest)
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.VatBta.updateDirectDebitDetailsRequest())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -946,7 +946,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.VatGovUk.updateDirectDebitDetailsRequest)
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.VatGovUk.updateDirectDebitDetailsRequest())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -1101,7 +1101,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.VatDetachedUrl.updateDirectDebitDetailsRequest)
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.VatDetachedUrl.updateDirectDebitDetailsRequest())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -1253,7 +1253,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.VatVatService.updateDirectDebitDetailsRequest)
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.VatVatService.updateDirectDebitDetailsRequest())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -1412,7 +1412,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.VatVatPenalties.updateDirectDebitDetailsRequest)
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.VatVatPenalties.updateDirectDebitDetailsRequest())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -1566,7 +1566,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaBta.updateDirectDebitDetailsRequest)
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaBta.updateDirectDebitDetailsRequest())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -1700,7 +1700,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaPta.updateDirectDebitDetailsRequest)
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaPta.updateDirectDebitDetailsRequest())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -1839,7 +1839,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaMobile.updateDirectDebitDetailsRequest())
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaMobile.updateDirectDebitDetailsRequest()())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -1977,7 +1977,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaGovUk.updateDirectDebitDetailsRequest())
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaGovUk.updateDirectDebitDetailsRequest()())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -2129,7 +2129,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaDetachedUrl.updateDirectDebitDetailsRequest())
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaDetachedUrl.updateDirectDebitDetailsRequest()())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -2294,7 +2294,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaItsaViewAndChange.updateDirectDebitDetailsRequest)
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaItsaViewAndChange.updateDirectDebitDetailsRequest())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaItsaViewAndChange
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -2457,7 +2457,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SimpPta.updateDirectDebitDetailsRequest)
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SimpPta.updateDirectDebitDetailsRequest())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -2603,7 +2603,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SimpMobile.updateDirectDebitDetailsRequest())
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SimpMobile.updateDirectDebitDetailsRequest()())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -2743,7 +2743,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SimpGovUk.updateDirectDebitDetailsRequest())
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SimpGovUk.updateDirectDebitDetailsRequest()())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -2902,7 +2902,7 @@ class JourneyControllerSpec extends ItSpec {
 
       /** Update Direct debit details */
       journeyConnector
-        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SimpDetachedUrl.updateDirectDebitDetailsRequest())
+        .updateDirectDebitDetails(tdAll.journeyId, tdAll.SimpDetachedUrl.updateDirectDebitDetailsRequest()())
         .futureValue
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl
         .journeyAfterEnteredDirectDebitDetailsNoAffordability()
@@ -2959,7 +2959,7 @@ object JourneyControllerAffordabilityEnabledSpec {
 
 class JourneyControllerAffordabilityEnabledSpec extends ItSpec {
 
-  lazy val testAffordabilityEnablerService = new TestAffordabilityEnablerService
+  val testAffordabilityEnablerService = new TestAffordabilityEnablerService
 
   override lazy val overrideBindings: Seq[GuiceableModule] =
     Seq[GuiceableModule](
@@ -3031,8 +3031,7 @@ class JourneyControllerAffordabilityEnabledSpec extends ItSpec {
       .copy(
         affordabilityEnabled = Some(true),
         whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired,
-        canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo,
-        stage = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerRequired
+        canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo
       )
 
     /** Update StartCaseResponse */
@@ -3068,7 +3067,9 @@ class JourneyControllerAffordabilityEnabledSpec extends ItSpec {
       )
 
     /** Update Direct debit details */
-    journeyConnector.updateDirectDebitDetails(tdAll.journeyId, tdAll.SaBta.updateDirectDebitDetailsRequest).futureValue
+    journeyConnector
+      .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaBta.updateDirectDebitDetailsRequest())
+      .futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta
       .journeyAfterEnteredDirectDebitDetailsWithAffordability()
       .copy(

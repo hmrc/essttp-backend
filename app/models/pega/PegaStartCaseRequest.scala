@@ -54,7 +54,7 @@ object PegaStartCaseRequest {
     implicit val writes: OWrites[AA] = Json.writes
   }
 
-  final case class UnableToPayReason(reason: String) extends AnyVal
+  final case class UnableToPayReason(reason: String)
 
   object UnableToPayReason {
     implicit val writes: OWrites[UnableToPayReason] = Json.writes

@@ -49,6 +49,7 @@ trait RichMatchers
   /** Returns recorded by WireMock request. Asserts there was only one request made to wire mock. Use it in Connector
     * unit tests.
     */
+  @SuppressWarnings(Array("org.wartremover.warts.MutableDataStructures"))
   def getRecordedRequest(): LoggedRequest = {
     val allRecordedRequests = WireMock.getAllServeEvents().asScala.map(_.getRequest)
     allRecordedRequests.toList match {

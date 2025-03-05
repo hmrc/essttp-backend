@@ -22,7 +22,7 @@ import play.api.libs.json.{Json, OFormat, Reads, Writes}
 
 // OPS-12826 convoluted splitting of case class is due to 22 object limit in scala 2
 // TODO after scala 3 upgrade, merge back into one simple charges class
-final case class Charges(charges1: Charges1, charges2: Charges2)
+final case class Charges(charges1: Charges1, charges2: Charges2) derives CanEqual
 
 final case class Charges1(
   chargeType:              ChargeType,

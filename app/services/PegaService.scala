@@ -19,13 +19,12 @@ package services
 import cats.implicits.catsSyntaxEq
 import connectors.PegaConnector
 import essttp.enrolments.{EnrolmentDef, EnrolmentDefResult}
-import essttp.journey.model.Journey.{Epaye, Sa, Simp, Vat}
-import essttp.journey.model._
-import essttp.rootmodel._
+import essttp.journey.model.*
+import essttp.rootmodel.*
 import essttp.rootmodel.epaye.{TaxOfficeNumber, TaxOfficeReference}
 import essttp.rootmodel.pega.{GetCaseResponse, PegaCaseId, StartCaseResponse}
 import essttp.rootmodel.ttp.PaymentPlanFrequencies
-import essttp.rootmodel.ttp.affordablequotes._
+import essttp.rootmodel.ttp.affordablequotes.*
 import essttp.rootmodel.ttp.eligibility.{ChargeReference, ChargeTypeAssessment, Charges, EligibilityCheckResult}
 import essttp.utils.RequestSupport.hc
 import essttp.utils.{Errors, RequestSupport}
@@ -82,9 +81,9 @@ class PegaService @Inject() (
 
   def saveJourney(journeyId: JourneyId)(implicit r: Request[_]): Future[Unit] =
     journeyService.get(journeyId).flatMap {
-      case _: Journey.BeforeComputedTaxId =>
+      case _: JourneyStage.BeforeComputedTaxId =>
         Errors.throwBadRequestExceptionF("Cannot save journey when no tax ID has been computed yet")
-      case j: Journey.AfterComputedTaxId  =>
+      case j: JourneyStage.AfterComputedTaxId  =>
         val now = Instant.now(Clock.systemUTC())
         journeyByTaxIdRepo.upsert(JourneyWithTaxId(j.taxId, j, now))
     }
@@ -119,86 +118,36 @@ class PegaService @Inject() (
 
   private def updateJourneyWithSessionId(journey: Journey, sessionId: SessionId): Journey =
     journey match {
-      case j: Epaye.Started                              => j.copy(sessionId = sessionId)
-      case j: Epaye.ComputedTaxId                        => j.copy(sessionId = sessionId)
-      case j: Epaye.EligibilityChecked                   => j.copy(sessionId = sessionId)
-      case j: Epaye.ObtainedWhyCannotPayInFullAnswers    => j.copy(sessionId = sessionId)
-      case j: Epaye.AnsweredCanPayUpfront                => j.copy(sessionId = sessionId)
-      case j: Epaye.EnteredUpfrontPaymentAmount          => j.copy(sessionId = sessionId)
-      case j: Epaye.RetrievedExtremeDates                => j.copy(sessionId = sessionId)
-      case j: Epaye.RetrievedAffordabilityResult         => j.copy(sessionId = sessionId)
-      case j: Epaye.ObtainedCanPayWithinSixMonthsAnswers => j.copy(sessionId = sessionId)
-      case j: Epaye.StartedPegaCase                      => j.copy(sessionId = sessionId)
-      case j: Epaye.EnteredMonthlyPaymentAmount          => j.copy(sessionId = sessionId)
-      case j: Epaye.EnteredDayOfMonth                    => j.copy(sessionId = sessionId)
-      case j: Epaye.RetrievedStartDates                  => j.copy(sessionId = sessionId)
-      case j: Epaye.RetrievedAffordableQuotes            => j.copy(sessionId = sessionId)
-      case j: Epaye.ChosenPaymentPlan                    => j.copy(sessionId = sessionId)
-      case j: Epaye.CheckedPaymentPlan                   => j.copy(sessionId = sessionId)
-      case j: Epaye.EnteredCanYouSetUpDirectDebit        => j.copy(sessionId = sessionId)
-      case j: Epaye.EnteredDirectDebitDetails            => j.copy(sessionId = sessionId)
-      case j: Epaye.ConfirmedDirectDebitDetails          => j.copy(sessionId = sessionId)
-      case j: Epaye.AgreedTermsAndConditions             => j.copy(sessionId = sessionId)
-      case j: Epaye.SelectedEmailToBeVerified            => j.copy(sessionId = sessionId)
-      case j: Epaye.EmailVerificationComplete            => j.copy(sessionId = sessionId)
-      case j: Epaye.SubmittedArrangement                 => j.copy(sessionId = sessionId)
-
-      case j: Vat.Started                              => j.copy(sessionId = sessionId)
-      case j: Vat.ComputedTaxId                        => j.copy(sessionId = sessionId)
-      case j: Vat.EligibilityChecked                   => j.copy(sessionId = sessionId)
-      case j: Vat.ObtainedWhyCannotPayInFullAnswers    => j.copy(sessionId = sessionId)
-      case j: Vat.AnsweredCanPayUpfront                => j.copy(sessionId = sessionId)
-      case j: Vat.EnteredUpfrontPaymentAmount          => j.copy(sessionId = sessionId)
-      case j: Vat.RetrievedExtremeDates                => j.copy(sessionId = sessionId)
-      case j: Vat.RetrievedAffordabilityResult         => j.copy(sessionId = sessionId)
-      case j: Vat.ObtainedCanPayWithinSixMonthsAnswers => j.copy(sessionId = sessionId)
-      case j: Vat.StartedPegaCase                      => j.copy(sessionId = sessionId)
-      case j: Vat.EnteredMonthlyPaymentAmount          => j.copy(sessionId = sessionId)
-      case j: Vat.EnteredDayOfMonth                    => j.copy(sessionId = sessionId)
-      case j: Vat.RetrievedStartDates                  => j.copy(sessionId = sessionId)
-      case j: Vat.RetrievedAffordableQuotes            => j.copy(sessionId = sessionId)
-      case j: Vat.ChosenPaymentPlan                    => j.copy(sessionId = sessionId)
-      case j: Vat.CheckedPaymentPlan                   => j.copy(sessionId = sessionId)
-      case j: Vat.EnteredCanYouSetUpDirectDebit        => j.copy(sessionId = sessionId)
-      case j: Vat.EnteredDirectDebitDetails            => j.copy(sessionId = sessionId)
-      case j: Vat.ConfirmedDirectDebitDetails          => j.copy(sessionId = sessionId)
-      case j: Vat.AgreedTermsAndConditions             => j.copy(sessionId = sessionId)
-      case j: Vat.SelectedEmailToBeVerified            => j.copy(sessionId = sessionId)
-      case j: Vat.EmailVerificationComplete            => j.copy(sessionId = sessionId)
-      case j: Vat.SubmittedArrangement                 => j.copy(sessionId = sessionId)
-
-      case j: Sa.Started                              => j.copy(sessionId = sessionId)
-      case j: Sa.ComputedTaxId                        => j.copy(sessionId = sessionId)
-      case j: Sa.EligibilityChecked                   => j.copy(sessionId = sessionId)
-      case j: Sa.ObtainedWhyCannotPayInFullAnswers    => j.copy(sessionId = sessionId)
-      case j: Sa.AnsweredCanPayUpfront                => j.copy(sessionId = sessionId)
-      case j: Sa.EnteredUpfrontPaymentAmount          => j.copy(sessionId = sessionId)
-      case j: Sa.RetrievedExtremeDates                => j.copy(sessionId = sessionId)
-      case j: Sa.RetrievedAffordabilityResult         => j.copy(sessionId = sessionId)
-      case j: Sa.ObtainedCanPayWithinSixMonthsAnswers => j.copy(sessionId = sessionId)
-      case j: Sa.StartedPegaCase                      => j.copy(sessionId = sessionId)
-      case j: Sa.EnteredMonthlyPaymentAmount          => j.copy(sessionId = sessionId)
-      case j: Sa.EnteredDayOfMonth                    => j.copy(sessionId = sessionId)
-      case j: Sa.RetrievedStartDates                  => j.copy(sessionId = sessionId)
-      case j: Sa.RetrievedAffordableQuotes            => j.copy(sessionId = sessionId)
-      case j: Sa.ChosenPaymentPlan                    => j.copy(sessionId = sessionId)
-      case j: Sa.CheckedPaymentPlan                   => j.copy(sessionId = sessionId)
-      case j: Sa.EnteredCanYouSetUpDirectDebit        => j.copy(sessionId = sessionId)
-      case j: Sa.EnteredDirectDebitDetails            => j.copy(sessionId = sessionId)
-      case j: Sa.ConfirmedDirectDebitDetails          => j.copy(sessionId = sessionId)
-      case j: Sa.AgreedTermsAndConditions             => j.copy(sessionId = sessionId)
-      case j: Sa.SelectedEmailToBeVerified            => j.copy(sessionId = sessionId)
-      case j: Sa.EmailVerificationComplete            => j.copy(sessionId = sessionId)
-      case j: Sa.SubmittedArrangement                 => j.copy(sessionId = sessionId)
-
-      case _: Simp => sys.error("No other regime should be found here")
+      case j: Journey.Started                              => j.copy(sessionId = sessionId)
+      case j: Journey.ComputedTaxId                        => j.copy(sessionId = sessionId)
+      case j: Journey.EligibilityChecked                   => j.copy(sessionId = sessionId)
+      case j: Journey.ObtainedWhyCannotPayInFullAnswers    => j.copy(sessionId = sessionId)
+      case j: Journey.AnsweredCanPayUpfront                => j.copy(sessionId = sessionId)
+      case j: Journey.EnteredUpfrontPaymentAmount          => j.copy(sessionId = sessionId)
+      case j: Journey.RetrievedExtremeDates                => j.copy(sessionId = sessionId)
+      case j: Journey.RetrievedAffordabilityResult         => j.copy(sessionId = sessionId)
+      case j: Journey.ObtainedCanPayWithinSixMonthsAnswers => j.copy(sessionId = sessionId)
+      case j: Journey.StartedPegaCase                      => j.copy(sessionId = sessionId)
+      case j: Journey.EnteredMonthlyPaymentAmount          => j.copy(sessionId = sessionId)
+      case j: Journey.EnteredDayOfMonth                    => j.copy(sessionId = sessionId)
+      case j: Journey.RetrievedStartDates                  => j.copy(sessionId = sessionId)
+      case j: Journey.RetrievedAffordableQuotes            => j.copy(sessionId = sessionId)
+      case j: Journey.ChosenPaymentPlan                    => j.copy(sessionId = sessionId)
+      case j: Journey.CheckedPaymentPlan                   => j.copy(sessionId = sessionId)
+      case j: Journey.EnteredCanYouSetUpDirectDebit        => j.copy(sessionId = sessionId)
+      case j: Journey.EnteredDirectDebitDetails            => j.copy(sessionId = sessionId)
+      case j: Journey.ConfirmedDirectDebitDetails          => j.copy(sessionId = sessionId)
+      case j: Journey.AgreedTermsAndConditions             => j.copy(sessionId = sessionId)
+      case j: Journey.SelectedEmailToBeVerified            => j.copy(sessionId = sessionId)
+      case j: Journey.EmailVerificationComplete            => j.copy(sessionId = sessionId)
+      case j: Journey.SubmittedArrangement                 => j.copy(sessionId = sessionId)
     }
 
   private def getCaseId(journey: Journey): PegaCaseId = journey match {
-    case j: Journey.AfterStartedPegaCase =>
+    case j: JourneyStage.AfterStartedPegaCase =>
       j.startCaseResponse.caseId
 
-    case j: Journey.AfterCheckedPaymentPlan =>
+    case j: JourneyStage.AfterCheckedPaymentPlan =>
       j.paymentPlanAnswers match {
         case p: PaymentPlanAnswers.PaymentPlanAfterAffordability => p.startCaseResponse.caseId
         case _: PaymentPlanAnswers.PaymentPlanNoAffordability    =>
@@ -211,8 +160,8 @@ class PegaService @Inject() (
 
   private def toPegaStartCaseRequest(journey: Journey, recalculationNeeded: Boolean): PegaStartCaseRequest = {
     val taxId                  = journey match {
-      case j: Journey.AfterComputedTaxId => j.taxId
-      case _                             => sys.error("Could not find tax id")
+      case j: JourneyStage.AfterComputedTaxId => j.taxId
+      case _                                  => sys.error("Could not find tax id")
     }
     val taxIdType              = taxId match {
       case _: EmpRef => "EMPREF"
@@ -227,29 +176,29 @@ class PegaService @Inject() (
       case TaxRegime.Simp  => "SIMP"
     }
     val eligibilityCheckResult = journey match {
-      case j: Journey.AfterEligibilityChecked => j.eligibilityCheckResult
-      case _                                  => sys.error("Could not find eligibility check result")
+      case j: JourneyStage.AfterEligibilityChecked => j.eligibilityCheckResult
+      case _                                       => sys.error("Could not find eligibility check result")
     }
     val unableToPayReasons     = journey match {
-      case j: Journey.AfterWhyCannotPayInFullAnswers =>
+      case j: JourneyStage.AfterWhyCannotPayInFullAnswers =>
         j.whyCannotPayInFullAnswers match {
           case WhyCannotPayInFullAnswers.AnswerNotRequired           =>
             sys.error("Expected WhyCannotPayInFull reasons but answer was not required")
           case WhyCannotPayInFullAnswers.WhyCannotPayInFull(reasons) => reasons.map(toUnableToPayReason)
         }
-      case _                                         => sys.error("Could not find why cannot pay in full answers")
+      case _                                              => sys.error("Could not find why cannot pay in full answers")
     }
     val upfrontPaymentAmount   = journey match {
-      case j: Journey.AfterUpfrontPaymentAnswers =>
+      case j: JourneyStage.AfterUpfrontPaymentAnswers =>
         j.upfrontPaymentAnswers match {
           case UpfrontPaymentAnswers.NoUpfrontPayment               => None
           case UpfrontPaymentAnswers.DeclaredUpfrontPayment(amount) => Some(amount)
         }
-      case _                                     => sys.error("Could not find upfront payment answers")
+      case _                                          => sys.error("Could not find upfront payment answers")
     }
     val extremeDatesResponse   = journey match {
-      case j: Journey.AfterExtremeDatesResponse => j.extremeDatesResponse
-      case _                                    => sys.error("Could not find extreme dates result")
+      case j: JourneyStage.AfterExtremeDatesResponse => j.extremeDatesResponse
+      case _                                         => sys.error("Could not find extreme dates result")
     }
 
     val totalDebt = AmountInPence(eligibilityCheckResult.chargeTypeAssessment.map(_.debtTotalAmount.value.value).sum)
@@ -300,18 +249,17 @@ class PegaService @Inject() (
   }
 
   private def toDebtItemCharges(chargeTypeAssessment: ChargeTypeAssessment): List[DebtItemCharge] =
-    chargeTypeAssessment.charges.map {
-      charge: Charges =>
-        DebtItemCharge(
-          OutstandingDebtAmount(charge.charges1.outstandingAmount.value),
-          charge.charges1.mainTrans,
-          charge.charges1.subTrans,
-          charge.charges1.isInterestBearingCharge,
-          charge.charges2.useChargeReference,
-          chargeTypeAssessment.chargeReference,
-          charge.charges1.interestStartDate,
-          DebtItemOriginalDueDate(charge.charges1.dueDate.value)
-        )
+    chargeTypeAssessment.charges.map { (charge: Charges) =>
+      DebtItemCharge(
+        OutstandingDebtAmount(charge.charges1.outstandingAmount.value),
+        charge.charges1.mainTrans,
+        charge.charges1.subTrans,
+        charge.charges1.isInterestBearingCharge,
+        charge.charges2.useChargeReference,
+        chargeTypeAssessment.chargeReference,
+        charge.charges1.interestStartDate,
+        DebtItemOriginalDueDate(charge.charges1.dueDate.value)
+      )
     }
 
   private def calculateCumulativeInterest(eligibilityCheckResult: EligibilityCheckResult): AmountInPence =
@@ -331,24 +279,23 @@ class PegaService @Inject() (
         .find(_.planSelected)
         .getOrElse(throw new Exception("Could not find selected payment plan in PEGA get case response"))
 
-    val initialCollection =
-      paymentPlan.collections.initialCollection.map(c =>
-        InitialCollection(DueDate(c.dueDate), AmountDue(AmountInPence(c.amountDue)))
+    val initialCollection = paymentPlan.collections.initialCollection.map(c =>
+      InitialCollection(DueDate(c.dueDate), AmountDue(AmountInPence(c.amountDue)))
+    )
+
+    def toRegularCollection(pegaCollection: PegaCollection): RegularCollection =
+      RegularCollection(DueDate(pegaCollection.dueDate), AmountDue(AmountInPence(pegaCollection.amountDue)))
+
+    def toInstalment(pegaInstalment: PegaInstalment): Instalment =
+      Instalment(
+        InstalmentNumber(pegaInstalment.instalmentNumber),
+        DueDate(pegaInstalment.dueDate),
+        InterestAccrued(AmountInPence(pegaInstalment.instalmentInterestAccrued)),
+        InstalmentBalance(AmountInPence(pegaInstalment.instalmentBalance)),
+        ChargeReference(pegaInstalment.debtItemChargeId),
+        AmountDue(AmountInPence(pegaInstalment.amountDue)),
+        DebtItemOriginalDueDate(pegaInstalment.debtItemOriginalDueDate)
       )
-
-      def toRegularCollection(pegaCollection: PegaCollection): RegularCollection =
-        RegularCollection(DueDate(pegaCollection.dueDate), AmountDue(AmountInPence(pegaCollection.amountDue)))
-
-      def toInstalment(pegaInstalment: PegaInstalment): Instalment =
-        Instalment(
-          InstalmentNumber(pegaInstalment.instalmentNumber),
-          DueDate(pegaInstalment.dueDate),
-          InterestAccrued(AmountInPence(pegaInstalment.instalmentInterestAccrued)),
-          InstalmentBalance(AmountInPence(pegaInstalment.instalmentBalance)),
-          ChargeReference(pegaInstalment.debtItemChargeId),
-          AmountDue(AmountInPence(pegaInstalment.amountDue)),
-          DebtItemOriginalDueDate(pegaInstalment.debtItemOriginalDueDate)
-        )
 
     val expenditure =
       response.`AA`.expenditure
