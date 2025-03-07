@@ -23,29 +23,26 @@ import play.api.libs.json.{Json, OFormat}
 
 /**
  * This represents response from the Eligibylity API
- * https://confluence.tools.tax.service.gov.uk/pages/viewpage.action?spaceKey=DTDT&title=Eligibility+API
+ * https://confluence.tools.tax.service.gov.uk/display/DTDT/TTP+Eligibility+API
  */
 final case class EligibilityCheckResult(
     processingDateTime:              ProcessingDateTime,
     identification:                  List[Identification],
-    customerPostcodes:               Option[List[CustomerPostcode]],
+    invalidSignals:                  Option[List[InvalidSignals]],
+    customerPostcodes:               List[CustomerPostcode],
+    customerDetails:                 List[CustomerDetail],
+    individualDetails:               Option[IndividualDetails],
+    addresses:                       List[Address],
+    regimeDigitalCorrespondence:     RegimeDigitalCorrespondence,
     regimePaymentFrequency:          PaymentPlanFrequency,
     paymentPlanFrequency:            PaymentPlanFrequency,
     paymentPlanMinLength:            PaymentPlanMinLength,
     paymentPlanMaxLength:            PaymentPlanMaxLength,
     eligibilityStatus:               EligibilityStatus,
     eligibilityRules:                EligibilityRules,
-    chargeTypeAssessment:            List[ChargeTypeAssessment],
-    customerDetails:                 Option[List[CustomerDetail]],
-    individualDetails:               Option[IndividualDetails],
-    addresses:                       Option[List[Address]],
-    regimeDigitalCorrespondence:     Option[RegimeDigitalCorrespondence],
-    chargeTypesExcluded:             Option[Boolean],
     futureChargeLiabilitiesExcluded: Boolean,
-    invalidSignals:                  Option[List[InvalidSignals]],
-    //TODO OPS-12584 - Clean this up when TTP has implemented the changes to the Eligibility API - customerType and transitionToCDCS have moved in customerDetails/individualDetails
-    customerType:     Option[CustomerType],
-    transitionToCDCS: Option[TransitionToCDCS]
+    chargeTypesExcluded:             Option[Boolean],
+    chargeTypeAssessment:            List[ChargeTypeAssessment]
 )
 
 object EligibilityCheckResult {
@@ -54,23 +51,11 @@ object EligibilityCheckResult {
 
     def isEligible: Boolean = e.eligibilityStatus.eligibilityPass.value
 
-    //TODO OPS-12584 - Clean this up when TTP has implemented the changes to the Eligibility API. The email address will be coming from the addresses field only
-    def email: Option[Email] = {
-      // Check for email in customerDetails
-      val emailFromCustomerDetails = e.customerDetails.flatMap(_.collectFirst{ case CustomerDetail(Some(email), _) => email })
-
-      // If not found in customerDetails, check in addresses' contactDetails
-      val emailFromAddresses = emailFromCustomerDetails.orElse {
-        e.addresses.flatMap { addresses =>
-          addresses
-            .flatMap(_.contactDetails)
-            .collectFirst {
-              case ContactDetail(_, _, _, Some(emailAddress), _, _) => emailAddress
-            }
-        }
+    def email: Option[Email] = e.addresses
+      .flatMap(_.contactDetails)
+      .collectFirst {
+        case ContactDetail(_, _, _, Some(emailAddress), _, _) => emailAddress
       }
-      emailFromAddresses
-    }
 
   }
 

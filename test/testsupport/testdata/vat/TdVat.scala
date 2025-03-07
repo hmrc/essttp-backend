@@ -20,7 +20,7 @@ import essttp.rootmodel.ttp._
 import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.ttp.arrangement.{ArrangementResponse, CustomerReference}
 import essttp.rootmodel.ttp.eligibility._
-import essttp.rootmodel.{AmountInPence, TaxId, Vrn}
+import essttp.rootmodel.{AmountInPence, Email, TaxId, Vrn}
 import testsupport.testdata.TdBase
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
@@ -40,11 +40,38 @@ trait TdVat {
       )
     ),
     invalidSignals                  = None,
-    customerPostcodes               = Some(List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate(LocalDate.of(2020, 1, 1))))),
-    customerDetails                 = None,
+    customerPostcodes               = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate(LocalDate.of(2020, 1, 1)))),
+    customerDetails                 = List(CustomerDetail(
+      emailAddress = None,
+      emailSource  = None
+    )),
     individualDetails               = None,
-    addresses                       = None,
-    customerType                    = None,
+    addresses                       = List(
+      Address(
+        addressType     = AddressType("Residential"),
+        addressLine1    = None,
+        addressLine2    = None,
+        addressLine3    = None,
+        addressLine4    = None,
+        rls             = None,
+        contactDetails  = Some(ContactDetail(
+          telephoneNumber = None,
+          fax             = None,
+          mobile          = None,
+          emailAddress    = Some(Email(SensitiveString("some@email"))),
+          emailSource     = None,
+          altFormat       = None
+        )),
+        postCode        = None,
+        country         = None,
+        postcodeHistory = List(
+          PostcodeHistory(
+            addressPostcode = Postcode(SensitiveString("POSTCODE")),
+            postcodeDate    = PostcodeDate(LocalDate.now())
+          )
+        )
+      )
+    ),
     regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
     paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
     paymentPlanMinLength            = PaymentPlanMinLength(1),
@@ -100,10 +127,9 @@ trait TdVat {
         )
       )
     ),
-    regimeDigitalCorrespondence     = None,
+    regimeDigitalCorrespondence     = RegimeDigitalCorrespondence(value = true),
     futureChargeLiabilitiesExcluded = false,
-    chargeTypesExcluded             = None,
-    transitionToCDCS                = None
+    chargeTypesExcluded             = None
   )
 
   val arrangementResponseVat: ArrangementResponse = ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(vrn.value))
