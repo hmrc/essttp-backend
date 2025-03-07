@@ -36,7 +36,7 @@ final case class AffordableQuotesRequest(
     initialPaymentDate:          Option[InitialPaymentDate],
     initialPaymentAmount:        Option[UpfrontPaymentAmount],
     debtItemCharges:             List[DebtItemCharge],
-    customerPostcodes:           Option[List[CustomerPostcode]]
+    customerPostcodes:           List[CustomerPostcode]
 )
 
 object AffordableQuotesRequest {

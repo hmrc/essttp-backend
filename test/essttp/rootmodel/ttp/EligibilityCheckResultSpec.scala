@@ -17,10 +17,12 @@
 package essttp.rootmodel.ttp
 
 import essttp.rootmodel.Email
-import essttp.rootmodel.ttp.eligibility.{Address, ContactDetail, CustomerDetail}
+import essttp.rootmodel.ttp.eligibility._
 import testsupport.UnitSpec
 import testsupport.testdata.TdAll
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
+
+import java.time.LocalDate
 
 class EligibilityCheckResultSpec extends UnitSpec {
 
@@ -32,32 +34,36 @@ class EligibilityCheckResultSpec extends UnitSpec {
     }
 
     "email when" - {
+      val addressesWithNoEmail = List(Address(
+        AddressType("Residential"), None, None, None, None, None,
+        Some(ContactDetail(None, None, None, None, None, None)), None, None,
+        List(PostcodeHistory(Postcode(SensitiveString("POSTCODE")), PostcodeDate(LocalDate.now)))
+      ))
+
+      val addressesWithNoContactDetails = List(Address(
+        AddressType("Residential"), None, None, None, None, None, None, None, None,
+        List(PostcodeHistory(Postcode(SensitiveString("POSTCODE")), PostcodeDate(LocalDate.now)))
+      ))
+
+      val addressesWithEmailInContactDetails = List(Address(
+        AddressType("Residential"), None, None, None, None, None,
+        Some(ContactDetail(None, None, None, Some(Email(SensitiveString("abc@email.com"))), None, None)), None, None,
+        List(PostcodeHistory(Postcode(SensitiveString("POSTCODE")), PostcodeDate(LocalDate.now)))
+      ))
 
       "there are no emails" in {
-        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = None, addresses = None).email shouldBe None
-        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = Some(List.empty), addresses = None).email shouldBe None
-        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = None, addresses = Some(List(Address(None, None, None, None, None, None, None, None, None, None)))).email shouldBe None
-        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = None, addresses = Some(List(Address(None, None, None, None, None, None, Some(ContactDetail(None, None, None, None, None, None)), None, None, None)))).email shouldBe None
+        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = List(CustomerDetail(None, None)), addresses = addressesWithNoEmail).email shouldBe None
+        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = List(CustomerDetail(None, None)), addresses = addressesWithNoContactDetails).email shouldBe None
       }
 
-      "there are emails in customerDetails" in {
+      "there are emails in addresses" in {
         val expectedEmail = Email(SensitiveString("abc@email.com"))
-        TdAll.eligibleEligibilityCheckResultSa.copy(
-          customerDetails = Some(List(
-            CustomerDetail(None, None),
-            CustomerDetail(Some(expectedEmail), None),
-            CustomerDetail(Some(Email(SensitiveString("xyz@email.com"))), None)
-          )), addresses = None
-        ).email shouldBe Some(expectedEmail)
+        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = List(CustomerDetail(None, None)), addresses = addressesWithEmailInContactDetails)
+          .email shouldBe Some(expectedEmail)
       }
 
-      "there are no emails in customerDetails, but there are emails in addresses" in {
-        val expectedEmail = Email(SensitiveString("abc@email.com"))
-        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = None, addresses = Some(List(
-          Address(None, None, None, None, None, None, Some(ContactDetail(None, None, None, None, None, None)), None, None, None),
-          Address(None, None, None, None, None, None, Some(ContactDetail(None, None, None, Some(Email(SensitiveString("abc@email.com"))), None, None)), None, None, None),
-          Address(None, None, None, None, None, None, Some(ContactDetail(None, None, None, Some(Email(SensitiveString("xyz@email.com"))), None, None)), None, None, None)
-        ))).email shouldBe Some(expectedEmail)
+      "there are no emails in addresses, but there are emails in customerDetails" in {
+        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = List(CustomerDetail(Some(Email(SensitiveString("abc@email.com"))), None)), addresses = addressesWithNoContactDetails).email shouldBe None
       }
     }
 
