@@ -31,7 +31,7 @@ import play.api.libs.json.JsNull
 import testsupport.testdata.{TdBase, TdJourneyStructure}
 
 trait TdJourneySimpMobile {
-  dependencies: TdBase with TdSimp =>
+  dependencies: TdBase & TdSimp =>
 
   object SimpMobile extends TdJourneyStructure {
 

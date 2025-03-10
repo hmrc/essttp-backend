@@ -11,9 +11,9 @@ val majorVer = 2
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
 
-val appScalaVersion = "3.3.4"
+val appScalaVersion = "3.5.1"
 
-lazy val playSettings : Seq[Setting[_]] = Seq.empty
+lazy val playSettings : Seq[Setting[?]] = Seq.empty
 
 lazy val scalaCompilerOptions = Seq(
   "-Xfatal-warnings",
@@ -25,7 +25,7 @@ lazy val scalaCompilerOptions = Seq(
   "-language:implicitConversions",
   "-language:strictEquality",
   // required in place of silencer plugin
-  "-Wconf:msg=unused-imports&src=html/.*:s",
+  "-Wconf:msg=unused import&src=html/.*:s",
   "-Wconf:src=routes/.*:s"
 )
 

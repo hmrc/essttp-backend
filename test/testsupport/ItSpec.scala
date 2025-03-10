@@ -49,7 +49,7 @@ import scala.util.Random
 
 trait ItSpec extends AnyFreeSpecLike, RichMatchers, GuiceOneServerPerSuite, WireMockSupport { self =>
 
-  given testCrypto: (Encrypter with Decrypter) = new AesCrypto {
+  given testCrypto: (Encrypter & Decrypter) = new AesCrypto {
     override protected val encryptionKey: String = "P5xsJ9Nt+quxGZzB4DeLfw=="
   }
 
@@ -140,7 +140,7 @@ trait ItSpec extends AnyFreeSpecLike, RichMatchers, GuiceOneServerPerSuite, Wire
   override def fakeApplication(): Application = new GuiceApplicationBuilder()
     .configure(conf)
     .overrides(GuiceableModule.fromGuiceModules(Seq(overridingsModule)))
-    .overrides(overrideBindings: _*)
+    .overrides(overrideBindings*)
     .build()
 
   object TestServerFactory extends DefaultTestServerFactory {
@@ -168,7 +168,7 @@ trait ItSpec extends AnyFreeSpecLike, RichMatchers, GuiceOneServerPerSuite, Wire
   trait BarsVerifyStatusItTest {
     import testsupport.TdSupport._
 
-    given Request[_] = FakeRequest()
+    given Request[?] = FakeRequest()
       .withSessionId()
       .withAuthToken()
       .withAkamaiReputationHeader()

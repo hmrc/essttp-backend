@@ -64,7 +64,7 @@ class UpdateCheckYouCanSetupDDController @Inject() (
   private def updateJourneyWithNewValue(
     journey:             Journey.CheckedPaymentPlan,
     canSetUpDirectDebit: CanSetUpDirectDebit
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey =
       journey
         .into[Journey.EnteredCanYouSetUpDirectDebit]
@@ -77,7 +77,7 @@ class UpdateCheckYouCanSetupDDController @Inject() (
   private def updateJourneyWithExistingValue(
     journey:             JourneyStage.AfterEnteredCanYouSetUpDirectDebit & Journey,
     canSetUpDirectDebit: CanSetUpDirectDebit
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     if (journey.canSetUpDirectDebitAnswer == canSetUpDirectDebit) {
       JourneyLogger.info("Chosen type of bank account hasn't changed, nothing to update")
       Future.successful(journey)

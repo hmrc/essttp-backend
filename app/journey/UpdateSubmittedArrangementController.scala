@@ -83,7 +83,7 @@ class UpdateSubmittedArrangementController @Inject() (
   private def updateJourneyWithNewValue(
     journey:             Either[Journey.AgreedTermsAndConditions, Journey.EmailVerificationComplete],
     arrangementResponse: ArrangementResponse
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey = journey match {
       case Left(j: Journey.AgreedTermsAndConditions) =>
         j.into[Journey.SubmittedArrangement]

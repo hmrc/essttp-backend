@@ -34,7 +34,7 @@ class TestDatesConnector @Inject() (httpClient: HttpClientV2)(implicit execution
   private val essttpBackendBaseUrl = s"http://localhost:${ItSpec.testServerPort.toString}/essttp-backend"
 
   given HttpReads[HttpResponse] =
-    HttpReadsInstances.throwOnFailure(HttpReadsInstances.readEitherOf(HttpReadsInstances.readRaw))
+    HttpReadsInstances.throwOnFailure(HttpReadsInstances.readEitherOf(using HttpReadsInstances.readRaw))
 
   def startDates(startDatesRequest: StartDatesRequest)(using HeaderCarrier): Future[StartDatesResponse] =
     httpClient

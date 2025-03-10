@@ -67,7 +67,7 @@ class UpdateDatesController @Inject() (
   private def updateJourneyWithNewExtremeDatesValue(
     journey:              Either[Journey.AnsweredCanPayUpfront, Journey.EnteredUpfrontPaymentAmount],
     extremeDatesResponse: ExtremeDatesResponse
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey = journey match {
       case Left(j: Journey.AnsweredCanPayUpfront) =>
         j.into[Journey.RetrievedExtremeDates]
@@ -87,7 +87,7 @@ class UpdateDatesController @Inject() (
   private def updateJourneyWithExistingExtremeDatesValue(
     journey:              JourneyStage.AfterExtremeDatesResponse & Journey,
     extremeDatesResponse: ExtremeDatesResponse
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     if (journey.extremeDatesResponse == extremeDatesResponse) {
       JourneyLogger.info("Nothing to update, ExtremeDatesResponse is the same as the existing one in journey.")
       Future.successful(journey)
@@ -211,7 +211,7 @@ class UpdateDatesController @Inject() (
   private def updateJourneyWithNewStartDatesValue(
     journey:            Journey.EnteredDayOfMonth,
     startDatesResponse: StartDatesResponse
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey =
       journey
         .into[Journey.RetrievedStartDates]
@@ -224,7 +224,7 @@ class UpdateDatesController @Inject() (
   private def updateJourneyWithExistingStartDatesValue(
     journey:            Either[JourneyStage.AfterStartDatesResponse & Journey, JourneyStage.AfterCheckedPaymentPlan & Journey],
     startDatesResponse: StartDatesResponse
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     journey match {
       case Left(afterStartDatesResponse) =>
         updateJourneyWithExistingValue(
@@ -318,7 +318,7 @@ class UpdateDatesController @Inject() (
     existingJourney: Journey,
     newValue:        StartDatesResponse,
     newJourney:      Journey
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     if (existingValue == newValue) {
       JourneyLogger.info("Nothing to update, StartDatesResponse is the same as the existing one in journey.")
       Future.successful(existingJourney)

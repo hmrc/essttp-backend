@@ -31,7 +31,7 @@ import play.api.libs.json.JsNull
 import testsupport.testdata.{TdBase, TdJourneyStructure}
 
 trait TdJourneySaBta {
-  dependencies: TdBase with TdSa =>
+  dependencies: TdBase & TdSa =>
 
   object SaBta extends TdJourneyStructure {
 

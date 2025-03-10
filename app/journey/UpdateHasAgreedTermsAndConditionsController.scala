@@ -57,7 +57,7 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
   private def updateJourneyWithNewValue(
     journey:                Journey.ConfirmedDirectDebitDetails,
     isEmailAddressRequired: IsEmailAddressRequired
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey =
       journey
         .into[Journey.AgreedTermsAndConditions]
@@ -70,7 +70,7 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
   private def updateJourneyWithExistingValue(
     journey:                JourneyStage.AfterAgreedTermsAndConditions & Journey,
     isEmailAddressRequired: IsEmailAddressRequired
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     journey match {
       case _: Journey.SubmittedArrangement =>
         Errors.throwBadRequestException("Cannot update AgreedTermsAndConditions when journey is in completed state")
@@ -107,7 +107,7 @@ class UpdateHasAgreedTermsAndConditionsController @Inject() (
     j:                      JourneyStage.AfterAgreedTermsAndConditions & Journey,
     isEmailAddressRequired: IsEmailAddressRequired,
     updatedJourney:         => JourneyStage.AfterAgreedTermsAndConditions & Journey
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     if (j.isEmailAddressRequired == isEmailAddressRequired) Future.successful(j)
     else journeyService.upsert(updatedJourney)
 

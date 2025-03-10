@@ -52,10 +52,10 @@ object EnrolmentDef {
         case (_, IdentifierNotFound(enrolmentDef)) =>
           IdentifierNotFound(enrolmentDef)
 
-        case (_: EnrolmentNotFound[_], _) => EnrolmentNotFound()
-        case (_, _: EnrolmentNotFound[_]) => EnrolmentNotFound()
-        case (_: Inactive[_], _)          => Inactive()
-        case (_, _: Inactive[_])          => Inactive()
+        case (_: EnrolmentNotFound[?], _) => EnrolmentNotFound()
+        case (_, _: EnrolmentNotFound[?]) => EnrolmentNotFound()
+        case (_: Inactive[?], _)          => Inactive()
+        case (_, _: Inactive[?])          => Inactive()
       }
 
   }

@@ -31,7 +31,7 @@ import play.api.libs.json.JsNull
 import testsupport.testdata.{TdBase, TdJourneyStructure}
 
 trait TdJourneyVatVatService {
-  dependencies: TdBase with TdVat =>
+  dependencies: TdBase & TdVat =>
   object VatVatService extends TdJourneyStructure {
     def sjRequest: Vat.Simple = SjRequest.Vat.Simple(
       dependencies.returnUrl,

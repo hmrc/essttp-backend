@@ -51,7 +51,7 @@ class PegaService @Inject() (
   correlationIdGenerator: PegaCorrelationIdGenerator
 )(using ExecutionContext) {
 
-  def startCase(journeyId: JourneyId, recalculationNeeded: Boolean)(using Request[_]): Future[StartCaseResponse] =
+  def startCase(journeyId: JourneyId, recalculationNeeded: Boolean)(using Request[?]): Future[StartCaseResponse] =
     for {
       journey          <- journeyService.get(journeyId)
       request           = toPegaStartCaseRequest(journey, recalculationNeeded)
@@ -59,7 +59,7 @@ class PegaService @Inject() (
       response         <- doPegaCall(pegaConnector.startCase(request, _, pegaCorrelationId))
     } yield toStartCaseResponse(response, pegaCorrelationId)
 
-  def getCase(journeyId: JourneyId)(using Request[_]): Future[GetCaseResponse] =
+  def getCase(journeyId: JourneyId)(using Request[?]): Future[GetCaseResponse] =
     for {
       journey          <- journeyService.get(journeyId)
       caseId            = getCaseId(journey)
@@ -78,7 +78,7 @@ class PegaService @Inject() (
       }
     }
 
-  def saveJourney(journeyId: JourneyId)(using Request[_]): Future[Unit] =
+  def saveJourney(journeyId: JourneyId)(using Request[?]): Future[Unit] =
     journeyService.get(journeyId).flatMap {
       case _: JourneyStage.BeforeComputedTaxId =>
         Errors.throwBadRequestExceptionF("Cannot save journey when no tax ID has been computed yet")
@@ -87,13 +87,13 @@ class PegaService @Inject() (
         journeyByTaxIdRepo.upsert(JourneyWithTaxId(j.taxId, j, now))
     }
 
-  def recreateSession(taxRegime: TaxRegime, enrolments: Enrolments)(using Request[_]): Future[Journey] = {
+  def recreateSession(taxRegime: TaxRegime, enrolments: Enrolments)(using Request[?]): Future[Journey] = {
     def toEmpRef(taxOfficeNumber: TaxOfficeNumber, taxOfficeReference: TaxOfficeReference): EmpRef =
       EmpRef(s"${taxOfficeNumber.value}${taxOfficeReference.value}")
 
     val enrolmentResult: EnrolmentDefResult[TaxId] = taxRegime match {
       case TaxRegime.Epaye =>
-        EnrolmentDef.Epaye.findEnrolmentValues(enrolments).map((toEmpRef _).tupled)
+        EnrolmentDef.Epaye.findEnrolmentValues(enrolments).map(toEmpRef.tupled)
       case TaxRegime.Vat   => EnrolmentDef.Vat.findEnrolmentValues(enrolments)
       case TaxRegime.Sa    => EnrolmentDef.Sa.findEnrolmentValues(enrolments)
       case TaxRegime.Simp  => sys.error("SIMP should have never ended up here")

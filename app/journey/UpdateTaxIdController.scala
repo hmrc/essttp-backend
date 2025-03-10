@@ -47,7 +47,7 @@ class UpdateTaxIdController @Inject() (
       } yield Ok(newJourney.json)
   }
 
-  private def updateJourney(journey: Journey, taxId: TaxId)(using Request[_]): Future[Journey] =
+  private def updateJourney(journey: Journey, taxId: TaxId)(using Request[?]): Future[Journey] =
     journey match {
       case j: Journey.Started =>
         val validatedId: Validated[String, TaxId] = (j.origin.taxRegime, taxId) match {

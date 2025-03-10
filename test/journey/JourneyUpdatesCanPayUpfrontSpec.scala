@@ -26,7 +26,7 @@ import testsupport.testdata.TdAll
 class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
   def journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
-  def putJourneyIntoObtainedWhyCannotPayInFullState(tdAll: TdAll)(using Request[_]): Unit = {
+  def putJourneyIntoObtainedWhyCannotPayInFullState(tdAll: TdAll)(using Request[?]): Unit = {
     journeyConnector.updateTaxId(tdAll.journeyId, tdAll.EpayeBta.updateTaxIdRequest()).futureValue
     journeyConnector
       .updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest())
@@ -43,7 +43,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
 
-    given Request[_]         = tdAll.request
+    given Request[?]         = tdAll.request
     val response: SjResponse = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
     response shouldBe tdAll.EpayeBta.sjResponse
     putJourneyIntoObtainedWhyCannotPayInFullState(tdAll)
@@ -71,7 +71,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
 
-    given Request[_]         = tdAll.request
+    given Request[?]         = tdAll.request
     val response: SjResponse = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
     response shouldBe tdAll.EpayeBta.sjResponse
     putJourneyIntoObtainedWhyCannotPayInFullState(tdAll)
@@ -101,7 +101,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
 
-    given Request[_]         = tdAll.request
+    given Request[?]         = tdAll.request
     val response: SjResponse = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
     response shouldBe tdAll.EpayeBta.sjResponse
     putJourneyIntoObtainedWhyCannotPayInFullState(tdAll)

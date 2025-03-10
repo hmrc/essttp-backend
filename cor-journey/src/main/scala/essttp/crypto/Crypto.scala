@@ -25,7 +25,7 @@ class Crypto @Inject() (configuration: Configuration) extends Encrypter, Decrypt
 
   val aesGcmCryptoKey: String = configuration.get[String]("crypto.encryption-key")
 
-  given aesCrypto: (Encrypter with Decrypter) = SymmetricCryptoFactory.aesGcmCrypto(aesGcmCryptoKey)
+  given aesCrypto: (Encrypter & Decrypter) = SymmetricCryptoFactory.aesGcmCrypto(aesGcmCryptoKey)
 
   override def encrypt(plain: PlainContent): Crypted = aesCrypto.encrypt(plain)
 

@@ -63,7 +63,7 @@ class UpdatePegaStartCaseResponseController @Inject() (
   private def updateJourneyWithNewValue(
     journey:           Journey.ObtainedCanPayWithinSixMonthsAnswers,
     startCaseResponse: StartCaseResponse
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey =
       journey
         .into[Journey.StartedPegaCase]
@@ -77,7 +77,7 @@ class UpdatePegaStartCaseResponseController @Inject() (
   private def updateJourneyWithExistingValue(
     journey:           Either[JourneyStage.AfterStartedPegaCase & Journey, JourneyStage.AfterCheckedPaymentPlan & Journey],
     startCaseResponse: StartCaseResponse
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     journey match {
       case Left(afterStartedPegaCase) =>
         updateJourneyWithExistingValue(
@@ -156,7 +156,7 @@ class UpdatePegaStartCaseResponseController @Inject() (
     existingJourney: Journey,
     newValue:        StartCaseResponse,
     newJourney:      Journey
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     if (existingValue == newValue) {
       JourneyLogger.info("Nothing to update, PEGA StartCaseResponse is the same as the existing one in journey.")
       Future.successful(existingJourney)

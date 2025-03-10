@@ -63,7 +63,7 @@ class UpdateMonthlyPaymentAmountController @Inject() (
   private def updateJourneyWithNewValue(
     journey:              Journey.ObtainedCanPayWithinSixMonthsAnswers,
     monthlyPaymentAmount: MonthlyPaymentAmount
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey =
       journey
         .into[Journey.EnteredMonthlyPaymentAmount]
@@ -79,7 +79,7 @@ class UpdateMonthlyPaymentAmountController @Inject() (
       JourneyStage.AfterCheckedPaymentPlan & Journey
     ],
     monthlyPaymentAmount: MonthlyPaymentAmount
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     journey match {
       case Left(afterEnteredMonthlyPaymentAmount) =>
         updateJourneyWithExistingValue(
@@ -171,7 +171,7 @@ class UpdateMonthlyPaymentAmountController @Inject() (
     existingJourney: Journey,
     newValue:        MonthlyPaymentAmount,
     newJourney:      Journey
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     if (existingValue.value == newValue.value) {
       JourneyLogger.info("Nothing to update, selected MonthlyPaymentAmount is the same as the existing one in journey.")
       Future.successful(existingJourney)

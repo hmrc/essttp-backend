@@ -40,7 +40,7 @@ object RequestSupport {
   given hc(using request: RequestHeader): HeaderCarrier =
     HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-  def getSessionId()(using Request[_]): SessionId =
+  def getSessionId()(using Request[?]): SessionId =
     hc.sessionId
       .map(s => SessionId(s.value))
       .getOrElse(

@@ -62,7 +62,7 @@ class UpdateHasConfirmedDirectDebitDetailsController @Inject() (
 
   private def updateJourneyWithNewValue(
     journey: Journey.EnteredDirectDebitDetails
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey = journey.into[Journey.ConfirmedDirectDebitDetails].transform
 
     journeyService.upsert(newJourney)

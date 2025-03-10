@@ -66,7 +66,7 @@ class UpdateEmailVerificationResultController @Inject() (
   private def updateJourneyWithNewValue(
     journey: Journey.SelectedEmailToBeVerified,
     status:  EmailVerificationResult
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey =
       journey
         .into[Journey.EmailVerificationComplete]
@@ -83,7 +83,7 @@ class UpdateEmailVerificationResultController @Inject() (
   private def updateJourneyWithExistingValue(
     journey: Journey.EmailVerificationComplete & Journey,
     result:  EmailVerificationResult
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     if (journey.emailVerificationResult == result) {
       Future.successful(journey)
     } else {

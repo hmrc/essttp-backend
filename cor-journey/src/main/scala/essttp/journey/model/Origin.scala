@@ -158,6 +158,6 @@ object Origins extends Enum[Origin] {
 /** Mixin to provide a better name for origins
   */
 trait BetterName extends EnumEntry { self: Origin =>
-  override def entryName: String                 = stableEntryName
-  private[this] lazy val stableEntryName: String = self.toString
+  override def entryName: String           = stableEntryName
+  private lazy val stableEntryName: String = self.toString
 }

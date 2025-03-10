@@ -65,7 +65,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
   private def updateJourneyWithNewValue(
     journey:                   Journey.EligibilityChecked,
     whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey =
       journey
         .into[Journey.ObtainedWhyCannotPayInFullAnswers]
@@ -79,7 +79,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
   private def updateJourneyWithExistingValue(
     journey:                   JourneyStage.AfterWhyCannotPayInFullAnswers & Journey,
     whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     if (journey.whyCannotPayInFullAnswers == whyCannotPayInFullAnswers) {
       Future.successful(journey)
     } else {

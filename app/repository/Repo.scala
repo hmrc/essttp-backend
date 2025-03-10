@@ -31,7 +31,7 @@ abstract class Repo[ID, A: ClassTag](
   collectionName:   String,
   mongoComponent:   MongoComponent,
   indexes:          Seq[IndexModel],
-  extraCodecs:      Seq[Codec[_]],
+  extraCodecs:      Seq[Codec[?]],
   replaceIndexes:   Boolean = false
 )(using
   domainFormat:     OFormat[A],

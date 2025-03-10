@@ -70,7 +70,7 @@ class UpdateDayOfMonthController @Inject() (
   private def updateJourneyWithNewValue(
     journey:    Journey.EnteredMonthlyPaymentAmount,
     dayOfMonth: DayOfMonth
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey =
       journey
         .into[Journey.EnteredDayOfMonth]
@@ -83,7 +83,7 @@ class UpdateDayOfMonthController @Inject() (
   private def updateJourneyWithExistingValue(
     journey:    Either[JourneyStage.AfterEnteredDayOfMonth & Journey, JourneyStage.AfterCheckedPaymentPlan & Journey],
     dayOfMonth: DayOfMonth
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     journey match {
       case Left(afterEnteredDayOfMonth) =>
         updateJourneyWithExistingValue(
@@ -176,7 +176,7 @@ class UpdateDayOfMonthController @Inject() (
     existingJourney: Journey,
     newValue:        DayOfMonth,
     newJourney:      Journey
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     if (existingValue == newValue) {
       JourneyLogger.info("Nothing to update, DayOfMonth is the same as the existing one in journey.")
       Future.successful(existingJourney)

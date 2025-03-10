@@ -65,7 +65,7 @@ class UpdateUpfrontPaymentAmountController @Inject() (
   private def updateJourneyWithNewValue(
     journey:              Journey.AnsweredCanPayUpfront,
     upfrontPaymentAmount: UpfrontPaymentAmount
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     if (journey.canPayUpfront.value) {
       val updatedJourney: Journey =
         journey
@@ -86,7 +86,7 @@ class UpdateUpfrontPaymentAmountController @Inject() (
       JourneyStage.AfterUpfrontPaymentAnswers & Journey
     ],
     upfrontPaymentAmount: UpfrontPaymentAmount
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
 
     journey match {
       case Left(j) =>

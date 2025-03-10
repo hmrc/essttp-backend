@@ -64,7 +64,7 @@ class UpdateEligibilityCheckResultController @Inject() (
   private def updateJourneyWithNewValue(
     journey:                Journey.ComputedTaxId & Journey,
     eligibilityCheckResult: EligibilityCheckResult
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney = journey
       .into[Journey.EligibilityChecked]
       .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
@@ -76,7 +76,7 @@ class UpdateEligibilityCheckResultController @Inject() (
   private def updateJourneyWithExistingValue(
     journey:                JourneyStage.AfterEligibilityChecked & Journey,
     eligibilityCheckResult: EligibilityCheckResult
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     if (journey.eligibilityCheckResult == eligibilityCheckResult) {
       JourneyLogger.info("Nothing to update, EligibilityCheckResult is the same as the existing one in journey.")
       Future.successful(journey)

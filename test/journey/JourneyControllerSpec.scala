@@ -69,7 +69,7 @@ class JourneyControllerSpec extends ItSpec {
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
 
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse = journeyConnector.Epaye.startJourneyBta(tdAll.EpayeBta.sjRequest).futureValue
 
       /** Start journey */
@@ -213,7 +213,7 @@ class JourneyControllerSpec extends ItSpec {
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
 
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse = journeyConnector.Epaye.startJourneyGovUk(tdAll.EpayeGovUk.sjRequest).futureValue
 
       /** Start journey */
@@ -361,7 +361,7 @@ class JourneyControllerSpec extends ItSpec {
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
 
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse =
         journeyConnector.Epaye.startJourneyDetachedUrl(tdAll.EpayeDetachedUrl.sjRequest).futureValue
 
@@ -522,7 +522,7 @@ class JourneyControllerSpec extends ItSpec {
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
 
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse =
         journeyConnector.Epaye.startJourneyEpayeService(tdAll.EpayeEpayeService.sjRequest).futureValue
 
@@ -707,7 +707,7 @@ class JourneyControllerSpec extends ItSpec {
         override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse = journeyConnector.Vat.startJourneyBta(tdAll.VatBta.sjRequest).futureValue
 
       /** Start journey */
@@ -849,7 +849,7 @@ class JourneyControllerSpec extends ItSpec {
         override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse = journeyConnector.Vat.startJourneyGovUk(tdAll.VatGovUk.sjRequest).futureValue
 
       /** Start journey */
@@ -987,7 +987,7 @@ class JourneyControllerSpec extends ItSpec {
         override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse =
         journeyConnector.Vat.startJourneyDetachedUrl(tdAll.VatDetachedUrl.sjRequest).futureValue
 
@@ -1142,7 +1142,7 @@ class JourneyControllerSpec extends ItSpec {
         override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse = journeyConnector.Vat.startJourneyVatService(tdAll.VatVatService.sjRequest).futureValue
 
       /** Start journey */
@@ -1294,7 +1294,7 @@ class JourneyControllerSpec extends ItSpec {
         override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse =
         journeyConnector.Vat.startJourneyVatPenalties(tdAll.VatVatPenalties.sjRequest).futureValue
 
@@ -1475,7 +1475,7 @@ class JourneyControllerSpec extends ItSpec {
         override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse = journeyConnector.Sa.startJourneyBta(tdAll.SaBta.sjRequest).futureValue
 
       /** Start journey */
@@ -1609,7 +1609,7 @@ class JourneyControllerSpec extends ItSpec {
         override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse = journeyConnector.Sa.startJourneyPta(tdAll.SaPta.sjRequest).futureValue
 
       /** Start journey */
@@ -1742,7 +1742,7 @@ class JourneyControllerSpec extends ItSpec {
         override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse = journeyConnector.Sa.startJourneyMobile(tdAll.SaMobile.sjRequest).futureValue
 
       /** Start journey */
@@ -1880,7 +1880,7 @@ class JourneyControllerSpec extends ItSpec {
         override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse = journeyConnector.Sa.startJourneyGovUk(tdAll.SaGovUk.sjRequest).futureValue
 
       /** Start journey */
@@ -2018,7 +2018,7 @@ class JourneyControllerSpec extends ItSpec {
         override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse = journeyConnector.Sa.startJourneyDetachedUrl(tdAll.SaDetachedUrl.sjRequest).futureValue
 
       /** Start journey */
@@ -2170,7 +2170,7 @@ class JourneyControllerSpec extends ItSpec {
         override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse =
         journeyConnector.Sa.startJourneyItsaViewAndChange(tdAll.SaItsaViewAndChange.sjRequest).futureValue
 
@@ -2360,7 +2360,7 @@ class JourneyControllerSpec extends ItSpec {
         override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse = journeyConnector.Simp.startJourneyPta(tdAll.SimpPta.sjRequest).futureValue
 
       /** Start journey */
@@ -2498,7 +2498,7 @@ class JourneyControllerSpec extends ItSpec {
         override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse = journeyConnector.Simp.startJourneyMobile(tdAll.SimpMobile.sjRequest).futureValue
 
       /** Start journey */
@@ -2644,7 +2644,7 @@ class JourneyControllerSpec extends ItSpec {
         override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse = journeyConnector.Simp.startJourneyGovUk(tdAll.SimpGovUk.sjRequest).futureValue
 
       /** Start journey */
@@ -2784,7 +2784,7 @@ class JourneyControllerSpec extends ItSpec {
         override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
         override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
-      given Request[_]         = tdAll.request
+      given Request[?]         = tdAll.request
       val response: SjResponse =
         journeyConnector.Simp.startJourneyDetachedUrl(tdAll.SimpDetachedUrl.sjRequest).futureValue
 
@@ -2976,7 +2976,7 @@ class JourneyControllerAffordabilityEnabledSpec extends ItSpec {
       override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
-    given Request[_]         = tdAll.request
+    given Request[?]         = tdAll.request
     val response: SjResponse = journeyConnector.Sa.startJourneyBta(tdAll.SaBta.sjRequest).futureValue
 
     /** Start journey */
@@ -3143,7 +3143,7 @@ class JourneyControllerAffordabilityEnabledSpec extends ItSpec {
       override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
-    given Request[_]         = tdAll.request
+    given Request[?]         = tdAll.request
     val response: SjResponse = journeyConnector.Sa.startJourneyBta(tdAll.SaBta.sjRequest).futureValue
 
     /** Start journey */

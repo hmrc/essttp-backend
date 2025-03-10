@@ -70,7 +70,7 @@ class UpdateAffordableQuotesController @Inject() (
   private def updateJourneyWithNewValue(
     journey:                  Journey.RetrievedStartDates,
     affordableQuotesResponse: AffordableQuotesResponse
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey =
       journey
         .into[Journey.RetrievedAffordableQuotes]
@@ -85,7 +85,7 @@ class UpdateAffordableQuotesController @Inject() (
       JourneyStage.AfterCheckedPaymentPlan & Journey
     ],
     affordableQuotesResponse: AffordableQuotesResponse
-  )(using Request[_]): Future[Journey] = journey match {
+  )(using Request[?]): Future[Journey] = journey match {
     case Left(afterAffordableQuotesResponse) =>
       updateJourneyWithExistingValue(
         afterAffordableQuotesResponse.affordableQuotesResponse,
@@ -182,7 +182,7 @@ class UpdateAffordableQuotesController @Inject() (
     existingJourney: Journey,
     newValue:        AffordableQuotesResponse,
     newJourney:      Journey
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     if (existingValue == newValue) {
       JourneyLogger.info("Nothing to update, AffordableQuotesResponse is the same as the existing one in journey.")
       Future.successful(existingJourney)

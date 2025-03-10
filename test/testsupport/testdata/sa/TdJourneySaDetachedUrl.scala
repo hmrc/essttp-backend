@@ -31,7 +31,7 @@ import play.api.libs.json.JsNull
 import testsupport.testdata.{TdBase, TdJourneyStructure}
 
 trait TdJourneySaDetachedUrl {
-  dependencies: TdBase with TdSa =>
+  dependencies: TdBase & TdSa =>
 
   object SaDetachedUrl extends TdJourneyStructure {
 

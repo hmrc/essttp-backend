@@ -31,7 +31,7 @@ import play.api.libs.json.JsNull
 import testsupport.testdata.{TdBase, TdJourneyStructure}
 
 trait TdJourneyVatDetachedUrl {
-  dependencies: TdBase with TdVat =>
+  dependencies: TdBase & TdVat =>
   object VatDetachedUrl extends TdJourneyStructure {
     def sjRequest: Vat.Empty = SjRequest.Vat.Empty()
 

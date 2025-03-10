@@ -31,7 +31,7 @@ import play.api.libs.json.JsNull
 import testsupport.testdata.{TdBase, TdJourneyStructure}
 
 trait TdJourneyEpayeGovUk {
-  dependencies: TdBase with TdEpaye =>
+  dependencies: TdBase & TdEpaye =>
 
   object EpayeGovUk extends TdJourneyStructure {
 

@@ -31,7 +31,7 @@ import play.api.libs.json.JsNull
 import testsupport.testdata.{TdBase, TdJourneyStructure}
 
 trait TdJourneySimpPta {
-  dependencies: TdBase with TdSimp =>
+  dependencies: TdBase & TdSimp =>
 
   object SimpPta extends TdJourneyStructure {
 

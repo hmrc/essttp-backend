@@ -56,7 +56,7 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
   private def updateJourneyWithNewValue(
     journey: Journey.RetrievedAffordabilityResult,
     answers: CanPayWithinSixMonthsAnswers
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey =
       journey
         .into[Journey.ObtainedCanPayWithinSixMonthsAnswers]
@@ -69,7 +69,7 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
   private def updateJourneyWithExistingValue(
     journey: JourneyStage.AfterCanPayWithinSixMonthsAnswers & Journey,
     answers: CanPayWithinSixMonthsAnswers
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     if (journey.canPayWithinSixMonthsAnswers == answers) {
       Future.successful(journey)
     } else {

@@ -117,7 +117,7 @@ class SjController @Inject() (
 
   private def doJourneyStart(
     originatedRequest: OriginatedSjRequest
-  )(using Request[_]): Future[Result] = {
+  )(using Request[?]): Future[Result] = {
     val journey: Journey = journeyFactory.makeJourney(originatedRequest, RequestSupport.getSessionId())
 
     journeyService.upsert(journey).map { _ =>

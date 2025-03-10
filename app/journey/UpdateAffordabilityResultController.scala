@@ -64,7 +64,7 @@ class UpdateAffordabilityResultController @Inject() (
   private def updateJourneyWithNewValue(
     journey:           Journey.RetrievedExtremeDates,
     instalmentAmounts: InstalmentAmounts
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey =
       journey
         .into[Journey.RetrievedAffordabilityResult]
@@ -77,7 +77,7 @@ class UpdateAffordabilityResultController @Inject() (
   private def updateJourneyWithExistingValue(
     journey:           JourneyStage.AfterRetrievedAffordabilityResult & Journey,
     instalmentAmounts: InstalmentAmounts
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     if (journey.instalmentAmounts == instalmentAmounts) {
       JourneyLogger.info("Nothing to update, InstalmentAmounts is the same as the existing one in journey.")
       Future.successful(journey)

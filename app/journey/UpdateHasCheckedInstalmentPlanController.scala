@@ -67,7 +67,7 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
   private def updateJourneyWithNewValue(
     journey: Either[model.Journey.StartedPegaCase, model.Journey.ChosenPaymentPlan],
     answers: PaymentPlanAnswers
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey = journey match {
       case Left(j: Journey.StartedPegaCase) =>
         j.into[Journey.CheckedPaymentPlan]
@@ -85,7 +85,7 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
   private def updateJourneyWithExistingValue(
     journey: JourneyStage.AfterCheckedPaymentPlan & Journey,
     answers: PaymentPlanAnswers
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     if (journey.paymentPlanAnswers == answers)
       Future.successful(journey)
     else {

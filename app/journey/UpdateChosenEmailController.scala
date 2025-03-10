@@ -70,7 +70,7 @@ class UpdateChosenEmailController @Inject() (
   private def updateJourneyWithNewValue(
     journey: Journey.AgreedTermsAndConditions,
     email:   Email
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey =
       journey
         .into[Journey.SelectedEmailToBeVerified]
@@ -83,7 +83,7 @@ class UpdateChosenEmailController @Inject() (
   private def updateJourneyWithExistingValue(
     journey: JourneyStage.AfterEmailAddressSelectedToBeVerified & Journey,
     email:   Email
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     // don't check to see if email is same to allow for passcodes to be requested again for same email
     val newJourney: Journey = journey match {
       case j: Journey.SelectedEmailToBeVerified =>

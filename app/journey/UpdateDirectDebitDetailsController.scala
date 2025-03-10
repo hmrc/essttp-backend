@@ -64,7 +64,7 @@ class UpdateDirectDebitDetailsController @Inject() (
   private def updateJourneyWithNewValue(
     journey:            Journey.EnteredCanYouSetUpDirectDebit,
     directDebitDetails: BankDetails
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey =
       journey
         .into[Journey.EnteredDirectDebitDetails]
@@ -77,7 +77,7 @@ class UpdateDirectDebitDetailsController @Inject() (
   private def updateJourneyWithExistingValue(
     journey:            JourneyStage.AfterEnteredDirectDebitDetails & Journey,
     directDebitDetails: BankDetails
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     if (journey.directDebitDetails == directDebitDetails) {
       JourneyLogger.info("Direct debit details haven't changed, nothing to update")
       Future.successful(journey)

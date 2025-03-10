@@ -82,20 +82,20 @@ object JourneyLogger {
   private def deviceId(using r: RequestHeader) =
     s"[deviceId: ${r.cookies.find(_.name == CookieNames.deviceID).map(_.value).getOrElse("")}]"
 
-  private def origin(implicit r: JourneyRequest[_]) = s"[${r.journey.origin.toString}]"
+  private def origin(implicit r: JourneyRequest[?]) = s"[${r.journey.origin.toString}]"
 
-  private def journeyId(implicit r: JourneyRequest[_]) = s"[${r.journey.id.toString}]"
+  private def journeyId(implicit r: JourneyRequest[?]) = s"[${r.journey.id.toString}]"
 
-  private def taxRegime(implicit r: JourneyRequest[_]) = s"[${r.journey.taxRegime.toString}]"
+  private def taxRegime(implicit r: JourneyRequest[?]) = s"[${r.journey.taxRegime.toString}]"
 
-  private def stage(implicit r: JourneyRequest[_]) = s"[${r.journey.stage}]"
+  private def stage(implicit r: JourneyRequest[?]) = s"[${r.journey.stage}]"
 
-  private def journeyName(implicit r: JourneyRequest[_]) = s"[${r.journey.name}]"
+  private def journeyName(implicit r: JourneyRequest[?]) = s"[${r.journey.name}]"
 
   private def makeRichMessage(message: String)(using request: RequestHeader): String =
     request match {
-      case r: JourneyRequest[_] =>
-        given JourneyRequest[_] = r
+      case r: JourneyRequest[?] =>
+        given JourneyRequest[?] = r
         s"$message $taxRegime $origin $journeyName $stage $journeyId $context"
       case _                    =>
         s"$message $context "

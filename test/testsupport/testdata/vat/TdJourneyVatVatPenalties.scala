@@ -30,7 +30,7 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import play.api.libs.json.JsNull
 import testsupport.testdata.{TdBase, TdJourneyStructure}
 
-trait TdJourneyVatVatPenalties { dependencies: TdBase with TdVat =>
+trait TdJourneyVatVatPenalties { dependencies: TdBase & TdVat =>
 
   object VatVatPenalties extends TdJourneyStructure {
     def sjRequest: Vat.Simple = SjRequest.Vat.Simple(

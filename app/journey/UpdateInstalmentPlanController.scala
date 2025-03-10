@@ -74,7 +74,7 @@ class UpdateInstalmentPlanController @Inject() (
   private def updateJourneyWithNewValue(
     journey:     Journey.RetrievedAffordableQuotes,
     paymentPlan: PaymentPlan
-  )(using Request[_]): Future[Journey] = {
+  )(using Request[?]): Future[Journey] = {
     val newJourney: Journey =
       journey
         .into[Journey.ChosenPaymentPlan]
@@ -87,7 +87,7 @@ class UpdateInstalmentPlanController @Inject() (
   private def updateJourneyWithExistingValue(
     journey:     Either[JourneyStage.AfterSelectedPaymentPlan & Journey, JourneyStage.AfterCheckedPaymentPlan & Journey],
     paymentPlan: PaymentPlan
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     journey match {
       case Left(afterSelectedPaymentPlan) =>
         updateJourneyWithExistingValue(
@@ -186,7 +186,7 @@ class UpdateInstalmentPlanController @Inject() (
     existingJourney: Journey,
     newValue:        PaymentPlan,
     newJourney:      Journey
-  )(using Request[_]): Future[Journey] =
+  )(using Request[?]): Future[Journey] =
     if (existingValue == newValue) {
       JourneyLogger.info("Nothing to update, selected PaymentPlan is the same as the existing one in journey.")
       Future.successful(existingJourney)

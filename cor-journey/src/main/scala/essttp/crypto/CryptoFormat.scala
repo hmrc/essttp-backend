@@ -24,7 +24,7 @@ sealed trait CryptoFormat derives CanEqual
 object CryptoFormat {
 
   @Singleton
-  final case class OperationalCryptoFormat @Inject() (crypto: Encrypter with Decrypter) extends CryptoFormat
+  final case class OperationalCryptoFormat @Inject() (crypto: Encrypter & Decrypter) extends CryptoFormat
 
   case object NoOpCryptoFormat extends CryptoFormat
 
