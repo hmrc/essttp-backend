@@ -24,23 +24,23 @@ import essttp.rootmodel.ttp.{PaymentPlanFrequency, RegimeType}
 import play.api.libs.json.{Json, OFormat}
 
 final case class ArrangementRequest(
-    channelIdentifier:           ChannelIdentifier,
-    regimeType:                  RegimeType,
-    hasAffordabilityAssessment:  Boolean,
-    caseID:                      Option[PegaCaseId],
-    regimePaymentFrequency:      PaymentPlanFrequency,
-    arrangementAgreedDate:       ArrangementAgreedDate,
-    identification:              List[Identification],
-    directDebitInstruction:      DirectDebitInstruction,
-    paymentPlan:                 EnactPaymentPlan,
-    customerDetails:             Option[List[CustomerDetail]],
-    individualDetails:           Option[IndividualDetails],
-    addresses:                   Option[List[Address]],
-    regimeDigitalCorrespondence: Option[RegimeDigitalCorrespondence]
+  channelIdentifier:           ChannelIdentifier,
+  regimeType:                  RegimeType,
+  hasAffordabilityAssessment:  Boolean,
+  caseID:                      Option[PegaCaseId],
+  regimePaymentFrequency:      PaymentPlanFrequency,
+  arrangementAgreedDate:       ArrangementAgreedDate,
+  identification:              List[Identification],
+  directDebitInstruction:      DirectDebitInstruction,
+  paymentPlan:                 EnactPaymentPlan,
+  customerDetails:             Option[List[CustomerDetail]],
+  individualDetails:           Option[IndividualDetails],
+  addresses:                   Option[List[Address]],
+  regimeDigitalCorrespondence: Option[RegimeDigitalCorrespondence]
 )
 
 object ArrangementRequest {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[ArrangementRequest] = Json.format
+  given (using CryptoFormat): OFormat[ArrangementRequest] = Json.format
 
 }

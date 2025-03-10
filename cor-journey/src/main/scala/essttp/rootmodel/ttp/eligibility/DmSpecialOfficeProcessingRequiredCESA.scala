@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class DmSpecialOfficeProcessingRequiredCESA(value: Boolean) extends AnyVal
 
 object DmSpecialOfficeProcessingRequiredCESA {
-  implicit val format: Format[DmSpecialOfficeProcessingRequiredCESA] = Json.valueFormat
+  given Format[DmSpecialOfficeProcessingRequiredCESA] = Json.valueFormat
 }

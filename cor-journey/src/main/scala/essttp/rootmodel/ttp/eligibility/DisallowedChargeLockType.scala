@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class DisallowedChargeLockType(value: Boolean) extends AnyVal
 
 object DisallowedChargeLockType {
-  implicit val format: Format[DisallowedChargeLockType] = Json.valueFormat
+  given Format[DisallowedChargeLockType] = Json.valueFormat
 }

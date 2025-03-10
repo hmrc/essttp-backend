@@ -17,19 +17,19 @@
 package essttp.rootmodel.ttp.eligibility
 
 import essttp.rootmodel.ttp.CustomerType
-import play.api.libs.json.{Json, Format}
+import play.api.libs.json.{Format, Json}
 
 final case class IndividualDetails(
-    title:            Option[Title],
-    firstName:        Option[FirstName],
-    lastName:         Option[LastName],
-    dateOfBirth:      Option[DateOfBirth],
-    districtNumber:   Option[DistrictNumber],
-    customerType:     Option[CustomerType],
-    transitionToCDCS: Option[TransitionToCDCS]
+  title:            Option[Title],
+  firstName:        Option[FirstName],
+  lastName:         Option[LastName],
+  dateOfBirth:      Option[DateOfBirth],
+  districtNumber:   Option[DistrictNumber],
+  customerType:     Option[CustomerType],
+  transitionToCDCS: Option[TransitionToCDCS]
 )
 
 object IndividualDetails {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format: Format[IndividualDetails] = Json.format[IndividualDetails]
+  given Format[IndividualDetails] = Json.format[IndividualDetails]
 }

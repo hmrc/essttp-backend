@@ -25,21 +25,22 @@ import essttp.rootmodel.ttp.{PaymentPlanFrequency, PaymentPlanMaxLength, Payment
 import play.api.libs.json.{Json, OFormat}
 
 final case class AffordableQuotesRequest(
-    channelIdentifier:           ChannelIdentifier,
-    regimeType:                  RegimeType,
-    paymentPlanAffordableAmount: PaymentPlanAffordableAmount,
-    paymentPlanFrequency:        PaymentPlanFrequency,
-    paymentPlanMaxLength:        PaymentPlanMaxLength,
-    paymentPlanMinLength:        PaymentPlanMinLength,
-    accruedDebtInterest:         AccruedDebtInterest,
-    paymentPlanStartDate:        InstalmentStartDate,
-    initialPaymentDate:          Option[InitialPaymentDate],
-    initialPaymentAmount:        Option[UpfrontPaymentAmount],
-    debtItemCharges:             List[DebtItemCharge],
-    customerPostcodes:           List[CustomerPostcode]
+  channelIdentifier:           ChannelIdentifier,
+  regimeType:                  RegimeType,
+  paymentPlanAffordableAmount: PaymentPlanAffordableAmount,
+  paymentPlanFrequency:        PaymentPlanFrequency,
+  paymentPlanMaxLength:        PaymentPlanMaxLength,
+  paymentPlanMinLength:        PaymentPlanMinLength,
+  accruedDebtInterest:         AccruedDebtInterest,
+  paymentPlanStartDate:        InstalmentStartDate,
+  initialPaymentDate:          Option[InitialPaymentDate],
+  initialPaymentAmount:        Option[UpfrontPaymentAmount],
+  debtItemCharges:             List[DebtItemCharge],
+  customerPostcodes:           List[CustomerPostcode]
 )
 
 object AffordableQuotesRequest {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[AffordableQuotesRequest] = Json.format[AffordableQuotesRequest]
+  given (using CryptoFormat): OFormat[AffordableQuotesRequest] =
+    Json.format[AffordableQuotesRequest]
 }

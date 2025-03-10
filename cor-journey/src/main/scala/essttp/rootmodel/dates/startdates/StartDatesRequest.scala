@@ -20,8 +20,9 @@ import essttp.rootmodel.dates.InitialPayment
 import play.api.libs.json.{Format, Json}
 
 final case class StartDatesRequest(initialPayment: InitialPayment, preferredDayOfMonth: PreferredDayOfMonth)
+    derives CanEqual
 
 object StartDatesRequest {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: Format[StartDatesRequest] = Json.format[StartDatesRequest]
+  given Format[StartDatesRequest] = Json.format[StartDatesRequest]
 }

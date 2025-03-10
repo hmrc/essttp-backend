@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class IneligibleChargeType(value: Boolean) extends AnyVal
 
 object IneligibleChargeType {
-  implicit val format: Format[IneligibleChargeType] = Json.valueFormat
+  given Format[IneligibleChargeType] = Json.valueFormat
 }

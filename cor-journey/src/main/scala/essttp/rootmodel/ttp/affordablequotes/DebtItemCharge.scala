@@ -21,17 +21,17 @@ import essttp.rootmodel.ttp.eligibility.{ChargeReference, InterestStartDate, Mai
 import play.api.libs.json.{Json, OFormat}
 
 final case class DebtItemCharge(
-    outstandingDebtAmount:   OutstandingDebtAmount,
-    mainTrans:               MainTrans,
-    subTrans:                SubTrans,
-    isInterestBearingCharge: Option[IsInterestBearingCharge],
-    useChargeReference:      Option[UseChargeReference],
-    debtItemChargeId:        ChargeReference,
-    interestStartDate:       Option[InterestStartDate],
-    debtItemOriginalDueDate: DebtItemOriginalDueDate
+  outstandingDebtAmount:   OutstandingDebtAmount,
+  mainTrans:               MainTrans,
+  subTrans:                SubTrans,
+  isInterestBearingCharge: Option[IsInterestBearingCharge],
+  useChargeReference:      Option[UseChargeReference],
+  debtItemChargeId:        ChargeReference,
+  interestStartDate:       Option[InterestStartDate],
+  debtItemOriginalDueDate: DebtItemOriginalDueDate
 )
 
 object DebtItemCharge {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[DebtItemCharge] = Json.format[DebtItemCharge]
+  given OFormat[DebtItemCharge] = Json.format[DebtItemCharge]
 }

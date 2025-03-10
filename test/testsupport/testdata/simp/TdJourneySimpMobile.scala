@@ -41,526 +41,514 @@ trait TdJourneySimpMobile {
     )
 
     def sjResponse: SjResponse = SjResponse(
-      nextUrl   = NextUrl(s"http://localhost:9215/set-up-a-payment-plan/simple-assessment-payment-plan"),
+      nextUrl = NextUrl(s"http://localhost:9215/set-up-a-payment-plan/simple-assessment-payment-plan"),
       journeyId = dependencies.journeyId
     )
 
     def postPath: String = "/simp/mobile/journey/start"
 
-    def journeyAfterStarted: Journey.Simp.Started = Journey.Simp.Started(
-      _id                  = dependencies.journeyId,
-      origin               = Origins.Simp.Mobile,
-      createdOn            = dependencies.createdOn,
-      sjRequest            = sjRequest,
-      sessionId            = dependencies.sessionId,
-      stage                = Stage.AfterStarted.Started,
+    def journeyAfterStarted: Journey.Started = Journey.Started(
+      _id = dependencies.journeyId,
+      origin = Origins.Simp.Mobile,
+      createdOn = dependencies.createdOn,
+      sjRequest = sjRequest,
+      sessionId = dependencies.sessionId,
       affordabilityEnabled = Some(false),
-      correlationId        = dependencies.correlationId,
-      pegaCaseId           = None
+      correlationId = dependencies.correlationId,
+      pegaCaseId = None
     )
 
     def updateTaxIdRequest(): TaxId = nino
 
-    def journeyAfterDetermineTaxIds: Journey.Simp.ComputedTaxId = Journey.Simp.ComputedTaxId(
-      _id                  = dependencies.journeyId,
-      origin               = Origins.Simp.Mobile,
-      createdOn            = dependencies.createdOn,
-      sjRequest            = sjRequest,
-      sessionId            = dependencies.sessionId,
-      stage                = Stage.AfterComputedTaxId.ComputedTaxId,
+    def journeyAfterDetermineTaxIds: Journey.ComputedTaxId = Journey.ComputedTaxId(
+      _id = dependencies.journeyId,
+      origin = Origins.Simp.Mobile,
+      createdOn = dependencies.createdOn,
+      sjRequest = sjRequest,
+      sessionId = dependencies.sessionId,
       affordabilityEnabled = Some(false),
-      correlationId        = dependencies.correlationId,
-      taxId                = nino,
-      pegaCaseId           = None
+      correlationId = dependencies.correlationId,
+      taxId = nino,
+      pegaCaseId = None
     )
 
     def updateEligibilityCheckRequest(): EligibilityCheckResult = eligibleEligibilityCheckResultSimp
 
-    def journeyAfterEligibilityCheckEligible: Journey.Simp.EligibilityChecked = Journey.Simp.EligibilityChecked(
-      _id                    = dependencies.journeyId,
-      origin                 = Origins.Simp.Mobile,
-      createdOn              = dependencies.createdOn,
-      sjRequest              = sjRequest,
-      sessionId              = dependencies.sessionId,
-      stage                  = Stage.AfterEligibilityCheck.Eligible,
-      affordabilityEnabled   = Some(false),
-      correlationId          = dependencies.correlationId,
-      taxId                  = nino,
+    def journeyAfterEligibilityCheckEligible: Journey.EligibilityChecked = Journey.EligibilityChecked(
+      _id = dependencies.journeyId,
+      origin = Origins.Simp.Mobile,
+      createdOn = dependencies.createdOn,
+      sjRequest = sjRequest,
+      sessionId = dependencies.sessionId,
+      affordabilityEnabled = Some(false),
+      correlationId = dependencies.correlationId,
+      taxId = nino,
       eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
-      pegaCaseId             = None
+      pegaCaseId = None
     )
 
-    def journeyAfterEligibilityCheckNotEligible: Journey.Simp.EligibilityChecked = Journey.Simp.EligibilityChecked(
-      _id                    = dependencies.journeyId,
-      origin                 = Origins.Simp.Mobile,
-      createdOn              = dependencies.createdOn,
-      sjRequest              = sjRequest,
-      sessionId              = dependencies.sessionId,
-      stage                  = Stage.AfterEligibilityCheck.Ineligible,
-      affordabilityEnabled   = Some(false),
-      correlationId          = dependencies.correlationId,
-      taxId                  = nino,
+    def journeyAfterEligibilityCheckNotEligible: Journey.EligibilityChecked = Journey.EligibilityChecked(
+      _id = dependencies.journeyId,
+      origin = Origins.Simp.Mobile,
+      createdOn = dependencies.createdOn,
+      sjRequest = sjRequest,
+      sessionId = dependencies.sessionId,
+      affordabilityEnabled = Some(false),
+      correlationId = dependencies.correlationId,
+      taxId = nino,
       eligibilityCheckResult = ineligibleEligibilityCheckResultSimp,
-      pegaCaseId             = None
+      pegaCaseId = None
     )
 
-    def journeyAfterWhyCannotPayInFullNotRequired: Journey.Simp.ObtainedWhyCannotPayInFullAnswers = Journey.Simp.ObtainedWhyCannotPayInFullAnswers(
-      _id                       = dependencies.journeyId,
-      origin                    = Origins.Simp.Mobile,
-      createdOn                 = dependencies.createdOn,
-      sjRequest                 = sjRequest,
-      sessionId                 = dependencies.sessionId,
-      stage                     = Stage.AfterWhyCannotPayInFullAnswers.AnswerNotRequired,
-      affordabilityEnabled      = Some(false),
-      correlationId             = dependencies.correlationId,
-      taxId                     = nino,
-      eligibilityCheckResult    = eligibleEligibilityCheckResultSimp,
-      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      pegaCaseId                = None
-    )
+    def journeyAfterWhyCannotPayInFullNotRequired: Journey.ObtainedWhyCannotPayInFullAnswers =
+      Journey.ObtainedWhyCannotPayInFullAnswers(
+        _id = dependencies.journeyId,
+        origin = Origins.Simp.Mobile,
+        createdOn = dependencies.createdOn,
+        sjRequest = sjRequest,
+        sessionId = dependencies.sessionId,
+        affordabilityEnabled = Some(false),
+        correlationId = dependencies.correlationId,
+        taxId = nino,
+        eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        pegaCaseId = None
+      )
 
     def updateCanPayUpfrontYesRequest(): CanPayUpfront = canPayUpfrontYes
 
     def updateCanPayUpfrontNoRequest(): CanPayUpfront = canPayUpfrontNo
 
-    def journeyAfterCanPayUpfrontYes: Journey.Simp.AnsweredCanPayUpfront = Journey.Simp.AnsweredCanPayUpfront(
-      _id                       = dependencies.journeyId,
-      origin                    = Origins.Simp.Mobile,
-      createdOn                 = dependencies.createdOn,
-      sjRequest                 = sjRequest,
-      sessionId                 = dependencies.sessionId,
-      stage                     = Stage.AfterCanPayUpfront.Yes,
-      affordabilityEnabled      = Some(false),
-      correlationId             = dependencies.correlationId,
-      taxId                     = nino,
-      eligibilityCheckResult    = eligibleEligibilityCheckResultSimp,
+    def journeyAfterCanPayUpfrontYes: Journey.AnsweredCanPayUpfront = Journey.AnsweredCanPayUpfront(
+      _id = dependencies.journeyId,
+      origin = Origins.Simp.Mobile,
+      createdOn = dependencies.createdOn,
+      sjRequest = sjRequest,
+      sessionId = dependencies.sessionId,
+      affordabilityEnabled = Some(false),
+      correlationId = dependencies.correlationId,
+      taxId = nino,
+      eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      canPayUpfront             = canPayUpfrontYes,
-      pegaCaseId                = None
+      canPayUpfront = canPayUpfrontYes,
+      pegaCaseId = None
     )
 
-    def journeyAfterCanPayUpfrontNo: Journey.Simp.AnsweredCanPayUpfront = Journey.Simp.AnsweredCanPayUpfront(
-      _id                       = dependencies.journeyId,
-      origin                    = Origins.Simp.Mobile,
-      createdOn                 = dependencies.createdOn,
-      sjRequest                 = sjRequest,
-      sessionId                 = dependencies.sessionId,
-      stage                     = Stage.AfterCanPayUpfront.No,
-      affordabilityEnabled      = Some(false),
-      correlationId             = dependencies.correlationId,
-      taxId                     = nino,
-      eligibilityCheckResult    = eligibleEligibilityCheckResultSimp,
+    def journeyAfterCanPayUpfrontNo: Journey.AnsweredCanPayUpfront = Journey.AnsweredCanPayUpfront(
+      _id = dependencies.journeyId,
+      origin = Origins.Simp.Mobile,
+      createdOn = dependencies.createdOn,
+      sjRequest = sjRequest,
+      sessionId = dependencies.sessionId,
+      affordabilityEnabled = Some(false),
+      correlationId = dependencies.correlationId,
+      taxId = nino,
+      eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      canPayUpfront             = canPayUpfrontNo,
-      pegaCaseId                = None
+      canPayUpfront = canPayUpfrontNo,
+      pegaCaseId = None
     )
 
     def updateUpfrontPaymentAmountRequest(): UpfrontPaymentAmount = dependencies.upfrontPaymentAmount
 
-    def journeyAfterUpfrontPaymentAmount: Journey.Simp.EnteredUpfrontPaymentAmount = Journey.Simp.EnteredUpfrontPaymentAmount(
-      _id                       = dependencies.journeyId,
-      origin                    = Origins.Simp.Mobile,
-      createdOn                 = dependencies.createdOn,
-      sjRequest                 = sjRequest,
-      sessionId                 = dependencies.sessionId,
-      stage                     = Stage.AfterUpfrontPaymentAmount.EnteredUpfrontPaymentAmount,
-      affordabilityEnabled      = Some(false),
-      correlationId             = dependencies.correlationId,
-      taxId                     = nino,
-      eligibilityCheckResult    = eligibleEligibilityCheckResultSimp,
-      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      canPayUpfront             = canPayUpfrontYes,
-      upfrontPaymentAmount      = dependencies.upfrontPaymentAmount,
-      pegaCaseId                = None
-    )
+    def journeyAfterUpfrontPaymentAmount: Journey.EnteredUpfrontPaymentAmount =
+      Journey.EnteredUpfrontPaymentAmount(
+        _id = dependencies.journeyId,
+        origin = Origins.Simp.Mobile,
+        createdOn = dependencies.createdOn,
+        sjRequest = sjRequest,
+        sessionId = dependencies.sessionId,
+        affordabilityEnabled = Some(false),
+        correlationId = dependencies.correlationId,
+        taxId = nino,
+        eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        canPayUpfront = canPayUpfrontYes,
+        upfrontPaymentAmount = dependencies.upfrontPaymentAmount,
+        pegaCaseId = None
+      )
 
     def updateExtremeDatesRequest(): ExtremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment
 
-    def journeyAfterExtremeDates: Journey.Simp.RetrievedExtremeDates = Journey.Simp.RetrievedExtremeDates(
-      _id                       = dependencies.journeyId,
-      origin                    = Origins.Simp.Mobile,
-      createdOn                 = dependencies.createdOn,
-      sjRequest                 = sjRequest,
-      sessionId                 = dependencies.sessionId,
-      stage                     = Stage.AfterExtremeDatesResponse.ExtremeDatesResponseRetrieved,
-      affordabilityEnabled      = Some(false),
-      correlationId             = dependencies.correlationId,
-      taxId                     = nino,
-      eligibilityCheckResult    = eligibleEligibilityCheckResultSimp,
+    def journeyAfterExtremeDates: Journey.RetrievedExtremeDates = Journey.RetrievedExtremeDates(
+      _id = dependencies.journeyId,
+      origin = Origins.Simp.Mobile,
+      createdOn = dependencies.createdOn,
+      sjRequest = sjRequest,
+      sessionId = dependencies.sessionId,
+      affordabilityEnabled = Some(false),
+      correlationId = dependencies.correlationId,
+      taxId = nino,
+      eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
       whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
-      pegaCaseId                = None
+      upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+      pegaCaseId = None
     )
 
     def updateInstalmentAmountsRequest(): InstalmentAmounts = dependencies.instalmentAmounts
 
-    def journeyAfterInstalmentAmounts: Journey.Simp.RetrievedAffordabilityResult = Journey.Simp.RetrievedAffordabilityResult(
-      _id                       = dependencies.journeyId,
-      origin                    = Origins.Simp.Mobile,
-      createdOn                 = dependencies.createdOn,
-      sjRequest                 = sjRequest,
-      sessionId                 = dependencies.sessionId,
-      stage                     = Stage.AfterAffordabilityResult.RetrievedAffordabilityResult,
-      affordabilityEnabled      = Some(false),
-      correlationId             = dependencies.correlationId,
-      taxId                     = nino,
-      eligibilityCheckResult    = eligibleEligibilityCheckResultSimp,
-      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers     = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse      = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts         = dependencies.instalmentAmounts,
-      pegaCaseId                = None
-    )
+    def journeyAfterInstalmentAmounts: Journey.RetrievedAffordabilityResult =
+      Journey.RetrievedAffordabilityResult(
+        _id = dependencies.journeyId,
+        origin = Origins.Simp.Mobile,
+        createdOn = dependencies.createdOn,
+        sjRequest = sjRequest,
+        sessionId = dependencies.sessionId,
+        affordabilityEnabled = Some(false),
+        correlationId = dependencies.correlationId,
+        taxId = nino,
+        eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts = dependencies.instalmentAmounts,
+        pegaCaseId = None
+      )
 
     def updateMonthlyPaymentAmountRequest(): MonthlyPaymentAmount = dependencies.monthlyPaymentAmount
 
-    def journeyAfterMonthlyPaymentAmount: Journey.Simp.EnteredMonthlyPaymentAmount = Journey.Simp.EnteredMonthlyPaymentAmount(
-      _id                          = dependencies.journeyId,
-      origin                       = Origins.Simp.Mobile,
-      createdOn                    = dependencies.createdOn,
-      sjRequest                    = sjRequest,
-      sessionId                    = dependencies.sessionId,
-      stage                        = Stage.AfterMonthlyPaymentAmount.EnteredMonthlyPaymentAmount,
-      affordabilityEnabled         = Some(false),
-      correlationId                = dependencies.correlationId,
-      taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
-      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts            = dependencies.instalmentAmounts,
-      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      monthlyPaymentAmount         = dependencies.monthlyPaymentAmount,
-      pegaCaseId                   = None
-    )
+    def journeyAfterMonthlyPaymentAmount: Journey.EnteredMonthlyPaymentAmount =
+      Journey.EnteredMonthlyPaymentAmount(
+        _id = dependencies.journeyId,
+        origin = Origins.Simp.Mobile,
+        createdOn = dependencies.createdOn,
+        sjRequest = sjRequest,
+        sessionId = dependencies.sessionId,
+        affordabilityEnabled = Some(false),
+        correlationId = dependencies.correlationId,
+        taxId = nino,
+        eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts = dependencies.instalmentAmounts,
+        canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+        monthlyPaymentAmount = dependencies.monthlyPaymentAmount,
+        pegaCaseId = None
+      )
 
-    def journeyAfterCanPayWithinSixMonths: Journey.Simp.ObtainedCanPayWithinSixMonthsAnswers = Journey.Simp.ObtainedCanPayWithinSixMonthsAnswers(
-      _id                          = dependencies.journeyId,
-      origin                       = Origins.Simp.Mobile,
-      createdOn                    = dependencies.createdOn,
-      sjRequest                    = sjRequest,
-      sessionId                    = dependencies.sessionId,
-      stage                        = Stage.AfterCanPayWithinSixMonthsAnswers.AnswerNotRequired,
-      affordabilityEnabled         = Some(false),
-      correlationId                = dependencies.correlationId,
-      taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
-      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts            = dependencies.instalmentAmounts,
-      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      pegaCaseId                   = None
-    )
+    def journeyAfterCanPayWithinSixMonths: Journey.ObtainedCanPayWithinSixMonthsAnswers =
+      Journey.ObtainedCanPayWithinSixMonthsAnswers(
+        _id = dependencies.journeyId,
+        origin = Origins.Simp.Mobile,
+        createdOn = dependencies.createdOn,
+        sjRequest = sjRequest,
+        sessionId = dependencies.sessionId,
+        affordabilityEnabled = Some(false),
+        correlationId = dependencies.correlationId,
+        taxId = nino,
+        eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts = dependencies.instalmentAmounts,
+        canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+        pegaCaseId = None
+      )
 
     def updateDayOfMonthRequest(): DayOfMonth = dependencies.dayOfMonth
 
-    def journeyAfterDayOfMonth: Journey.Simp.EnteredDayOfMonth = Journey.Simp.EnteredDayOfMonth(
-      _id                          = dependencies.journeyId,
-      origin                       = Origins.Simp.Mobile,
-      createdOn                    = dependencies.createdOn,
-      sjRequest                    = sjRequest,
-      sessionId                    = dependencies.sessionId,
-      stage                        = Stage.AfterEnteredDayOfMonth.EnteredDayOfMonth,
-      affordabilityEnabled         = Some(false),
-      correlationId                = dependencies.correlationId,
-      taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
-      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts            = dependencies.instalmentAmounts,
+    def journeyAfterDayOfMonth: Journey.EnteredDayOfMonth = Journey.EnteredDayOfMonth(
+      _id = dependencies.journeyId,
+      origin = Origins.Simp.Mobile,
+      createdOn = dependencies.createdOn,
+      sjRequest = sjRequest,
+      sessionId = dependencies.sessionId,
+      affordabilityEnabled = Some(false),
+      correlationId = dependencies.correlationId,
+      taxId = nino,
+      eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      monthlyPaymentAmount         = dependencies.monthlyPaymentAmount,
-      dayOfMonth                   = dependencies.dayOfMonth,
-      pegaCaseId                   = None
+      monthlyPaymentAmount = dependencies.monthlyPaymentAmount,
+      dayOfMonth = dependencies.dayOfMonth,
+      pegaCaseId = None
     )
 
     def updateStartDatesResponse(): StartDatesResponse = dependencies.startDatesResponseWithInitialPayment
 
-    def journeyAfterStartDatesResponse: Journey.AfterStartDatesResponse = Journey.Simp.RetrievedStartDates(
-      _id                          = dependencies.journeyId,
-      origin                       = Origins.Simp.Mobile,
-      createdOn                    = dependencies.createdOn,
-      sjRequest                    = sjRequest,
-      sessionId                    = dependencies.sessionId,
-      stage                        = Stage.AfterStartDatesResponse.StartDatesResponseRetrieved,
-      affordabilityEnabled         = Some(false),
-      correlationId                = dependencies.correlationId,
-      taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
-      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts            = dependencies.instalmentAmounts,
-      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      monthlyPaymentAmount         = dependencies.monthlyPaymentAmount,
-      dayOfMonth                   = dependencies.dayOfMonth,
-      startDatesResponse           = dependencies.startDatesResponseWithInitialPayment,
-      pegaCaseId                   = None
-    )
+    def journeyAfterStartDatesResponse: Journey & JourneyStage.AfterStartDatesResponse =
+      Journey.RetrievedStartDates(
+        _id = dependencies.journeyId,
+        origin = Origins.Simp.Mobile,
+        createdOn = dependencies.createdOn,
+        sjRequest = sjRequest,
+        sessionId = dependencies.sessionId,
+        affordabilityEnabled = Some(false),
+        correlationId = dependencies.correlationId,
+        taxId = nino,
+        eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts = dependencies.instalmentAmounts,
+        canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+        monthlyPaymentAmount = dependencies.monthlyPaymentAmount,
+        dayOfMonth = dependencies.dayOfMonth,
+        startDatesResponse = dependencies.startDatesResponseWithInitialPayment,
+        pegaCaseId = None
+      )
 
     def updateAffordableQuotesResponse(): AffordableQuotesResponse = dependencies.affordableQuotesResponse
 
-    def journeyAfterAffordableQuotesResponse: Journey.AfterAffordableQuotesResponse = Journey.Simp.RetrievedAffordableQuotes(
-      _id                          = dependencies.journeyId,
-      origin                       = Origins.Simp.Mobile,
-      createdOn                    = dependencies.createdOn,
-      sjRequest                    = sjRequest,
-      sessionId                    = dependencies.sessionId,
-      stage                        = Stage.AfterAffordableQuotesResponse.AffordableQuotesRetrieved,
-      affordabilityEnabled         = Some(false),
-      correlationId                = dependencies.correlationId,
-      taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
-      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts            = dependencies.instalmentAmounts,
-      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      monthlyPaymentAmount         = dependencies.monthlyPaymentAmount,
-      dayOfMonth                   = dependencies.dayOfMonth,
-      startDatesResponse           = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse     = dependencies.affordableQuotesResponse,
-      pegaCaseId                   = None
-    )
+    def journeyAfterAffordableQuotesResponse: Journey & JourneyStage.AfterAffordableQuotesResponse =
+      Journey.RetrievedAffordableQuotes(
+        _id = dependencies.journeyId,
+        origin = Origins.Simp.Mobile,
+        createdOn = dependencies.createdOn,
+        sjRequest = sjRequest,
+        sessionId = dependencies.sessionId,
+        affordabilityEnabled = Some(false),
+        correlationId = dependencies.correlationId,
+        taxId = nino,
+        eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts = dependencies.instalmentAmounts,
+        canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+        monthlyPaymentAmount = dependencies.monthlyPaymentAmount,
+        dayOfMonth = dependencies.dayOfMonth,
+        startDatesResponse = dependencies.startDatesResponseWithInitialPayment,
+        affordableQuotesResponse = dependencies.affordableQuotesResponse,
+        pegaCaseId = None
+      )
 
     def updateSelectedPaymentPlanRequest(): PaymentPlan = dependencies.paymentPlan(1)
 
-    def journeyAfterSelectedPaymentPlan: Journey.AfterSelectedPaymentPlan = Journey.Simp.ChosenPaymentPlan(
-      _id                          = dependencies.journeyId,
-      origin                       = Origins.Simp.Mobile,
-      createdOn                    = dependencies.createdOn,
-      sjRequest                    = sjRequest,
-      sessionId                    = dependencies.sessionId,
-      stage                        = Stage.AfterSelectedPlan.SelectedPlan,
-      affordabilityEnabled         = Some(false),
-      correlationId                = dependencies.correlationId,
-      taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
-      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts            = dependencies.instalmentAmounts,
-      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      monthlyPaymentAmount         = dependencies.monthlyPaymentAmount,
-      dayOfMonth                   = dependencies.dayOfMonth,
-      startDatesResponse           = dependencies.startDatesResponseWithInitialPayment,
-      affordableQuotesResponse     = dependencies.affordableQuotesResponse,
-      selectedPaymentPlan          = dependencies.paymentPlan(1),
-      pegaCaseId                   = None
-    )
+    def journeyAfterSelectedPaymentPlan: Journey & JourneyStage.AfterSelectedPaymentPlan =
+      Journey.ChosenPaymentPlan(
+        _id = dependencies.journeyId,
+        origin = Origins.Simp.Mobile,
+        createdOn = dependencies.createdOn,
+        sjRequest = sjRequest,
+        sessionId = dependencies.sessionId,
+        affordabilityEnabled = Some(false),
+        correlationId = dependencies.correlationId,
+        taxId = nino,
+        eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts = dependencies.instalmentAmounts,
+        canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+        monthlyPaymentAmount = dependencies.monthlyPaymentAmount,
+        dayOfMonth = dependencies.dayOfMonth,
+        startDatesResponse = dependencies.startDatesResponseWithInitialPayment,
+        affordableQuotesResponse = dependencies.affordableQuotesResponse,
+        selectedPaymentPlan = dependencies.paymentPlan(1),
+        pegaCaseId = None
+      )
 
     def updateCheckedPaymentPlanRequest(): JsNull.type = JsNull
 
-    def journeyAfterCheckedPaymentPlanNonAffordability: Journey.AfterCheckedPaymentPlan = Journey.Simp.CheckedPaymentPlan(
-      _id                          = dependencies.journeyId,
-      origin                       = Origins.Simp.Mobile,
-      createdOn                    = dependencies.createdOn,
-      sjRequest                    = sjRequest,
-      sessionId                    = dependencies.sessionId,
-      stage                        = Stage.AfterCheckedPlan.AcceptedPlan,
-      affordabilityEnabled         = Some(false),
-      correlationId                = dependencies.correlationId,
-      taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
-      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts            = dependencies.instalmentAmounts,
-      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      pegaCaseId                   = None
-    )
+    def journeyAfterCheckedPaymentPlanNonAffordability: Journey & JourneyStage.AfterCheckedPaymentPlan =
+      Journey.CheckedPaymentPlan(
+        _id = dependencies.journeyId,
+        origin = Origins.Simp.Mobile,
+        createdOn = dependencies.createdOn,
+        sjRequest = sjRequest,
+        sessionId = dependencies.sessionId,
+        affordabilityEnabled = Some(false),
+        correlationId = dependencies.correlationId,
+        taxId = nino,
+        eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts = dependencies.instalmentAmounts,
+        canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+        paymentPlanAnswers = dependencies.paymentPlanAnswersNoAffordability,
+        pegaCaseId = None
+      )
 
     def updateCanSetUpDirectDebitRequest(isAccountHolder: Boolean): CanSetUpDirectDebit =
       CanSetUpDirectDebit(isAccountHolder)
 
-    def journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder: Boolean): Journey.AfterEnteredCanYouSetUpDirectDebit = Journey.Simp.EnteredCanYouSetUpDirectDebit(
-      _id                          = dependencies.journeyId,
-      origin                       = Origins.Simp.Mobile,
-      createdOn                    = dependencies.createdOn,
-      sjRequest                    = sjRequest,
-      sessionId                    = dependencies.sessionId,
-      stage                        = if (isAccountHolder) Stage.AfterEnteredCanYouSetUpDirectDebit.CanSetUpDirectDebit else Stage.AfterEnteredCanYouSetUpDirectDebit.CannotSetUpDirectDebit,
-      affordabilityEnabled         = Some(false),
-      correlationId                = dependencies.correlationId,
-      taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
-      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts            = dependencies.instalmentAmounts,
+    def journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(
+      isAccountHolder: Boolean
+    ): Journey & JourneyStage.AfterEnteredCanYouSetUpDirectDebit = Journey.EnteredCanYouSetUpDirectDebit(
+      _id = dependencies.journeyId,
+      origin = Origins.Simp.Mobile,
+      createdOn = dependencies.createdOn,
+      sjRequest = sjRequest,
+      sessionId = dependencies.sessionId,
+      affordabilityEnabled = Some(false),
+      correlationId = dependencies.correlationId,
+      taxId = nino,
+      eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder),
-      pegaCaseId                   = None
+      paymentPlanAnswers = dependencies.paymentPlanAnswersNoAffordability,
+      canSetUpDirectDebitAnswer = CanSetUpDirectDebit(isAccountHolder),
+      pegaCaseId = None
     )
 
     def updateDirectDebitDetailsRequest(): BankDetails = dependencies.directDebitDetails
 
-    def journeyAfterEnteredDirectDebitDetailsNoAffordability(): Journey.AfterEnteredDirectDebitDetails = Journey.Simp.EnteredDirectDebitDetails(
-      _id                          = dependencies.journeyId,
-      origin                       = Origins.Simp.Mobile,
-      createdOn                    = dependencies.createdOn,
-      sjRequest                    = sjRequest,
-      sessionId                    = dependencies.sessionId,
-      stage                        = Stage.AfterEnteredDirectDebitDetails.EnteredDirectDebitDetails,
-      affordabilityEnabled         = Some(false),
-      correlationId                = dependencies.correlationId,
-      taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
-      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts            = dependencies.instalmentAmounts,
-      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
-      directDebitDetails           = directDebitDetails,
-      pegaCaseId                   = None
-    )
+    def journeyAfterEnteredDirectDebitDetailsNoAffordability(): Journey & JourneyStage.AfterEnteredDirectDebitDetails =
+      Journey.EnteredDirectDebitDetails(
+        _id = dependencies.journeyId,
+        origin = Origins.Simp.Mobile,
+        createdOn = dependencies.createdOn,
+        sjRequest = sjRequest,
+        sessionId = dependencies.sessionId,
+        affordabilityEnabled = Some(false),
+        correlationId = dependencies.correlationId,
+        taxId = nino,
+        eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts = dependencies.instalmentAmounts,
+        canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+        paymentPlanAnswers = dependencies.paymentPlanAnswersNoAffordability,
+        canSetUpDirectDebitAnswer = CanSetUpDirectDebit(isAccountHolder = true),
+        directDebitDetails = directDebitDetails,
+        pegaCaseId = None
+      )
 
     def updateConfirmedDirectDebitDetailsRequest(): JsNull.type = JsNull
 
-    def journeyAfterConfirmedDirectDebitDetailsNoAffordability: Journey.AfterConfirmedDirectDebitDetails = Journey.Simp.ConfirmedDirectDebitDetails(
-      _id                          = dependencies.journeyId,
-      origin                       = Origins.Simp.Mobile,
-      createdOn                    = dependencies.createdOn,
-      sjRequest                    = sjRequest,
-      sessionId                    = dependencies.sessionId,
-      stage                        = Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails,
-      affordabilityEnabled         = Some(false),
-      correlationId                = dependencies.correlationId,
-      taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
-      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts            = dependencies.instalmentAmounts,
-      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
-      directDebitDetails           = directDebitDetails,
-      pegaCaseId                   = None
-    )
-
-    def updateAgreedTermsAndConditionsRequest(isEmailAddressRequired: Boolean): IsEmailAddressRequired = IsEmailAddressRequired(isEmailAddressRequired)
-
-    def journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired: Boolean): Journey.AfterAgreedTermsAndConditions = {
-      val stage =
-        if (isEmailAddressRequired) Stage.AfterAgreedTermsAndConditions.EmailAddressRequired
-        else Stage.AfterAgreedTermsAndConditions.EmailAddressNotRequired
-
-      Journey.Simp.AgreedTermsAndConditions(
-        _id                          = dependencies.journeyId,
-        origin                       = Origins.Simp.Mobile,
-        createdOn                    = dependencies.createdOn,
-        sjRequest                    = sjRequest,
-        sessionId                    = dependencies.sessionId,
-        stage                        = stage,
-        affordabilityEnabled         = Some(false),
-        correlationId                = dependencies.correlationId,
-        taxId                        = nino,
-        eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
-        whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
-        upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
-        extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
-        instalmentAmounts            = dependencies.instalmentAmounts,
+    def journeyAfterConfirmedDirectDebitDetailsNoAffordability
+      : Journey & JourneyStage.AfterConfirmedDirectDebitDetails =
+      Journey.ConfirmedDirectDebitDetails(
+        _id = dependencies.journeyId,
+        origin = Origins.Simp.Mobile,
+        createdOn = dependencies.createdOn,
+        sjRequest = sjRequest,
+        sessionId = dependencies.sessionId,
+        affordabilityEnabled = Some(false),
+        correlationId = dependencies.correlationId,
+        taxId = nino,
+        eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts = dependencies.instalmentAmounts,
         canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-        paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-        canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
-        directDebitDetails           = directDebitDetails,
-        isEmailAddressRequired       = IsEmailAddressRequired(isEmailAddressRequired),
-        pegaCaseId                   = None
+        paymentPlanAnswers = dependencies.paymentPlanAnswersNoAffordability,
+        canSetUpDirectDebitAnswer = CanSetUpDirectDebit(isAccountHolder = true),
+        directDebitDetails = directDebitDetails,
+        pegaCaseId = None
       )
-    }
+
+    def updateAgreedTermsAndConditionsRequest(isEmailAddressRequired: Boolean): IsEmailAddressRequired =
+      IsEmailAddressRequired(isEmailAddressRequired)
+
+    def journeyAfterAgreedTermsAndConditionsNoAffordability(
+      isEmailAddressRequired: Boolean
+    ): Journey & JourneyStage.AfterAgreedTermsAndConditions =
+      Journey.AgreedTermsAndConditions(
+        _id = dependencies.journeyId,
+        origin = Origins.Simp.Mobile,
+        createdOn = dependencies.createdOn,
+        sjRequest = sjRequest,
+        sessionId = dependencies.sessionId,
+        affordabilityEnabled = Some(false),
+        correlationId = dependencies.correlationId,
+        taxId = nino,
+        eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts = dependencies.instalmentAmounts,
+        canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+        paymentPlanAnswers = dependencies.paymentPlanAnswersNoAffordability,
+        canSetUpDirectDebitAnswer = CanSetUpDirectDebit(isAccountHolder = true),
+        directDebitDetails = directDebitDetails,
+        isEmailAddressRequired = IsEmailAddressRequired(isEmailAddressRequired),
+        pegaCaseId = None
+      )
 
     def updateSelectedEmailRequest(): Email = dependencies.email
 
-    def journeyAfterSelectedEmail: Journey.Simp.SelectedEmailToBeVerified = Journey.Simp.SelectedEmailToBeVerified(
-      _id                          = dependencies.journeyId,
-      origin                       = Origins.Simp.Mobile,
-      createdOn                    = dependencies.createdOn,
-      sjRequest                    = sjRequest,
-      sessionId                    = dependencies.sessionId,
-      stage                        = Stage.AfterSelectedAnEmailToBeVerified.EmailChosen,
-      affordabilityEnabled         = Some(false),
-      correlationId                = dependencies.correlationId,
-      taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
-      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts            = dependencies.instalmentAmounts,
+    def journeyAfterSelectedEmail: Journey.SelectedEmailToBeVerified = Journey.SelectedEmailToBeVerified(
+      _id = dependencies.journeyId,
+      origin = Origins.Simp.Mobile,
+      createdOn = dependencies.createdOn,
+      sjRequest = sjRequest,
+      sessionId = dependencies.sessionId,
+      affordabilityEnabled = Some(false),
+      correlationId = dependencies.correlationId,
+      taxId = nino,
+      eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
-      directDebitDetails           = directDebitDetails,
-      isEmailAddressRequired       = IsEmailAddressRequired(value = true),
-      emailToBeVerified            = dependencies.email,
-      pegaCaseId                   = None
+      paymentPlanAnswers = dependencies.paymentPlanAnswersNoAffordability,
+      canSetUpDirectDebitAnswer = CanSetUpDirectDebit(isAccountHolder = true),
+      directDebitDetails = directDebitDetails,
+      isEmailAddressRequired = IsEmailAddressRequired(value = true),
+      emailToBeVerified = dependencies.email,
+      pegaCaseId = None
     )
 
-    def journeyAfterEmailVerificationResult(result: EmailVerificationResult): Journey.Simp.EmailVerificationComplete = Journey.Simp.EmailVerificationComplete(
-      _id                          = dependencies.journeyId,
-      origin                       = Origins.Simp.Mobile,
-      createdOn                    = dependencies.createdOn,
-      sjRequest                    = sjRequest,
-      sessionId                    = dependencies.sessionId,
-      stage                        = result match {
-        case EmailVerificationResult.Verified => Stage.AfterEmailVerificationPhase.VerificationSuccess
-        case EmailVerificationResult.Locked   => Stage.AfterEmailVerificationPhase.Locked
-      },
-      affordabilityEnabled         = Some(false),
-      correlationId                = dependencies.correlationId,
-      taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
-      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts            = dependencies.instalmentAmounts,
-      canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
-      directDebitDetails           = directDebitDetails,
-      isEmailAddressRequired       = IsEmailAddressRequired(value = true),
-      emailToBeVerified            = dependencies.email,
-      emailVerificationResult      = result,
-      emailVerificationAnswers     = emailVerificationAnswers(Some(result)),
-      pegaCaseId                   = None
-    )
+    def journeyAfterEmailVerificationResult(result: EmailVerificationResult): Journey.EmailVerificationComplete =
+      Journey.EmailVerificationComplete(
+        _id = dependencies.journeyId,
+        origin = Origins.Simp.Mobile,
+        createdOn = dependencies.createdOn,
+        sjRequest = sjRequest,
+        sessionId = dependencies.sessionId,
+        affordabilityEnabled = Some(false),
+        correlationId = dependencies.correlationId,
+        taxId = nino,
+        eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts = dependencies.instalmentAmounts,
+        canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+        paymentPlanAnswers = dependencies.paymentPlanAnswersNoAffordability,
+        canSetUpDirectDebitAnswer = CanSetUpDirectDebit(isAccountHolder = true),
+        directDebitDetails = directDebitDetails,
+        isEmailAddressRequired = IsEmailAddressRequired(value = true),
+        emailToBeVerified = dependencies.email,
+        emailVerificationResult = result,
+        emailVerificationAnswers = emailVerificationAnswers(Some(result)),
+        pegaCaseId = None
+      )
 
     def updateArrangementRequest(): ArrangementResponse = dependencies.arrangementResponseSimp
 
-    def journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired: Boolean): Journey.AfterArrangementSubmitted = Journey.Simp.SubmittedArrangement(
-      _id                          = dependencies.journeyId,
-      origin                       = Origins.Simp.Mobile,
-      createdOn                    = dependencies.createdOn,
-      sjRequest                    = sjRequest,
-      sessionId                    = dependencies.sessionId,
-      stage                        = Stage.AfterSubmittedArrangement.Submitted,
-      affordabilityEnabled         = Some(false),
-      correlationId                = dependencies.correlationId,
-      taxId                        = nino,
-      eligibilityCheckResult       = eligibleEligibilityCheckResultSimp,
-      whyCannotPayInFullAnswers    = WhyCannotPayInFullAnswers.AnswerNotRequired,
-      upfrontPaymentAnswers        = dependencies.upfrontPaymentAnswersDeclared,
-      extremeDatesResponse         = dependencies.extremeDatesWithUpfrontPayment,
-      instalmentAmounts            = dependencies.instalmentAmounts,
+    def journeyAfterSubmittedArrangementNoAffordability(
+      isEmailAddressRequired: Boolean
+    ): Journey & JourneyStage.AfterArrangementSubmitted = Journey.SubmittedArrangement(
+      _id = dependencies.journeyId,
+      origin = Origins.Simp.Mobile,
+      createdOn = dependencies.createdOn,
+      sjRequest = sjRequest,
+      sessionId = dependencies.sessionId,
+      affordabilityEnabled = Some(false),
+      correlationId = dependencies.correlationId,
+      taxId = nino,
+      eligibilityCheckResult = eligibleEligibilityCheckResultSimp,
+      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+      upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+      extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+      instalmentAmounts = dependencies.instalmentAmounts,
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
-      paymentPlanAnswers           = dependencies.paymentPlanAnswersNoAffordability,
-      canSetUpDirectDebitAnswer    = CanSetUpDirectDebit(isAccountHolder = true),
-      directDebitDetails           = directDebitDetails,
-      isEmailAddressRequired       = IsEmailAddressRequired(isEmailAddressRequired),
-      emailVerificationAnswers     = if (isEmailAddressRequired) {
+      paymentPlanAnswers = dependencies.paymentPlanAnswersNoAffordability,
+      canSetUpDirectDebitAnswer = CanSetUpDirectDebit(isAccountHolder = true),
+      directDebitDetails = directDebitDetails,
+      isEmailAddressRequired = IsEmailAddressRequired(isEmailAddressRequired),
+      emailVerificationAnswers = if (isEmailAddressRequired) {
         EmailVerificationAnswers.EmailVerified(dependencies.email, EmailVerificationResult.Verified)
       } else {
         EmailVerificationAnswers.NoEmailJourney
       },
-      arrangementResponse          = dependencies.arrangementResponseSimp,
-      pegaCaseId                   = None
+      arrangementResponse = dependencies.arrangementResponseSimp,
+      pegaCaseId = None
     )
 
   }

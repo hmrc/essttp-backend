@@ -7,10 +7,10 @@ object AppDependencies {
   val hmrcMongoVersion = "2.5.0"
   val chimneyVersion = "1.7.3"
   val catsVersion = "2.13.0"
-  val playJsonDerivedCodesVersion = "10.1.0"
-  val enumeratumVersion = "1.7.0" // breaks with later version
+  val enumeratumVersion = "1.7.3"
   val enumeratumPlayVersion = "1.8.0"
   val cryptoVersion = "8.2.0"
+  val circeVersion = "0.14.10"
 
   /**
    * Note we pull in various libraries from corJourneyDependencies such as:
@@ -21,7 +21,6 @@ object AppDependencies {
     val compile: Seq[ModuleID] = Seq(
       "uk.gov.hmrc"             %% "bootstrap-backend-play-30"  % bootstrapVersion,
       "com.beachape"            %% "enumeratum"                 % enumeratumVersion,
-      "org.julienrf"            %% "play-json-derived-codecs"   % playJsonDerivedCodesVersion,
       "io.scalaland"            %% "chimney"                    % chimneyVersion,
       "org.typelevel"           %% "cats-core"                  % catsVersion
     )
@@ -38,16 +37,17 @@ object AppDependencies {
 
   lazy val corJourneyDependencies: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"           %% "bootstrap-common-play-30"        % bootstrapVersion % Provided,
-    "org.julienrf"          %% "play-json-derived-codecs"        % playJsonDerivedCodesVersion, //choose carefully
-    "com.github.kxbmap"     %% "configs"                         % "0.6.1" exclude("org.apache.commons", "commons-text"),
-    "com.github.pureconfig" %% "pureconfig"                      % "0.17.8",
+    "io.circe"              %% "circe-core"                      % circeVersion,
+    "io.circe"              %% "circe-generic"                   % circeVersion,
+    "io.circe"              %% "circe-parser"                    % circeVersion,
+    "com.github.pureconfig" %% "pureconfig-core"                 % "0.17.8",
     "com.beachape"          %% "enumeratum-play"                 % enumeratumPlayVersion,
     "org.playframework"     %% "play"                            % play.core.PlayVersion.current % Provided,
     "io.scalaland"          %% "chimney"                         % chimneyVersion,
     "org.typelevel"         %% "cats-core"                       % catsVersion,
     "uk.gov.hmrc.mongo"     %% "hmrc-mongo-play-30"              % hmrcMongoVersion,
     "uk.gov.hmrc"           %% "crypto-json-play-30"             % cryptoVersion,
-    "uk.gov.hmrc"           %% "payments-email-verification-cor-play-30" % "3.2.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
+    "uk.gov.hmrc"           %% "payments-email-verification-cor-play-30" % "4.2.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
   )
 
 }

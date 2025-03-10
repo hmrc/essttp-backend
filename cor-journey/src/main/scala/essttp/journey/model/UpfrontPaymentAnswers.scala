@@ -17,10 +17,12 @@
 package essttp.journey.model
 
 import essttp.rootmodel.UpfrontPaymentAmount
-import julienrf.json.derived
+import essttp.utils.DerivedJson
+import essttp.utils.DerivedJson.Circe.formatToCodec
+import io.circe.generic.semiauto.deriveCodec
 import play.api.libs.json.OFormat
 
-sealed trait UpfrontPaymentAnswers
+sealed trait UpfrontPaymentAnswers derives CanEqual
 
 object UpfrontPaymentAnswers {
   case object NoUpfrontPayment extends UpfrontPaymentAnswers
@@ -28,5 +30,5 @@ object UpfrontPaymentAnswers {
   final case class DeclaredUpfrontPayment(amount: UpfrontPaymentAmount) extends UpfrontPaymentAnswers
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[UpfrontPaymentAnswers] = derived.oformat[UpfrontPaymentAnswers]()
+  given OFormat[UpfrontPaymentAnswers] = DerivedJson.Circe.format(deriveCodec[UpfrontPaymentAnswers])
 }

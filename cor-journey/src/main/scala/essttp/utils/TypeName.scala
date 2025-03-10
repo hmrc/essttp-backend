@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package essttp.rootmodel.epaye
+package essttp.utils
 
-import julienrf.json.derived
-import play.api.libs.json.OFormat
+import scala.quoted.{Expr, Quotes, Type}
 
-/**
- * Accounts Office Reference (Aor)
- *
- * Another Epaye identifier which can be obtained based on the EmpRef from master data API from EPAYE Hod.
- */
-final case class Aor(value: String)
+object TypeName {
 
-object Aor {
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[Aor] = derived.oformat[Aor]()
+  inline def of[A]: String = ${ impl[A] }
+
+  def impl[A](using Type[A], Quotes): Expr[String] =
+    Expr(Type.show[A])
+
 }

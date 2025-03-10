@@ -20,7 +20,7 @@ import enumeratum._
 import essttp.rootmodel.TaxRegime
 import play.api.libs.json.{Format, JsError, JsString, JsSuccess, Reads, Writes}
 
-sealed trait RegimeType extends EnumEntry with Product with Serializable
+sealed trait RegimeType extends EnumEntry, Product, Serializable derives CanEqual
 
 object RegimeType extends Enum[RegimeType] {
 
@@ -39,7 +39,7 @@ object RegimeType extends Enum[RegimeType] {
     case TaxRegime.Simp  => SIMP
   }
 
-  implicit val format: Format[RegimeType] = Format(
+  given Format[RegimeType] = Format(
     Reads {
       case JsString("PAYE") => JsSuccess(EPAYE)
       case JsString("VATC") => JsSuccess(VAT)

@@ -25,15 +25,20 @@ import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
 import scala.concurrent.Future
 
-class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateChosenEmailControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-chosen-email" - {
     "should throw Bad Request when Journey is in a stage [BeforeAgreedTermsAndConditions]" in new JourneyItTest {
       stubCommonActions()
 
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
-      val result: Throwable = journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest()).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"UpdateChosenEmail is not possible in that state: [Started]"}""")
+      val result: Throwable = journeyConnector
+        .updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest())
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"UpdateChosenEmail is not possible in that state: [Started]"}"""
+      )
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }
@@ -45,9 +50,10 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
           tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(true),
           tdAll.EpayeBta.updateSelectedEmailRequest()
         )(
-            journeyConnector.updateSelectedEmailToBeVerified,
-            tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability.copy(emailToBeVerified = tdAll.EpayeBta.updateSelectedEmailRequest())
-          )(this)
+          journeyConnector.updateSelectedEmailToBeVerified,
+          tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability
+            .copy(emailToBeVerified = tdAll.EpayeBta.updateSelectedEmailRequest())
+        )(this)
       }
 
       "Vat" in new JourneyItTest {
@@ -55,9 +61,10 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
           tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(true),
           tdAll.VatBta.updateSelectedEmailRequest()
         )(
-            journeyConnector.updateSelectedEmailToBeVerified,
-            tdAll.VatBta.journeyAfterSelectedEmailNoAffordability.copy(emailToBeVerified = tdAll.VatBta.updateSelectedEmailRequest())
-          )(this)
+          journeyConnector.updateSelectedEmailToBeVerified,
+          tdAll.VatBta.journeyAfterSelectedEmailNoAffordability
+            .copy(emailToBeVerified = tdAll.VatBta.updateSelectedEmailRequest())
+        )(this)
       }
 
       "Sa" in new JourneyItTest {
@@ -65,9 +72,10 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
           tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(true),
           tdAll.SaBta.updateSelectedEmailRequest()
         )(
-            journeyConnector.updateSelectedEmailToBeVerified,
-            tdAll.SaBta.journeyAfterSelectedEmailNoAffordability.copy(emailToBeVerified = tdAll.SaBta.updateSelectedEmailRequest())
-          )(this)
+          journeyConnector.updateSelectedEmailToBeVerified,
+          tdAll.SaBta.journeyAfterSelectedEmailNoAffordability
+            .copy(emailToBeVerified = tdAll.SaBta.updateSelectedEmailRequest())
+        )(this)
       }
 
       "Simp" in new JourneyItTest {
@@ -75,9 +83,9 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
           tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(true),
           tdAll.SimpPta.updateSelectedEmailRequest()
         )(
-            journeyConnector.updateSelectedEmailToBeVerified,
-            tdAll.SimpPta.journeyAfterSelectedEmail.copy(emailToBeVerified = tdAll.SaBta.updateSelectedEmailRequest())
-          )(this)
+          journeyConnector.updateSelectedEmailToBeVerified,
+          tdAll.SimpPta.journeyAfterSelectedEmail.copy(emailToBeVerified = tdAll.SaBta.updateSelectedEmailRequest())
+        )(this)
       }
     }
 
@@ -85,35 +93,36 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
 
       val differentEmail = Email(SensitiveString("different.email@test.com"))
 
-        def testUpdate[J <: Journey, R](initialJourney: J, value: R)(
-            existingJourneyId:  J => JourneyId,
-            doUpdate:           (JourneyId, R) => Future[Journey],
-            expectedNewJourney: Journey
-        )(context: JourneyItTest): Unit = {
-          import context.request
+      def testUpdate[J <: Journey, R](initialJourney: J, value: R)(
+        existingJourneyId:  J => JourneyId,
+        doUpdate:           (JourneyId, R) => Future[Journey],
+        expectedNewJourney: Journey
+      )(context: JourneyItTest): Unit = {
+        import context.request
 
-          val journeyId = existingJourneyId(initialJourney)
+        val journeyId = existingJourneyId(initialJourney)
 
-          stubCommonActions()
+        stubCommonActions()
 
-          context.insertJourneyForTest(initialJourney)
+        context.insertJourneyForTest(initialJourney)
 
-          val result = doUpdate(journeyId, value).futureValue
-          result shouldBe expectedNewJourney
-          journeyConnector.getJourney(journeyId).futureValue shouldBe expectedNewJourney
+        val result = doUpdate(journeyId, value).futureValue
+        result shouldBe expectedNewJourney
+        journeyConnector.getJourney(journeyId).futureValue shouldBe expectedNewJourney
 
-          verifyCommonActions(numberOfAuthCalls = 2)
-          ()
-        }
+        verifyCommonActions(numberOfAuthCalls = 2)
+        ()
+      }
 
       "Epaye when" - {
 
-          def testEpayeBta[J <: Journey](initialJourney: J)(value: J => Email)(context: JourneyItTest): Unit =
-            testUpdate(initialJourney, value(initialJourney))(
-              _.journeyId,
-              journeyConnector.updateSelectedEmailToBeVerified(_, _)(context.request),
-              context.tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability.copy(emailToBeVerified = value(initialJourney))
-            )(context)
+        def testEpayeBta[J <: Journey](initialJourney: J)(value: J => Email)(context: JourneyItTest): Unit =
+          testUpdate(initialJourney, value(initialJourney))(
+            _.journeyId,
+            journeyConnector.updateSelectedEmailToBeVerified(_, _)(using context.request),
+            context.tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability
+              .copy(emailToBeVerified = value(initialJourney))
+          )(context)
 
         "the value is the same and" - {
 
@@ -124,7 +133,9 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
             }
 
             "EmailVerificationComplete" in new JourneyItTest {
-              testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.emailToBeVerified)(this)
+              testEpayeBta(
+                tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+              )(_.emailToBeVerified)(this)
             }
 
           }
@@ -139,7 +150,9 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
             }
 
             "EmailVerificationComplete" in new JourneyItTest {
-              testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_ => differentEmail)(this)
+              testEpayeBta(
+                tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+              )(_ => differentEmail)(this)
             }
 
           }
@@ -149,12 +162,13 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
 
       "Vat when" - {
 
-          def testVatBta[J <: Journey](initialJourney: J)(value: J => Email)(context: JourneyItTest): Unit =
-            testUpdate(initialJourney, value(initialJourney))(
-              _.journeyId,
-              journeyConnector.updateSelectedEmailToBeVerified(_, _)(context.request),
-              context.tdAll.VatBta.journeyAfterSelectedEmailNoAffordability.copy(emailToBeVerified = value(initialJourney))
-            )(context)
+        def testVatBta[J <: Journey](initialJourney: J)(value: J => Email)(context: JourneyItTest): Unit =
+          testUpdate(initialJourney, value(initialJourney))(
+            _.journeyId,
+            journeyConnector.updateSelectedEmailToBeVerified(_, _)(using context.request),
+            context.tdAll.VatBta.journeyAfterSelectedEmailNoAffordability
+              .copy(emailToBeVerified = value(initialJourney))
+          )(context)
 
         "the value is the same and" - {
 
@@ -165,7 +179,9 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
             }
 
             "EmailVerificationComplete" in new JourneyItTest {
-              testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.emailToBeVerified)(this)
+              testVatBta(
+                tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+              )(_.emailToBeVerified)(this)
             }
 
           }
@@ -180,7 +196,9 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
             }
 
             "EmailVerificationComplete" in new JourneyItTest {
-              testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_ => differentEmail)(this)
+              testVatBta(
+                tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+              )(_ => differentEmail)(this)
             }
 
           }
@@ -190,12 +208,12 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
 
       "Sa when" - {
 
-          def testSaBta[J <: Journey](initialJourney: J)(value: J => Email)(context: JourneyItTest): Unit =
-            testUpdate(initialJourney, value(initialJourney))(
-              _.journeyId,
-              journeyConnector.updateSelectedEmailToBeVerified(_, _)(context.request),
-              context.tdAll.SaBta.journeyAfterSelectedEmailNoAffordability.copy(emailToBeVerified = value(initialJourney))
-            )(context)
+        def testSaBta[J <: Journey](initialJourney: J)(value: J => Email)(context: JourneyItTest): Unit =
+          testUpdate(initialJourney, value(initialJourney))(
+            _.journeyId,
+            journeyConnector.updateSelectedEmailToBeVerified(_, _)(using context.request),
+            context.tdAll.SaBta.journeyAfterSelectedEmailNoAffordability.copy(emailToBeVerified = value(initialJourney))
+          )(context)
 
         "the value is the same and" - {
 
@@ -206,7 +224,9 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
             }
 
             "EmailVerificationComplete" in new JourneyItTest {
-              testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.emailToBeVerified)(this)
+              testSaBta(
+                tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+              )(_.emailToBeVerified)(this)
             }
 
           }
@@ -221,7 +241,9 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
             }
 
             "EmailVerificationComplete" in new JourneyItTest {
-              testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_ => differentEmail)(this)
+              testSaBta(
+                tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+              )(_ => differentEmail)(this)
             }
 
           }
@@ -231,12 +253,12 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
 
       "Simp when" - {
 
-          def testSimpPta[J <: Journey](initialJourney: J)(value: J => Email)(context: JourneyItTest): Unit =
-            testUpdate(initialJourney, value(initialJourney))(
-              _.journeyId,
-              journeyConnector.updateSelectedEmailToBeVerified(_, _)(context.request),
-              context.tdAll.SimpPta.journeyAfterSelectedEmail.copy(emailToBeVerified = value(initialJourney))
-            )(context)
+        def testSimpPta[J <: Journey](initialJourney: J)(value: J => Email)(context: JourneyItTest): Unit =
+          testUpdate(initialJourney, value(initialJourney))(
+            _.journeyId,
+            journeyConnector.updateSelectedEmailToBeVerified(_, _)(using context.request),
+            context.tdAll.SimpPta.journeyAfterSelectedEmail.copy(emailToBeVerified = value(initialJourney))
+          )(context)
 
         "the value is the same and" - {
 
@@ -247,7 +269,9 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
             }
 
             "EmailVerificationComplete" in new JourneyItTest {
-              testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.emailToBeVerified)(this)
+              testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(
+                _.emailToBeVerified
+              )(this)
             }
 
           }
@@ -262,7 +286,9 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
             }
 
             "EmailVerificationComplete" in new JourneyItTest {
-              testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_ => differentEmail)(this)
+              testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_ =>
+                differentEmail
+              )(this)
             }
 
           }
@@ -276,38 +302,57 @@ class UpdateChosenEmailControllerSpec extends ItSpec with UpdateJourneyControlle
       stubCommonActions()
 
       insertJourneyForTest(
-        TdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Locked)
+        TdAll.EpayeBta
+          .journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Locked)
           .copy(_id = tdAll.journeyId)
           .copy(correlationId = tdAll.correlationId)
       )
 
-      val result: Journey = journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest()).futureValue
+      val result: Journey = journeyConnector
+        .updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest())
+        .futureValue
       result shouldBe tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability
-      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability
+      journeyConnector
+        .getJourney(tdAll.journeyId)
+        .futureValue shouldBe tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }
 
     "should throw a Bad Request when isEmailAddressRequired in journey is false" in new JourneyItTest {
       stubCommonActions()
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(false)
-        .copy(_id = tdAll.journeyId)
-        .copy(correlationId = tdAll.correlationId))
-      val result: Throwable = journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest()).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"Cannot update selected email address when isEmailAddressRequired is false for journey."}""")
+      insertJourneyForTest(
+        TdAll.EpayeBta
+          .journeyAfterAgreedTermsAndConditionsNoAffordability(false)
+          .copy(_id = tdAll.journeyId)
+          .copy(correlationId = tdAll.correlationId)
+      )
+      val result: Throwable = journeyConnector
+        .updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest())
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"Cannot update selected email address when isEmailAddressRequired is false for journey."}"""
+      )
       verifyCommonActions(numberOfAuthCalls = 1)
     }
 
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
       insertJourneyForTest(
-        TdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability()
+        TdAll.EpayeBta
+          .journeyAfterSubmittedArrangementNoAffordability()
           .copy(_id = tdAll.journeyId)
           .copy(correlationId = tdAll.correlationId)
           .copy(isEmailAddressRequired = IsEmailAddressRequired(value = true))
       )
-      val result: Throwable = journeyConnector.updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest()).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"Cannot update ChosenEmail when journey is in completed state."}""")
+      val result: Throwable = journeyConnector
+        .updateSelectedEmailToBeVerified(tdAll.journeyId, tdAll.EpayeBta.updateSelectedEmailRequest())
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"Cannot update ChosenEmail when journey is in completed state."}"""
+      )
       verifyCommonActions(numberOfAuthCalls = 1)
     }
   }

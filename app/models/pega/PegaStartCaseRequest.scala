@@ -31,53 +31,53 @@ final case class PegaStartCaseRequest(caseTypeID: String, content: Content)
 object PegaStartCaseRequest {
 
   final case class Content(
-      uniqueIdentifier:     String,
-      uniqueIdentifierType: String,
-      regime:               String,
-      caseID:               Option[PegaCaseId],
-      recalculationNeeded:  Option[Boolean],
-      `AA`:                 AA
+    uniqueIdentifier:     String,
+    uniqueIdentifierType: String,
+    regime:               String,
+    caseID:               Option[PegaCaseId],
+    recalculationNeeded:  Option[Boolean],
+    `AA`:                 AA
   )
 
   object Content {
-    implicit val writes: OWrites[Content] = Json.writes
+    given OWrites[Content] = Json.writes
   }
 
   final case class AA(
-      debtAmount:          AmountInPence,
-      makeUpFrontPayment:  Boolean,
-      unableToPayReasons:  Set[UnableToPayReason],
-      mdtpPropertyMapping: MDTPropertyMapping
+    debtAmount:          AmountInPence,
+    makeUpFrontPayment:  Boolean,
+    unableToPayReasons:  Set[UnableToPayReason],
+    mdtpPropertyMapping: MDTPropertyMapping
   )
 
   object AA {
-    implicit val writes: OWrites[AA] = Json.writes
+    given OWrites[AA] = Json.writes
   }
 
-  final case class UnableToPayReason(reason: String) extends AnyVal
+  final case class UnableToPayReason(reason: String)
 
   object UnableToPayReason {
-    implicit val writes: OWrites[UnableToPayReason] = Json.writes
+    given OWrites[UnableToPayReason] = Json.writes
   }
 
   final case class MDTPropertyMapping(
-      customerPostcodes:    List[CustomerPostcode],
-      initialPaymentDate:   Option[InitialPaymentDate],
-      channelIdentifier:    ChannelIdentifier,
-      debtItemCharges:      List[DebtItemCharge],
-      accruedDebtInterest:  AccruedDebtInterest,
-      initialPaymentAmount: Option[UpfrontPaymentAmount],
-      paymentPlanFrequency: PaymentPlanFrequency
+    customerPostcodes:    List[CustomerPostcode],
+    initialPaymentDate:   Option[InitialPaymentDate],
+    channelIdentifier:    ChannelIdentifier,
+    debtItemCharges:      List[DebtItemCharge],
+    accruedDebtInterest:  AccruedDebtInterest,
+    initialPaymentAmount: Option[UpfrontPaymentAmount],
+    paymentPlanFrequency: PaymentPlanFrequency
   )
 
   object MDTPropertyMapping {
-    implicit val writes: OWrites[MDTPropertyMapping] = {
-      implicit val cryptoFormat: CryptoFormat = CryptoFormat.NoOpCryptoFormat
+    given OWrites[MDTPropertyMapping] = {
+      given CryptoFormat = CryptoFormat.NoOpCryptoFormat
       Json.writes
     }
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val writes: OWrites[PegaStartCaseRequest] = Json.writes
+  given OWrites[PegaStartCaseRequest] = Json.writes
 
 }

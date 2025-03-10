@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class IdValue(value: String) extends AnyVal
 
 object IdValue {
-  implicit val format: Format[IdValue] = Json.valueFormat
+  given Format[IdValue] = Json.valueFormat
 }

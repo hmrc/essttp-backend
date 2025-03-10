@@ -20,11 +20,11 @@ import essttp.crypto.CryptoFormat
 import play.api.libs.json.{Json, OFormat}
 
 final case class CustomerPostcode(
-    addressPostcode: Postcode,
-    postcodeDate:    PostcodeDate
+  addressPostcode: Postcode,
+  postcodeDate:    PostcodeDate
 )
 
 object CustomerPostcode {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[CustomerPostcode] = Json.format[CustomerPostcode]
+  given (using CryptoFormat): OFormat[CustomerPostcode] = Json.format[CustomerPostcode]
 }

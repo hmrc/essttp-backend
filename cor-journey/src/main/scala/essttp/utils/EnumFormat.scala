@@ -27,7 +27,10 @@ object EnumFormat {
     val identityTransformation: Transformation = Transformation(identity, identity)
   }
 
-  def apply[T <: EnumEntry](e: Enum[T], transformation: Transformation = Transformation.identityTransformation): Format[T] = Format(
+  def apply[T <: EnumEntry](
+    e:              Enum[T],
+    transformation: Transformation = Transformation.identityTransformation
+  ): Format[T] = Format(
     Reads {
       case JsString(value) =>
         e.withNameOption(transformation.readsTransformation(value))

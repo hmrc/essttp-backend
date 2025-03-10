@@ -26,21 +26,22 @@ import essttp.rootmodel.ttp.{PaymentPlanFrequency, PaymentPlanMaxLength, Payment
 import play.api.libs.json.{Json, OFormat}
 
 final case class InstalmentAmountRequest(
-    channelIdentifier:            ChannelIdentifier,
-    regimeType:                   RegimeType,
-    paymentPlanFrequency:         PaymentPlanFrequency,
-    paymentPlanMinLength:         PaymentPlanMinLength,
-    paymentPlanMaxLength:         PaymentPlanMaxLength,
-    earliestPaymentPlanStartDate: EarliestPaymentPlanStartDate,
-    latestPaymentPlanStartDate:   LatestPaymentPlanStartDate,
-    initialPaymentDate:           Option[InitialPaymentDate],
-    initialPaymentAmount:         Option[AmountInPence],
-    accruedDebtInterest:          AccruedDebtInterest,
-    debtItemCharges:              List[DebtItemCharge],
-    customerPostcodes:            Option[List[CustomerPostcode]]
+  channelIdentifier:            ChannelIdentifier,
+  regimeType:                   RegimeType,
+  paymentPlanFrequency:         PaymentPlanFrequency,
+  paymentPlanMinLength:         PaymentPlanMinLength,
+  paymentPlanMaxLength:         PaymentPlanMaxLength,
+  earliestPaymentPlanStartDate: EarliestPaymentPlanStartDate,
+  latestPaymentPlanStartDate:   LatestPaymentPlanStartDate,
+  initialPaymentDate:           Option[InitialPaymentDate],
+  initialPaymentAmount:         Option[AmountInPence],
+  accruedDebtInterest:          AccruedDebtInterest,
+  debtItemCharges:              List[DebtItemCharge],
+  customerPostcodes:            Option[List[CustomerPostcode]]
 )
 
 object InstalmentAmountRequest {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[InstalmentAmountRequest] = Json.format[InstalmentAmountRequest]
+  given (using CryptoFormat): OFormat[InstalmentAmountRequest] =
+    Json.format[InstalmentAmountRequest]
 }

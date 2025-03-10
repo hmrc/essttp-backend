@@ -18,14 +18,14 @@ package dates.models
 
 import play.api.libs.json.{JsString, Writes}
 
-sealed trait Region
+sealed trait Region derives CanEqual
 
 object Region {
 
   case object EnglandAndWales extends Region
 
-  implicit val writes: Writes[Region] = Writes {
-    case EnglandAndWales => JsString("EW")
+  given Writes[Region] = Writes { case EnglandAndWales =>
+    JsString("EW")
   }
 
 }

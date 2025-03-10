@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class ChargeOverMaxDebtAge(value: Boolean) extends AnyVal
 
 object ChargeOverMaxDebtAge {
-  implicit val format: Format[ChargeOverMaxDebtAge] = Json.valueFormat
+  given Format[ChargeOverMaxDebtAge] = Json.valueFormat
 }

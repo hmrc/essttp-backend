@@ -22,8 +22,8 @@ import play.api.mvc.{ActionBuilder, AnyContent, DefaultActionBuilder}
 
 @Singleton
 class Actions @Inject() (
-    actionBuilder:              DefaultActionBuilder,
-    authenticatedActionRefiner: AuthenticatedActionRefiner
+  actionBuilder:              DefaultActionBuilder,
+  authenticatedActionRefiner: AuthenticatedActionRefiner
 ) {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))

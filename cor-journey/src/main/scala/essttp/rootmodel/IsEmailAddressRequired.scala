@@ -16,17 +16,14 @@
 
 package essttp.rootmodel
 
-import cats.kernel.Eq
 import play.api.libs.json.{Format, Json}
 
-final case class IsEmailAddressRequired(value: Boolean) extends AnyVal
+final case class IsEmailAddressRequired(value: Boolean) extends AnyVal derives CanEqual
 
 object IsEmailAddressRequired {
 
-  implicit val eq: Eq[IsEmailAddressRequired] = Eq.fromUniversalEquals
-
   implicit def asBoolean(e: IsEmailAddressRequired): Boolean = e.value
 
-  implicit val format: Format[IsEmailAddressRequired] = Json.valueFormat
+  given Format[IsEmailAddressRequired] = Json.valueFormat
 
 }

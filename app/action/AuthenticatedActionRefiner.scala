@@ -29,28 +29,29 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendHeaderCarrierProvide
 import scala.concurrent.{ExecutionContext, Future}
 
 class AuthenticatedActionRefiner @Inject() (
-    val authConnector: AuthConnector,
-    cc:                MessagesControllerComponents
-)(
-    implicit
-    ec: ExecutionContext
-) extends ActionRefiner[Request, AuthenticatedRequest] with BackendHeaderCarrierProvider with AuthorisedFunctions {
+  val authConnector: AuthConnector,
+  cc:                MessagesControllerComponents
+)(using
+  ec:                ExecutionContext
+) extends ActionRefiner[Request, AuthenticatedRequest],
+      BackendHeaderCarrierProvider,
+      AuthorisedFunctions {
 
   private val logger = Logger(getClass)
 
-  override protected def refine[A](request: Request[A]): Future[Either[Result, AuthenticatedRequest[A]]] = {
-    authorised(AuthProviders(GovernmentGateway)).retrieve(Retrievals.allEnrolments) {
-      enrolments =>
+  override protected def refine[A](request: Request[A]): Future[Either[Result, AuthenticatedRequest[A]]] =
+    authorised(AuthProviders(GovernmentGateway))
+      .retrieve(Retrievals.allEnrolments) { enrolments =>
         Future.successful(Right(model.AuthenticatedRequest(request, enrolments)))
-    }(hc(request), ec).recover {
-      case _: NoActiveSession =>
-        Left(Unauthorized)
+      }(hc(request), ec)
+      .recover {
+        case _: NoActiveSession =>
+          Left(Unauthorized)
 
-      case e: AuthorisationException =>
-        logger.warn(s"Unauthorised because of ${e.reason}, please investigate why", e)
-        Left(InternalServerError)
-    }
-  }
+        case e: AuthorisationException =>
+          logger.warn(s"Unauthorised because of ${e.reason}, please investigate why", e)
+          Left(InternalServerError)
+      }
 
   override protected def executionContext: ExecutionContext = cc.executionContext
 

@@ -19,11 +19,11 @@ package essttp.rootmodel.ttp.eligibility
 import play.api.libs.json.{Json, OFormat}
 
 final case class ChargeTypeAssessment(
-    taxPeriodFrom:   TaxPeriodFrom,
-    taxPeriodTo:     TaxPeriodTo,
-    debtTotalAmount: DebtTotalAmount,
-    chargeReference: ChargeReference,
-    charges:         List[Charges]
+  taxPeriodFrom:   TaxPeriodFrom,
+  taxPeriodTo:     TaxPeriodTo,
+  debtTotalAmount: DebtTotalAmount,
+  chargeReference: ChargeReference,
+  charges:         List[Charges]
 )
 
 object ChargeTypeAssessment {
@@ -31,5 +31,5 @@ object ChargeTypeAssessment {
   final case class ChargesWithDifferentMTransException(charges: List[Charges]) extends Exception
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[ChargeTypeAssessment] = Json.format[ChargeTypeAssessment]
+  given OFormat[ChargeTypeAssessment] = Json.format[ChargeTypeAssessment]
 }

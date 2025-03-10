@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class ArrangementAgreedDate(value: String) extends AnyVal
 
 object ArrangementAgreedDate {
-  implicit val format: Format[ArrangementAgreedDate] = Json.valueFormat
+  given Format[ArrangementAgreedDate] = Json.valueFormat
 }

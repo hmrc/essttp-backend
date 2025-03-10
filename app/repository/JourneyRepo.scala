@@ -22,7 +22,7 @@ import essttp.journey.model.{Journey, JourneyId}
 import essttp.rootmodel.SessionId
 import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, Indexes}
-import repository.JourneyRepo._
+import repository.JourneyRepoUtils.{id, idExtractor}
 import repository.Repo.{Id, IdExtractor}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.Codecs
@@ -34,20 +34,19 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 final class JourneyRepo @Inject() (
-    mongoComponent: MongoComponent,
-    config:         AppConfig
-)(implicit ec: ExecutionContext, cryptoFormat: OperationalCryptoFormat)
-  extends Repo[JourneyId, Journey](
-    collectionName = "journey",
-    mongoComponent = mongoComponent,
-    indexes        = JourneyRepo.indexes(config.journeyRepoTtl),
-    extraCodecs    = Codecs.playFormatSumCodecs(Journey.format),
-    replaceIndexes = true
-  ) {
+  mongoComponent: MongoComponent,
+  config:         AppConfig
+)(using ExecutionContext, OperationalCryptoFormat)
+    extends Repo[JourneyId, Journey](
+      collectionName = "journey",
+      mongoComponent = mongoComponent,
+      indexes = JourneyRepoUtils.indexes(config.journeyRepoTtl),
+      extraCodecs = Codecs.playFormatSumCodecs(Journey.format),
+      replaceIndexes = true
+    ) {
 
-  /**
-   * Find the latest journey for given sessionId.
-   */
+  /** Find the latest journey for given sessionId.
+    */
   def findLatestJourney(sessionId: SessionId): Future[Option[Journey]] =
     collection
       .find(filter = Filters.eq("sessionId", sessionId.value))
@@ -56,19 +55,19 @@ final class JourneyRepo @Inject() (
 
 }
 
-object JourneyRepo {
+object JourneyRepoUtils {
 
-  implicit val journeyId: Id[JourneyId] = new Id[JourneyId] {
+  given id: Id[JourneyId] = new Id[JourneyId] {
     override def value(i: JourneyId): String = i.value
   }
 
-  implicit val journeyIdExtractor: IdExtractor[Journey, JourneyId] = new IdExtractor[Journey, JourneyId] {
+  given idExtractor: IdExtractor[Journey, JourneyId] = new IdExtractor[Journey, JourneyId] {
     override def id(j: Journey): JourneyId = j.journeyId
   }
 
   def indexes(cacheTtl: FiniteDuration): Seq[IndexModel] = Seq(
     IndexModel(
-      keys         = Indexes.ascending("lastUpdated"),
+      keys = Indexes.ascending("lastUpdated"),
       indexOptions = IndexOptions().expireAfter(cacheTtl.toSeconds, TimeUnit.SECONDS).name("lastUpdatedIdx")
     ),
     IndexModel(

@@ -16,18 +16,16 @@
 
 package essttp.rootmodel
 
-import cats.Eq
 import essttp.crypto.CryptoFormat
 import play.api.libs.json._
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
 
-final case class Email(value: SensitiveString) extends AnyVal
+final case class Email(value: SensitiveString) extends AnyVal derives CanEqual
 
 object Email {
-  implicit val eq: Eq[Email] = Eq.fromUniversalEquals
 
-  implicit def format(implicit cryptoFormat: CryptoFormat): Format[Email] = {
-    implicit val sensitiveStringFormat: Format[SensitiveString] = essttp.crypto.sensitiveStringFormat(cryptoFormat)
+  implicit def format(using cryptoFormat: CryptoFormat): Format[Email] = {
+    given Format[SensitiveString] = essttp.crypto.sensitiveStringFormat(cryptoFormat)
     Json.valueFormat
   }
 }

@@ -16,12 +16,12 @@
 
 package essttp.rootmodel.ttp.eligibility
 
-import play.api.libs.json.{Json, Format}
+import play.api.libs.json.{Format, Json}
 
-final case class EmailSource(value: String) extends AnyVal
+final case class EmailSource(value: String) extends AnyVal derives CanEqual
 
 object EmailSource {
-  implicit val format: Format[EmailSource] = Json.valueFormat
-  val `ETMP`: EmailSource = EmailSource("ETMP")
-  val `TEMP`: EmailSource = EmailSource("TEMP")
+  given Format[EmailSource] = Json.valueFormat
+  val `ETMP`: EmailSource   = EmailSource("ETMP")
+  val `TEMP`: EmailSource   = EmailSource("TEMP")
 }

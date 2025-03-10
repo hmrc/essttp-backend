@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class TransitionToCDCS(value: Boolean) extends AnyVal
 
 object TransitionToCDCS {
-  implicit val format: Format[TransitionToCDCS] = Json.valueFormat[TransitionToCDCS]
+  given Format[TransitionToCDCS] = Json.valueFormat[TransitionToCDCS]
 }

@@ -32,7 +32,7 @@ package object crypto {
 
   def sensitiveStringFormat(cryptoFormat: CryptoFormat): Format[SensitiveString] = cryptoFormat match {
     case CryptoFormat.OperationalCryptoFormat(crypto) =>
-      JsonEncryption.sensitiveEncrypterDecrypter(SensitiveString.apply)(implicitly[Format[String]], crypto)
+      JsonEncryption.sensitiveEncrypterDecrypter(SensitiveString.apply)(summon[Format[String]], crypto)
 
     case CryptoFormat.NoOpCryptoFormat =>
       noOpSensitiveStringFormat

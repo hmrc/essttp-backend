@@ -20,34 +20,32 @@ import uk.gov.hmrc.http.UpstreamErrorResponse
 
 import scala.concurrent.Future
 
-/**
- * Exceptions thrown by below util are expected exceptions maintained by our ErrorHandler
- */
+/** Exceptions thrown by below util are expected exceptions maintained by our ErrorHandler
+  */
 object Errors {
 
-  /**
-   * Creates a requirement which has to pass in order to continue computation.
-   * If it failes it will result in Upstream4xxResponse.
-   */
-  def require(requirement: Boolean, message: => String): Unit = {
+  /** Creates a requirement which has to pass in order to continue computation. If it failes it will result in
+    * Upstream4xxResponse.
+    */
+  def require(requirement: Boolean, message: => String): Unit =
     if (!requirement) throw UpstreamErrorResponse(message, play.mvc.Http.Status.BAD_REQUEST)
     else ()
-  }
 
-  def requireF(requirement: Boolean, message: => String): Future[Unit] = {
+  def requireF(requirement: Boolean, message: => String): Future[Unit] =
     if (!requirement) Future.failed(UpstreamErrorResponse(message, play.mvc.Http.Status.BAD_REQUEST))
     else Future.successful(())
-  }
 
   @inline def throwBadRequestException(message: => String): Nothing = throw UpstreamErrorResponse(
     message,
     play.mvc.Http.Status.BAD_REQUEST
   )
 
-  @inline def throwBadRequestExceptionF(message: => String): Future[Nothing] = Future.failed(UpstreamErrorResponse(
-    message,
-    play.mvc.Http.Status.BAD_REQUEST
-  ))
+  @inline def throwBadRequestExceptionF(message: => String): Future[Nothing] = Future.failed(
+    UpstreamErrorResponse(
+      message,
+      play.mvc.Http.Status.BAD_REQUEST
+    )
+  )
 
   @inline def throwNotFoundException(message: => String): Nothing = throw UpstreamErrorResponse(
     message,
@@ -64,18 +62,13 @@ object Errors {
     play.mvc.Http.Status.INTERNAL_SERVER_ERROR
   )
 
-  /**
-   * Call this to ensure that we don't do stupid things,
-   * like make illegal transitions (eg. from Finished to New)
-   */
-  def sanityCheck(requirement: Boolean, message: => String): Unit = {
+  /** Call this to ensure that we don't do stupid things, like make illegal transitions (eg. from Finished to New)
+    */
+  def sanityCheck(requirement: Boolean, message: => String): Unit =
     if (!requirement) throw UpstreamErrorResponse(message, play.mvc.Http.Status.INTERNAL_SERVER_ERROR)
     else ()
-  }
 
-  def notImplemented(message: => String = ""): Nothing = {
+  def notImplemented(message: => String = ""): Nothing =
     throw UpstreamErrorResponse(s"Unimplemented: $message", play.mvc.Http.Status.NOT_IMPLEMENTED)
-
-  }
 
 }

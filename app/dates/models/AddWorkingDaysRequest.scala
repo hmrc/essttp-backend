@@ -21,13 +21,13 @@ import play.api.libs.json.{Json, OWrites}
 import java.time.LocalDate
 
 final case class AddWorkingDaysRequest(
-    date:                     LocalDate,
-    numberOfWorkingDaysToAdd: Int,
-    regions:                  Set[Region]
+  date:                     LocalDate,
+  numberOfWorkingDaysToAdd: Int,
+  regions:                  Set[Region]
 )
 
 object AddWorkingDaysRequest {
 
-  implicit val writes: OWrites[AddWorkingDaysRequest] = Json.writes
+  given OWrites[AddWorkingDaysRequest] = Json.writes
 
 }

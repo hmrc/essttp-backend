@@ -20,20 +20,22 @@ import essttp.journey.model.JourneyId
 import play.api.libs.json.{Format, Json}
 import play.api.mvc.{PathBindable, QueryStringBindable}
 
-/**
- * Prediction from journeyId which we can use in urls and in logging to log in kibana what happened during particular journey
- */
-final case class TraceId(value: String)
+/** Prediction from journeyId which we can use in urls and in logging to log in kibana what happened during particular
+  * journey
+  */
+final case class TraceId(value: String) extends AnyVal
 
 object TraceId {
-  def apply(journeyId: JourneyId): TraceId = TraceId(eightDigitAbsoluteMod(journeyId.value.hashCode))
 
-  def eightDigitAbsoluteMod(i: Int): String = {
-    val absoluteMod = Math.abs(i % 100000000)
-    f"$absoluteMod%08d"
+  @SuppressWarnings(Array("org.wartremover.warts.Any"))
+  def fromJourneyId(journeyId: JourneyId): TraceId = {
+    val absoluteMod           = Math.abs(journeyId.value.hashCode % 100000000)
+    val eightDigitAbsoluteMod = f"$absoluteMod%08d"
+    TraceId(eightDigitAbsoluteMod)
   }
 
-  implicit val format: Format[TraceId] = Json.valueFormat
-  implicit val traceIdPathBinder: PathBindable[TraceId] = essttp.utils.ValueClassBinder.valueClassBinder(_.value)
-  implicit val traceIdQueryStringBinder: QueryStringBindable[TraceId] = essttp.utils.ValueClassBinder.queryStringValueBinder(_.value)
+  given Format[TraceId]              = Json.valueFormat
+  given PathBindable[TraceId]        = essttp.utils.ValueClassBinder.valueClassBinder(_.value)
+  given QueryStringBindable[TraceId] =
+    essttp.utils.ValueClassBinder.queryStringValueBinder(_.value)
 }

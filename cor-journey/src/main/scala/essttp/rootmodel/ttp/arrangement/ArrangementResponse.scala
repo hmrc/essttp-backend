@@ -23,6 +23,6 @@ final case class ArrangementResponse(processingDateTime: ProcessingDateTime, cus
 
 object ArrangementResponse {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[ArrangementResponse] = Json.format
+  given OFormat[ArrangementResponse] = Json.format
 
 }

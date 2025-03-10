@@ -22,6 +22,7 @@ import com.google.inject.{AbstractModule, Provides}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{CorrelationId, Journey, JourneyId}
 import org.mongodb.scala.bson.BsonDocument
+import org.mongodb.scala.SingleObservableFuture
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -44,21 +45,16 @@ import java.time.Clock
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Singleton
-import scala.annotation.nowarn
 import scala.util.Random
 
-trait ItSpec
-  extends AnyFreeSpecLike
-  with RichMatchers
-  with GuiceOneServerPerSuite
-  with WireMockSupport { self =>
+trait ItSpec extends AnyFreeSpecLike, RichMatchers, GuiceOneServerPerSuite, WireMockSupport { self =>
 
-  implicit val testCrypto: Encrypter with Decrypter = new AesCrypto {
+  given testCrypto: (Encrypter with Decrypter) = new AesCrypto {
     override protected val encryptionKey: String = "P5xsJ9Nt+quxGZzB4DeLfw=="
   }
 
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(
-    timeout  = scaled(Span(20, Seconds)),
+    timeout = scaled(Span(20, Seconds)),
     interval = scaled(Span(300, Millis))
   )
 
@@ -69,84 +65,78 @@ trait ItSpec
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def operationalCryptoFormat: OperationalCryptoFormat = OperationalCryptoFormat(testCrypto)
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
-    def clock: Clock = {
+    def clock: Clock =
       overrideClock.getOrElse {
         FrozenTime.reset()
         FrozenTime.getClock
       }
-    }
 
-    /**
-     * This one is randomised every time new test application is spawned. Thanks to that there will be no
-     * collisions in database when 2 tests insert journey.
-     */
+    /** This one is randomised every time new test application is spawned. Thanks to that there will be no collisions in
+      * database when 2 tests insert journey.
+      */
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def journeyIdGenerator(testJourneyIdGenerator: TestJourneyIdGenerator): JourneyIdGenerator = testJourneyIdGenerator
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def testJourneyIdGenerator(): TestJourneyIdGenerator = {
-      val randomPart: String = Random.alphanumeric.take(5).mkString
+      val randomPart: String                   = Random.alphanumeric.take(5).mkString
       val journeyIdPrefix: TestJourneyIdPrefix = TestJourneyIdPrefix(s"TestJourneyId-$randomPart-")
       new TestJourneyIdGenerator(journeyIdPrefix)
     }
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
-    def testCorrelationIdGenerator(testCorrelationIdGenerator: TestCorrelationIdGenerator): CorrelationIdGenerator = testCorrelationIdGenerator
+    def testCorrelationIdGenerator(testCorrelationIdGenerator: TestCorrelationIdGenerator): CorrelationIdGenerator =
+      testCorrelationIdGenerator
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def testCorrelationIdGenerator(): TestCorrelationIdGenerator = {
-      val randomPart: String = UUID.randomUUID().toString.take(8)
-      val correlationIdPrefix: TestCorrelationIdPrefix = TestCorrelationIdPrefix(s"$randomPart-843f-4988-89c6-d4d3e2e91e26")
+      val randomPart: String                           = UUID.randomUUID().toString.take(8)
+      val correlationIdPrefix: TestCorrelationIdPrefix = TestCorrelationIdPrefix(
+        s"$randomPart-843f-4988-89c6-d4d3e2e91e26"
+      )
       new TestCorrelationIdGenerator(correlationIdPrefix)
     }
 
     @Provides
     @Singleton
-    @nowarn // silence "method never used" warning
     def testPegaCorrelationIdGenerator(): PegaCorrelationIdGenerator = pegaCorrelationIdGenerator
   }
 
   lazy val overrideBindings: Seq[GuiceableModule] = Seq.empty
 
-  def journeyIdGenerator: TestJourneyIdGenerator = app.injector.instanceOf[TestJourneyIdGenerator]
-  def correlationIdGenerator: TestCorrelationIdGenerator = app.injector.instanceOf[TestCorrelationIdGenerator]
+  def journeyIdGenerator: TestJourneyIdGenerator                 = app.injector.instanceOf[TestJourneyIdGenerator]
+  def correlationIdGenerator: TestCorrelationIdGenerator         = app.injector.instanceOf[TestCorrelationIdGenerator]
   val pegaCorrelationIdGenerator: TestPegaCorrelationIdGenerator = new TestPegaCorrelationIdGenerator
 
-  implicit def hc: HeaderCarrier = HeaderCarrier()
+  given hc: HeaderCarrier = HeaderCarrier()
 
-  val baseUrl: String = s"http://localhost:${ItSpec.testServerPort.toString}"
+  val baseUrl: String      = s"http://localhost:${ItSpec.testServerPort.toString}"
   val databaseName: String = "essttp-backend-it"
 
   val overrideConfig: Map[String, Any] = Map.empty
 
   def conf: Map[String, Any] = Map[String, Any](
-    "mongodb.uri" -> s"mongodb://localhost:27017/$databaseName",
+    "mongodb.uri"                                   -> s"mongodb://localhost:27017/$databaseName",
     "microservice.services.essttp-backend.protocol" -> "http",
-    "microservice.services.essttp-backend.host" -> "localhost",
-    "microservice.services.essttp-backend.port" -> ItSpec.testServerPort,
-    "microservice.services.auth.port" -> WireMockSupport.port,
-    "microservice.services.date-calculator.port" -> WireMockSupport.port,
-    "microservice.services.pega.port" -> WireMockSupport.port,
-    "logger.root" -> "INFO",
-    "logger.application" -> "INFO",
-    "logger.connector" -> "INFO"
+    "microservice.services.essttp-backend.host"     -> "localhost",
+    "microservice.services.essttp-backend.port"     -> ItSpec.testServerPort,
+    "microservice.services.auth.port"               -> WireMockSupport.port,
+    "microservice.services.date-calculator.port"    -> WireMockSupport.port,
+    "microservice.services.pega.port"               -> WireMockSupport.port,
+    "logger.root"                                   -> "INFO",
+    "logger.application"                            -> "INFO",
+    "logger.connector"                              -> "INFO"
   ) ++ overrideConfig
 
-  //in tests use `app`
+  // in tests use `app`
   override def fakeApplication(): Application = new GuiceApplicationBuilder()
     .configure(conf)
     .overrides(GuiceableModule.fromGuiceModules(Seq(overridingsModule)))
@@ -155,7 +145,7 @@ trait ItSpec
 
   object TestServerFactory extends DefaultTestServerFactory {
     override protected def serverConfig(app: Application): ServerConfig = {
-      val sc = ServerConfig(port    = Some(ItSpec.testServerPort), sslPort = Some(0), mode = Mode.Test, rootDir = app.path)
+      val sc = ServerConfig(port = Some(ItSpec.testServerPort), sslPort = Some(0), mode = Mode.Test, rootDir = app.path)
       sc.copy(configuration = sc.configuration.withFallback(overrideServerConfiguration(app)))
     }
   }
@@ -164,11 +154,11 @@ trait ItSpec
     TestServerFactory.start(app)
 
   trait JourneyItTest {
-    val tdAll: TdAll = new TdAll {
-      override val journeyId: JourneyId = journeyIdGenerator.readNextJourneyId()
+    val tdAll: TdAll                   = new TdAll {
+      override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
       override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
     }
-    implicit val request: Request[AnyContent] = tdAll.request.withHeaders("Authorization" -> TdAll.authorization.value)
+    given request: Request[AnyContent] = tdAll.request.withHeaders("Authorization" -> TdAll.authorization.value)
 
     lazy val journeyRepo: JourneyRepo = app.injector.instanceOf[JourneyRepo]
 
@@ -178,7 +168,7 @@ trait ItSpec
   trait BarsVerifyStatusItTest {
     import testsupport.TdSupport._
 
-    implicit val request: Request[_] = FakeRequest()
+    given Request[_] = FakeRequest()
       .withSessionId()
       .withAuthToken()
       .withAkamaiReputationHeader()
@@ -200,9 +190,11 @@ trait ItSpec
     AuthStub.ensureAuthoriseCalled(numberOfAuthCalls, AuthProviders(GovernmentGateway))
 
   def encryptString(s: String, encrypter: Encrypter): String =
-    encrypter.encrypt(
-      PlainText("\"" + SensitiveString(s).decryptedValue + "\"")
-    ).value
+    encrypter
+      .encrypt(
+        PlainText("\"" + SensitiveString(s).decryptedValue + "\"")
+      )
+      .value
 }
 
 object ItSpec {
@@ -215,28 +207,30 @@ final case class TestJourneyIdPrefix(value: String)
 
 class TestJourneyIdGenerator(testJourneyIdPrefix: TestJourneyIdPrefix) extends JourneyIdGenerator {
 
-  private val idIterator: Iterator[JourneyId] = LazyList.from(0).map(i => JourneyId(s"${testJourneyIdPrefix.value}${i.toString}")).iterator
-  private val nextJourneyIdCached = new AtomicReference[JourneyId](idIterator.next())
+  private val idIterator: Iterator[JourneyId] =
+    LazyList.from(0).map(i => JourneyId(s"${testJourneyIdPrefix.value}${i.toString}")).iterator
+  private val nextJourneyIdCached             = new AtomicReference[JourneyId](idIterator.next())
 
   def readNextJourneyId(): JourneyId = nextJourneyIdCached.get()
 
-  override def nextJourneyId(): JourneyId = {
+  override def nextJourneyId(): JourneyId =
     nextJourneyIdCached.getAndSet(idIterator.next())
-  }
 }
 
 final case class TestCorrelationIdPrefix(value: String)
 
 class TestCorrelationIdGenerator(testCorrelationIdPrefix: TestCorrelationIdPrefix) extends CorrelationIdGenerator {
   private val correlationIdIterator: Iterator[CorrelationId] =
-    LazyList.from(0).map(i => CorrelationId(UUID.fromString(s"${testCorrelationIdPrefix.value.dropRight(1)}${i.toString}".take(35)))).iterator
-  private val nextCorrelationIdCached = new AtomicReference[CorrelationId](correlationIdIterator.next())
+    LazyList
+      .from(0)
+      .map(i => CorrelationId(UUID.fromString(s"${testCorrelationIdPrefix.value.dropRight(1)}${i.toString}".take(35))))
+      .iterator
+  private val nextCorrelationIdCached                        = new AtomicReference[CorrelationId](correlationIdIterator.next())
 
   def readNextCorrelationId(): CorrelationId = nextCorrelationIdCached.get()
 
-  override def nextCorrelationId(): CorrelationId = {
+  override def nextCorrelationId(): CorrelationId =
     nextCorrelationIdCached.getAndSet(correlationIdIterator.next())
-  }
 }
 
 class TestPegaCorrelationIdGenerator extends PegaCorrelationIdGenerator {
@@ -246,4 +240,3 @@ class TestPegaCorrelationIdGenerator extends PegaCorrelationIdGenerator {
   override def nextCorrelationId(): String = fixedCorrelationId
 
 }
-

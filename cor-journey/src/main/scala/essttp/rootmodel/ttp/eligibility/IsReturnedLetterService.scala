@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class IsReturnedLetterService(value: Boolean) extends AnyVal
 
 object IsReturnedLetterService {
-  implicit val format: Format[IsReturnedLetterService] = Json.valueFormat[IsReturnedLetterService]
+  given Format[IsReturnedLetterService] = Json.valueFormat[IsReturnedLetterService]
 }

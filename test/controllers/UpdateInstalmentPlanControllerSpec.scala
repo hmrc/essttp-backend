@@ -22,7 +22,7 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateInstalmentPlanControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-selected-plan" - {
     "should throw Bad Request when Journey is in a stage" - {
@@ -30,8 +30,13 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyContro
         stubCommonActions()
 
         journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
-        val result: Throwable = journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.EpayeBta.updateSelectedPaymentPlanRequest()).failed.futureValue
-        result.getMessage should include("""{"statusCode":400,"message":"UpdateSelectedPaymentPlan is not possible in that state: [Started]"}""")
+        val result: Throwable = journeyConnector
+          .updateChosenPaymentPlan(tdAll.journeyId, TdAll.EpayeBta.updateSelectedPaymentPlanRequest())
+          .failed
+          .futureValue
+        result.getMessage should include(
+          """{"statusCode":400,"message":"UpdateSelectedPaymentPlan is not possible in that state: [Started]"}"""
+        )
 
         verifyCommonActions(numberOfAuthCalls = 2)
       }
@@ -40,8 +45,13 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyContro
         insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
         stubCommonActions()
 
-        val result: Throwable = journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.EpayeBta.updateSelectedPaymentPlanRequest()).failed.futureValue
-        result.getMessage should include("""{"statusCode":400,"message":"Not expecting to update SelectedPaymentPlan after starting PEGA case"}""")
+        val result: Throwable = journeyConnector
+          .updateChosenPaymentPlan(tdAll.journeyId, tdAll.EpayeBta.updateSelectedPaymentPlanRequest())
+          .failed
+          .futureValue
+        result.getMessage should include(
+          """{"statusCode":400,"message":"Not expecting to update SelectedPaymentPlan after starting PEGA case"}"""
+        )
 
         verifyCommonActions(numberOfAuthCalls = 1)
       }
@@ -50,8 +60,13 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyContro
         insertJourneyForTest(tdAll.EpayeBta.journeyAfterCheckedPaymentPlanWithAffordability)
         stubCommonActions()
 
-        val result: Throwable = journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, TdAll.EpayeBta.updateSelectedPaymentPlanRequest()).failed.futureValue
-        result.getMessage should include("""{"statusCode":400,"message":"Cannot update SelectedPaymentPlan on affordability journey"}""")
+        val result: Throwable = journeyConnector
+          .updateChosenPaymentPlan(tdAll.journeyId, TdAll.EpayeBta.updateSelectedPaymentPlanRequest())
+          .failed
+          .futureValue
+        result.getMessage should include(
+          """{"statusCode":400,"message":"Cannot update SelectedPaymentPlan on affordability journey"}"""
+        )
 
         verifyCommonActions(numberOfAuthCalls = 1)
       }
@@ -64,9 +79,9 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyContro
           tdAll.EpayeBta.journeyAfterAffordableQuotesResponse,
           TdAll.EpayeBta.updateSelectedPaymentPlanRequest()
         )(
-            journeyConnector.updateChosenPaymentPlan,
-            tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
-          )(this)
+          journeyConnector.updateChosenPaymentPlan,
+          tdAll.EpayeBta.journeyAfterSelectedPaymentPlan
+        )(this)
       }
 
       "Vat" in new JourneyItTest {
@@ -74,9 +89,9 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyContro
           tdAll.VatBta.journeyAfterAffordableQuotesResponse,
           TdAll.VatBta.updateSelectedPaymentPlanRequest()
         )(
-            journeyConnector.updateChosenPaymentPlan,
-            tdAll.VatBta.journeyAfterSelectedPaymentPlan
-          )(this)
+          journeyConnector.updateChosenPaymentPlan,
+          tdAll.VatBta.journeyAfterSelectedPaymentPlan
+        )(this)
       }
 
       "Sa" in new JourneyItTest {
@@ -84,9 +99,9 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyContro
           tdAll.SaBta.journeyAfterAffordableQuotesResponse,
           TdAll.SaBta.updateSelectedPaymentPlanRequest()
         )(
-            journeyConnector.updateChosenPaymentPlan,
-            tdAll.SaBta.journeyAfterSelectedPaymentPlan
-          )(this)
+          journeyConnector.updateChosenPaymentPlan,
+          tdAll.SaBta.journeyAfterSelectedPaymentPlan
+        )(this)
       }
 
       "Simp" in new JourneyItTest {
@@ -94,9 +109,9 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyContro
           tdAll.SimpPta.journeyAfterAffordableQuotesResponse,
           TdAll.SimpPta.updateSelectedPaymentPlanRequest()
         )(
-            journeyConnector.updateChosenPaymentPlan,
-            tdAll.SimpPta.journeyAfterSelectedPaymentPlan
-          )(this)
+          journeyConnector.updateChosenPaymentPlan,
+          tdAll.SimpPta.journeyAfterSelectedPaymentPlan
+        )(this)
       }
     }
 
@@ -106,184 +121,244 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyContro
 
       "Epaye when the current stage is" - {
 
-          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => PaymentPlan)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentPaymentPlan,
-                journeyConnector.updateChosenPaymentPlan(_, _)(context.request),
-                context.tdAll.EpayeBta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = differentPaymentPlan)
-              )(context)
+        def testEpayeBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => PaymentPlan)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentPaymentPlan,
+            journeyConnector.updateChosenPaymentPlan(_, _)(using context.request),
+            context.tdAll.EpayeBta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = differentPaymentPlan)
+          )(context)
 
         "ChosenPaymentPlan" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedPaymentPlan)(_.selectedPaymentPlan)(this)
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testEpayeBta(
+            tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
+          )(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testEpayeBta(
+            tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+          )(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
         }
 
       }
 
       "Vat when the current stage is" - {
 
-          def testVatBta[J <: Journey](initialJourney: J)(existingValue: J => PaymentPlan)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentPaymentPlan,
-                journeyConnector.updateChosenPaymentPlan(_, _)(context.request),
-                context.tdAll.VatBta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = differentPaymentPlan)
-              )(context)
+        def testVatBta[J <: Journey](initialJourney: J)(existingValue: J => PaymentPlan)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentPaymentPlan,
+            journeyConnector.updateChosenPaymentPlan(_, _)(using context.request),
+            context.tdAll.VatBta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = differentPaymentPlan)
+          )(context)
 
         "ChosenPaymentPlan" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterSelectedPaymentPlan)(_.selectedPaymentPlan)(this)
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testVatBta(tdAll.VatBta.journeyAfterCheckedPaymentPlanNonAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterSelectedEmailNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testVatBta(tdAll.VatBta.journeyAfterSelectedEmailNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
       }
 
       "Sa when the current stage is" - {
 
-          def testSaBta[J <: Journey](initialJourney: J)(existingValue: J => PaymentPlan)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentPaymentPlan,
-                journeyConnector.updateChosenPaymentPlan(_, _)(context.request),
-                context.tdAll.SaBta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = differentPaymentPlan)
-              )(context)
+        def testSaBta[J <: Journey](initialJourney: J)(existingValue: J => PaymentPlan)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentPaymentPlan,
+            journeyConnector.updateChosenPaymentPlan(_, _)(using context.request),
+            context.tdAll.SaBta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = differentPaymentPlan)
+          )(context)
 
         "ChosenPaymentPlan" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterSelectedPaymentPlan)(_.selectedPaymentPlan)(this)
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSaBta(tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSaBta(tdAll.SaBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterSelectedEmailNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSaBta(tdAll.SaBta.journeyAfterSelectedEmailNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
       }
 
       "Simp when the current stage is" - {
 
-          def testSimpPta[J <: Journey](initialJourney: J)(existingValue: J => PaymentPlan)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentPaymentPlan,
-                journeyConnector.updateChosenPaymentPlan(_, _)(context.request),
-                context.tdAll.SimpPta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = differentPaymentPlan)
-              )(context)
+        def testSimpPta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => PaymentPlan)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentPaymentPlan,
+            journeyConnector.updateChosenPaymentPlan(_, _)(using context.request),
+            context.tdAll.SimpPta.journeyAfterSelectedPaymentPlan.copy(selectedPaymentPlan = differentPaymentPlan)
+          )(context)
 
         "ChosenPaymentPlan" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterSelectedPaymentPlan)(_.selectedPaymentPlan)(this)
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterCheckedPaymentPlanNonAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterSelectedEmail)(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterSelectedEmail)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.selectedPaymentPlan
+          )(this)
         }
 
       }
@@ -293,9 +368,19 @@ class UpdateInstalmentPlanControllerSpec extends ItSpec with UpdateJourneyContro
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      val result: Throwable = journeyConnector.updateChosenPaymentPlan(tdAll.journeyId, tdAll.EpayeBta.updateSelectedPaymentPlanRequest()).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"Cannot update ChosenPlan when journey is in completed state"}""")
+      insertJourneyForTest(
+        TdAll.EpayeBta
+          .journeyAfterSubmittedArrangementNoAffordability()
+          .copy(_id = tdAll.journeyId)
+          .copy(correlationId = tdAll.correlationId)
+      )
+      val result: Throwable = journeyConnector
+        .updateChosenPaymentPlan(tdAll.journeyId, tdAll.EpayeBta.updateSelectedPaymentPlanRequest())
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"Cannot update ChosenPlan when journey is in completed state"}"""
+      )
 
       verifyCommonActions(numberOfAuthCalls = 1)
     }

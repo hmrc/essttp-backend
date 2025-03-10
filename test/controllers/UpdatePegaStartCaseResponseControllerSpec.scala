@@ -21,7 +21,7 @@ import essttp.rootmodel.pega.{PegaCaseId, StartCaseResponse}
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdatePegaStartCaseResponseControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-pega-start-case-response" - {
     "should throw Bad Request when Journey is in a stage" - {
@@ -30,8 +30,11 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
         stubCommonActions()
 
         journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
-        val result: Throwable = journeyConnector.updatePegaStartCaseResponse(tdAll.journeyId, tdAll.startCaseResponse).failed.futureValue
-        result.getMessage should include("""{"statusCode":400,"message":"UpdatePegaStartCaseResponse update is not possible in that state: [Started]"}""")
+        val result: Throwable =
+          journeyConnector.updatePegaStartCaseResponse(tdAll.journeyId, tdAll.startCaseResponse).failed.futureValue
+        result.getMessage should include(
+          """{"statusCode":400,"message":"UpdatePegaStartCaseResponse update is not possible in that state: [Started]"}"""
+        )
 
         verifyCommonActions(numberOfAuthCalls = 2)
       }
@@ -40,8 +43,11 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
         insertJourneyForTest(tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount)
         stubCommonActions()
 
-        val result: Throwable = journeyConnector.updatePegaStartCaseResponse(tdAll.journeyId, tdAll.startCaseResponse).failed.futureValue
-        result.getMessage should include("""{"statusCode":400,"message":"update PEGA start case response not expected after entered monthly payment amount"}""")
+        val result: Throwable =
+          journeyConnector.updatePegaStartCaseResponse(tdAll.journeyId, tdAll.startCaseResponse).failed.futureValue
+        result.getMessage should include(
+          """{"statusCode":400,"message":"update PEGA start case response not expected after entered monthly payment amount"}"""
+        )
 
         verifyCommonActions(numberOfAuthCalls = 1)
       }
@@ -54,9 +60,9 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
           tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired,
           tdAll.startCaseResponse
         )(
-            journeyConnector.updatePegaStartCaseResponse,
-            tdAll.EpayeBta.journeyAfterStartedPegaCase
-          )(this)
+          journeyConnector.updatePegaStartCaseResponse,
+          tdAll.EpayeBta.journeyAfterStartedPegaCase
+        )(this)
       }
 
       "Vat" in new JourneyItTest {
@@ -64,9 +70,9 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
           tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired,
           tdAll.startCaseResponse
         )(
-            journeyConnector.updatePegaStartCaseResponse,
-            tdAll.VatBta.journeyAfterStartedPegaCase
-          )(this)
+          journeyConnector.updatePegaStartCaseResponse,
+          tdAll.VatBta.journeyAfterStartedPegaCase
+        )(this)
       }
 
       "Sa" in new JourneyItTest {
@@ -74,9 +80,9 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
           tdAll.SaBta.journeyAfterCanPayWithinSixMonths,
           tdAll.startCaseResponse
         )(
-            journeyConnector.updatePegaStartCaseResponse,
-            tdAll.SaBta.journeyAfterStartedPegaCase
-          )(this)
+          journeyConnector.updatePegaStartCaseResponse,
+          tdAll.SaBta.journeyAfterStartedPegaCase
+        )(this)
       }
 
       "Simp" in new JourneyItTest {
@@ -84,9 +90,9 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
           tdAll.SimpPta.journeyAfterCanPayWithinSixMonths,
           tdAll.startCaseResponse
         )(
-            journeyConnector.updatePegaStartCaseResponse,
-            tdAll.SimpPta.journeyAfterStartedPegaCase
-          )(this)
+          journeyConnector.updatePegaStartCaseResponse,
+          tdAll.SimpPta.journeyAfterStartedPegaCase
+        )(this)
       }
     }
 
@@ -96,15 +102,17 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
 
       "Epaye when the current stage is" - {
 
-          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => StartCaseResponse)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentResponse,
-                journeyConnector.updatePegaStartCaseResponse(_, _)(context.request),
-                context.tdAll.EpayeBta.journeyAfterStartedPegaCase.copy(startCaseResponse = differentResponse)
-              )(context)
+        def testEpayeBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => StartCaseResponse)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentResponse,
+            journeyConnector.updatePegaStartCaseResponse(_, _)(using context.request),
+            context.tdAll.EpayeBta.journeyAfterStartedPegaCase.copy(startCaseResponse = differentResponse)
+          )(context)
 
         "StartedPegaCase" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterStartedPegaCase)(_.startCaseResponse)(this)
@@ -114,15 +122,17 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
 
       "Vat when the current stage is" - {
 
-          def testVatBta[J <: Journey](initialJourney: J)(existingValue: J => StartCaseResponse)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentResponse,
-                journeyConnector.updatePegaStartCaseResponse(_, _)(context.request),
-                context.tdAll.VatBta.journeyAfterStartedPegaCase.copy(startCaseResponse = differentResponse)
-              )(context)
+        def testVatBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => StartCaseResponse)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentResponse,
+            journeyConnector.updatePegaStartCaseResponse(_, _)(using context.request),
+            context.tdAll.VatBta.journeyAfterStartedPegaCase.copy(startCaseResponse = differentResponse)
+          )(context)
 
         "StartedPegaCase" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterStartedPegaCase)(_.startCaseResponse)(this)
@@ -132,15 +142,17 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
 
       "Sa when the current stage is" - {
 
-          def testSaBta[J <: Journey](initialJourney: J)(existingValue: J => StartCaseResponse)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentResponse,
-                journeyConnector.updatePegaStartCaseResponse(_, _)(context.request),
-                context.tdAll.SaBta.journeyAfterStartedPegaCase.copy(startCaseResponse = differentResponse)
-              )(context)
+        def testSaBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => StartCaseResponse)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentResponse,
+            journeyConnector.updatePegaStartCaseResponse(_, _)(using context.request),
+            context.tdAll.SaBta.journeyAfterStartedPegaCase.copy(startCaseResponse = differentResponse)
+          )(context)
 
         "StartedPegaCase" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterStartedPegaCase)(_.startCaseResponse)(this)
@@ -150,15 +162,17 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
 
       "Simp when the current stage is" - {
 
-          def testSimpPta[J <: Journey](initialJourney: J)(existingValue: J => StartCaseResponse)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentResponse,
-                journeyConnector.updatePegaStartCaseResponse(_, _)(context.request),
-                context.tdAll.SimpPta.journeyAfterStartedPegaCase.copy(startCaseResponse = differentResponse)
-              )(context)
+        def testSimpPta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => StartCaseResponse)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentResponse,
+            journeyConnector.updatePegaStartCaseResponse(_, _)(using context.request),
+            context.tdAll.SimpPta.journeyAfterStartedPegaCase.copy(startCaseResponse = differentResponse)
+          )(context)
 
         "StartedPegaCase" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterStartedPegaCase)(_.startCaseResponse)(this)
@@ -170,4 +184,3 @@ class UpdatePegaStartCaseResponseControllerSpec extends ItSpec with UpdateJourne
 
   }
 }
-

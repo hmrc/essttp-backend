@@ -34,36 +34,74 @@ class EligibilityCheckResultSpec extends UnitSpec {
     }
 
     "email when" - {
-      val addressesWithNoEmail = List(Address(
-        AddressType("Residential"), None, None, None, None, None,
-        Some(ContactDetail(None, None, None, None, None, None)), None, None,
-        List(PostcodeHistory(Postcode(SensitiveString("POSTCODE")), PostcodeDate(LocalDate.now)))
-      ))
+      val addressesWithNoEmail = List(
+        Address(
+          AddressType("Residential"),
+          None,
+          None,
+          None,
+          None,
+          None,
+          Some(ContactDetail(None, None, None, None, None, None)),
+          None,
+          None,
+          List(PostcodeHistory(Postcode(SensitiveString("POSTCODE")), PostcodeDate(LocalDate.now)))
+        )
+      )
 
-      val addressesWithNoContactDetails = List(Address(
-        AddressType("Residential"), None, None, None, None, None, None, None, None,
-        List(PostcodeHistory(Postcode(SensitiveString("POSTCODE")), PostcodeDate(LocalDate.now)))
-      ))
+      val addressesWithNoContactDetails = List(
+        Address(
+          AddressType("Residential"),
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          None,
+          List(PostcodeHistory(Postcode(SensitiveString("POSTCODE")), PostcodeDate(LocalDate.now)))
+        )
+      )
 
-      val addressesWithEmailInContactDetails = List(Address(
-        AddressType("Residential"), None, None, None, None, None,
-        Some(ContactDetail(None, None, None, Some(Email(SensitiveString("abc@email.com"))), None, None)), None, None,
-        List(PostcodeHistory(Postcode(SensitiveString("POSTCODE")), PostcodeDate(LocalDate.now)))
-      ))
+      val addressesWithEmailInContactDetails = List(
+        Address(
+          AddressType("Residential"),
+          None,
+          None,
+          None,
+          None,
+          None,
+          Some(ContactDetail(None, None, None, Some(Email(SensitiveString("abc@email.com"))), None, None)),
+          None,
+          None,
+          List(PostcodeHistory(Postcode(SensitiveString("POSTCODE")), PostcodeDate(LocalDate.now)))
+        )
+      )
 
       "there are no emails" in {
-        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = List(CustomerDetail(None, None)), addresses = addressesWithNoEmail).email shouldBe None
-        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = List(CustomerDetail(None, None)), addresses = addressesWithNoContactDetails).email shouldBe None
+        TdAll.eligibleEligibilityCheckResultSa
+          .copy(customerDetails = List(CustomerDetail(None, None)), addresses = addressesWithNoEmail)
+          .email shouldBe None
+        TdAll.eligibleEligibilityCheckResultSa
+          .copy(customerDetails = List(CustomerDetail(None, None)), addresses = addressesWithNoContactDetails)
+          .email shouldBe None
       }
 
       "there are emails in addresses" in {
         val expectedEmail = Email(SensitiveString("abc@email.com"))
-        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = List(CustomerDetail(None, None)), addresses = addressesWithEmailInContactDetails)
+        TdAll.eligibleEligibilityCheckResultSa
+          .copy(customerDetails = List(CustomerDetail(None, None)), addresses = addressesWithEmailInContactDetails)
           .email shouldBe Some(expectedEmail)
       }
 
       "there are no emails in addresses, but there are emails in customerDetails" in {
-        TdAll.eligibleEligibilityCheckResultSa.copy(customerDetails = List(CustomerDetail(Some(Email(SensitiveString("abc@email.com"))), None)), addresses = addressesWithNoContactDetails).email shouldBe None
+        TdAll.eligibleEligibilityCheckResultSa
+          .copy(
+            customerDetails = List(CustomerDetail(Some(Email(SensitiveString("abc@email.com"))), None)),
+            addresses = addressesWithNoContactDetails
+          )
+          .email shouldBe None
       }
     }
 

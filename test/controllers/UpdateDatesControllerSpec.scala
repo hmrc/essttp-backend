@@ -25,15 +25,20 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateDatesControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-extreme-dates" - {
     "should throw Bad Request when Journey is in a stage [BeforeUpfrontPaymentAnswers]" in new JourneyItTest {
       stubCommonActions()
 
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
-      val result: Throwable = journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.EpayeBta.updateExtremeDatesRequest()).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"UpdateExtremeDatesResponse update is not possible in that state: [Started]"}""")
+      val result: Throwable = journeyConnector
+        .updateExtremeDates(tdAll.journeyId, tdAll.EpayeBta.updateExtremeDatesRequest())
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"UpdateExtremeDatesResponse update is not possible in that state: [Started]"}"""
+      )
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }
@@ -47,9 +52,9 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             tdAll.EpayeBta.journeyAfterCanPayUpfrontNo,
             TdAll.EpayeBta.updateExtremeDatesRequest()
           )(
-              journeyConnector.updateExtremeDates,
-              tdAll.EpayeBta.journeyAfterExtremeDates.copy(upfrontPaymentAnswers = UpfrontPaymentAnswers.NoUpfrontPayment)
-            )(this)
+            journeyConnector.updateExtremeDates,
+            tdAll.EpayeBta.journeyAfterExtremeDates.copy(upfrontPaymentAnswers = UpfrontPaymentAnswers.NoUpfrontPayment)
+          )(this)
         }
 
         "the user has selected an upfront payment" in new JourneyItTest {
@@ -57,9 +62,9 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount,
             TdAll.EpayeBta.updateExtremeDatesRequest()
           )(
-              journeyConnector.updateExtremeDates,
-              tdAll.EpayeBta.journeyAfterExtremeDates
-            )(this)
+            journeyConnector.updateExtremeDates,
+            tdAll.EpayeBta.journeyAfterExtremeDates
+          )(this)
         }
       }
 
@@ -70,9 +75,9 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             tdAll.VatBta.journeyAfterCanPayUpfrontNo,
             TdAll.VatBta.updateExtremeDatesRequest()
           )(
-              journeyConnector.updateExtremeDates,
-              tdAll.VatBta.journeyAfterExtremeDates.copy(upfrontPaymentAnswers = UpfrontPaymentAnswers.NoUpfrontPayment)
-            )(this)
+            journeyConnector.updateExtremeDates,
+            tdAll.VatBta.journeyAfterExtremeDates.copy(upfrontPaymentAnswers = UpfrontPaymentAnswers.NoUpfrontPayment)
+          )(this)
         }
 
         "the user has selected an upfront payment" in new JourneyItTest {
@@ -80,9 +85,9 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             tdAll.VatBta.journeyAfterUpfrontPaymentAmount,
             TdAll.VatBta.updateExtremeDatesRequest()
           )(
-              journeyConnector.updateExtremeDates,
-              tdAll.VatBta.journeyAfterExtremeDates
-            )(this)
+            journeyConnector.updateExtremeDates,
+            tdAll.VatBta.journeyAfterExtremeDates
+          )(this)
         }
       }
 
@@ -93,9 +98,9 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             tdAll.SaBta.journeyAfterCanPayUpfrontNo,
             TdAll.SaBta.updateExtremeDatesRequest()
           )(
-              journeyConnector.updateExtremeDates,
-              tdAll.SaBta.journeyAfterExtremeDates.copy(upfrontPaymentAnswers = UpfrontPaymentAnswers.NoUpfrontPayment)
-            )(this)
+            journeyConnector.updateExtremeDates,
+            tdAll.SaBta.journeyAfterExtremeDates.copy(upfrontPaymentAnswers = UpfrontPaymentAnswers.NoUpfrontPayment)
+          )(this)
         }
 
         "the user has selected an upfront payment" in new JourneyItTest {
@@ -103,9 +108,9 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             tdAll.SaBta.journeyAfterUpfrontPaymentAmount,
             TdAll.SaBta.updateExtremeDatesRequest()
           )(
-              journeyConnector.updateExtremeDates,
-              tdAll.SaBta.journeyAfterExtremeDates
-            )(this)
+            journeyConnector.updateExtremeDates,
+            tdAll.SaBta.journeyAfterExtremeDates
+          )(this)
         }
       }
 
@@ -116,9 +121,9 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             tdAll.SimpPta.journeyAfterCanPayUpfrontNo,
             TdAll.SimpPta.updateExtremeDatesRequest()
           )(
-              journeyConnector.updateExtremeDates,
-              tdAll.SimpPta.journeyAfterExtremeDates.copy(upfrontPaymentAnswers = UpfrontPaymentAnswers.NoUpfrontPayment)
-            )(this)
+            journeyConnector.updateExtremeDates,
+            tdAll.SimpPta.journeyAfterExtremeDates.copy(upfrontPaymentAnswers = UpfrontPaymentAnswers.NoUpfrontPayment)
+          )(this)
         }
 
         "the user has selected an upfront payment" in new JourneyItTest {
@@ -126,9 +131,9 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
             tdAll.SimpPta.journeyAfterUpfrontPaymentAmount,
             TdAll.SimpPta.updateExtremeDatesRequest()
           )(
-              journeyConnector.updateExtremeDates,
-              tdAll.SimpPta.journeyAfterExtremeDates
-            )(this)
+            journeyConnector.updateExtremeDates,
+            tdAll.SimpPta.journeyAfterExtremeDates
+          )(this)
         }
       }
 
@@ -142,25 +147,30 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
 
       "Epaye when the current stage is" - {
 
-          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentExtremeDates,
-                journeyConnector.updateExtremeDates(_, _)(context.request),
-                context.tdAll.EpayeBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
-              )(context)
+        def testEpayeBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentExtremeDates,
+            journeyConnector.updateExtremeDates(_, _)(using context.request),
+            context.tdAll.EpayeBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
+          )(context)
 
-          def testEpayeBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentExtremeDates,
-                journeyConnector.updateExtremeDates(_, _)(context.request),
-                context.tdAll.EpayeBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
-              )(context)
+        def testEpayeBtaWithCaseId[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentExtremeDates,
+            journeyConnector.updateExtremeDates(_, _)(using context.request),
+            context.tdAll.EpayeBta.journeyAfterExtremeDates
+              .copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
+          )(context)
 
         "RetrievedExtremeDates" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterExtremeDates)(_.extremeDatesResponse)(this)
@@ -203,19 +213,27 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.extremeDatesResponse)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.extremeDatesResponse
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.extremeDatesResponse)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.extremeDatesResponse)(
+            this
+          )
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.extremeDatesResponse)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.extremeDatesResponse)(
+            this
+          )
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.extremeDatesResponse)(this)
+          testEpayeBta(
+            tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
+          )(_.extremeDatesResponse)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
@@ -223,32 +241,39 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.extremeDatesResponse)(this)
+          testEpayeBta(
+            tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+          )(_.extremeDatesResponse)(this)
         }
 
       }
 
       "Vat when the current stage is" - {
 
-          def testVatBta[J <: Journey](initialJourney: J)(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentExtremeDates,
-                journeyConnector.updateExtremeDates(_, _)(context.request),
-                context.tdAll.VatBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
-              )(context)
+        def testVatBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentExtremeDates,
+            journeyConnector.updateExtremeDates(_, _)(using context.request),
+            context.tdAll.VatBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
+          )(context)
 
-          def testVatBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentExtremeDates,
-                journeyConnector.updateExtremeDates(_, _)(context.request),
-                context.tdAll.VatBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
-              )(context)
+        def testVatBtaWithCaseId[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentExtremeDates,
+            journeyConnector.updateExtremeDates(_, _)(using context.request),
+            context.tdAll.VatBta.journeyAfterExtremeDates
+              .copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
+          )(context)
 
         "RetrievedExtremeDates" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterExtremeDates)(_.extremeDatesResponse)(this)
@@ -291,7 +316,9 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.extremeDatesResponse)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.extremeDatesResponse
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -303,7 +330,9 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.extremeDatesResponse)(this)
+          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.extremeDatesResponse
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
@@ -311,32 +340,39 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.extremeDatesResponse)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
+            _.extremeDatesResponse
+          )(this)
         }
 
       }
 
       "Sa when the current stage is" - {
 
-          def testSaBta[J <: Journey](initialJourney: J)(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentExtremeDates,
-                journeyConnector.updateExtremeDates(_, _)(context.request),
-                context.tdAll.SaBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
-              )(context)
+        def testSaBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentExtremeDates,
+            journeyConnector.updateExtremeDates(_, _)(using context.request),
+            context.tdAll.SaBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
+          )(context)
 
-          def testSaBtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentExtremeDates,
-                journeyConnector.updateExtremeDates(_, _)(context.request),
-                context.tdAll.SaBta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
-              )(context)
+        def testSaBtaWithCaseId[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentExtremeDates,
+            journeyConnector.updateExtremeDates(_, _)(using context.request),
+            context.tdAll.SaBta.journeyAfterExtremeDates
+              .copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
+          )(context)
 
         "RetrievedExtremeDates" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterExtremeDates)(_.extremeDatesResponse)(this)
@@ -379,7 +415,9 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.extremeDatesResponse)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.extremeDatesResponse
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
@@ -391,7 +429,9 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.extremeDatesResponse)(this)
+          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.extremeDatesResponse
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
@@ -399,32 +439,39 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.extremeDatesResponse)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
+            _.extremeDatesResponse
+          )(this)
         }
 
       }
 
       "Simp when the current stage is" - {
 
-          def testSimpPta[J <: Journey](initialJourney: J)(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentExtremeDates,
-                journeyConnector.updateExtremeDates(_, _)(context.request),
-                context.tdAll.SimpPta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
-              )(context)
+        def testSimpPta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentExtremeDates,
+            journeyConnector.updateExtremeDates(_, _)(using context.request),
+            context.tdAll.SimpPta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates)
+          )(context)
 
-          def testSimpPtaWithCaseId[J <: Journey](initialJourney: J)(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentExtremeDates,
-                journeyConnector.updateExtremeDates(_, _)(context.request),
-                context.tdAll.SimpPta.journeyAfterExtremeDates.copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
-              )(context)
+        def testSimpPtaWithCaseId[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => ExtremeDatesResponse)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentExtremeDates,
+            journeyConnector.updateExtremeDates(_, _)(using context.request),
+            context.tdAll.SimpPta.journeyAfterExtremeDates
+              .copy(extremeDatesResponse = differentExtremeDates, pegaCaseId = Some(PegaCaseId("case-id")))
+          )(context)
 
         "RetrievedExtremeDates" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterExtremeDates)(_.extremeDatesResponse)(this)
@@ -467,19 +514,27 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.extremeDatesResponse
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.extremeDatesResponse)(
+            this
+          )
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.extremeDatesResponse)(
+            this
+          )
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.extremeDatesResponse
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
@@ -487,7 +542,9 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.extremeDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(
+            _.extremeDatesResponse
+          )(this)
         }
 
       }
@@ -497,9 +554,19 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      val result: Throwable = journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.EpayeBta.updateExtremeDatesRequest()).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"Cannot update ExtremeDates when journey is in completed state"}""")
+      insertJourneyForTest(
+        TdAll.EpayeBta
+          .journeyAfterSubmittedArrangementNoAffordability()
+          .copy(_id = tdAll.journeyId)
+          .copy(correlationId = tdAll.correlationId)
+      )
+      val result: Throwable = journeyConnector
+        .updateExtremeDates(tdAll.journeyId, tdAll.EpayeBta.updateExtremeDatesRequest())
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"Cannot update ExtremeDates when journey is in completed state"}"""
+      )
 
       verifyCommonActions(numberOfAuthCalls = 1)
     }
@@ -512,8 +579,13 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         stubCommonActions()
 
         journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
-        val result: Throwable = journeyConnector.updateStartDates(tdAll.journeyId, tdAll.EpayeBta.updateStartDatesResponse()).failed.futureValue
-        result.getMessage should include("""{"statusCode":400,"message":"UpdateStartDates is not possible when we don't have a chosen day of month, stage: [ Started ]"}""")
+        val result: Throwable = journeyConnector
+          .updateStartDates(tdAll.journeyId, tdAll.EpayeBta.updateStartDatesResponse())
+          .failed
+          .futureValue
+        result.getMessage should include(
+          """{"statusCode":400,"message":"UpdateStartDates is not possible when we don't have a chosen day of month, stage: [ Started ]"}"""
+        )
 
         verifyCommonActions(numberOfAuthCalls = 2)
       }
@@ -522,8 +594,13 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
         stubCommonActions()
 
-        val result: Throwable = journeyConnector.updateStartDates(tdAll.journeyId, tdAll.EpayeBta.updateStartDatesResponse()).failed.futureValue
-        result.getMessage should include("""{"statusCode":400,"message":"Not expecting to update ExtremeDates after starting PEGA case"}""")
+        val result: Throwable = journeyConnector
+          .updateStartDates(tdAll.journeyId, tdAll.EpayeBta.updateStartDatesResponse())
+          .failed
+          .futureValue
+        result.getMessage should include(
+          """{"statusCode":400,"message":"Not expecting to update ExtremeDates after starting PEGA case"}"""
+        )
 
         verifyCommonActions(numberOfAuthCalls = 1)
       }
@@ -532,8 +609,13 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         insertJourneyForTest(tdAll.EpayeBta.journeyAfterCheckedPaymentPlanWithAffordability)
         stubCommonActions()
 
-        val result: Throwable = journeyConnector.updateStartDates(tdAll.journeyId, TdAll.EpayeBta.updateStartDatesResponse()).failed.futureValue
-        result.getMessage should include("""{"statusCode":400,"message":"Cannot update StartDatesResponse on affordability journey"}""")
+        val result: Throwable = journeyConnector
+          .updateStartDates(tdAll.journeyId, TdAll.EpayeBta.updateStartDatesResponse())
+          .failed
+          .futureValue
+        result.getMessage should include(
+          """{"statusCode":400,"message":"Cannot update StartDatesResponse on affordability journey"}"""
+        )
 
         verifyCommonActions(numberOfAuthCalls = 1)
       }
@@ -546,9 +628,9 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
           tdAll.EpayeBta.journeyAfterDayOfMonth,
           TdAll.EpayeBta.updateStartDatesResponse()
         )(
-            journeyConnector.updateStartDates,
-            tdAll.EpayeBta.journeyAfterStartDatesResponse
-          )(this)
+          journeyConnector.updateStartDates,
+          tdAll.EpayeBta.journeyAfterStartDatesResponse
+        )(this)
       }
 
       "Vat" in new JourneyItTest {
@@ -556,9 +638,9 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
           tdAll.VatBta.journeyAfterDayOfMonth,
           TdAll.VatBta.updateStartDatesResponse()
         )(
-            journeyConnector.updateStartDates,
-            tdAll.VatBta.journeyAfterStartDatesResponse
-          )(this)
+          journeyConnector.updateStartDates,
+          tdAll.VatBta.journeyAfterStartDatesResponse
+        )(this)
       }
 
       "Sa" in new JourneyItTest {
@@ -566,9 +648,9 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
           tdAll.SaBta.journeyAfterDayOfMonth,
           TdAll.SaBta.updateStartDatesResponse()
         )(
-            journeyConnector.updateStartDates,
-            tdAll.SaBta.journeyAfterStartDatesResponse
-          )(this)
+          journeyConnector.updateStartDates,
+          tdAll.SaBta.journeyAfterStartDatesResponse
+        )(this)
       }
 
       "Simp" in new JourneyItTest {
@@ -576,23 +658,28 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
           tdAll.SimpPta.journeyAfterDayOfMonth,
           TdAll.SimpPta.updateStartDatesResponse()
         )(
-            journeyConnector.updateStartDates,
-            tdAll.SimpPta.journeyAfterStartDatesResponse
-          )(this)
+          journeyConnector.updateStartDates,
+          tdAll.SimpPta.journeyAfterStartDatesResponse
+        )(this)
       }
     }
 
     "should update the journey when start dates response has changed" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterDayOfMonth.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
+      insertJourneyForTest(
+        TdAll.EpayeBta.journeyAfterDayOfMonth.copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId)
+      )
 
-      val result1 = journeyConnector.updateStartDates(tdAll.journeyId, tdAll.EpayeBta.updateStartDatesResponse()).futureValue
+      val result1 =
+        journeyConnector.updateStartDates(tdAll.journeyId, tdAll.EpayeBta.updateStartDatesResponse()).futureValue
       result1 shouldBe tdAll.EpayeBta.journeyAfterStartDatesResponse
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterStartDatesResponse
 
-      val result2 = journeyConnector.updateStartDates(tdAll.journeyId, TdAll.startDatesResponseWithoutInitialPayment).futureValue
-      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterStartDatesResponse.copy(startDatesResponse = TdAll.startDatesResponseWithoutInitialPayment)
+      val result2                 =
+        journeyConnector.updateStartDates(tdAll.journeyId, TdAll.startDatesResponseWithoutInitialPayment).futureValue
+      val expectedUpdatedJourney2 = tdAll.EpayeBta.journeyAfterStartDatesResponse
+        .copy(startDatesResponse = TdAll.startDatesResponseWithoutInitialPayment)
       result2 shouldBe expectedUpdatedJourney2
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe expectedUpdatedJourney2
 
@@ -607,15 +694,17 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
 
       "Epaye when the current stage is" - {
 
-          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => StartDatesResponse)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentStartDates,
-                journeyConnector.updateStartDates(_, _)(context.request),
-                context.tdAll.EpayeBta.journeyAfterStartDatesResponse.copy(startDatesResponse = differentStartDates)
-              )(context)
+        def testEpayeBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => StartDatesResponse)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentStartDates,
+            journeyConnector.updateStartDates(_, _)(using context.request),
+            context.tdAll.EpayeBta.journeyAfterStartDatesResponse.copy(startDatesResponse = differentStartDates)
+          )(context)
 
         "RetrievedStartDates" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterStartDatesResponse)(_.startDatesResponse)(this)
@@ -630,46 +719,62 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testEpayeBta(
+            tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
+          )(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testEpayeBta(
+            tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+          )(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
         }
 
       }
 
       "Vat when the current stage is" - {
 
-          def testVatBta[J <: Journey](initialJourney: J)(existingValue: J => StartDatesResponse)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentStartDates,
-                journeyConnector.updateStartDates(_, _)(context.request),
-                context.tdAll.VatBta.journeyAfterStartDatesResponse.copy(startDatesResponse = differentStartDates)
-              )(context)
+        def testVatBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => StartDatesResponse)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentStartDates,
+            journeyConnector.updateStartDates(_, _)(using context.request),
+            context.tdAll.VatBta.journeyAfterStartDatesResponse.copy(startDatesResponse = differentStartDates)
+          )(context)
 
         "RetrievedStartDates" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterStartDatesResponse)(_.startDatesResponse)(this)
@@ -684,46 +789,62 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testVatBta(tdAll.VatBta.journeyAfterCheckedPaymentPlanNonAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterSelectedEmailNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testVatBta(tdAll.VatBta.journeyAfterSelectedEmailNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
       }
 
       "Sa when the current stage is" - {
 
-          def testSaBta[J <: Journey](initialJourney: J)(existingValue: J => StartDatesResponse)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentStartDates,
-                journeyConnector.updateStartDates(_, _)(context.request),
-                context.tdAll.SaBta.journeyAfterStartDatesResponse.copy(startDatesResponse = differentStartDates)
-              )(context)
+        def testSaBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => StartDatesResponse)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentStartDates,
+            journeyConnector.updateStartDates(_, _)(using context.request),
+            context.tdAll.SaBta.journeyAfterStartDatesResponse.copy(startDatesResponse = differentStartDates)
+          )(context)
 
         "RetrievedStartDates" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterStartDatesResponse)(_.startDatesResponse)(this)
@@ -738,46 +859,62 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSaBta(tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSaBta(tdAll.SaBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterSelectedEmailNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSaBta(tdAll.SaBta.journeyAfterSelectedEmailNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
       }
 
       "Simp when the current stage is" - {
 
-          def testSimpPta[J <: Journey](initialJourney: J)(existingValue: J => StartDatesResponse)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentStartDates,
-                journeyConnector.updateStartDates(_, _)(context.request),
-                context.tdAll.SimpPta.journeyAfterStartDatesResponse.copy(startDatesResponse = differentStartDates)
-              )(context)
+        def testSimpPta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => StartDatesResponse)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentStartDates,
+            journeyConnector.updateStartDates(_, _)(using context.request),
+            context.tdAll.SimpPta.journeyAfterStartDatesResponse.copy(startDatesResponse = differentStartDates)
+          )(context)
 
         "RetrievedStartDates" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterStartDatesResponse)(_.startDatesResponse)(this)
@@ -792,31 +929,45 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterCheckedPaymentPlanNonAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterSelectedEmail)(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterSelectedEmail)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
         }
 
       }
@@ -826,9 +977,19 @@ class UpdateDatesControllerSpec extends ItSpec with UpdateJourneyControllerSpec 
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      val result: Throwable = journeyConnector.updateExtremeDates(tdAll.journeyId, tdAll.EpayeBta.updateExtremeDatesRequest()).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"Cannot update ExtremeDates when journey is in completed state"}""")
+      insertJourneyForTest(
+        TdAll.EpayeBta
+          .journeyAfterSubmittedArrangementNoAffordability()
+          .copy(_id = tdAll.journeyId)
+          .copy(correlationId = tdAll.correlationId)
+      )
+      val result: Throwable = journeyConnector
+        .updateExtremeDates(tdAll.journeyId, tdAll.EpayeBta.updateExtremeDatesRequest())
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"Cannot update ExtremeDates when journey is in completed state"}"""
+      )
 
       verifyCommonActions(numberOfAuthCalls = 1)
     }

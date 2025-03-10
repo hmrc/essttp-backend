@@ -16,13 +16,13 @@
 
 package controllers
 
-import essttp.journey.model.{Journey, Stage, WhyCannotPayInFullAnswers}
+import essttp.journey.model.{Journey, WhyCannotPayInFullAnswers}
 import essttp.rootmodel.CannotPayReason
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateWhyCannotPayInFullControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-why-cannot-pay-in-full" - {
 
@@ -32,8 +32,13 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
       journeyConnector.updateTaxId(tdAll.journeyId, TdAll.empRef).futureValue
 
-      val result: Throwable = journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"WhyCannotPayInFullAnswers update is not possible in that state."}""")
+      val result: Throwable = journeyConnector
+        .updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired)
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"WhyCannotPayInFullAnswers update is not possible in that state."}"""
+      )
 
       verifyCommonActions(numberOfAuthCalls = 3)
     }
@@ -45,9 +50,9 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
           tdAll.EpayeBta.journeyAfterEligibilityCheckEligible,
           TdAll.whyCannotPayInFullNotRequired
         )(
-            journeyConnector.updateWhyCannotPayInFullAnswers,
-            tdAll.EpayeBta.journeyAfterWhyCannotPayInFullNotRequired
-          )(this)
+          journeyConnector.updateWhyCannotPayInFullAnswers,
+          tdAll.EpayeBta.journeyAfterWhyCannotPayInFullNotRequired
+        )(this)
       }
 
       "Vat" in new JourneyItTest {
@@ -55,9 +60,9 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
           tdAll.VatBta.journeyAfterEligibilityCheckEligible,
           TdAll.whyCannotPayInFullNotRequired
         )(
-            journeyConnector.updateWhyCannotPayInFullAnswers,
-            tdAll.VatBta.journeyAfterWhyCannotPayInFullNotRequired
-          )(this)
+          journeyConnector.updateWhyCannotPayInFullAnswers,
+          tdAll.VatBta.journeyAfterWhyCannotPayInFullNotRequired
+        )(this)
       }
 
       "Sa" in new JourneyItTest {
@@ -65,9 +70,9 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
           tdAll.SaBta.journeyAfterEligibilityCheckEligible,
           TdAll.whyCannotPayInFullRequired
         )(
-            journeyConnector.updateWhyCannotPayInFullAnswers,
-            tdAll.SaBta.journeyAfterWhyCannotPayInFullRequired
-          )(this)
+          journeyConnector.updateWhyCannotPayInFullAnswers,
+          tdAll.SaBta.journeyAfterWhyCannotPayInFullRequired
+        )(this)
       }
 
       "Simp" in new JourneyItTest {
@@ -75,9 +80,9 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
           tdAll.SimpPta.journeyAfterEligibilityCheckEligible,
           TdAll.whyCannotPayInFullRequired
         )(
-            journeyConnector.updateWhyCannotPayInFullAnswers,
-            tdAll.SimpPta.journeyAfterWhyCannotPayInFullRequired
-          )(this)
+          journeyConnector.updateWhyCannotPayInFullAnswers,
+          tdAll.SimpPta.journeyAfterWhyCannotPayInFullRequired
+        )(this)
       }
     }
 
@@ -87,28 +92,31 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
 
         val differentWhyCannotPayInFullReasons =
           WhyCannotPayInFullAnswers.WhyCannotPayInFull(
-            Set(CannotPayReason.NoMoneySetAside, CannotPayReason.LostOrReducedAbilityToEarnOrTrade, CannotPayReason.NationalOrLocalDisaster)
+            Set(
+              CannotPayReason.NoMoneySetAside,
+              CannotPayReason.LostOrReducedAbilityToEarnOrTrade,
+              CannotPayReason.NationalOrLocalDisaster
+            )
           )
 
-          def testEpayeBta[J <: Journey](initialJourney: J)(
-              existingValue:                              J => WhyCannotPayInFullAnswers,
-              expectedUpdateInitialJourneyTransformation: J => J
-          )(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentWhyCannotPayInFullReasons,
-                journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(context.request),
-                expectedUpdateInitialJourneyTransformation(initialJourney)
-              )(context)
+        def testEpayeBta[J <: Journey](initialJourney: J)(
+          existingValue:                              J => WhyCannotPayInFullAnswers,
+          expectedUpdateInitialJourneyTransformation: J => J
+        )(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentWhyCannotPayInFullReasons,
+            journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(using context.request),
+            expectedUpdateInitialJourneyTransformation(initialJourney)
+          )(context)
 
         "ObtainedWhyCannotPayInFullAnswers" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterWhyCannotPayInFullNotRequired)(
             _.whyCannotPayInFullAnswers,
             _.copy(
-              whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons,
-              stage                     = Stage.AfterWhyCannotPayInFullAnswers.AnswerRequired
+              whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons
             )
           )(this)
         }
@@ -219,7 +227,9 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+          testEpayeBta(
+            tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
+          )(
             _.whyCannotPayInFullAnswers,
             _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
           )(this)
@@ -233,7 +243,9 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
+          testEpayeBta(
+            tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+          )(
             _.whyCannotPayInFullAnswers,
             _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
           )(this)
@@ -245,28 +257,31 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
 
         val differentWhyCannotPayInFullReasons =
           WhyCannotPayInFullAnswers.WhyCannotPayInFull(
-            Set(CannotPayReason.NoMoneySetAside, CannotPayReason.LostOrReducedAbilityToEarnOrTrade, CannotPayReason.NationalOrLocalDisaster)
+            Set(
+              CannotPayReason.NoMoneySetAside,
+              CannotPayReason.LostOrReducedAbilityToEarnOrTrade,
+              CannotPayReason.NationalOrLocalDisaster
+            )
           )
 
-          def testVatBta[J <: Journey](initialJourney: J)(
-              existingValue:                              J => WhyCannotPayInFullAnswers,
-              expectedUpdateInitialJourneyTransformation: J => J
-          )(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentWhyCannotPayInFullReasons,
-                journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(context.request),
-                expectedUpdateInitialJourneyTransformation(initialJourney)
-              )(context)
+        def testVatBta[J <: Journey](initialJourney: J)(
+          existingValue:                              J => WhyCannotPayInFullAnswers,
+          expectedUpdateInitialJourneyTransformation: J => J
+        )(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentWhyCannotPayInFullReasons,
+            journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(using context.request),
+            expectedUpdateInitialJourneyTransformation(initialJourney)
+          )(context)
 
         "ObtainedWhyCannotPayInFullAnswers" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterWhyCannotPayInFullNotRequired)(
             _.whyCannotPayInFullAnswers,
             _.copy(
-              whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons,
-              stage                     = Stage.AfterWhyCannotPayInFullAnswers.AnswerRequired
+              whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons
             )
           )(this)
         }
@@ -403,28 +418,31 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
 
         val differentWhyCannotPayInFullReasons =
           WhyCannotPayInFullAnswers.WhyCannotPayInFull(
-            Set(CannotPayReason.NoMoneySetAside, CannotPayReason.LostOrReducedAbilityToEarnOrTrade, CannotPayReason.NationalOrLocalDisaster)
+            Set(
+              CannotPayReason.NoMoneySetAside,
+              CannotPayReason.LostOrReducedAbilityToEarnOrTrade,
+              CannotPayReason.NationalOrLocalDisaster
+            )
           )
 
-          def testSaBta[J <: Journey](initialJourney: J)(
-              existingValue:                              J => WhyCannotPayInFullAnswers,
-              expectedUpdateInitialJourneyTransformation: J => J
-          )(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentWhyCannotPayInFullReasons,
-                journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(context.request),
-                expectedUpdateInitialJourneyTransformation(initialJourney)
-              )(context)
+        def testSaBta[J <: Journey](initialJourney: J)(
+          existingValue:                              J => WhyCannotPayInFullAnswers,
+          expectedUpdateInitialJourneyTransformation: J => J
+        )(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentWhyCannotPayInFullReasons,
+            journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(using context.request),
+            expectedUpdateInitialJourneyTransformation(initialJourney)
+          )(context)
 
         "ObtainedWhyCannotPayInFullAnswers" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterWhyCannotPayInFullNotRequired)(
             _.whyCannotPayInFullAnswers,
             _.copy(
-              whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons,
-              stage                     = Stage.AfterWhyCannotPayInFullAnswers.AnswerRequired
+              whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons
             )
           )(this)
         }
@@ -561,28 +579,31 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
 
         val differentWhyCannotPayInFullReasons =
           WhyCannotPayInFullAnswers.WhyCannotPayInFull(
-            Set(CannotPayReason.NoMoneySetAside, CannotPayReason.LostOrReducedAbilityToEarnOrTrade, CannotPayReason.NationalOrLocalDisaster)
+            Set(
+              CannotPayReason.NoMoneySetAside,
+              CannotPayReason.LostOrReducedAbilityToEarnOrTrade,
+              CannotPayReason.NationalOrLocalDisaster
+            )
           )
 
-          def testSimpPta[J <: Journey](initialJourney: J)(
-              existingValue:                              J => WhyCannotPayInFullAnswers,
-              expectedUpdateInitialJourneyTransformation: J => J
-          )(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentWhyCannotPayInFullReasons,
-                journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(context.request),
-                expectedUpdateInitialJourneyTransformation(initialJourney)
-              )(context)
+        def testSimpPta[J <: Journey](initialJourney: J)(
+          existingValue:                              J => WhyCannotPayInFullAnswers,
+          expectedUpdateInitialJourneyTransformation: J => J
+        )(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentWhyCannotPayInFullReasons,
+            journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(using context.request),
+            expectedUpdateInitialJourneyTransformation(initialJourney)
+          )(context)
 
         "ObtainedWhyCannotPayInFullAnswers" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterWhyCannotPayInFullNotRequired)(
             _.whyCannotPayInFullAnswers,
             _.copy(
-              whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons,
-              stage                     = Stage.AfterWhyCannotPayInFullAnswers.AnswerRequired
+              whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons
             )
           )(this)
         }
@@ -720,13 +741,22 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec with UpdateJourneyCo
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      val result: Throwable = journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullRequired).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"Cannot update WhyCannotPayInFullAnswers when journey is in completed state"}""")
+      insertJourneyForTest(
+        TdAll.EpayeBta
+          .journeyAfterSubmittedArrangementNoAffordability()
+          .copy(_id = tdAll.journeyId)
+          .copy(correlationId = tdAll.correlationId)
+      )
+      val result: Throwable = journeyConnector
+        .updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullRequired)
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"Cannot update WhyCannotPayInFullAnswers when journey is in completed state"}"""
+      )
 
       verifyCommonActions(numberOfAuthCalls = 1)
     }
   }
 
 }
-

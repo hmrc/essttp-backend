@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class LastName(value: String) extends AnyVal
 
 object LastName {
-  implicit val format: Format[LastName] = Json.valueFormat[LastName]
+  given Format[LastName] = Json.valueFormat[LastName]
 }

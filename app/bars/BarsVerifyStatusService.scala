@@ -28,10 +28,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class BarsVerifyStatusService @Inject() (
-    barsRepo:  BarsVerifyStatusRepo,
-    appConfig: AppConfig,
-    clock:     Clock
-)(implicit ec: ExecutionContext) {
+  barsRepo:  BarsVerifyStatusRepo,
+  appConfig: AppConfig,
+  clock:     Clock
+)(using ExecutionContext) {
 
   /*
    * get current count of calls to verify endpoint for this taxId
@@ -39,9 +39,9 @@ class BarsVerifyStatusService @Inject() (
   def status(taxId: TaxId): Future[BarsVerifyStatusResponse] =
     find(taxId).map {
       case Some(barsStatus) => BarsVerifyStatusResponse(barsStatus)
-      case None =>
+      case None             =>
         BarsVerifyStatusResponse(
-          attempts              = NumberOfBarsVerifyAttempts.zero,
+          attempts = NumberOfBarsVerifyAttempts.zero,
           lockoutExpiryDateTime = None
         )
     }
@@ -52,19 +52,18 @@ class BarsVerifyStatusService @Inject() (
    */
   def update(taxId: TaxId): Future[BarsVerifyStatusResponse] =
     OptionT[Future, BarsVerifyStatus](find(taxId))
-      .fold(BarsVerifyStatus(taxId)) {
-        status =>
-          val newVerifyCalls = status.verifyCalls.increment
-          val expiry: Option[Instant] =
-            if (newVerifyCalls.value >= appConfig.barsVerifyMaxAttempts)
-              Some(Instant.now(clock).plus(24, ChronoUnit.HOURS))
-            else None
+      .fold(BarsVerifyStatus(taxId)) { status =>
+        val newVerifyCalls          = status.verifyCalls.increment
+        val expiry: Option[Instant] =
+          if (newVerifyCalls.value >= appConfig.barsVerifyMaxAttempts)
+            Some(Instant.now(clock).plus(24, ChronoUnit.HOURS))
+          else None
 
-          status.copy(
-            verifyCalls           = newVerifyCalls,
-            lastUpdated           = Instant.now,
-            lockoutExpiryDateTime = expiry
-          )
+        status.copy(
+          verifyCalls = newVerifyCalls,
+          lastUpdated = Instant.now,
+          lockoutExpiryDateTime = expiry
+        )
       }
       .flatMap(status => upsert(status).map(_ => BarsVerifyStatusResponse(status)))
 

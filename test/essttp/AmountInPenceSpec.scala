@@ -19,6 +19,7 @@ package essttp
 import essttp.rootmodel.AmountInPence
 import play.api.libs.json._
 import testsupport.UnitSpec
+import testsupport.Givens.canEqualJsValue
 
 class AmountInPenceSpec extends UnitSpec {
 

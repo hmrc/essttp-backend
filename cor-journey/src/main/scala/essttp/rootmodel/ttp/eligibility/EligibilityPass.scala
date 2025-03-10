@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class EligibilityPass(value: Boolean) extends AnyVal
 
 object EligibilityPass {
-  implicit val format: Format[EligibilityPass] = Json.valueFormat
+  given Format[EligibilityPass] = Json.valueFormat
 }

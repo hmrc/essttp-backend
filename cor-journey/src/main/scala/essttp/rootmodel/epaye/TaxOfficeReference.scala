@@ -18,8 +18,8 @@ package essttp.rootmodel.epaye
 
 import play.api.libs.json.{Format, Json}
 
-final case class TaxOfficeReference(value: String)
+final case class TaxOfficeReference(value: String) extends AnyVal
 
 object TaxOfficeReference {
-  implicit val format: Format[TaxOfficeReference] = Json.valueFormat
+  given Format[TaxOfficeReference] = Json.valueFormat
 }

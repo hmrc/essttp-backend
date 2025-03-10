@@ -22,6 +22,5 @@ import play.api.libs.json.{Format, Json}
 final case class BarsUpdateVerifyStatusParams(taxId: TaxId)
 
 object BarsUpdateVerifyStatusParams {
-  implicit val format: Format[BarsUpdateVerifyStatusParams] = Json.format
+  given Format[BarsUpdateVerifyStatusParams] = Json.format
 }
-

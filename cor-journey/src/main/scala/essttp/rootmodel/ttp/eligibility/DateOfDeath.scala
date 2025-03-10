@@ -23,5 +23,5 @@ import java.time.LocalDate
 final case class DateOfDeath(value: LocalDate) extends AnyVal
 
 object DateOfDeath {
-  implicit val format: Format[DateOfDeath] = Json.valueFormat[DateOfDeath]
+  given Format[DateOfDeath] = Json.valueFormat[DateOfDeath]
 }

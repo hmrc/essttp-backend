@@ -16,10 +16,9 @@
 
 package essttp.journey.model
 
-/**
- * A temporary structure which binds both [[Origin]] and [[SjRequest]] of the same "type"
- * (Vat to Vat, Sdil to Sdil, Cds to Cds, etc)
- */
+/** A temporary structure which binds both [[Origin]] and [[SjRequest]] of the same "type" (Vat to Vat, Sdil to Sdil,
+  * Cds to Cds, etc)
+  */
 sealed trait OriginatedSjRequest {
   def origin: Origin
   def sjRequest: SjRequest
@@ -28,23 +27,23 @@ sealed trait OriginatedSjRequest {
 object OriginatedSjRequest {
 
   final case class Epaye(
-      override val origin:    Origins.Epaye,
-      override val sjRequest: SjRequest.Epaye
+    override val origin:    Origins.Epaye,
+    override val sjRequest: SjRequest.Epaye
   ) extends OriginatedSjRequest
 
   final case class Vat(
-      override val origin:    Origins.Vat,
-      override val sjRequest: SjRequest.Vat
+    override val origin:    Origins.Vat,
+    override val sjRequest: SjRequest.Vat
   ) extends OriginatedSjRequest
 
   final case class Sa(
-      override val origin:    Origins.Sa,
-      override val sjRequest: SjRequest.Sa
+    override val origin:    Origins.Sa,
+    override val sjRequest: SjRequest.Sa
   ) extends OriginatedSjRequest
 
   final case class Simp(
-      override val origin:    Origins.Simp,
-      override val sjRequest: SjRequest.Simp
+    override val origin:    Origins.Simp,
+    override val sjRequest: SjRequest.Simp
   ) extends OriginatedSjRequest
 
 }

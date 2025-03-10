@@ -20,22 +20,22 @@ import essttp.crypto.CryptoFormat
 import essttp.journey.model.{Journey, UpfrontPaymentAnswers, WhyCannotPayInFullAnswers}
 import essttp.rootmodel._
 import essttp.rootmodel.pega.{GetCaseResponse, StartCaseResponse}
-import org.apache.pekko.Done
 import org.apache.pekko.stream.Materializer
+import org.mongodb.scala.SingleObservableFuture
 import play.api.cache.AsyncCacheApi
-import play.api.http.Status.CREATED
 import play.api.test.Helpers._
 import repository.JourneyByTaxIdRepo.JourneyWithTaxId
 import repository.{JourneyByTaxIdRepo, JourneyRepo}
 import testsupport.ItSpec
 import testsupport.stubs.PegaStub
 import testsupport.testdata.TdBase
+import testsupport.Givens.canEqualUnit
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments}
 import uk.gov.hmrc.http.UpstreamErrorResponse
 
 import java.time.{Clock, Instant}
 
-class PegaControllerSpec extends ItSpec with TdBase {
+class PegaControllerSpec extends ItSpec, TdBase {
 
   lazy val journeyByTaxIdRepo = app.injector.instanceOf[JourneyByTaxIdRepo]
 
@@ -43,9 +43,9 @@ class PegaControllerSpec extends ItSpec with TdBase {
 
   lazy val cacheApi: AsyncCacheApi = app.injector.instanceOf[AsyncCacheApi]
 
-  implicit lazy val mat: Materializer = app.injector.instanceOf[Materializer]
+  given Materializer = app.injector.instanceOf[Materializer]
 
-  implicit lazy val cryptoFormat: CryptoFormat = CryptoFormat.OperationalCryptoFormat(testCrypto)
+  given CryptoFormat = CryptoFormat.OperationalCryptoFormat(testCrypto)
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -59,8 +59,8 @@ class PegaControllerSpec extends ItSpec with TdBase {
 
     "handling requests to start a case must" - {
 
-        def expectedEpayeStartCaseRequestJson(unableToPayReasonsCodes: Seq[String] = Seq("UTPR-3")) =
-          s"""
+      def expectedEpayeStartCaseRequestJson(unableToPayReasonsCodes: Seq[String] = Seq("UTPR-3")) =
+        s"""
              |{
              |   "caseTypeID": "HMRC-Debt-Work-AffordAssess",
              |   "content":{
@@ -99,8 +99,11 @@ class PegaControllerSpec extends ItSpec with TdBase {
              |}
              |""".stripMargin
 
-        def expectedEpayeStartCaseRequestAfterStartedPegaCaseJson(unableToPayReasonsCodes: Seq[String] = Seq("UTPR-3"), recalculationNeeded: Boolean) =
-          s"""
+      def expectedEpayeStartCaseRequestAfterStartedPegaCaseJson(
+        unableToPayReasonsCodes: Seq[String] = Seq("UTPR-3"),
+        recalculationNeeded:     Boolean
+      ) =
+        s"""
              |{
              |   "caseTypeID": "HMRC-Debt-Work-AffordAssess",
              |   "content":{
@@ -143,17 +146,17 @@ class PegaControllerSpec extends ItSpec with TdBase {
 
       "return an error when" - {
 
-          def testException(context: JourneyItTest)(
-              expectedErrorMessage: String
-          ) = {
-            stubCommonActions()
+        def testException(context: JourneyItTest)(
+          expectedErrorMessage: String
+        ) = {
+          stubCommonActions()
 
-            val exception = intercept[Exception]{
-              controller.startCase(context.tdAll.journeyId, recalculationNeeded = true)(context.request).futureValue
-            }
-
-            exception.getMessage should include(expectedErrorMessage)
+          val exception = intercept[Exception] {
+            controller.startCase(context.tdAll.journeyId, recalculationNeeded = true)(context.request).futureValue
           }
+
+          exception.getMessage should include(expectedErrorMessage)
+        }
 
         "no journey can be found for the given journey id" in new JourneyItTest {
           testException(this)("Expected journey to be found")
@@ -237,7 +240,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
         }
 
         "there are two consecutive 401 errors when calling the start case API, when there is already a PEGA token in the cache" in new JourneyItTest {
-          cacheApi.set("pega-Oauth-token", "tokenInCache").futureValue shouldBe Done
+          cacheApi.set("pega-Oauth-token", "tokenInCache").map(_ => ()).futureValue shouldBe ()
 
           insertJourneyForTest(
             tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo
@@ -256,22 +259,25 @@ class PegaControllerSpec extends ItSpec with TdBase {
 
       "submit the correct payload and return the correct id's when" - {
 
-          def testSuccess(context: JourneyItTest)(journey: Journey, expectedRequestJson: String, recalculationNeeded: Boolean) = {
-            context.insertJourneyForTest(journey)
-            stubCommonActions()
-            PegaStub.stubOauthToken(Right(context.tdAll.pegaOauthToken))
-            PegaStub.stubStartCase(Right(context.tdAll.pegaStartCaseResponse))
+        def testSuccess(
+          context: JourneyItTest
+        )(journey: Journey, expectedRequestJson: String, recalculationNeeded: Boolean) = {
+          context.insertJourneyForTest(journey)
+          stubCommonActions()
+          PegaStub.stubOauthToken(Right(context.tdAll.pegaOauthToken))
+          PegaStub.stubStartCase(Right(context.tdAll.pegaStartCaseResponse))
 
-            val result = controller.startCase(context.tdAll.journeyId, recalculationNeeded)(context.request)
-            status(result) shouldBe CREATED
-            contentAsJson(result).as[StartCaseResponse] shouldBe StartCaseResponse(pegaCaseId, pegaCorrelationIdGenerator.fixedCorrelationId)
+          val result = controller.startCase(context.tdAll.journeyId, recalculationNeeded)(context.request)
+          status(result) shouldBe CREATED
+          contentAsJson(result)
+            .as[StartCaseResponse] shouldBe StartCaseResponse(pegaCaseId, pegaCorrelationIdGenerator.fixedCorrelationId)
 
-            PegaStub.verifyOauthCalled("user", "pass")
-            PegaStub.verifyStartCaseCalled(
-              context.tdAll.pegaOauthToken,
-              expectedRequestJson
-            )
-          }
+          PegaStub.verifyOauthCalled("user", "pass")
+          PegaStub.verifyStartCaseCalled(
+            context.tdAll.pegaOauthToken,
+            expectedRequestJson
+          )
+        }
 
         "the start case API returns a 401 initially and is successfully retried after refreshing the oauth token" in new JourneyItTest {
           insertJourneyForTest(
@@ -621,8 +627,8 @@ class PegaControllerSpec extends ItSpec with TdBase {
           testSuccess(this)(
             tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo.copy(
               whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired,
-              upfrontPaymentAnswers     = UpfrontPaymentAnswers.NoUpfrontPayment,
-              extremeDatesResponse      = tdAll.extremeDatesWithoutUpfrontPayment
+              upfrontPaymentAnswers = UpfrontPaymentAnswers.NoUpfrontPayment,
+              extremeDatesResponse = tdAll.extremeDatesWithoutUpfrontPayment
             ),
             s"""
                |{
@@ -674,20 +680,19 @@ class PegaControllerSpec extends ItSpec with TdBase {
             (CannotPayReason.NoMoneySetAside, "UTPR-6"),
             (CannotPayReason.WaitingForRefund, "UTPR-7"),
             (CannotPayReason.Other, "UTPR-8")
-          ).foreach{
-              case (cannotPayReason, expectedCode) =>
-                withClue(s"For ${cannotPayReason.toString}") {
-                  testSuccess(this)(
-                    tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo.copy(
-                      whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.WhyCannotPayInFull(
-                        Set(cannotPayReason)
-                      )
-                    ),
-                    expectedEpayeStartCaseRequestJson(Seq(expectedCode)),
-                    recalculationNeeded = true
+          ).foreach { case (cannotPayReason, expectedCode) =>
+            withClue(s"For ${cannotPayReason.toString}") {
+              testSuccess(this)(
+                tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo.copy(
+                  whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.WhyCannotPayInFull(
+                    Set(cannotPayReason)
                   )
-                }
+                ),
+                expectedEpayeStartCaseRequestJson(Seq(expectedCode)),
+                recalculationNeeded = true
+              )
             }
+          }
         }
 
       }
@@ -698,17 +703,17 @@ class PegaControllerSpec extends ItSpec with TdBase {
 
       "return an error when" - {
 
-          def testException(context: JourneyItTest)(
-              expectedErrorMessage: String
-          ) = {
-            stubCommonActions()
+        def testException(context: JourneyItTest)(
+          expectedErrorMessage: String
+        ) = {
+          stubCommonActions()
 
-            val exception = intercept[Exception]{
-              controller.getCase(context.tdAll.journeyId)(context.request).futureValue
-            }
-
-            exception.getMessage should include(expectedErrorMessage)
+          val exception = intercept[Exception] {
+            controller.getCase(context.tdAll.journeyId)(context.request).futureValue
           }
+
+          exception.getMessage should include(expectedErrorMessage)
+        }
 
         "no journey can be found for the given journey id" in new JourneyItTest {
           testException(this)("Expected journey to be found")
@@ -717,7 +722,9 @@ class PegaControllerSpec extends ItSpec with TdBase {
         "a PEGA case has not been started yet" in new JourneyItTest {
           insertJourneyForTest(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNo)
 
-          testException(this)("Could not find PEGA case id in journey in state essttp.journey.model.Journey.Epaye.ObtainedCanPayWithinSixMonthsAnswers")
+          testException(this)(
+            "Could not find PEGA case id in journey in state essttp.journey.model.Journey.ObtainedCanPayWithinSixMonthsAnswers"
+          )
         }
 
         "the user has checked their payment plan but they are on a non-affordability joureny" in new JourneyItTest {
@@ -755,7 +762,7 @@ class PegaControllerSpec extends ItSpec with TdBase {
         }
 
         "there are two consecutive 401 errors when calling the get case API, when there is already a PEGA token in the cache" in new JourneyItTest {
-          cacheApi.set("pega-Oauth-token", "tokenInCache").futureValue shouldBe Done
+          cacheApi.set("pega-Oauth-token", "tokenInCache").map(_ => ()).futureValue shouldBe ()
 
           insertJourneyForTest(
             tdAll.EpayeBta.journeyAfterStartedPegaCase
@@ -774,20 +781,23 @@ class PegaControllerSpec extends ItSpec with TdBase {
       "return the payment plan when one is returned by PEGA" in new JourneyItTest {
         val paymentPlan = tdAll.paymentPlan(2)
         val expenditure = Map(" a Bc def " -> "", " Gh i" -> "101.21")
-        val income = Map(" Mn op " -> "2,000 ", "q R S" -> "0.99")
+        val income      = Map(" Mn op " -> "2,000 ", "q R S" -> "0.99")
 
         insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
         stubCommonActions()
         PegaStub.stubOauthToken(Right(tdAll.pegaOauthToken))
-        PegaStub.stubGetCase(tdAll.pegaCaseId, Right(tdAll.pegaGetCaseResponse(tdAll.dayOfMonth, paymentPlan, expenditure, income)))
+        PegaStub.stubGetCase(
+          tdAll.pegaCaseId,
+          Right(tdAll.pegaGetCaseResponse(tdAll.dayOfMonth, paymentPlan, expenditure, income))
+        )
 
         val result = controller.getCase(tdAll.journeyId)(request)
         status(result) shouldBe OK
         contentAsJson(result).as[GetCaseResponse] shouldBe GetCaseResponse(
           tdAll.dayOfMonth,
           paymentPlan,
-          Map("aBcDef" -> BigDecimal("0"), "ghI" -> BigDecimal("101.21")),
-          Map("mnOp" -> BigDecimal("2000"), "qRS" -> BigDecimal("0.99")),
+          Map("aBcDef" -> BigDecimal("0"), "ghI"    -> BigDecimal("101.21")),
+          Map("mnOp"   -> BigDecimal("2000"), "qRS" -> BigDecimal("0.99")),
           pegaCorrelationIdGenerator.fixedCorrelationId
         )
 
@@ -874,15 +884,17 @@ class PegaControllerSpec extends ItSpec with TdBase {
 
         "return an error when" - {
 
-            def testError(enrolments: Set[Enrolment], expectedResponseStatus: Int, expectedResponseMessage: String)(context: JourneyItTest) = {
-              stubCommonActions(Enrolments(enrolments))
+          def testError(enrolments: Set[Enrolment], expectedResponseStatus: Int, expectedResponseMessage: String)(
+            context: JourneyItTest
+          ) = {
+            stubCommonActions(Enrolments(enrolments))
 
-              val exception = intercept[UpstreamErrorResponse](
-                await(controller.recreateSession(TaxRegime.Epaye)(context.request))
-              )
-              exception.statusCode shouldBe expectedResponseStatus
-              exception.getMessage shouldBe expectedResponseMessage
-            }
+            val exception = intercept[UpstreamErrorResponse](
+              await(controller.recreateSession(TaxRegime.Epaye)(context.request))
+            )
+            exception.statusCode shouldBe expectedResponseStatus
+            exception.getMessage shouldBe expectedResponseMessage
+          }
 
           "no IR-PAYE enrolment can be found" in new JourneyItTest {
             testError(Set.empty, FORBIDDEN, "No enrolment found for tax regime Epaye: EnrolmentNotFound()")(this)
@@ -923,7 +935,10 @@ class PegaControllerSpec extends ItSpec with TdBase {
               Set(
                 Enrolment(
                   "IR-PAYE",
-                  Seq(EnrolmentIdentifier("TaxOfficeNumber", "12345"), EnrolmentIdentifier("TaxOfficeReference", "67890")),
+                  Seq(
+                    EnrolmentIdentifier("TaxOfficeNumber", "12345"),
+                    EnrolmentIdentifier("TaxOfficeReference", "67890")
+                  ),
                   "Activated"
                 )
               ),
@@ -936,17 +951,24 @@ class PegaControllerSpec extends ItSpec with TdBase {
 
         "save the journey in the JourneyRepo if one can be found and return it in the response" in new JourneyItTest {
           val journey = tdAll.EpayeBta.journeyAfterStartedPegaCase.copy(taxId = EmpRef("1234567890"))
-          await(journeyByTaxIdRepo.upsert(JourneyWithTaxId(journey.taxId, journey, Instant.now(Clock.systemUTC())))) shouldBe ()
+          await(
+            journeyByTaxIdRepo.upsert(JourneyWithTaxId(journey.taxId, journey, Instant.now(Clock.systemUTC())))
+          ) shouldBe ()
 
-          stubCommonActions(Enrolments(
-            Set(
-              Enrolment(
-                "IR-PAYE",
-                Seq(EnrolmentIdentifier("TaxOfficeNumber", "12345"), EnrolmentIdentifier("TaxOfficeReference", "67890")),
-                "Activated"
+          stubCommonActions(
+            Enrolments(
+              Set(
+                Enrolment(
+                  "IR-PAYE",
+                  Seq(
+                    EnrolmentIdentifier("TaxOfficeNumber", "12345"),
+                    EnrolmentIdentifier("TaxOfficeReference", "67890")
+                  ),
+                  "Activated"
+                )
               )
             )
-          ))
+          )
 
           val result = controller.recreateSession(TaxRegime.Epaye)(request)
           status(result) shouldBe OK
@@ -979,15 +1001,17 @@ class PegaControllerSpec extends ItSpec with TdBase {
 
         "return an error when" - {
 
-            def testError(enrolments: Set[Enrolment], expectedResponseStatus: Int, expectedResponseMessage: String)(context: JourneyItTest) = {
-              stubCommonActions(Enrolments(enrolments))
+          def testError(enrolments: Set[Enrolment], expectedResponseStatus: Int, expectedResponseMessage: String)(
+            context: JourneyItTest
+          ) = {
+            stubCommonActions(Enrolments(enrolments))
 
-              val exception = intercept[UpstreamErrorResponse](
-                await(controller.recreateSession(TaxRegime.Vat)(context.request))
-              )
-              exception.statusCode shouldBe expectedResponseStatus
-              exception.getMessage shouldBe expectedResponseMessage
-            }
+            val exception = intercept[UpstreamErrorResponse](
+              await(controller.recreateSession(TaxRegime.Vat)(context.request))
+            )
+            exception.statusCode shouldBe expectedResponseStatus
+            exception.getMessage shouldBe expectedResponseMessage
+          }
 
           "no relevant enrolment can be found" in new JourneyItTest {
             testError(Set.empty, FORBIDDEN, "No enrolment found for tax regime Vat: EnrolmentNotFound()")(this)
@@ -1036,19 +1060,21 @@ class PegaControllerSpec extends ItSpec with TdBase {
         }
 
         "save the journey in the JourneyRepo if one can be found and return it in the response when" - {
-            def test(enrolments: Set[Enrolment], expectedVrn: String)(context: JourneyItTest): Unit = {
-              val journey = context.tdAll.VatBta.journeyAfterStartedPegaCase.copy(taxId = Vrn(expectedVrn))
-              await(journeyByTaxIdRepo.upsert(JourneyWithTaxId(journey.taxId, journey, Instant.now(Clock.systemUTC())))) shouldBe ()
+          def test(enrolments: Set[Enrolment], expectedVrn: String)(context: JourneyItTest): Unit = {
+            val journey = context.tdAll.VatBta.journeyAfterStartedPegaCase.copy(taxId = Vrn(expectedVrn))
+            await(
+              journeyByTaxIdRepo.upsert(JourneyWithTaxId(journey.taxId, journey, Instant.now(Clock.systemUTC())))
+            ) shouldBe ()
 
-              stubCommonActions(Enrolments(enrolments))
+            stubCommonActions(Enrolments(enrolments))
 
-              val result = controller.recreateSession(TaxRegime.Vat)(context.request)
-              status(result) shouldBe OK
-              contentAsJson(result).validate[Journey].get shouldBe journey
+            val result = controller.recreateSession(TaxRegime.Vat)(context.request)
+            status(result) shouldBe OK
+            contentAsJson(result).validate[Journey].get shouldBe journey
 
-              context.journeyRepo.findById(context.tdAll.journeyId).futureValue shouldBe Some(journey)
-              ()
-            }
+            context.journeyRepo.findById(context.tdAll.journeyId).futureValue shouldBe Some(journey)
+            ()
+          }
 
           "there are active MtdVat, VatVar and VatDec enrolments" in new JourneyItTest {
             test(
@@ -1113,15 +1139,17 @@ class PegaControllerSpec extends ItSpec with TdBase {
 
         "return an error when" - {
 
-            def testError(enrolments: Set[Enrolment], expectedResponseStatus: Int, expectedResponseMessage: String)(context: JourneyItTest) = {
-              stubCommonActions(Enrolments(enrolments))
+          def testError(enrolments: Set[Enrolment], expectedResponseStatus: Int, expectedResponseMessage: String)(
+            context: JourneyItTest
+          ) = {
+            stubCommonActions(Enrolments(enrolments))
 
-              val exception = intercept[UpstreamErrorResponse](
-                await(controller.recreateSession(TaxRegime.Sa)(context.request))
-              )
-              exception.statusCode shouldBe expectedResponseStatus
-              exception.getMessage shouldBe expectedResponseMessage
-            }
+            val exception = intercept[UpstreamErrorResponse](
+              await(controller.recreateSession(TaxRegime.Sa)(context.request))
+            )
+            exception.statusCode shouldBe expectedResponseStatus
+            exception.getMessage shouldBe expectedResponseMessage
+          }
 
           "no IR-SA enrolment can be found" in new JourneyItTest {
             testError(Set.empty, FORBIDDEN, "No enrolment found for tax regime Sa: EnrolmentNotFound()")(this)
@@ -1154,10 +1182,12 @@ class PegaControllerSpec extends ItSpec with TdBase {
 
         "save the journey in the JourneyRepo if one can be found and return it in the response" in new JourneyItTest {
           val journey = tdAll.SaBta.journeyAfterStartedPegaCase.copy(
-            taxId     = SaUtr("1234567895"),
+            taxId = SaUtr("1234567895"),
             sessionId = SessionId("old-session-id")
           )
-          await(journeyByTaxIdRepo.upsert(JourneyWithTaxId(journey.taxId, journey, Instant.now(Clock.systemUTC())))) shouldBe ()
+          await(
+            journeyByTaxIdRepo.upsert(JourneyWithTaxId(journey.taxId, journey, Instant.now(Clock.systemUTC())))
+          ) shouldBe ()
 
           stubCommonActions(Enrolments(Set(saEnrolment)))
 

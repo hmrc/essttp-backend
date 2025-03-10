@@ -24,6 +24,6 @@ final case class AddWorkingDaysResponse(result: LocalDate)
 
 object AddWorkingDaysResponse {
 
-  implicit val reads: Reads[AddWorkingDaysResponse] = Json.reads
+  given Reads[AddWorkingDaysResponse] = Json.reads
 
 }

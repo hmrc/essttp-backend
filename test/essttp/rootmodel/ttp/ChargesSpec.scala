@@ -20,6 +20,7 @@ import essttp.rootmodel.AmountInPence
 import essttp.rootmodel.ttp.affordablequotes.DueDate
 import essttp.rootmodel.ttp.eligibility._
 import play.api.libs.json.{JsSuccess, Json}
+import testsupport.Givens.{canEqualJsResult, canEqualJsValue}
 import testsupport.UnitSpec
 
 import java.time.LocalDate
@@ -27,7 +28,7 @@ import java.time.LocalDate
 class ChargesSpec extends UnitSpec {
 
   val reusableDateAsString: String = "2022-05-17"
-  val reusableDate: LocalDate = LocalDate.parse(reusableDateAsString)
+  val reusableDate: LocalDate      = LocalDate.parse(reusableDateAsString)
 
   val json = Json.parse(
     """
@@ -69,41 +70,41 @@ class ChargesSpec extends UnitSpec {
 
   val expectedCharges: Charges = Charges(
     Charges1(
-      chargeType              = ChargeType("VAT Return Debit Charge"),
-      mainType                = MainType("VAT Return Debit Charge"),
-      mainTrans               = MainTrans("4700"),
-      subTrans                = SubTrans("1174"),
-      outstandingAmount       = OutstandingAmount(AmountInPence(148781)),
-      dueDate                 = DueDate(reusableDate),
-      interestStartDate       = Some(InterestStartDate(reusableDate)),
-      accruedInterest         = AccruedInterest(AmountInPence(1597)),
-      ineligibleChargeType    = IneligibleChargeType(value = false),
-      chargeOverMaxDebtAge    = Some(ChargeOverMaxDebtAge(value = false)),
-      locks                   = Some(
+      chargeType = ChargeType("VAT Return Debit Charge"),
+      mainType = MainType("VAT Return Debit Charge"),
+      mainTrans = MainTrans("4700"),
+      subTrans = SubTrans("1174"),
+      outstandingAmount = OutstandingAmount(AmountInPence(148781)),
+      dueDate = DueDate(reusableDate),
+      interestStartDate = Some(InterestStartDate(reusableDate)),
+      accruedInterest = AccruedInterest(AmountInPence(1597)),
+      ineligibleChargeType = IneligibleChargeType(value = false),
+      chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
+      locks = Some(
         List(
           Lock(
-            lockType                 = LockType("Payment"),
-            lockReason               = LockReason("Risk/Fraud"),
+            lockType = LockType("Payment"),
+            lockReason = LockReason("Risk/Fraud"),
             disallowedChargeLockType = DisallowedChargeLockType(value = false)
           )
         )
       ),
-      dueDateNotReached       = false,
+      dueDateNotReached = false,
       isInterestBearingCharge = Some(IsInterestBearingCharge(value = false))
     ),
     Charges2(
-      useChargeReference            = Some(UseChargeReference(value = false)),
+      useChargeReference = Some(UseChargeReference(value = false)),
       chargeBeforeMaxAccountingDate = Some(ChargeBeforeMaxAccountingDate(value = false)),
-      ddInProgress                  = Some(DdInProgress(value = false)),
-      chargeSource                  = Some(ChargeSource("CESA")),
-      parentChargeReference         = Some(ParentChargeReference("XW006559808862")),
-      parentMainTrans               = Some(ParentMainTrans("4700")),
-      originalCreationDate          = Some(OriginalCreationDate(reusableDate)),
-      tieBreaker                    = Some(TieBreaker("xyz")),
-      originalTieBreaker            = Some(OriginalTieBreaker("xyz")),
-      saTaxYearEnd                  = Some(SaTaxYearEnd(reusableDate)),
-      creationDate                  = Some(CreationDate(reusableDate)),
-      originalChargeType            = Some(OriginalChargeType("VAT Return Debit Charge"))
+      ddInProgress = Some(DdInProgress(value = false)),
+      chargeSource = Some(ChargeSource("CESA")),
+      parentChargeReference = Some(ParentChargeReference("XW006559808862")),
+      parentMainTrans = Some(ParentMainTrans("4700")),
+      originalCreationDate = Some(OriginalCreationDate(reusableDate)),
+      tieBreaker = Some(TieBreaker("xyz")),
+      originalTieBreaker = Some(OriginalTieBreaker("xyz")),
+      saTaxYearEnd = Some(SaTaxYearEnd(reusableDate)),
+      creationDate = Some(CreationDate(reusableDate)),
+      originalChargeType = Some(OriginalChargeType("VAT Return Debit Charge"))
     )
   )
   "charges object should" - {

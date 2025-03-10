@@ -18,18 +18,18 @@ package essttp.bars.model
 
 import play.api.libs.json.{Format, Json}
 
-final case class NumberOfBarsVerifyAttempts(value: Int) extends AnyVal
+final case class NumberOfBarsVerifyAttempts(value: Int) extends AnyVal derives CanEqual
 
 object NumberOfBarsVerifyAttempts {
 
   val zero: NumberOfBarsVerifyAttempts = NumberOfBarsVerifyAttempts(0)
 
-  implicit class NumberOfBarsVerifyAttemptsOps(private val n: NumberOfBarsVerifyAttempts) {
+  extension (n: NumberOfBarsVerifyAttempts) {
 
     def increment: NumberOfBarsVerifyAttempts = NumberOfBarsVerifyAttempts(n.value + 1)
 
   }
 
-  implicit val format: Format[NumberOfBarsVerifyAttempts] = Json.valueFormat
+  given Format[NumberOfBarsVerifyAttempts] = Json.valueFormat
 
 }

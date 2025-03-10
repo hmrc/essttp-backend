@@ -16,16 +16,13 @@
 
 package essttp.rootmodel.pega
 
-import cats.Eq
 import play.api.libs.json.{Json, OFormat}
 
-final case class StartCaseResponse(caseId: PegaCaseId, pegaCorrelationId: String)
+final case class StartCaseResponse(caseId: PegaCaseId, pegaCorrelationId: String) derives CanEqual
 
 object StartCaseResponse {
 
-  implicit val eq: Eq[StartCaseResponse] = Eq.fromUniversalEquals
-
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[StartCaseResponse] = Json.format
+  given OFormat[StartCaseResponse] = Json.format
 
 }

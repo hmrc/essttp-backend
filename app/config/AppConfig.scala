@@ -24,7 +24,7 @@ import scala.concurrent.duration.FiniteDuration
 
 @Singleton
 class AppConfig @Inject() (
-    config: ServicesConfig
+  config: ServicesConfig
 ) {
 
   private def configFiniteDuration(key: String): FiniteDuration = {
@@ -34,9 +34,9 @@ class AppConfig @Inject() (
   }
 
   val barsVerifyRepoTtl: FiniteDuration = configFiniteDuration("bars.verify.repoTtl")
-  val barsVerifyMaxAttempts: Int = config.getInt("bars.verify.maxAttempts")
+  val barsVerifyMaxAttempts: Int        = config.getInt("bars.verify.maxAttempts")
 
-  val journeyRepoTtl: FiniteDuration = configFiniteDuration("journey.repoTtl")
+  val journeyRepoTtl: FiniteDuration        = configFiniteDuration("journey.repoTtl")
   val journeyByTaxIdRepoTtl: FiniteDuration = configFiniteDuration("journey-by-tax-id.repoTtl")
 
 }

@@ -27,21 +27,24 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class BarsVerifyStatusController @Inject() (
-    actions:     Actions,
-    barsService: BarsVerifyStatusService,
-    cc:          ControllerComponents
-)
-  (implicit exec: ExecutionContext)
-  extends BackendController(cc) {
+  actions:     Actions,
+  barsService: BarsVerifyStatusService,
+  cc:          ControllerComponents
+)(using exec: ExecutionContext)
+    extends BackendController(cc) {
 
-  val status: Action[BarsUpdateVerifyStatusParams] = actions.authenticatedAction.async(parse.json[BarsUpdateVerifyStatusParams]) { implicit request =>
-    barsService.status(request.body.taxId)
-      .map { resp => Ok(Json.toJson(resp)) }
-  }
+  val status: Action[BarsUpdateVerifyStatusParams] =
+    actions.authenticatedAction.async(parse.json[BarsUpdateVerifyStatusParams]) { implicit request =>
+      barsService
+        .status(request.body.taxId)
+        .map(resp => Ok(Json.toJson(resp)))
+    }
 
-  val update: Action[BarsUpdateVerifyStatusParams] = actions.authenticatedAction.async(parse.json[BarsUpdateVerifyStatusParams]) { implicit request =>
-    barsService.update(request.body.taxId)
-      .map { resp => Ok(Json.toJson(resp)) }
-  }
+  val update: Action[BarsUpdateVerifyStatusParams] =
+    actions.authenticatedAction.async(parse.json[BarsUpdateVerifyStatusParams]) { implicit request =>
+      barsService
+        .update(request.body.taxId)
+        .map(resp => Ok(Json.toJson(resp)))
+    }
 
 }
