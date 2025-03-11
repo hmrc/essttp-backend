@@ -1,4 +1,3 @@
-import play.sbt.routes.RoutesKeys.routes
 import sbt.Keys._
 import sbt._
 import wartremover.Wart
@@ -10,6 +9,7 @@ object WartRemoverSettings {
     Seq(
       (Compile / compile / wartremoverErrors) ++= Warts.allBut(
         Wart.DefaultArguments,
+        Wart.Equals,
         Wart.ImplicitConversion,
         Wart.ImplicitParameter,
         Wart.Nothing,
@@ -20,7 +20,6 @@ object WartRemoverSettings {
       ),
       Test / compile / wartremoverErrors --= Seq(
         Wart.Any,
-        Wart.Equals,
         Wart.GlobalExecutionContext,
         Wart.Null,
         Wart.NonUnitStatements,

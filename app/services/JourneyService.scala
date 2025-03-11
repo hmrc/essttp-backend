@@ -27,24 +27,21 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class JourneyService @Inject() (
-    journeyRepo: JourneyRepo
-)(implicit ec: ExecutionContext) {
+  journeyRepo: JourneyRepo
+)(using ExecutionContext) {
 
-  def findLatestJourney(sessionId: SessionId): Future[Option[Journey]] = {
+  def findLatestJourney(sessionId: SessionId): Future[Option[Journey]] =
     journeyRepo.findLatestJourney(sessionId)
-  }
 
-  def get(journeyId: JourneyId)(implicit request: Request[_]): Future[Journey] = {
+  def get(journeyId: JourneyId)(using request: Request[?]): Future[Journey] =
     find(journeyId).map { maybeJourney =>
       maybeJourney.getOrElse(throw new RuntimeException(s"Expected journey to be found ${request.path}"))
     }
-  }
 
-  private def find(journeyId: JourneyId): Future[Option[Journey]] = {
+  private def find(journeyId: JourneyId): Future[Option[Journey]] =
     journeyRepo.findById(journeyId)
-  }
 
-  def upsert(journey: Journey)(implicit request: Request[_]): Future[Journey] = {
+  def upsert(journey: Journey)(using Request[?]): Future[Journey] = {
     JourneyLogger.debug("Upserting new journey")
     journeyRepo.upsert(journey).map(_ => journey)
 

@@ -16,14 +16,17 @@
 
 package essttp.rootmodel.dates.startdates
 
-import cats.Eq
 import essttp.rootmodel.dates.InitialPaymentDate
 import play.api.libs.json.{Format, Json}
 
-final case class StartDatesResponse(initialPaymentDate: Option[InitialPaymentDate], instalmentStartDate: InstalmentStartDate)
+final case class StartDatesResponse(
+  initialPaymentDate:  Option[InitialPaymentDate],
+  instalmentStartDate: InstalmentStartDate
+) derives CanEqual
 
 object StartDatesResponse {
+
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: Format[StartDatesResponse] = Json.format[StartDatesResponse]
-  implicit val eq: Eq[StartDatesResponse] = Eq.fromUniversalEquals
+  given Format[StartDatesResponse] = Json.format[StartDatesResponse]
+
 }

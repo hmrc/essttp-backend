@@ -22,6 +22,9 @@ import testsupport.UnitSpec
 class CorrelationIdGeneratorSpec extends UnitSpec {
   "CorrelationId should be generated as a UUID" in {
     val gen = new CorrelationIdGenerator
-    gen.nextCorrelationId().value.toString should fullyMatch regex """[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"""
+    gen
+      .nextCorrelationId()
+      .value
+      .toString should fullyMatch regex """[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"""
   }
 }

@@ -19,13 +19,12 @@ package essttp.rootmodel.ttp.eligibility
 import play.api.libs.json.{Format, Json}
 
 final case class InvalidSignals(
-    signalType:        String,
-    signalValue:       String,
-    signalDescription: String
+  signalType:        String,
+  signalValue:       String,
+  signalDescription: String
 )
 
 object InvalidSignals {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format: Format[InvalidSignals] = Json.format[InvalidSignals]
+  given Format[InvalidSignals] = Json.format[InvalidSignals]
 }
-

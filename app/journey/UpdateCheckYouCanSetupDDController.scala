@@ -17,13 +17,12 @@
 package journey
 
 import action.Actions
-import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, Stage}
+import essttp.journey.model.{Journey, JourneyId, JourneyStage}
 import essttp.rootmodel.bank.CanSetUpDirectDebit
 import essttp.utils.Errors
-import io.scalaland.chimney.dsl.TransformationOps
+import io.scalaland.chimney.dsl.*
 import play.api.mvc.{Action, ControllerComponents, Request}
 import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -32,204 +31,91 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateCheckYouCanSetupDDController @Inject() (
-    actions:        Actions,
-    journeyService: JourneyService,
-    cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
+  actions:        Actions,
+  journeyService: JourneyService,
+  cc:             ControllerComponents
+)(using ExecutionContext, OperationalCryptoFormat)
+    extends BackendController(cc) {
 
-  def updateCheckYouCanSetupDD(journeyId: JourneyId): Action[CanSetUpDirectDebit] = actions.authenticatedAction.async(parse.json[CanSetUpDirectDebit]) { implicit request =>
-    for {
-      journey <- journeyService.get(journeyId)
-      newJourney <- journey match {
-        case j: Journey.BeforeCheckedPaymentPlan  => Errors.throwBadRequestExceptionF(s"UpdateCheckYouCanSetupDD is not possible in that state: [${j.stage.toString}]")
-        case j: Journey.Stages.CheckedPaymentPlan => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterEnteredCanYouSetUpDirectDebit => j match {
-          case _: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(j, request.body)
-          case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update CanSetUpDirectDebit when journey is in completed state")
-        }
-      }
-    } yield Ok(newJourney.json)
-  }
+  def updateCheckYouCanSetupDD(journeyId: JourneyId): Action[CanSetUpDirectDebit] =
+    actions.authenticatedAction.async(parse.json[CanSetUpDirectDebit]) { implicit request =>
+      for {
+        journey    <- journeyService.get(journeyId)
+        newJourney <- journey match {
+                        case j: JourneyStage.BeforeCheckedPaymentPlan           =>
+                          Errors.throwBadRequestExceptionF(
+                            s"UpdateCheckYouCanSetupDD is not possible in that state: [${j.stage}]"
+                          )
+                        case j: Journey.CheckedPaymentPlan                      =>
+                          updateJourneyWithNewValue(j, request.body)
+                        case j: JourneyStage.AfterEnteredCanYouSetUpDirectDebit =>
+                          j match {
+                            case _: JourneyStage.BeforeArrangementSubmitted =>
+                              updateJourneyWithExistingValue(j, request.body)
+                            case _: JourneyStage.AfterArrangementSubmitted  =>
+                              Errors.throwBadRequestExceptionF(
+                                "Cannot update CanSetUpDirectDebit when journey is in completed state"
+                              )
+                          }
+                      }
+      } yield Ok(newJourney.json)
+    }
 
   private def updateJourneyWithNewValue(
-      journey:             Journey.Stages.CheckedPaymentPlan,
-      canSetUpDirectDebit: CanSetUpDirectDebit
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey.AfterEnteredCanYouSetUpDirectDebit = journey match {
-      case j: Journey.Epaye.CheckedPaymentPlan =>
-        j.into[Journey.Epaye.EnteredCanYouSetUpDirectDebit]
-          .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-          .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-          .transform
-      case j: Journey.Vat.CheckedPaymentPlan =>
-        j.into[Journey.Vat.EnteredCanYouSetUpDirectDebit]
-          .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-          .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-          .transform
-      case j: Journey.Sa.CheckedPaymentPlan =>
-        j.into[Journey.Sa.EnteredCanYouSetUpDirectDebit]
-          .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-          .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-          .transform
-      case j: Journey.Simp.CheckedPaymentPlan =>
-        j.into[Journey.Simp.EnteredCanYouSetUpDirectDebit]
-          .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-          .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-          .transform
-    }
+    journey:             Journey.CheckedPaymentPlan,
+    canSetUpDirectDebit: CanSetUpDirectDebit
+  )(using Request[?]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.EnteredCanYouSetUpDirectDebit]
+        .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
+        .transform
+
     journeyService.upsert(newJourney)
   }
 
   private def updateJourneyWithExistingValue(
-      journey:             Journey.AfterEnteredCanYouSetUpDirectDebit,
-      canSetUpDirectDebit: CanSetUpDirectDebit
-  )(implicit request: Request[_]): Future[Journey] = {
-    if (journey.canSetUpDirectDebitAnswer === canSetUpDirectDebit) {
+    journey:             JourneyStage.AfterEnteredCanYouSetUpDirectDebit & Journey,
+    canSetUpDirectDebit: CanSetUpDirectDebit
+  )(using Request[?]): Future[Journey] =
+    if (journey.canSetUpDirectDebitAnswer == canSetUpDirectDebit) {
       JourneyLogger.info("Chosen type of bank account hasn't changed, nothing to update")
       Future.successful(journey)
     } else {
-      val updatedJourney: Journey.AfterEnteredCanYouSetUpDirectDebit = journey match {
+      val updatedJourney: Journey = journey match {
+        case j: Journey.EnteredCanYouSetUpDirectDebit =>
+          j.copy(canSetUpDirectDebitAnswer = canSetUpDirectDebit)
 
-        case j: Journey.Epaye.EnteredCanYouSetUpDirectDebit =>
-          j.copy(
-            canSetUpDirectDebitAnswer = canSetUpDirectDebit,
-            stage                     = determineStage(canSetUpDirectDebit)
-          )
-        case j: Journey.Vat.EnteredCanYouSetUpDirectDebit =>
-          j.copy(
-            canSetUpDirectDebitAnswer = canSetUpDirectDebit,
-            stage                     = determineStage(canSetUpDirectDebit)
-          )
-        case j: Journey.Sa.EnteredCanYouSetUpDirectDebit =>
-          j.copy(
-            canSetUpDirectDebitAnswer = canSetUpDirectDebit,
-            stage                     = determineStage(canSetUpDirectDebit)
-          )
-        case j: Journey.Simp.EnteredCanYouSetUpDirectDebit =>
-          j.copy(
-            canSetUpDirectDebitAnswer = canSetUpDirectDebit,
-            stage                     = determineStage(canSetUpDirectDebit)
-          )
-
-        case j: Journey.Epaye.EnteredDirectDebitDetails =>
-          j.into[Journey.Epaye.EnteredCanYouSetUpDirectDebit]
+        case j: Journey.EnteredDirectDebitDetails =>
+          j.into[Journey.EnteredCanYouSetUpDirectDebit]
             .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-            .transform
-        case j: Journey.Vat.EnteredDirectDebitDetails =>
-          j.into[Journey.Vat.EnteredCanYouSetUpDirectDebit]
-            .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-            .transform
-        case j: Journey.Sa.EnteredDirectDebitDetails =>
-          j.into[Journey.Sa.EnteredCanYouSetUpDirectDebit]
-            .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-            .transform
-        case j: Journey.Simp.EnteredDirectDebitDetails =>
-          j.into[Journey.Simp.EnteredCanYouSetUpDirectDebit]
-            .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
             .transform
 
-        case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
-          j.into[Journey.Epaye.EnteredCanYouSetUpDirectDebit]
+        case j: Journey.ConfirmedDirectDebitDetails =>
+          j.into[Journey.EnteredCanYouSetUpDirectDebit]
             .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-            .transform
-        case j: Journey.Vat.ConfirmedDirectDebitDetails =>
-          j.into[Journey.Vat.EnteredCanYouSetUpDirectDebit]
-            .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-            .transform
-        case j: Journey.Sa.ConfirmedDirectDebitDetails =>
-          j.into[Journey.Sa.EnteredCanYouSetUpDirectDebit]
-            .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-            .transform
-        case j: Journey.Simp.ConfirmedDirectDebitDetails =>
-          j.into[Journey.Simp.EnteredCanYouSetUpDirectDebit]
-            .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
             .transform
 
-        case j: Journey.Epaye.AgreedTermsAndConditions =>
-          j.into[Journey.Epaye.EnteredCanYouSetUpDirectDebit]
+        case j: Journey.AgreedTermsAndConditions =>
+          j.into[Journey.EnteredCanYouSetUpDirectDebit]
             .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-            .transform
-        case j: Journey.Vat.AgreedTermsAndConditions =>
-          j.into[Journey.Vat.EnteredCanYouSetUpDirectDebit]
-            .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-            .transform
-        case j: Journey.Sa.AgreedTermsAndConditions =>
-          j.into[Journey.Sa.EnteredCanYouSetUpDirectDebit]
-            .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-            .transform
-        case j: Journey.Simp.AgreedTermsAndConditions =>
-          j.into[Journey.Simp.EnteredCanYouSetUpDirectDebit]
-            .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
             .transform
 
-        case j: Journey.Epaye.SelectedEmailToBeVerified =>
-          j.into[Journey.Epaye.EnteredCanYouSetUpDirectDebit]
+        case j: Journey.SelectedEmailToBeVerified =>
+          j.into[Journey.EnteredCanYouSetUpDirectDebit]
             .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-            .transform
-        case j: Journey.Vat.SelectedEmailToBeVerified =>
-          j.into[Journey.Vat.EnteredCanYouSetUpDirectDebit]
-            .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-            .transform
-        case j: Journey.Sa.SelectedEmailToBeVerified =>
-          j.into[Journey.Sa.EnteredCanYouSetUpDirectDebit]
-            .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-            .transform
-        case j: Journey.Simp.SelectedEmailToBeVerified =>
-          j.into[Journey.Simp.EnteredCanYouSetUpDirectDebit]
-            .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
             .transform
 
-        case j: Journey.Epaye.EmailVerificationComplete =>
-          j.into[Journey.Epaye.EnteredCanYouSetUpDirectDebit]
+        case j: Journey.EmailVerificationComplete =>
+          j.into[Journey.EnteredCanYouSetUpDirectDebit]
             .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-            .transform
-        case j: Journey.Vat.EmailVerificationComplete =>
-          j.into[Journey.Vat.EnteredCanYouSetUpDirectDebit]
-            .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-            .transform
-        case j: Journey.Sa.EmailVerificationComplete =>
-          j.into[Journey.Sa.EnteredCanYouSetUpDirectDebit]
-            .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
-            .transform
-        case j: Journey.Simp.EmailVerificationComplete =>
-          j.into[Journey.Simp.EnteredCanYouSetUpDirectDebit]
-            .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
-            .withFieldConst(_.stage, determineStage(canSetUpDirectDebit))
             .transform
 
-        case _: Journey.Stages.SubmittedArrangement =>
+        case _: Journey.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update CanSetUpDirectDebit when journey is in completed state")
       }
 
       journeyService.upsert(updatedJourney)
     }
 
-  }
-
-  private def determineStage(canSetUpDirectDebit: CanSetUpDirectDebit): Stage.AfterEnteredCanYouSetUpDirectDebit =
-    if (canSetUpDirectDebit.isAccountHolder)
-      Stage.AfterEnteredCanYouSetUpDirectDebit.CanSetUpDirectDebit
-    else
-      Stage.AfterEnteredCanYouSetUpDirectDebit.CannotSetUpDirectDebit
-
 }
-

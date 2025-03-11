@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class AddressLine(value: String) extends AnyVal
 
 object AddressLine {
-  implicit val format: Format[AddressLine] = Json.valueFormat[AddressLine]
+  given Format[AddressLine] = Json.valueFormat[AddressLine]
 }

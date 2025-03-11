@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class SubTrans(value: String) extends AnyVal
 
 object SubTrans {
-  implicit val format: Format[SubTrans] = Json.valueFormat
+  given Format[SubTrans] = Json.valueFormat
 }

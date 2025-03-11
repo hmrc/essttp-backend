@@ -27,98 +27,102 @@ final case class PegaGetCaseResponse(`AA`: AA)
 object PegaGetCaseResponse {
 
   final case class AA(
-      paymentDay:  Int,
-      paymentPlan: Seq[PegaPaymentPlan],
-      expenditure: Seq[ExpenditureItem],
-      income:      Seq[IncomeItem]
+    paymentDay:  Int,
+    paymentPlan: Seq[PegaPaymentPlan],
+    expenditure: Seq[ExpenditureItem],
+    income:      Seq[IncomeItem]
   )
 
   object AA {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val reads: Reads[AA] =
+    given Reads[AA] =
       Reads(json =>
         for {
-          paymentDay <- (json \ "paymentDay").validate[String].flatMap(s =>
-            JsResult.fromTry(
-              Try(s.toInt),
-              e => JsError(s"Could not read paymentDay: ${e.getMessage}")
-            ))
+          paymentDay  <- (json \ "paymentDay")
+                           .validate[String]
+                           .flatMap(s =>
+                             JsResult.fromTry(
+                               Try(s.toInt),
+                               e => JsError(s"Could not read paymentDay: ${e.getMessage}")
+                             )
+                           )
           paymentPlan <- (json \ "paymentPlan").validate[Seq[PegaPaymentPlan]]
           expenditure <- (json \ "expenditure").validate[Seq[ExpenditureItem]]
-          income <- (json \ "income").validate[Seq[IncomeItem]]
-        } yield AA(paymentDay, paymentPlan, expenditure, income))
+          income      <- (json \ "income").validate[Seq[IncomeItem]]
+        } yield AA(paymentDay, paymentPlan, expenditure, income)
+      )
 
   }
 
   final case class ExpenditureItem(
-      amountValue: String,
-      pyLabel:     String
+    amountValue: String,
+    pyLabel:     String
   )
 
   object ExpenditureItem {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val reads: Reads[ExpenditureItem] = Json.reads
+    given Reads[ExpenditureItem] = Json.reads
   }
 
   final case class IncomeItem(
-      amountValue: String,
-      pyLabel:     String
+    amountValue: String,
+    pyLabel:     String
   )
 
   object IncomeItem {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val reads: Reads[IncomeItem] = Json.reads
+    given Reads[IncomeItem] = Json.reads
   }
 
   final case class PegaPaymentPlan(
-      numberOfInstalments: Int,
-      planDuration:        Int,
-      totalDebt:           Long,
-      totalDebtIncInt:     Long,
-      planInterest:        Long,
-      collections:         PegaCollections,
-      instalments:         List[PegaInstalment],
-      planSelected:        Boolean
+    numberOfInstalments: Int,
+    planDuration:        Int,
+    totalDebt:           Long,
+    totalDebtIncInt:     Long,
+    planInterest:        Long,
+    collections:         PegaCollections,
+    instalments:         List[PegaInstalment],
+    planSelected:        Boolean
   )
 
   object PegaPaymentPlan {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val reads: Reads[PegaPaymentPlan] = Json.reads[PegaPaymentPlan]
+    given Reads[PegaPaymentPlan] = Json.reads[PegaPaymentPlan]
   }
 
   final case class PegaCollections(
-      initialCollection:  Option[PegaCollection],
-      regularCollections: List[PegaCollection]
+    initialCollection:  Option[PegaCollection],
+    regularCollections: List[PegaCollection]
   )
 
   object PegaCollections {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val reads: Reads[PegaCollections] = Json.reads[PegaCollections]
+    given Reads[PegaCollections] = Json.reads[PegaCollections]
   }
 
   final case class PegaCollection(dueDate: LocalDate, amountDue: Long)
 
   object PegaCollection {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val reads: Reads[PegaCollection] = Json.reads[PegaCollection]
+    given Reads[PegaCollection] = Json.reads[PegaCollection]
   }
 
   final case class PegaInstalment(
-      instalmentNumber:          Int,
-      dueDate:                   LocalDate,
-      instalmentInterestAccrued: Long,
-      instalmentBalance:         Long,
-      debtItemChargeId:          String,
-      amountDue:                 Long,
-      debtItemOriginalDueDate:   LocalDate
+    instalmentNumber:          Int,
+    dueDate:                   LocalDate,
+    instalmentInterestAccrued: Long,
+    instalmentBalance:         Long,
+    debtItemChargeId:          String,
+    amountDue:                 Long,
+    debtItemOriginalDueDate:   LocalDate
   )
 
   object PegaInstalment {
     @SuppressWarnings(Array("org.wartremover.warts.Any"))
-    implicit val reads: Reads[PegaInstalment] = Json.reads[PegaInstalment]
+    given Reads[PegaInstalment] = Json.reads[PegaInstalment]
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val reads: Reads[PegaGetCaseResponse] = Json.reads
+  given Reads[PegaGetCaseResponse] = Json.reads
 
 }

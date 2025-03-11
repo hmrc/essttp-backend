@@ -32,114 +32,120 @@ trait TdSimp {
   val nino: Nino = Nino("testNino")
 
   val eligibleEligibilityCheckResultSimp: EligibilityCheckResult = eligibility.EligibilityCheckResult(
-    processingDateTime              = ProcessingDateTime(reusableDateAsString),
-    identification                  = List(
+    processingDateTime = ProcessingDateTime(reusableDateAsString),
+    identification = List(
       Identification(
-        idType  = IdType("NINO"),
+        idType = IdType("NINO"),
         idValue = IdValue(nino.value)
       )
     ),
-    invalidSignals                  = Some(List(
-      InvalidSignals(
-        signalType        = "xyz",
-        signalValue       = "123",
-        signalDescription = "Description"
+    invalidSignals = Some(
+      List(
+        InvalidSignals(
+          signalType = "xyz",
+          signalValue = "123",
+          signalDescription = "Description"
+        )
       )
-    )),
-    customerPostcodes               = List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate(LocalDate.of(2020, 1, 1)))),
-    customerDetails                 = List(CustomerDetail(None, None)),
-    individualDetails               = None,
-    addresses                       = List(
+    ),
+    customerPostcodes =
+      List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate(LocalDate.of(2020, 1, 1)))),
+    customerDetails = List(CustomerDetail(None, None)),
+    individualDetails = None,
+    addresses = List(
       Address(
-        addressType     = AddressType("Residential"),
-        addressLine1    = None,
-        addressLine2    = None,
-        addressLine3    = None,
-        addressLine4    = None,
-        rls             = None,
-        contactDetails  = Some(ContactDetail(
-          telephoneNumber = None,
-          fax             = None,
-          mobile          = None,
-          emailAddress    = Some(Email(SensitiveString("some@email"))),
-          emailSource     = None,
-          altFormat       = None
-        )),
-        postCode        = None,
-        country         = None,
+        addressType = AddressType("Residential"),
+        addressLine1 = None,
+        addressLine2 = None,
+        addressLine3 = None,
+        addressLine4 = None,
+        rls = None,
+        contactDetails = Some(
+          ContactDetail(
+            telephoneNumber = None,
+            fax = None,
+            mobile = None,
+            emailAddress = Some(Email(SensitiveString("some@email"))),
+            emailSource = None,
+            altFormat = None
+          )
+        ),
+        postCode = None,
+        country = None,
         postcodeHistory = List(
           PostcodeHistory(
             addressPostcode = Postcode(SensitiveString("POSTCODE")),
-            postcodeDate    = PostcodeDate(LocalDate.now())
+            postcodeDate = PostcodeDate(LocalDate.now())
           )
         )
       )
     ),
-    regimePaymentFrequency          = PaymentPlanFrequencies.Monthly,
-    paymentPlanFrequency            = PaymentPlanFrequencies.Monthly,
-    paymentPlanMinLength            = PaymentPlanMinLength(1),
-    paymentPlanMaxLength            = PaymentPlanMaxLength(6),
-    eligibilityStatus               = EligibilityStatus(EligibilityPass(value = true)),
-    eligibilityRules                = eligibleEligibilityRules,
-    chargeTypeAssessment            = List(
+    regimePaymentFrequency = PaymentPlanFrequencies.Monthly,
+    paymentPlanFrequency = PaymentPlanFrequencies.Monthly,
+    paymentPlanMinLength = PaymentPlanMinLength(1),
+    paymentPlanMaxLength = PaymentPlanMaxLength(6),
+    eligibilityStatus = EligibilityStatus(EligibilityPass(value = true)),
+    eligibilityRules = eligibleEligibilityRules,
+    chargeTypeAssessment = List(
       ChargeTypeAssessment(
-        taxPeriodFrom   = TaxPeriodFrom("2020-08-13"),
-        taxPeriodTo     = TaxPeriodTo("2020-08-14"),
+        taxPeriodFrom = TaxPeriodFrom("2020-08-13"),
+        taxPeriodTo = TaxPeriodTo("2020-08-14"),
         debtTotalAmount = DebtTotalAmount(AmountInPence(300000)),
         chargeReference = ChargeReference("A00000000001"),
-        charges         = List(
+        charges = List(
           Charges(
             Charges1(
-              chargeType              = ChargeType("InYearRTICharge-Tax"),
-              mainType                = MainType("InYearRTICharge(FPS)"),
-              mainTrans               = MainTrans("mainTrans"),
-              subTrans                = SubTrans("subTrans"),
-              outstandingAmount       = OutstandingAmount(AmountInPence(100000)),
-              dueDate                 = DueDate(reusableDate),
-              interestStartDate       = Some(InterestStartDate(reusableDate)),
-              accruedInterest         = AccruedInterest(AmountInPence(1597)),
-              ineligibleChargeType    = IneligibleChargeType(value = false),
-              chargeOverMaxDebtAge    = Some(ChargeOverMaxDebtAge(value = false)),
-              locks                   = Some(
+              chargeType = ChargeType("InYearRTICharge-Tax"),
+              mainType = MainType("InYearRTICharge(FPS)"),
+              mainTrans = MainTrans("mainTrans"),
+              subTrans = SubTrans("subTrans"),
+              outstandingAmount = OutstandingAmount(AmountInPence(100000)),
+              dueDate = DueDate(reusableDate),
+              interestStartDate = Some(InterestStartDate(reusableDate)),
+              accruedInterest = AccruedInterest(AmountInPence(1597)),
+              ineligibleChargeType = IneligibleChargeType(value = false),
+              chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
+              locks = Some(
                 List(
                   Lock(
-                    lockType                 = LockType("Payment"),
-                    lockReason               = LockReason("Risk/Fraud"),
+                    lockType = LockType("Payment"),
+                    lockReason = LockReason("Risk/Fraud"),
                     disallowedChargeLockType = DisallowedChargeLockType(value = false)
                   )
                 )
               ),
-              dueDateNotReached       = false,
+              dueDateNotReached = false,
               isInterestBearingCharge = None
             ),
             Charges2(
-              useChargeReference            = None,
+              useChargeReference = None,
               chargeBeforeMaxAccountingDate = None,
-              ddInProgress                  = None,
-              chargeSource                  = None,
-              parentChargeReference         = None,
-              parentMainTrans               = None,
-              originalCreationDate          = None,
-              tieBreaker                    = None,
-              originalTieBreaker            = None,
-              saTaxYearEnd                  = None,
-              creationDate                  = None,
-              originalChargeType            = None
+              ddInProgress = None,
+              chargeSource = None,
+              parentChargeReference = None,
+              parentMainTrans = None,
+              originalCreationDate = None,
+              tieBreaker = None,
+              originalTieBreaker = None,
+              saTaxYearEnd = None,
+              creationDate = None,
+              originalChargeType = None
             )
           )
         )
       )
     ),
-    regimeDigitalCorrespondence     = RegimeDigitalCorrespondence(value = true),
+    regimeDigitalCorrespondence = RegimeDigitalCorrespondence(value = true),
     futureChargeLiabilitiesExcluded = false,
-    chargeTypesExcluded             = None
+    chargeTypesExcluded = None
   )
 
   def ineligibleEligibilityCheckResultSimp: EligibilityCheckResult = eligibleEligibilityCheckResultSimp.copy(
     eligibilityStatus = EligibilityStatus(EligibilityPass(value = false)),
-    eligibilityRules  = hasRlsAddressOn
+    eligibilityRules = hasRlsAddressOn
   )
 
-  val arrangementResponseSimp: ArrangementResponse = ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(nino.value))
+  val arrangementResponseSimp: ArrangementResponse =
+    ArrangementResponse(ProcessingDateTime(reusableDateAsString), CustomerReference(nino.value))
 
 }

@@ -16,11 +16,11 @@
 
 package essttp.rootmodel.ttp.affordablequotes
 
-import play.api.libs.json.{OFormat, Json}
+import play.api.libs.json.{Json, OFormat}
 
 final case class InitialCollection(dueDate: DueDate, amountDue: AmountDue)
 
 object InitialCollection {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[InitialCollection] = Json.format[InitialCollection]
+  given OFormat[InitialCollection] = Json.format[InitialCollection]
 }

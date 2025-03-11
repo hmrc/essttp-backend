@@ -22,5 +22,5 @@ import play.api.libs.json.{Format, Json}
 final case class DebtTotalAmount(value: AmountInPence) extends AnyVal
 
 object DebtTotalAmount {
-  implicit val format: Format[DebtTotalAmount] = Json.valueFormat
+  given Format[DebtTotalAmount] = Json.valueFormat
 }

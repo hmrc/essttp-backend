@@ -25,18 +25,22 @@ import java.time.LocalDate
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class StartDatesService @Inject() (datesService: DatesService)(implicit ec: ExecutionContext) {
+class StartDatesService @Inject() (datesService: DatesService)(using ExecutionContext) {
 
-  private def calculateInstalmentStartDate(preferredDayOfMonth: PreferredDayOfMonth, proposedStartDate: LocalDate): InstalmentStartDate = {
+  private def calculateInstalmentStartDate(
+    preferredDayOfMonth: PreferredDayOfMonth,
+    proposedStartDate:   LocalDate
+  ): InstalmentStartDate =
     // if the preferred day of month is before the proposed start date day of month it should be next month on that day
     if (preferredDayOfMonth.value < proposedStartDate.getDayOfMonth) {
       InstalmentStartDate(proposedStartDate.plusMonths(1).withDayOfMonth(preferredDayOfMonth.value))
     } else {
       InstalmentStartDate(proposedStartDate.withDayOfMonth(preferredDayOfMonth.value))
     }
-  }
 
-  def calculateStartDates(startDatesRequest: StartDatesRequest)(implicit hc: HeaderCarrier): Future[StartDatesResponse] = {
+  def calculateStartDates(
+    startDatesRequest: StartDatesRequest
+  )(using HeaderCarrier): Future[StartDatesResponse] = {
     val earliestDatePaymentCanBeTakenF = datesService.todayPlusWorkingDays(6)
 
     earliestDatePaymentCanBeTakenF.map { earliestDatePaymentCanBeTaken =>
@@ -48,10 +52,10 @@ class StartDatesService @Inject() (datesService: DatesService)(implicit ec: Exec
         case Some(_) => InstalmentStartDate(datesService.todayPlusCalendarDays(30))
         case None    => InstalmentStartDate(earliestDatePaymentCanBeTaken)
       }
-      val instalmentStartDate: InstalmentStartDate =
+      val instalmentStartDate: InstalmentStartDate          =
         calculateInstalmentStartDate(
           preferredDayOfMonth = startDatesRequest.preferredDayOfMonth,
-          proposedStartDate   = potentialInstalmentStartDate.value
+          proposedStartDate = potentialInstalmentStartDate.value
         )
 
       StartDatesResponse(initialPaymentDate, instalmentStartDate)

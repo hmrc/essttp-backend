@@ -20,7 +20,7 @@ import enumeratum.{Enum, EnumEntry}
 import essttp.utils.EnumFormat
 import play.api.libs.json.Format
 
-sealed trait CannotPayReason extends EnumEntry with Product with Serializable
+sealed trait CannotPayReason extends EnumEntry derives CanEqual
 
 object CannotPayReason extends Enum[CannotPayReason] {
 
@@ -42,6 +42,6 @@ object CannotPayReason extends Enum[CannotPayReason] {
 
   val values: IndexedSeq[CannotPayReason] = findValues
 
-  implicit val format: Format[CannotPayReason] = EnumFormat(CannotPayReason)
+  given Format[CannotPayReason] = EnumFormat(CannotPayReason)
 
 }

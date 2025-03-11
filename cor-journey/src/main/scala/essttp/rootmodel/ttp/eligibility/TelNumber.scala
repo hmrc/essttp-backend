@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class TelNumber(value: String) extends AnyVal
 
 object TelNumber {
-  implicit val format: Format[TelNumber] = Json.valueFormat[TelNumber]
+  given Format[TelNumber] = Json.valueFormat[TelNumber]
 }

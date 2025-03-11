@@ -22,7 +22,7 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-monthly-payment-amount" - {
     "should throw Bad Request when Journey is in a stage" - {
@@ -30,8 +30,13 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
         stubCommonActions()
 
         journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
-        val result: Throwable = journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, TdAll.EpayeBta.updateMonthlyPaymentAmountRequest()).failed.futureValue
-        result.getMessage should include("""{"statusCode":400,"message":"UpdateMonthlyPaymentAmount update is not possible in that state: [Started]"}""")
+        val result: Throwable = journeyConnector
+          .updateMonthlyPaymentAmount(tdAll.journeyId, TdAll.EpayeBta.updateMonthlyPaymentAmountRequest())
+          .failed
+          .futureValue
+        result.getMessage should include(
+          """{"statusCode":400,"message":"UpdateMonthlyPaymentAmount update is not possible in that state: [Started]"}"""
+        )
 
         verifyCommonActions(numberOfAuthCalls = 2)
       }
@@ -40,8 +45,13 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
         insertJourneyForTest(tdAll.EpayeBta.journeyAfterStartedPegaCase)
         stubCommonActions()
 
-        val result: Throwable = journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, TdAll.EpayeBta.updateMonthlyPaymentAmountRequest()).failed.futureValue
-        result.getMessage should include("""{"statusCode":400,"message":"Not expecting monthly payment amount to be updated after PEGA case started"}""")
+        val result: Throwable = journeyConnector
+          .updateMonthlyPaymentAmount(tdAll.journeyId, TdAll.EpayeBta.updateMonthlyPaymentAmountRequest())
+          .failed
+          .futureValue
+        result.getMessage should include(
+          """{"statusCode":400,"message":"Not expecting monthly payment amount to be updated after PEGA case started"}"""
+        )
 
         verifyCommonActions(numberOfAuthCalls = 1)
       }
@@ -50,8 +60,13 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
         insertJourneyForTest(tdAll.EpayeBta.journeyAfterCheckedPaymentPlanWithAffordability)
         stubCommonActions()
 
-        val result: Throwable = journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, TdAll.EpayeBta.updateMonthlyPaymentAmountRequest()).failed.futureValue
-        result.getMessage should include("""{"statusCode":400,"message":"Cannot update MonthlyPaymentAmount on affordability journey"}""")
+        val result: Throwable = journeyConnector
+          .updateMonthlyPaymentAmount(tdAll.journeyId, TdAll.EpayeBta.updateMonthlyPaymentAmountRequest())
+          .failed
+          .futureValue
+        result.getMessage should include(
+          """{"statusCode":400,"message":"Cannot update MonthlyPaymentAmount on affordability journey"}"""
+        )
 
         verifyCommonActions(numberOfAuthCalls = 1)
       }
@@ -64,9 +79,9 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
           tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired,
           TdAll.EpayeBta.updateMonthlyPaymentAmountRequest()
         )(
-            journeyConnector.updateMonthlyPaymentAmount,
-            tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount
-          )(this)
+          journeyConnector.updateMonthlyPaymentAmount,
+          tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount
+        )(this)
       }
 
       "Vat" in new JourneyItTest {
@@ -74,9 +89,9 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
           tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired,
           TdAll.VatBta.updateMonthlyPaymentAmountRequest()
         )(
-            journeyConnector.updateMonthlyPaymentAmount,
-            tdAll.VatBta.journeyAfterMonthlyPaymentAmount
-          )(this)
+          journeyConnector.updateMonthlyPaymentAmount,
+          tdAll.VatBta.journeyAfterMonthlyPaymentAmount
+        )(this)
       }
 
       "Sa" in new JourneyItTest {
@@ -84,9 +99,9 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
           tdAll.SaBta.journeyAfterCanPayWithinSixMonths,
           TdAll.SaBta.updateMonthlyPaymentAmountRequest()
         )(
-            journeyConnector.updateMonthlyPaymentAmount,
-            tdAll.SaBta.journeyAfterMonthlyPaymentAmount
-          )(this)
+          journeyConnector.updateMonthlyPaymentAmount,
+          tdAll.SaBta.journeyAfterMonthlyPaymentAmount
+        )(this)
       }
 
       "Simp" in new JourneyItTest {
@@ -94,9 +109,9 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
           tdAll.SimpPta.journeyAfterCanPayWithinSixMonths,
           TdAll.SimpPta.updateMonthlyPaymentAmountRequest()
         )(
-            journeyConnector.updateMonthlyPaymentAmount,
-            tdAll.SimpPta.journeyAfterMonthlyPaymentAmount
-          )(this)
+          journeyConnector.updateMonthlyPaymentAmount,
+          tdAll.SimpPta.journeyAfterMonthlyPaymentAmount
+        )(this)
       }
     }
 
@@ -106,15 +121,17 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
 
         val differentAmount = MonthlyPaymentAmount(AmountInPence(4583972))
 
-          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => MonthlyPaymentAmount)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentAmount,
-                journeyConnector.updateMonthlyPaymentAmount(_, _)(context.request),
-                context.tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount.copy(monthlyPaymentAmount = differentAmount)
-              )(context)
+        def testEpayeBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => MonthlyPaymentAmount)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentAmount,
+            journeyConnector.updateMonthlyPaymentAmount(_, _)(using context.request),
+            context.tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount.copy(monthlyPaymentAmount = differentAmount)
+          )(context)
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount)(_.monthlyPaymentAmount)(this)
@@ -137,31 +154,45 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testEpayeBta(
+            tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
+          )(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testEpayeBta(
+            tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+          )(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
         }
 
       }
@@ -170,15 +201,17 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
 
         val differentAmount = MonthlyPaymentAmount(AmountInPence(4583972))
 
-          def testVatBta[J <: Journey](initialJourney: J)(existingValue: J => MonthlyPaymentAmount)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentAmount,
-                journeyConnector.updateMonthlyPaymentAmount(_, _)(context.request),
-                context.tdAll.VatBta.journeyAfterMonthlyPaymentAmount.copy(monthlyPaymentAmount = differentAmount)
-              )(context)
+        def testVatBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => MonthlyPaymentAmount)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentAmount,
+            journeyConnector.updateMonthlyPaymentAmount(_, _)(using context.request),
+            context.tdAll.VatBta.journeyAfterMonthlyPaymentAmount.copy(monthlyPaymentAmount = differentAmount)
+          )(context)
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterMonthlyPaymentAmount)(_.monthlyPaymentAmount)(this)
@@ -201,31 +234,45 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterCheckedPaymentPlanNonAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterSelectedEmailNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterSelectedEmailNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
       }
@@ -234,15 +281,17 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
 
         val differentAmount = MonthlyPaymentAmount(AmountInPence(4583972))
 
-          def testSaBta[J <: Journey](initialJourney: J)(existingValue: J => MonthlyPaymentAmount)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentAmount,
-                journeyConnector.updateMonthlyPaymentAmount(_, _)(context.request),
-                context.tdAll.SaBta.journeyAfterMonthlyPaymentAmount.copy(monthlyPaymentAmount = differentAmount)
-              )(context)
+        def testSaBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => MonthlyPaymentAmount)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentAmount,
+            journeyConnector.updateMonthlyPaymentAmount(_, _)(using context.request),
+            context.tdAll.SaBta.journeyAfterMonthlyPaymentAmount.copy(monthlyPaymentAmount = differentAmount)
+          )(context)
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterMonthlyPaymentAmount)(_.monthlyPaymentAmount)(this)
@@ -265,31 +314,45 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterSelectedEmailNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterSelectedEmailNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
       }
@@ -298,15 +361,17 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
 
         val differentAmount = MonthlyPaymentAmount(AmountInPence(4583972))
 
-          def testSimpPta[J <: Journey](initialJourney: J)(existingValue: J => MonthlyPaymentAmount)(context: JourneyItTest): Unit =
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentAmount,
-                journeyConnector.updateMonthlyPaymentAmount(_, _)(context.request),
-                context.tdAll.SimpPta.journeyAfterMonthlyPaymentAmount.copy(monthlyPaymentAmount = differentAmount)
-              )(context)
+        def testSimpPta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => MonthlyPaymentAmount)(context: JourneyItTest): Unit =
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentAmount,
+            journeyConnector.updateMonthlyPaymentAmount(_, _)(using context.request),
+            context.tdAll.SimpPta.journeyAfterMonthlyPaymentAmount.copy(monthlyPaymentAmount = differentAmount)
+          )(context)
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterMonthlyPaymentAmount)(_.monthlyPaymentAmount)(this)
@@ -329,31 +394,45 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterCheckedPaymentPlanNonAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterCheckedPaymentPlanNonAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterSelectedEmail)(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterSelectedEmail)(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(_.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount)(this)
+          testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
         }
 
       }
@@ -363,9 +442,19 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec with UpdateJourney
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      val result: Throwable = journeyConnector.updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateMonthlyPaymentAmountRequest()).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"Cannot update MonthlyAmount when journey is in completed state"}""")
+      insertJourneyForTest(
+        TdAll.EpayeBta
+          .journeyAfterSubmittedArrangementNoAffordability()
+          .copy(_id = tdAll.journeyId)
+          .copy(correlationId = tdAll.correlationId)
+      )
+      val result: Throwable = journeyConnector
+        .updateMonthlyPaymentAmount(tdAll.journeyId, tdAll.EpayeBta.updateMonthlyPaymentAmountRequest())
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"Cannot update MonthlyAmount when journey is in completed state"}"""
+      )
 
       verifyCommonActions(numberOfAuthCalls = 1)
     }

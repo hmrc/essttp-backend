@@ -23,5 +23,5 @@ import java.time.LocalDate
 final case class CreationDate(value: LocalDate) extends AnyVal
 
 object CreationDate {
-  implicit val format: Format[CreationDate] = Json.valueFormat[CreationDate]
+  given Format[CreationDate] = Json.valueFormat[CreationDate]
 }

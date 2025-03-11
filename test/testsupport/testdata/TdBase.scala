@@ -28,7 +28,7 @@ import essttp.rootmodel.ttp.affordablequotes._
 import essttp.rootmodel.ttp.eligibility.{ChargeReference, EligibilityCheckResult, EligibilityPass, EligibilityRules, EligibilityRulesPart1, EligibilityRulesPart2, EligibilityStatus}
 import models.pega.{PegaOauthToken, PegaStartCaseResponse}
 import paymentsEmailVerification.models.EmailVerificationResult
-import testsupport.TdSupport.FakeRequestOps
+import testsupport.TdSupport._
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
@@ -54,31 +54,31 @@ trait TdBase {
   def amountInPence: AmountInPence = AmountInPence(1000)
 
   val reusableDateAsString: String = "2022-05-17"
-  val reusableDate: LocalDate = LocalDate.parse(reusableDateAsString)
+  val reusableDate: LocalDate      = LocalDate.parse(reusableDateAsString)
 
   val eligibleEligibilityRules: EligibilityRules = EligibilityRules(
     EligibilityRulesPart1(
-      hasRlsOnAddress                       = false,
-      markedAsInsolvent                     = false,
-      isLessThanMinDebtAllowance            = false,
-      isMoreThanMaxDebtAllowance            = false,
-      disallowedChargeLockTypes             = false,
-      existingTTP                           = false,
-      chargesOverMaxDebtAge                 = None,
-      ineligibleChargeTypes                 = false,
-      missingFiledReturns                   = false,
-      hasInvalidInterestSignals             = None,
-      dmSpecialOfficeProcessingRequired     = None,
-      noDueDatesReached                     = false,
-      cannotFindLockReason                  = None,
-      creditsNotAllowed                     = None,
-      isMoreThanMaxPaymentReference         = None,
-      chargesBeforeMaxAccountingDate        = None,
-      hasInvalidInterestSignalsCESA         = None,
-      hasDisguisedRemuneration              = None,
-      hasCapacitor                          = None,
+      hasRlsOnAddress = false,
+      markedAsInsolvent = false,
+      isLessThanMinDebtAllowance = false,
+      isMoreThanMaxDebtAllowance = false,
+      disallowedChargeLockTypes = false,
+      existingTTP = false,
+      chargesOverMaxDebtAge = None,
+      ineligibleChargeTypes = false,
+      missingFiledReturns = false,
+      hasInvalidInterestSignals = None,
+      dmSpecialOfficeProcessingRequired = None,
+      noDueDatesReached = false,
+      cannotFindLockReason = None,
+      creditsNotAllowed = None,
+      isMoreThanMaxPaymentReference = None,
+      chargesBeforeMaxAccountingDate = None,
+      hasInvalidInterestSignalsCESA = None,
+      hasDisguisedRemuneration = None,
+      hasCapacitor = None,
       dmSpecialOfficeProcessingRequiredCDCS = None,
-      isAnMtdCustomer                       = None,
+      isAnMtdCustomer = None,
       dmSpecialOfficeProcessingRequiredCESA = None
     ),
     EligibilityRulesPart2(
@@ -89,17 +89,19 @@ trait TdBase {
   def ineligibleEligibilityCheckResult(eligibleEligibilityCheckResult: EligibilityCheckResult): EligibilityCheckResult =
     eligibleEligibilityCheckResult.copy(
       eligibilityStatus = EligibilityStatus(EligibilityPass(value = false)),
-      eligibilityRules  = hasRlsAddressOn
+      eligibilityRules = hasRlsAddressOn
     )
 
-  val hasRlsAddressOn: EligibilityRules = eligibleEligibilityRules.copy(part1 = eligibleEligibilityRules.part1.copy(hasRlsOnAddress = true))
+  val hasRlsAddressOn: EligibilityRules =
+    eligibleEligibilityRules.copy(part1 = eligibleEligibilityRules.part1.copy(hasRlsOnAddress = true))
 
   val whyCannotPayInFullNotRequired: WhyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired
 
-  val whyCannotPayInFullRequired: WhyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.WhyCannotPayInFull(Set(CannotPayReason.LostOrReducedAbilityToEarnOrTrade))
+  val whyCannotPayInFullRequired: WhyCannotPayInFullAnswers =
+    WhyCannotPayInFullAnswers.WhyCannotPayInFull(Set(CannotPayReason.LostOrReducedAbilityToEarnOrTrade))
 
   val canPayUpfrontYes: CanPayUpfront = CanPayUpfront(value = true)
-  val canPayUpfrontNo: CanPayUpfront = CanPayUpfront(value = false)
+  val canPayUpfrontNo: CanPayUpfront  = CanPayUpfront(value = false)
 
   def upfrontPaymentAmount: UpfrontPaymentAmount = UpfrontPaymentAmount(amountInPence)
 
@@ -107,7 +109,8 @@ trait TdBase {
 
   def instalmentAmounts: InstalmentAmounts = InstalmentAmounts(AmountInPence(1000), AmountInPence(2000))
 
-  def upfrontPaymentAnswersDeclared: UpfrontPaymentAnswers = UpfrontPaymentAnswers.DeclaredUpfrontPayment(upfrontPaymentAmount)
+  def upfrontPaymentAnswersDeclared: UpfrontPaymentAnswers =
+    UpfrontPaymentAnswers.DeclaredUpfrontPayment(upfrontPaymentAmount)
 
   def upfrontPaymentAnswersNoUpfrontPayment: UpfrontPaymentAnswers = UpfrontPaymentAnswers.NoUpfrontPayment
 
@@ -117,9 +120,11 @@ trait TdBase {
 
   def latestPlanStartDate: LatestPaymentPlanStartDate = LatestPaymentPlanStartDate(LocalDate.parse("2022-03-01"))
 
-  def extremeDatesWithUpfrontPayment: ExtremeDatesResponse = ExtremeDatesResponse(Some(initialPaymentDate), earliestPlanStartDate, latestPlanStartDate)
+  def extremeDatesWithUpfrontPayment: ExtremeDatesResponse =
+    ExtremeDatesResponse(Some(initialPaymentDate), earliestPlanStartDate, latestPlanStartDate)
 
-  def extremeDatesWithoutUpfrontPayment: ExtremeDatesResponse = extremeDatesWithUpfrontPayment.copy(initialPaymentDate = None)
+  def extremeDatesWithoutUpfrontPayment: ExtremeDatesResponse =
+    extremeDatesWithUpfrontPayment.copy(initialPaymentDate = None)
 
   val canPayWithinSixMonthsNotRequired = CanPayWithinSixMonthsAnswers.AnswerNotRequired
 
@@ -129,9 +134,13 @@ trait TdBase {
 
   def dayOfMonth: DayOfMonth = DayOfMonth(1)
 
-  def startDatesResponseWithInitialPayment: StartDatesResponse = StartDatesResponse(Some(InitialPaymentDate(LocalDate.parse("2022-01-01"))), InstalmentStartDate(LocalDate.parse("2022-01-01")))
+  def startDatesResponseWithInitialPayment: StartDatesResponse = StartDatesResponse(
+    Some(InitialPaymentDate(LocalDate.parse("2022-01-01"))),
+    InstalmentStartDate(LocalDate.parse("2022-01-01"))
+  )
 
-  def startDatesResponseWithoutInitialPayment: StartDatesResponse = StartDatesResponse(None, InstalmentStartDate(LocalDate.parse("2022-01-01")))
+  def startDatesResponseWithoutInitialPayment: StartDatesResponse =
+    StartDatesResponse(None, InstalmentStartDate(LocalDate.parse("2022-01-01")))
 
   def dueDate: DueDate = DueDate(LocalDate.parse("2022-02-01"))
 
@@ -139,23 +148,25 @@ trait TdBase {
 
   def paymentPlan(numberOfInstalments: Int): PaymentPlan = PaymentPlan(
     numberOfInstalments = NumberOfInstalments(numberOfInstalments),
-    planDuration        = PlanDuration(numberOfInstalments),
-    totalDebt           = TotalDebt(amountInPence),
-    totalDebtIncInt     = TotalDebtIncludingInterest(amountInPence.+(amountInPence)),
-    planInterest        = PlanInterest(amountInPence),
-    collections         = Collection(
-      initialCollection  = Some(InitialCollection(dueDate   = dueDate, amountDue = amountDue)),
-      regularCollections = List(RegularCollection(dueDate   = dueDate, amountDue = amountDue))
+    planDuration = PlanDuration(numberOfInstalments),
+    totalDebt = TotalDebt(amountInPence),
+    totalDebtIncInt = TotalDebtIncludingInterest(amountInPence.+(amountInPence)),
+    planInterest = PlanInterest(amountInPence),
+    collections = Collection(
+      initialCollection = Some(InitialCollection(dueDate = dueDate, amountDue = amountDue)),
+      regularCollections = List(RegularCollection(dueDate = dueDate, amountDue = amountDue))
     ),
-    instalments         = List(Instalment(
-      instalmentNumber          = InstalmentNumber(numberOfInstalments),
-      dueDate                   = DueDate(LocalDate.parse("2022-02-01")),
-      instalmentInterestAccrued = InterestAccrued(amountInPence),
-      instalmentBalance         = InstalmentBalance(amountInPence),
-      debtItemChargeId          = ChargeReference("testchargeid"),
-      amountDue                 = amountDue,
-      debtItemOriginalDueDate   = DebtItemOriginalDueDate(LocalDate.parse("2022-01-01"))
-    ))
+    instalments = List(
+      Instalment(
+        instalmentNumber = InstalmentNumber(numberOfInstalments),
+        dueDate = DueDate(LocalDate.parse("2022-02-01")),
+        instalmentInterestAccrued = InterestAccrued(amountInPence),
+        instalmentBalance = InstalmentBalance(amountInPence),
+        debtItemChargeId = ChargeReference("testchargeid"),
+        amountDue = amountDue,
+        debtItemOriginalDueDate = DebtItemOriginalDueDate(LocalDate.parse("2022-01-01"))
+      )
+    )
   )
 
   def paymentPlanAnswersNoAffordability = PaymentPlanAnswers.PaymentPlanNoAffordability(
@@ -196,9 +207,11 @@ trait TdBase {
 
   val emailVerificationAnswersEmailNotNeeded: EmailVerificationAnswers = EmailVerificationAnswers.NoEmailJourney
 
-  val emailVerificationAnswersSuccess: EmailVerificationAnswers = EmailVerificationAnswers.EmailVerified(email, emailVerificationSuccess)
+  val emailVerificationAnswersSuccess: EmailVerificationAnswers =
+    EmailVerificationAnswers.EmailVerified(email, emailVerificationSuccess)
 
-  val emailVerificationAnswersLocked: EmailVerificationAnswers = EmailVerificationAnswers.EmailVerified(email, emailVerificationLocked)
+  val emailVerificationAnswersLocked: EmailVerificationAnswers =
+    EmailVerificationAnswers.EmailVerified(email, emailVerificationLocked)
 
   def emailVerificationAnswers(status: Option[EmailVerificationResult]): EmailVerificationAnswers = status match {
     case Some(EmailVerificationResult.Verified) => emailVerificationAnswersSuccess
@@ -246,29 +259,31 @@ trait TdBase {
   val pegaStartCaseResponse = PegaStartCaseResponse(pegaCaseId.value)
 
   def pegaGetCaseResponse(
-      dayOfMonth:  DayOfMonth,
-      paymentPlan: PaymentPlan,
-      expenditure: Map[String, String],
-      income:      Map[String, String]
+    dayOfMonth:  DayOfMonth,
+    paymentPlan: PaymentPlan,
+    expenditure: Map[String, String],
+    income:      Map[String, String]
   ) = {
 
-    val initialCollectionJsonString = paymentPlan.collections.initialCollection.map(c =>
-      s"""
+    val initialCollectionJsonString = paymentPlan.collections.initialCollection
+      .map(c => s"""
         |"initialCollection": {
         |  "amountDue": ${c.amountDue.value.value.toString},
         |  "dueDate": "${c.dueDate.value.format(DateTimeFormatter.ISO_LOCAL_DATE)}"
         |},
-        |""".stripMargin).getOrElse("")
+        |""".stripMargin)
+      .getOrElse("")
 
-      def regularCollectionsJsonString = paymentPlan.collections.regularCollections.map(c =>
-        s"""{
+    def regularCollectionsJsonString = paymentPlan.collections.regularCollections
+      .map(c => s"""{
          |  "amountDue": ${c.amountDue.value.value.toString},
          |  "dueDate": "${c.dueDate.value.format(DateTimeFormatter.ISO_LOCAL_DATE)}"
          |}
-         |""".stripMargin).mkString(", ")
+         |""".stripMargin)
+      .mkString(", ")
 
-      def instalmentsJsonString = paymentPlan.instalments.map(i =>
-        s"""
+    def instalmentsJsonString = paymentPlan.instalments
+      .map(i => s"""
         |{
         |  "amountDue": ${i.amountDue.value.value.toString},
         |  "debtItemChargeId": "${i.debtItemChargeId.value}",
@@ -278,28 +293,31 @@ trait TdBase {
         |  "instalmentInterestAccrued": ${i.instalmentInterestAccrued.value.value.toString},
         |  "instalmentNumber": ${i.instalmentNumber.value.toString}
         |}
-        |""".stripMargin).mkString(", ")
+        |""".stripMargin)
+      .mkString(", ")
 
     val expenditureJsonString = {
-      val items = expenditure.map{
-        case (k, v) =>
+      val items = expenditure
+        .map { case (k, v) =>
           s"""{
            |  "pyLabel": "$k",
            |  "amountValue": "$v"
            |}""".stripMargin
-      }.mkString(",")
+        }
+        .mkString(",")
 
       s"[ $items ]"
     }
 
     val incomeJsonString = {
-      val items = income.map{
-        case (k, v) =>
+      val items = income
+        .map { case (k, v) =>
           s"""{
            |  "pyLabel": "$k",
            |  "amountValue": "$v"
            |}""".stripMargin
-      }.mkString(",")
+        }
+        .mkString(",")
 
       s"[ $items ]"
     }
@@ -318,7 +336,7 @@ trait TdBase {
        |        "planInterest": ${paymentPlan.planInterest.value.value.toString},
        |        "collections": {
        |          $initialCollectionJsonString
-       |          "regularCollections": [ ${regularCollectionsJsonString} ]
+       |          "regularCollections": [ $regularCollectionsJsonString ]
        |        },
        |        "instalments": [ $instalmentsJsonString ]
        |      },

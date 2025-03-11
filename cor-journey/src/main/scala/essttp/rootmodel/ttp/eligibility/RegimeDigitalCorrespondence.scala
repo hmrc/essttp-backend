@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class RegimeDigitalCorrespondence(value: Boolean) extends AnyVal
 
 object RegimeDigitalCorrespondence {
-  implicit val format: Format[RegimeDigitalCorrespondence] = Json.valueFormat[RegimeDigitalCorrespondence]
+  given Format[RegimeDigitalCorrespondence] = Json.valueFormat[RegimeDigitalCorrespondence]
 }

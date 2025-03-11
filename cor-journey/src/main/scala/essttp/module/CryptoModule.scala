@@ -22,8 +22,8 @@ import play.api.{Configuration, Environment}
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 
 class CryptoModule extends Module {
-  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] =
+  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[?]] =
     Seq(
-      bind[Encrypter with Decrypter].to[Crypto]
+      bind[Encrypter & Decrypter].to[Crypto]
     )
 }

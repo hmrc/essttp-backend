@@ -16,18 +16,16 @@
 
 package essttp.rootmodel.ttp.affordability
 
-import cats.Eq
 import essttp.rootmodel.AmountInPence
 import play.api.libs.json.{Json, OFormat}
 
 final case class InstalmentAmounts(
-    minimumInstalmentAmount: AmountInPence,
-    maximumInstalmentAmount: AmountInPence
-)
+  minimumInstalmentAmount: AmountInPence,
+  maximumInstalmentAmount: AmountInPence
+) derives CanEqual
 
 object InstalmentAmounts {
-  implicit val eqInstalmentAmounts: Eq[InstalmentAmounts] = Eq.fromUniversalEquals
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[InstalmentAmounts] = Json.format[InstalmentAmounts]
+  given OFormat[InstalmentAmounts] = Json.format[InstalmentAmounts]
 }

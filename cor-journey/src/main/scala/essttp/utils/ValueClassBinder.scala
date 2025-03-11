@@ -20,15 +20,19 @@ import scala.reflect.runtime.universe.{TypeTag, typeOf}
 import play.api.libs.json.{JsError, JsResultException, JsString, JsSuccess, Reads}
 import play.api.mvc.{PathBindable, QueryStringBindable}
 
+import scala.reflect.ClassTag
+
 object ValueClassBinder {
 
-  def valueClassBinder[A: Reads](fromAtoString: A => String)(implicit stringBinder: PathBindable[String]): PathBindable[A] = {
+  def valueClassBinder[A: Reads](
+    fromAtoString: A => String
+  )(using stringBinder: PathBindable[String]): PathBindable[A] = {
 
-      def parseString(str: String) =
-        JsString(str).validate[A] match {
-          case JsSuccess(a, _) => Right(a)
-          case JsError(error)  => Left(s"No valid value in path: $str. Error: ${error.toString}")
-        }
+    def parseString(str: String) =
+      JsString(str).validate[A] match {
+        case JsSuccess(a, _) => Right(a)
+        case JsError(error)  => Left(s"No valid value in path: $str. Error: ${error.toString}")
+      }
 
     new PathBindable[A] {
       override def bind(key: String, value: String): Either[String, A] =
@@ -39,23 +43,26 @@ object ValueClassBinder {
     }
   }
 
-  def bindableA[A: TypeTag: Reads](fromAtoString: A => String): QueryStringBindable[A] = new QueryStringBindable.Parsing[A](
-    parse = JsString(_).as[A],
-    fromAtoString,
-    {
-      case (key: String, _: Exception) => s"Cannot parse param $key as ${typeOf[A].typeSymbol.name.toString}"
-    }
-  )
+  def bindableA[A: TypeTag: Reads](fromAtoString: A => String): QueryStringBindable[A] =
+    new QueryStringBindable.Parsing[A](
+      parse = JsString(_).as[A],
+      fromAtoString,
+      { case (key: String, _: Exception) =>
+        s"Cannot parse param $key as ${typeOf[A].typeSymbol.name.toString}"
+      }
+    )
 
-  def queryStringValueBinder[A: TypeTag: Reads](fromAtoString: A => String): QueryStringBindable[A] = {
+  def queryStringValueBinder[A: ClassTag: Reads](fromAtoString: A => String): QueryStringBindable[A] =
     new QueryStringBindable.Parsing[A](
       parse = JsString(_).as[A],
       fromAtoString,
       {
-        case (key: String, e: JsResultException) => s"Cannot parse param $key as ${typeOf[A].typeSymbol.name.toString}. ${e.errors.headOption.flatMap(_._2.headOption.map(_.message)).getOrElse("")}"
-        case (key: String, e)                    => s"Cannot parse param $key as ${typeOf[A].typeSymbol.name.toString}. ${e.toString}"
+        case (key: String, e: JsResultException) =>
+          s"Cannot parse param $key as ${TypeName.of[A]}. ${e.errors.headOption
+              .flatMap(_._2.headOption.map(_.message))
+              .getOrElse("")}"
+        case (key: String, e)                    => s"Cannot parse param $key as ${TypeName.of[A]}. ${e.toString}"
       }
     )
-  }
 
 }

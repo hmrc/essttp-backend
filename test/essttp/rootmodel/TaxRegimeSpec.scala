@@ -26,7 +26,7 @@ class TaxRegimeSpec extends UnitSpec {
       TaxRegime.pathBindable.bind("key", "epaye") shouldBe Right(TaxRegime.Epaye)
       TaxRegime.pathBindable.bind("key", "vat") shouldBe Right(TaxRegime.Vat)
       TaxRegime.pathBindable.bind("key", "sa") shouldBe Right(TaxRegime.Sa)
-      TaxRegime.pathBindable.bind("key", "other") shouldBe a[Left[_, _]]
+      TaxRegime.pathBindable.bind("key", "other") shouldBe a[Left[?, ?]]
 
       TaxRegime.pathBindable.unbind("key", TaxRegime.Epaye) shouldBe "epaye"
       TaxRegime.pathBindable.unbind("key", TaxRegime.Vat) shouldBe "vat"
@@ -38,8 +38,10 @@ class TaxRegimeSpec extends UnitSpec {
       TaxRegime.queryStringBindable.bind("key", Map("key" -> Seq("vat"))) shouldBe Some(Right(TaxRegime.Vat))
       TaxRegime.queryStringBindable.bind("key", Map("key" -> Seq("sa"))) shouldBe Some(Right(TaxRegime.Sa))
       TaxRegime.queryStringBindable.bind("key", Map("otherKey" -> Seq("epaye"))) shouldBe None
-      TaxRegime.queryStringBindable.bind("key", Map("key" -> Seq("unknown"))).getOrElse(fail()) shouldBe a[Left[_, _]]
-      TaxRegime.queryStringBindable.bind("key", Map("key" -> Seq("epaye", "epaye"))).getOrElse(fail()) shouldBe a[Left[_, _]]
+      TaxRegime.queryStringBindable.bind("key", Map("key" -> Seq("unknown"))).getOrElse(fail()) shouldBe a[Left[?, ?]]
+      TaxRegime.queryStringBindable
+        .bind("key", Map("key" -> Seq("epaye", "epaye")))
+        .getOrElse(fail()) shouldBe a[Left[?, ?]]
 
       TaxRegime.queryStringBindable.unbind("key", TaxRegime.Epaye) shouldBe "key=epaye"
       TaxRegime.queryStringBindable.unbind("key", TaxRegime.Vat) shouldBe "key=vat"

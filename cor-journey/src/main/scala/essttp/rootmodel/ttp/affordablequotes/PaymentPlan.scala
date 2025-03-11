@@ -16,21 +16,21 @@
 
 package essttp.rootmodel.ttp.affordablequotes
 
-import cats.Eq
 import play.api.libs.json.{Json, OFormat}
 
 final case class PaymentPlan(
-    numberOfInstalments: NumberOfInstalments,
-    planDuration:        PlanDuration,
-    totalDebt:           TotalDebt,
-    totalDebtIncInt:     TotalDebtIncludingInterest,
-    planInterest:        PlanInterest,
-    collections:         Collection,
-    instalments:         List[Instalment]
-)
+  numberOfInstalments: NumberOfInstalments,
+  planDuration:        PlanDuration,
+  totalDebt:           TotalDebt,
+  totalDebtIncInt:     TotalDebtIncludingInterest,
+  planInterest:        PlanInterest,
+  collections:         Collection,
+  instalments:         List[Instalment]
+) derives CanEqual
 
 object PaymentPlan {
+
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[PaymentPlan] = Json.format[PaymentPlan]
-  implicit val eq: Eq[PaymentPlan] = Eq.fromUniversalEquals
+  given OFormat[PaymentPlan] = Json.format[PaymentPlan]
+
 }

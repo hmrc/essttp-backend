@@ -20,14 +20,14 @@ import essttp.crypto.CryptoFormat
 import essttp.rootmodel.bank.{AccountName, AccountNumber, SortCode}
 import play.api.libs.json.{Json, OFormat}
 final case class DirectDebitInstruction(
-    sortCode:        SortCode,
-    accountNumber:   AccountNumber,
-    accountName:     AccountName,
-    paperAuddisFlag: PaperAuddisFlag
+  sortCode:        SortCode,
+  accountNumber:   AccountNumber,
+  accountName:     AccountName,
+  paperAuddisFlag: PaperAuddisFlag
 )
 
 object DirectDebitInstruction {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[DirectDebitInstruction] = Json.format
+  given (using CryptoFormat): OFormat[DirectDebitInstruction] = Json.format
 
 }

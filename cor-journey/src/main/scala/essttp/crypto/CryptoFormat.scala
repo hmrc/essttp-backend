@@ -19,12 +19,12 @@ package essttp.crypto
 import com.google.inject.{Inject, Singleton}
 import uk.gov.hmrc.crypto.{Decrypter, Encrypter}
 
-sealed trait CryptoFormat
+sealed trait CryptoFormat derives CanEqual
 
 object CryptoFormat {
 
   @Singleton
-  final case class OperationalCryptoFormat @Inject() (crypto: Encrypter with Decrypter) extends CryptoFormat
+  final case class OperationalCryptoFormat @Inject() (crypto: Encrypter & Decrypter) extends CryptoFormat
 
   case object NoOpCryptoFormat extends CryptoFormat
 

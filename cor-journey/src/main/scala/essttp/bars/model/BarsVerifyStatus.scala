@@ -23,20 +23,20 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 import java.time.Instant
 
 final case class BarsVerifyStatus(
-    _id:                   TaxIdIndex,
-    taxId:                 TaxId,
-    verifyCalls:           NumberOfBarsVerifyAttempts,
-    createdAt:             Instant                    = Instant.now,
-    lastUpdated:           Instant                    = Instant.now,
-    lockoutExpiryDateTime: Option[Instant]            = None
+  _id:                   TaxIdIndex,
+  taxId:                 TaxId,
+  verifyCalls:           NumberOfBarsVerifyAttempts,
+  createdAt:             Instant = Instant.now,
+  lastUpdated:           Instant = Instant.now,
+  lockoutExpiryDateTime: Option[Instant] = None
 )
 
 object BarsVerifyStatus {
 
-  implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
+  given format: Format[Instant]   = MongoJavatimeFormats.instantFormat
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[BarsVerifyStatus] = Json.format
+  given OFormat[BarsVerifyStatus] = Json.format
 
-  def apply(taxId: TaxId): BarsVerifyStatus = BarsVerifyStatus(TaxIdIndex(taxId), taxId, verifyCalls = NumberOfBarsVerifyAttempts(1))
+  def apply(taxId: TaxId): BarsVerifyStatus =
+    BarsVerifyStatus(TaxIdIndex(taxId), taxId, verifyCalls = NumberOfBarsVerifyAttempts(1))
 }
-

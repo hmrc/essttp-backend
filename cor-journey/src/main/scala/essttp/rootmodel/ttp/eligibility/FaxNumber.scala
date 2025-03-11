@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class FaxNumber(value: String) extends AnyVal
 
 object FaxNumber {
-  implicit val format: Format[FaxNumber] = Json.valueFormat[FaxNumber]
+  given Format[FaxNumber] = Json.valueFormat[FaxNumber]
 }

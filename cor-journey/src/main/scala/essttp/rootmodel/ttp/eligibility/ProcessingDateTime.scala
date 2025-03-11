@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class ProcessingDateTime(value: String) extends AnyVal
 
 object ProcessingDateTime {
-  implicit val format: Format[ProcessingDateTime] = Json.valueFormat
+  given Format[ProcessingDateTime] = Json.valueFormat
 }

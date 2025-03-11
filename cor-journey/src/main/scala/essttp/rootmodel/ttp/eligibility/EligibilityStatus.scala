@@ -21,6 +21,5 @@ import play.api.libs.json.{Json, OFormat}
 final case class EligibilityStatus(eligibilityPass: EligibilityPass)
 
 object EligibilityStatus {
-  implicit val format: OFormat[EligibilityStatus] = Json.format[EligibilityStatus]
+  given OFormat[EligibilityStatus] = Json.format[EligibilityStatus]
 }
-

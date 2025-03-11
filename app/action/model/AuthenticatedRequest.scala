@@ -19,4 +19,5 @@ package action.model
 import play.api.mvc.{Request, WrappedRequest}
 import uk.gov.hmrc.auth.core.Enrolments
 
-final case class AuthenticatedRequest[A](val request: Request[A], enrolments: Enrolments) extends WrappedRequest[A](request)
+final case class AuthenticatedRequest[A](val request: Request[A], enrolments: Enrolments)
+    extends WrappedRequest[A](request)

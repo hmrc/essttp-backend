@@ -16,12 +16,12 @@
 
 package essttp.rootmodel.ttp.affordablequotes
 
-import cats.Eq
 import play.api.libs.json.{Json, OFormat}
 
-final case class AffordableQuotesResponse(paymentPlans: List[PaymentPlan])
+final case class AffordableQuotesResponse(paymentPlans: List[PaymentPlan]) derives CanEqual
 
 object AffordableQuotesResponse {
-  implicit val format: OFormat[AffordableQuotesResponse] = Json.format[AffordableQuotesResponse]
-  implicit val eq: Eq[AffordableQuotesResponse] = Eq.fromUniversalEquals
+
+  given OFormat[AffordableQuotesResponse] = Json.format[AffordableQuotesResponse]
+
 }

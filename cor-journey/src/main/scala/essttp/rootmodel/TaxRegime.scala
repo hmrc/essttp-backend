@@ -16,7 +16,6 @@
 
 package essttp.rootmodel
 
-import cats.Eq
 import cats.syntax.either._
 import enumeratum._
 import play.api.mvc.{PathBindable, QueryStringBindable}
@@ -24,11 +23,11 @@ import play.api.mvc.{PathBindable, QueryStringBindable}
 import java.util.Locale
 import scala.collection.immutable
 
-sealed trait TaxRegime extends EnumEntry with Product with Serializable
+sealed trait TaxRegime extends EnumEntry, Product, Serializable derives CanEqual
 
 object TaxRegime extends Enum[TaxRegime] {
 
-  implicit val pathBindable: PathBindable[TaxRegime] = new PathBindable[TaxRegime] {
+  given pathBindable: PathBindable[TaxRegime] = new PathBindable[TaxRegime] {
     override def bind(key: String, value: String): Either[String, TaxRegime] =
       TaxRegime.withNameInsensitiveEither(value).leftMap(_.toString)
 
@@ -36,9 +35,9 @@ object TaxRegime extends Enum[TaxRegime] {
       value.entryName.toLowerCase(Locale.UK)
   }
 
-  implicit val queryStringBindable: QueryStringBindable[TaxRegime] = new QueryStringBindable[TaxRegime] {
+  given queryStringBindable: QueryStringBindable[TaxRegime] = new QueryStringBindable[TaxRegime] {
     override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, TaxRegime]] =
-      params.get(key).map{
+      params.get(key).map {
         _.toList match {
           case regime :: Nil => TaxRegime.withNameInsensitiveEither(regime).leftMap(_.toString)
           case _             => Left(s"Could not read tax regime from query parameter values ${params.toString}")
@@ -46,29 +45,23 @@ object TaxRegime extends Enum[TaxRegime] {
       }
 
     override def unbind(key: String, value: TaxRegime): String =
-      s"$key=${value.entryName.toLowerCase((Locale.UK))}"
+      s"$key=${value.entryName.toLowerCase(Locale.UK)}"
   }
 
-  implicit val eqTaxRegime: Eq[TaxRegime] = Eq.fromUniversalEquals
-
-  /**
-   * Tax regime for Employers' Pay as you earn (Epaye)
-   */
+  /** Tax regime for Employers' Pay as you earn (Epaye)
+    */
   case object Epaye extends TaxRegime
 
-  /**
-   * Tax regime for Value Added Tax (Vat)
-   */
+  /** Tax regime for Value Added Tax (Vat)
+    */
   case object Vat extends TaxRegime
 
-  /**
-   * Tax regime for Self Assessment (Sa)
-   */
+  /** Tax regime for Self Assessment (Sa)
+    */
   case object Sa extends TaxRegime
 
-  /**
-   *  Tax regime for Simple Assessment (Simp)
-   */
+  /** Tax regime for Simple Assessment (Simp)
+    */
   case object Simp extends TaxRegime
 
   override val values: immutable.IndexedSeq[TaxRegime] = findValues

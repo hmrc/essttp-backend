@@ -19,6 +19,7 @@ package essttp.rootmodel
 import essttp.rootmodel.ttp.affordablequotes.{ChannelIdentifier, ChannelIdentifiers}
 import play.api.libs.json.{JsString, Json}
 import testsupport.UnitSpec
+import testsupport.Givens.canEqualJsValue
 
 class ChannelIdentifierSpec extends UnitSpec {
 

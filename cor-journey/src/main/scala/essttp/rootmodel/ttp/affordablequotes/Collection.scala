@@ -22,5 +22,5 @@ final case class Collection(initialCollection: Option[InitialCollection], regula
 
 object Collection {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[Collection] = Json.format[Collection]
+  given OFormat[Collection] = Json.format[Collection]
 }

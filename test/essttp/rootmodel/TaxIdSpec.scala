@@ -17,6 +17,7 @@
 package essttp.rootmodel
 
 import play.api.libs.json.Json
+import testsupport.Givens.canEqualJsValue
 import testsupport.UnitSpec
 
 class TaxIdSpec extends UnitSpec {

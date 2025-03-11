@@ -19,6 +19,7 @@ package essttp.journey.model.ttp
 import essttp.rootmodel.ttp.{PaymentPlanFrequencies, PaymentPlanFrequency}
 import play.api.libs.json.{JsString, JsSuccess, Json}
 import testsupport.UnitSpec
+import testsupport.Givens.{canEqualJsResult, canEqualJsValue}
 
 class PaymentPlanFrequencySpec extends UnitSpec {
 

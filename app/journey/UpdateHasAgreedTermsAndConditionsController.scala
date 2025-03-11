@@ -17,14 +17,12 @@
 package journey
 
 import action.Actions
-import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.Stages
-import essttp.journey.model.{Journey, JourneyId, Stage}
+import essttp.journey.model.{Journey, JourneyId, JourneyStage}
 import essttp.rootmodel.IsEmailAddressRequired
 import essttp.utils.Errors
-import io.scalaland.chimney.dsl.TransformationOps
+import io.scalaland.chimney.dsl.*
 import play.api.mvc.{Action, ControllerComponents, Request}
 import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -33,139 +31,84 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateHasAgreedTermsAndConditionsController @Inject() (
-    actions:        Actions,
-    journeyService: JourneyService,
-    cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
+  actions:        Actions,
+  journeyService: JourneyService,
+  cc:             ControllerComponents
+)(using ExecutionContext, OperationalCryptoFormat)
+    extends BackendController(cc) {
 
-  def updateAgreedTermsAndConditions(journeyId: JourneyId): Action[IsEmailAddressRequired] = actions.authenticatedAction.async(parse.json[IsEmailAddressRequired]) { implicit request =>
-    for {
-      journey <- journeyService.get(journeyId)
-      newJourney <- journey match {
-        case j: Journey.BeforeConfirmedDirectDebitDetails  => Errors.throwBadRequestExceptionF(s"UpdateAgreedTermsAndConditions is not possible in that state: [${j.stage.toString}]")
-        case j: Journey.Stages.ConfirmedDirectDebitDetails => updateJourneyWithNewValue(j, request.body)
-        case j: Journey.AfterAgreedTermsAndConditions      => updateJourneyWithExistingValue(j, request.body)
-      }
-    } yield Ok(newJourney.json)
-  }
+  def updateAgreedTermsAndConditions(journeyId: JourneyId): Action[IsEmailAddressRequired] =
+    actions.authenticatedAction.async(parse.json[IsEmailAddressRequired]) { implicit request =>
+      for {
+        journey    <- journeyService.get(journeyId)
+        newJourney <- journey match {
+                        case j: JourneyStage.BeforeConfirmedDirectDebitDetails =>
+                          Errors.throwBadRequestExceptionF(
+                            s"UpdateAgreedTermsAndConditions is not possible in that state: [${j.stage}]"
+                          )
+                        case j: Journey.ConfirmedDirectDebitDetails            =>
+                          updateJourneyWithNewValue(j, request.body)
+                        case j: JourneyStage.AfterAgreedTermsAndConditions     =>
+                          updateJourneyWithExistingValue(j, request.body)
+                      }
+      } yield Ok(newJourney.json)
+    }
 
   private def updateJourneyWithNewValue(
-      journey:                Journey.Stages.ConfirmedDirectDebitDetails,
-      isEmailAddressRequired: IsEmailAddressRequired
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey.AfterAgreedTermsAndConditions = journey match {
-      case j: Journey.Epaye.ConfirmedDirectDebitDetails =>
-        j.into[Journey.Epaye.AgreedTermsAndConditions]
-          .withFieldConst(_.stage, toStage(isEmailAddressRequired))
-          .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired)
-          .transform
-      case j: Journey.Vat.ConfirmedDirectDebitDetails =>
-        j.into[Journey.Vat.AgreedTermsAndConditions]
-          .withFieldConst(_.stage, toStage(isEmailAddressRequired))
-          .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired)
-          .transform
-      case j: Journey.Sa.ConfirmedDirectDebitDetails =>
-        j.into[Journey.Sa.AgreedTermsAndConditions]
-          .withFieldConst(_.stage, toStage(isEmailAddressRequired))
-          .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired)
-          .transform
-      case j: Journey.Simp.ConfirmedDirectDebitDetails =>
-        j.into[Journey.Simp.AgreedTermsAndConditions]
-          .withFieldConst(_.stage, toStage(isEmailAddressRequired))
-          .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired)
-          .transform
-    }
+    journey:                Journey.ConfirmedDirectDebitDetails,
+    isEmailAddressRequired: IsEmailAddressRequired
+  )(using Request[?]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.AgreedTermsAndConditions]
+        .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired)
+        .transform
+
     journeyService.upsert(newJourney)
   }
 
   private def updateJourneyWithExistingValue(
-      journey:                Journey.AfterAgreedTermsAndConditions,
-      isEmailAddressRequired: IsEmailAddressRequired
-  )(implicit request: Request[_]): Future[Journey] =
+    journey:                JourneyStage.AfterAgreedTermsAndConditions & Journey,
+    isEmailAddressRequired: IsEmailAddressRequired
+  )(using Request[?]): Future[Journey] =
     journey match {
-      case _: Stages.SubmittedArrangement =>
+      case _: Journey.SubmittedArrangement =>
         Errors.throwBadRequestException("Cannot update AgreedTermsAndConditions when journey is in completed state")
 
-      case j: Journey.Epaye.AgreedTermsAndConditions =>
-        upsertIfChanged(j, isEmailAddressRequired,
-                        j.copy(
-            isEmailAddressRequired = isEmailAddressRequired,
-            stage                  = toStage(isEmailAddressRequired)
-          ))
-      case j: Journey.Vat.AgreedTermsAndConditions =>
-        upsertIfChanged(j, isEmailAddressRequired,
-                        j.copy(
-            isEmailAddressRequired = isEmailAddressRequired,
-            stage                  = toStage(isEmailAddressRequired)
-          ))
-      case j: Journey.Sa.AgreedTermsAndConditions =>
-        upsertIfChanged(j, isEmailAddressRequired,
-                        j.copy(
-            isEmailAddressRequired = isEmailAddressRequired,
-            stage                  = toStage(isEmailAddressRequired)
-          ))
-      case j: Journey.Simp.AgreedTermsAndConditions =>
-        upsertIfChanged(j, isEmailAddressRequired,
-                        j.copy(
-            isEmailAddressRequired = isEmailAddressRequired,
-            stage                  = toStage(isEmailAddressRequired)
-          ))
+      case j: Journey.AgreedTermsAndConditions =>
+        upsertIfChanged(
+          j,
+          isEmailAddressRequired,
+          j.copy(
+            isEmailAddressRequired = isEmailAddressRequired
+          )
+        )
 
-      case j: Journey.Epaye.SelectedEmailToBeVerified =>
-        upsertIfChanged(j, isEmailAddressRequired,
-                        j.into[Journey.Epaye.AgreedTermsAndConditions]
-            .withFieldConst(_.stage, toStage(isEmailAddressRequired))
-            .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
-      case j: Journey.Vat.SelectedEmailToBeVerified =>
-        upsertIfChanged(j, isEmailAddressRequired,
-                        j.into[Journey.Vat.AgreedTermsAndConditions]
-            .withFieldConst(_.stage, toStage(isEmailAddressRequired))
-            .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
-      case j: Journey.Sa.SelectedEmailToBeVerified =>
-        upsertIfChanged(j, isEmailAddressRequired,
-                        j.into[Journey.Sa.AgreedTermsAndConditions]
-            .withFieldConst(_.stage, toStage(isEmailAddressRequired))
-            .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
-      case j: Journey.Simp.SelectedEmailToBeVerified =>
-        upsertIfChanged(j, isEmailAddressRequired,
-                        j.into[Journey.Simp.AgreedTermsAndConditions]
-            .withFieldConst(_.stage, toStage(isEmailAddressRequired))
-            .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
+      case j: Journey.SelectedEmailToBeVerified =>
+        upsertIfChanged(
+          j,
+          isEmailAddressRequired,
+          j.into[Journey.AgreedTermsAndConditions]
+            .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired)
+            .transform
+        )
 
-      case j: Journey.Epaye.EmailVerificationComplete =>
-        upsertIfChanged(j, isEmailAddressRequired,
-                        j.into[Journey.Epaye.AgreedTermsAndConditions]
-            .withFieldConst(_.stage, toStage(isEmailAddressRequired))
-            .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
-      case j: Journey.Vat.EmailVerificationComplete =>
-        upsertIfChanged(j, isEmailAddressRequired,
-                        j.into[Journey.Vat.AgreedTermsAndConditions]
-            .withFieldConst(_.stage, toStage(isEmailAddressRequired))
-            .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
-      case j: Journey.Sa.EmailVerificationComplete =>
-        upsertIfChanged(j, isEmailAddressRequired,
-                        j.into[Journey.Sa.AgreedTermsAndConditions]
-            .withFieldConst(_.stage, toStage(isEmailAddressRequired))
-            .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
-      case j: Journey.Simp.EmailVerificationComplete =>
-        upsertIfChanged(j, isEmailAddressRequired,
-                        j.into[Journey.Simp.AgreedTermsAndConditions]
-            .withFieldConst(_.stage, toStage(isEmailAddressRequired))
-            .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired).transform)
+      case j: Journey.EmailVerificationComplete =>
+        upsertIfChanged(
+          j,
+          isEmailAddressRequired,
+          j.into[Journey.AgreedTermsAndConditions]
+            .withFieldConst(_.isEmailAddressRequired, isEmailAddressRequired)
+            .transform
+        )
     }
 
   private def upsertIfChanged(
-      j:                      Journey.AfterAgreedTermsAndConditions,
-      isEmailAddressRequired: IsEmailAddressRequired,
-      updatedJourney:         => Journey.AfterAgreedTermsAndConditions
-  )(
-      implicit
-      r: Request[_]
-  ): Future[Journey] =
-    if (j.isEmailAddressRequired === isEmailAddressRequired) Future.successful(j)
+    j:                      JourneyStage.AfterAgreedTermsAndConditions & Journey,
+    isEmailAddressRequired: IsEmailAddressRequired,
+    updatedJourney:         => JourneyStage.AfterAgreedTermsAndConditions & Journey
+  )(using Request[?]): Future[Journey] =
+    if (j.isEmailAddressRequired == isEmailAddressRequired) Future.successful(j)
     else journeyService.upsert(updatedJourney)
 
-  private def toStage(isEmailAddressRequired: IsEmailAddressRequired): Stage.AfterAgreedTermsAndConditions =
-    if (isEmailAddressRequired) Stage.AfterAgreedTermsAndConditions.EmailAddressRequired
-    else Stage.AfterAgreedTermsAndConditions.EmailAddressNotRequired
 }

@@ -21,45 +21,45 @@ import essttp.rootmodel.Email
 import essttp.rootmodel.ttp._
 import play.api.libs.json.{Json, OFormat}
 
-/**
- * This represents response from the Eligibylity API
- * https://confluence.tools.tax.service.gov.uk/display/DTDT/TTP+Eligibility+API
- */
+/** This represents response from the Eligibylity API
+  * https://confluence.tools.tax.service.gov.uk/display/DTDT/TTP+Eligibility+API
+  */
 final case class EligibilityCheckResult(
-    processingDateTime:              ProcessingDateTime,
-    identification:                  List[Identification],
-    invalidSignals:                  Option[List[InvalidSignals]],
-    customerPostcodes:               List[CustomerPostcode],
-    customerDetails:                 List[CustomerDetail],
-    individualDetails:               Option[IndividualDetails],
-    addresses:                       List[Address],
-    regimeDigitalCorrespondence:     RegimeDigitalCorrespondence,
-    regimePaymentFrequency:          PaymentPlanFrequency,
-    paymentPlanFrequency:            PaymentPlanFrequency,
-    paymentPlanMinLength:            PaymentPlanMinLength,
-    paymentPlanMaxLength:            PaymentPlanMaxLength,
-    eligibilityStatus:               EligibilityStatus,
-    eligibilityRules:                EligibilityRules,
-    futureChargeLiabilitiesExcluded: Boolean,
-    chargeTypesExcluded:             Option[Boolean],
-    chargeTypeAssessment:            List[ChargeTypeAssessment]
-)
+  processingDateTime:              ProcessingDateTime,
+  identification:                  List[Identification],
+  invalidSignals:                  Option[List[InvalidSignals]],
+  customerPostcodes:               List[CustomerPostcode],
+  customerDetails:                 List[CustomerDetail],
+  individualDetails:               Option[IndividualDetails],
+  addresses:                       List[Address],
+  regimeDigitalCorrespondence:     RegimeDigitalCorrespondence,
+  regimePaymentFrequency:          PaymentPlanFrequency,
+  paymentPlanFrequency:            PaymentPlanFrequency,
+  paymentPlanMinLength:            PaymentPlanMinLength,
+  paymentPlanMaxLength:            PaymentPlanMaxLength,
+  eligibilityStatus:               EligibilityStatus,
+  eligibilityRules:                EligibilityRules,
+  futureChargeLiabilitiesExcluded: Boolean,
+  chargeTypesExcluded:             Option[Boolean],
+  chargeTypeAssessment:            List[ChargeTypeAssessment]
+) derives CanEqual
 
 object EligibilityCheckResult {
 
-  implicit class EligibilityCheckResultOps(private val e: EligibilityCheckResult) extends AnyVal {
+  extension (e: EligibilityCheckResult) {
 
     def isEligible: Boolean = e.eligibilityStatus.eligibilityPass.value
 
     def email: Option[Email] = e.addresses
       .flatMap(_.contactDetails)
-      .collectFirst {
-        case ContactDetail(_, _, _, Some(emailAddress), _, _) => emailAddress
+      .collectFirst { case ContactDetail(_, _, _, Some(emailAddress), _, _) =>
+        emailAddress
       }
 
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit def format(implicit cryptoFormat: CryptoFormat): OFormat[EligibilityCheckResult] = Json.format[EligibilityCheckResult]
+  given (using CryptoFormat): OFormat[EligibilityCheckResult] =
+    Json.format[EligibilityCheckResult]
 
 }

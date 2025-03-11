@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class IsAnMtdCustomer(value: Boolean) extends AnyVal
 
 object IsAnMtdCustomer {
-  implicit val format: Format[IsAnMtdCustomer] = Json.valueFormat
+  given Format[IsAnMtdCustomer] = Json.valueFormat
 }

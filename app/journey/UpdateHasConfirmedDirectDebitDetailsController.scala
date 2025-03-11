@@ -19,9 +19,10 @@ package journey
 import action.Actions
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.{Journey, JourneyId, Stage}
+import essttp.journey.model
+import essttp.journey.model.{Journey, JourneyId, JourneyStage}
 import essttp.utils.Errors
-import io.scalaland.chimney.dsl.TransformationOps
+import io.scalaland.chimney.dsl.*
 import play.api.mvc.{Action, AnyContent, ControllerComponents, Request}
 import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -30,46 +31,40 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateHasConfirmedDirectDebitDetailsController @Inject() (
-    actions:        Actions,
-    journeyService: JourneyService,
-    cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
+  actions:        Actions,
+  journeyService: JourneyService,
+  cc:             ControllerComponents
+)(using ExecutionContext, OperationalCryptoFormat)
+    extends BackendController(cc) {
 
-  def updateConfirmedDirectDebitDetails(journeyId: JourneyId): Action[AnyContent] = actions.authenticatedAction.async { implicit request =>
-    for {
-      journey <- journeyService.get(journeyId)
-      newJourney <- journey match {
-        case j: Journey.BeforeEnteredDirectDebitDetails  => Errors.throwBadRequestExceptionF(s"UpdateHasConfirmedDirectDebitDetails is not possible in that state: [${j.stage.toString}]")
-        case j: Journey.Stages.EnteredDirectDebitDetails => updateJourneyWithNewValue(j)
-        case j: Journey.AfterConfirmedDirectDebitDetails => j match {
-          case _: Journey.BeforeArrangementSubmitted => Future.successful(j)
-          case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update ConfirmedDirectDebitDetails when journey is in completed state")
-        }
-      }
-    } yield Ok(newJourney.json)
+  def updateConfirmedDirectDebitDetails(journeyId: JourneyId): Action[AnyContent] = actions.authenticatedAction.async {
+    implicit request =>
+      for {
+        journey    <- journeyService.get(journeyId)
+        newJourney <- journey match {
+                        case j: JourneyStage.BeforeEnteredDirectDebitDetails  =>
+                          Errors.throwBadRequestExceptionF(
+                            s"UpdateHasConfirmedDirectDebitDetails is not possible in that state: [${j.stage}]"
+                          )
+                        case j: model.Journey.EnteredDirectDebitDetails       =>
+                          updateJourneyWithNewValue(j)
+                        case j: JourneyStage.AfterConfirmedDirectDebitDetails =>
+                          j match {
+                            case _: JourneyStage.BeforeArrangementSubmitted => Future.successful(j)
+                            case _: JourneyStage.AfterArrangementSubmitted  =>
+                              Errors.throwBadRequestExceptionF(
+                                "Cannot update ConfirmedDirectDebitDetails when journey is in completed state"
+                              )
+                          }
+                      }
+      } yield Ok(newJourney.json)
   }
 
   private def updateJourneyWithNewValue(
-      journey: Journey.Stages.EnteredDirectDebitDetails
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey.AfterConfirmedDirectDebitDetails = journey match {
-      case j: Journey.Epaye.EnteredDirectDebitDetails =>
-        j.into[Journey.Epaye.ConfirmedDirectDebitDetails]
-          .withFieldConst(_.stage, Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails)
-          .transform
-      case j: Journey.Vat.EnteredDirectDebitDetails =>
-        j.into[Journey.Vat.ConfirmedDirectDebitDetails]
-          .withFieldConst(_.stage, Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails)
-          .transform
-      case j: Journey.Sa.EnteredDirectDebitDetails =>
-        j.into[Journey.Sa.ConfirmedDirectDebitDetails]
-          .withFieldConst(_.stage, Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails)
-          .transform
-      case j: Journey.Simp.EnteredDirectDebitDetails =>
-        j.into[Journey.Simp.ConfirmedDirectDebitDetails]
-          .withFieldConst(_.stage, Stage.AfterConfirmedDirectDebitDetails.ConfirmedDetails)
-          .transform
-    }
+    journey: Journey.EnteredDirectDebitDetails
+  )(using Request[?]): Future[Journey] = {
+    val newJourney: Journey = journey.into[Journey.ConfirmedDirectDebitDetails].transform
+
     journeyService.upsert(newJourney)
   }
 }

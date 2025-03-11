@@ -30,29 +30,36 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class PegaController @Inject() (
-    pegaService: PegaService,
-    actions:     Actions,
-    cc:          ControllerComponents
-)(implicit ec: ExecutionContext, operationalCryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
+  pegaService: PegaService,
+  actions:     Actions,
+  cc:          ControllerComponents
+)(using ExecutionContext, OperationalCryptoFormat)
+    extends BackendController(cc) {
 
-  def startCase(journeyId: JourneyId, recalculationNeeded: Boolean): Action[AnyContent] = actions.authenticatedAction.async { implicit request =>
-    pegaService.startCase(journeyId, recalculationNeeded)
-      .map(response => Created(Json.toJson(response)))
-  }
+  def startCase(journeyId: JourneyId, recalculationNeeded: Boolean): Action[AnyContent] =
+    actions.authenticatedAction.async { implicit request =>
+      pegaService
+        .startCase(journeyId, recalculationNeeded)
+        .map(response => Created(Json.toJson(response)))
+    }
 
   def getCase(journeyId: JourneyId): Action[AnyContent] = actions.authenticatedAction.async { implicit request =>
-    pegaService.getCase(journeyId)
+    pegaService
+      .getCase(journeyId)
       .map(response => Ok(Json.toJson(response)))
   }
 
   def saveJourney(journeyId: JourneyId): Action[AnyContent] = actions.authenticatedAction.async { implicit request =>
-    pegaService.saveJourney(journeyId)
+    pegaService
+      .saveJourney(journeyId)
       .map(_ => Ok)
   }
 
-  def recreateSession(taxRegime: TaxRegime): Action[AnyContent] = actions.authenticatedAction.async { implicit request =>
-    pegaService.recreateSession(taxRegime, request.enrolments)
-      .map(journey => Ok(Json.toJson(journey)))
+  def recreateSession(taxRegime: TaxRegime): Action[AnyContent] = actions.authenticatedAction.async {
+    implicit request =>
+      pegaService
+        .recreateSession(taxRegime, request.enrolments)
+        .map(journey => Ok(Json.toJson(journey)))
   }
 
 }

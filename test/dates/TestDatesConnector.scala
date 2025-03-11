@@ -18,6 +18,7 @@ package dates
 
 import essttp.rootmodel.dates.extremedates.{ExtremeDatesRequest, ExtremeDatesResponse}
 import essttp.rootmodel.dates.startdates.{StartDatesRequest, StartDatesResponse}
+import play.api.libs.ws.writeableOf_JsValue
 import play.api.libs.json.Json
 import testsupport.ItSpec
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -32,15 +33,16 @@ class TestDatesConnector @Inject() (httpClient: HttpClientV2)(implicit execution
 
   private val essttpBackendBaseUrl = s"http://localhost:${ItSpec.testServerPort.toString}/essttp-backend"
 
-  implicit val readResponse: HttpReads[HttpResponse] = HttpReadsInstances.throwOnFailure(HttpReadsInstances.readEitherOf(HttpReadsInstances.readRaw))
+  given HttpReads[HttpResponse] =
+    HttpReadsInstances.throwOnFailure(HttpReadsInstances.readEitherOf(using HttpReadsInstances.readRaw))
 
-  def startDates(startDatesRequest: StartDatesRequest)(implicit hc: HeaderCarrier): Future[StartDatesResponse] =
+  def startDates(startDatesRequest: StartDatesRequest)(using HeaderCarrier): Future[StartDatesResponse] =
     httpClient
       .post(url"$essttpBackendBaseUrl/start-dates")
       .withBody(Json.toJson(startDatesRequest))
       .execute[StartDatesResponse]
 
-  def extremeDates(extremeDatesRequest: ExtremeDatesRequest)(implicit hc: HeaderCarrier): Future[ExtremeDatesResponse] =
+  def extremeDates(extremeDatesRequest: ExtremeDatesRequest)(using HeaderCarrier): Future[ExtremeDatesResponse] =
     httpClient
       .post(url"$essttpBackendBaseUrl/extreme-dates")
       .withBody(Json.toJson(extremeDatesRequest))

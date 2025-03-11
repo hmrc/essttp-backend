@@ -21,5 +21,5 @@ import play.api.libs.json.{Format, Json}
 final case class ChargeSource(value: String) extends AnyVal
 
 object ChargeSource {
-  implicit val format: Format[ChargeSource] = Json.valueFormat[ChargeSource]
+  given Format[ChargeSource] = Json.valueFormat[ChargeSource]
 }

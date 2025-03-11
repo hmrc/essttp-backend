@@ -28,7 +28,7 @@ object EnrolmentDefResult {
 
   final case class IdentifierNotFound[T](enrolmentDefs: Set[EnrolmentDef]) extends EnrolmentDefResult[T]
 
-  implicit class EnrolmentDefResultOps[T](private val e: EnrolmentDefResult[T]) extends AnyVal {
+  extension [T](e: EnrolmentDefResult[T]) {
 
     def isSuccess: Boolean = e match {
       case Success(_)            => true

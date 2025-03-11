@@ -17,15 +17,11 @@
 package journey
 
 import action.Actions
-import cats.Eq
-import cats.syntax.eq._
 import com.google.inject.{Inject, Singleton}
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
-import essttp.journey.model.Journey.{Epaye, Sa, Simp, Stages, Vat}
-import essttp.journey.model.{Journey, JourneyId, Stage, WhyCannotPayInFullAnswers}
-import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
+import essttp.journey.model.{Journey, JourneyId, JourneyStage, WhyCannotPayInFullAnswers}
 import essttp.utils.Errors
-import io.scalaland.chimney.dsl.TransformationOps
+import io.scalaland.chimney.dsl.*
 import play.api.mvc.{Action, ControllerComponents, Request}
 import services.JourneyService
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -34,259 +30,122 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class UpdateWhyCannotPayInFullController @Inject() (
-    actions:        Actions,
-    journeyService: JourneyService,
-    cc:             ControllerComponents
-)(implicit exec: ExecutionContext, cryptoFormat: OperationalCryptoFormat) extends BackendController(cc) {
-
-  implicit val eq: Eq[EligibilityCheckResult] = Eq.fromUniversalEquals
+  actions:        Actions,
+  journeyService: JourneyService,
+  cc:             ControllerComponents
+)(using ExecutionContext, OperationalCryptoFormat)
+    extends BackendController(cc) {
 
   def updateWhyCannotPayinFull(journeyId: JourneyId): Action[WhyCannotPayInFullAnswers] =
     actions.authenticatedAction.async(parse.json[WhyCannotPayInFullAnswers]) { implicit request =>
       for {
-        journey <- journeyService.get(journeyId)
+        journey    <- journeyService.get(journeyId)
         newJourney <- journey match {
-          case _: Journey.BeforeEligibilityChecked =>
-            Errors.throwBadRequestExceptionF("WhyCannotPayInFullAnswers update is not possible in that state.")
+                        case _: JourneyStage.BeforeEligibilityChecked =>
+                          Errors.throwBadRequestExceptionF(
+                            "WhyCannotPayInFullAnswers update is not possible in that state."
+                          )
 
-          case j: Journey.Stages.EligibilityChecked =>
-            updateJourneyWithNewValue(j, request.body)
+                        case j: Journey.EligibilityChecked =>
+                          updateJourneyWithNewValue(j, request.body)
 
-          case j: Journey.AfterWhyCannotPayInFullAnswers => j match {
-            case j: Journey.BeforeArrangementSubmitted => updateJourneyWithExistingValue(j, request.body)
-            case _: Journey.AfterArrangementSubmitted  => Errors.throwBadRequestExceptionF("Cannot update WhyCannotPayInFullAnswers when journey is in completed state")
-          }
-        }
+                        case j: JourneyStage.AfterWhyCannotPayInFullAnswers =>
+                          j match {
+                            case j: JourneyStage.BeforeArrangementSubmitted =>
+                              updateJourneyWithExistingValue(j, request.body)
+                            case _: JourneyStage.AfterArrangementSubmitted  =>
+                              Errors.throwBadRequestExceptionF(
+                                "Cannot update WhyCannotPayInFullAnswers when journey is in completed state"
+                              )
+                          }
+                      }
       } yield Ok(newJourney.json)
     }
 
   private def updateJourneyWithNewValue(
-      journey:                   Stages.EligibilityChecked,
-      whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers
-  )(implicit request: Request[_]): Future[Journey] = {
-    val newJourney: Journey = journey match {
-      case j: Journey.Epaye.EligibilityChecked =>
-        j.into[Journey.Epaye.ObtainedWhyCannotPayInFullAnswers]
-          .withFieldConst(_.whyCannotPayInFullAnswers, whyCannotPayInFullAnswers)
-          .withFieldConst(_.stage, deriveStage(whyCannotPayInFullAnswers))
-          .transform
-      case j: Journey.Vat.EligibilityChecked =>
-        j.into[Journey.Vat.ObtainedWhyCannotPayInFullAnswers]
-          .withFieldConst(_.whyCannotPayInFullAnswers, whyCannotPayInFullAnswers)
-          .withFieldConst(_.stage, deriveStage(whyCannotPayInFullAnswers))
-          .transform
+    journey:                   Journey.EligibilityChecked,
+    whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers
+  )(using Request[?]): Future[Journey] = {
+    val newJourney: Journey =
+      journey
+        .into[Journey.ObtainedWhyCannotPayInFullAnswers]
+        .withFieldConst(_.whyCannotPayInFullAnswers, whyCannotPayInFullAnswers)
+        .transform
 
-      case j: Journey.Sa.EligibilityChecked =>
-        j.into[Journey.Sa.ObtainedWhyCannotPayInFullAnswers]
-          .withFieldConst(_.whyCannotPayInFullAnswers, whyCannotPayInFullAnswers)
-          .withFieldConst(_.stage, deriveStage(whyCannotPayInFullAnswers))
-          .transform
-
-      case j: Journey.Simp.EligibilityChecked =>
-        j.into[Journey.Simp.ObtainedWhyCannotPayInFullAnswers]
-          .withFieldConst(_.whyCannotPayInFullAnswers, whyCannotPayInFullAnswers)
-          .withFieldConst(_.stage, deriveStage(whyCannotPayInFullAnswers))
-          .transform
-    }
     journeyService.upsert(newJourney)
   }
 
   // don't need to wipe answers subsequent to the one being updated so can just use .copy and leave the journey in the same stage
   private def updateJourneyWithExistingValue(
-      journey:                   Journey.AfterWhyCannotPayInFullAnswers,
-      whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers
-  )(implicit request: Request[_]): Future[Journey] = {
-    if (journey.whyCannotPayInFullAnswers === whyCannotPayInFullAnswers) {
+    journey:                   JourneyStage.AfterWhyCannotPayInFullAnswers & Journey,
+    whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers
+  )(using Request[?]): Future[Journey] =
+    if (journey.whyCannotPayInFullAnswers == whyCannotPayInFullAnswers) {
       Future.successful(journey)
     } else {
       val newJourney: Journey = journey match {
-        case j: Epaye.ObtainedWhyCannotPayInFullAnswers =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-            .copy(stage = deriveStage(whyCannotPayInFullAnswers))
-        case j: Vat.ObtainedWhyCannotPayInFullAnswers =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-            .copy(stage = deriveStage(whyCannotPayInFullAnswers))
-        case j: Sa.ObtainedWhyCannotPayInFullAnswers =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-            .copy(stage = deriveStage(whyCannotPayInFullAnswers))
-        case j: Simp.ObtainedWhyCannotPayInFullAnswers =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-            .copy(stage = deriveStage(whyCannotPayInFullAnswers))
-
-        case j: Epaye.AnsweredCanPayUpfront =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.AnsweredCanPayUpfront =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.AnsweredCanPayUpfront =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.AnsweredCanPayUpfront =>
+        case j: Journey.ObtainedWhyCannotPayInFullAnswers =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.EnteredUpfrontPaymentAmount =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.EnteredUpfrontPaymentAmount =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.EnteredUpfrontPaymentAmount =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.EnteredUpfrontPaymentAmount =>
+        case j: Journey.AnsweredCanPayUpfront =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.RetrievedExtremeDates =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.RetrievedExtremeDates =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.RetrievedExtremeDates =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.RetrievedExtremeDates =>
+        case j: Journey.EnteredUpfrontPaymentAmount =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.RetrievedAffordabilityResult =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.RetrievedAffordabilityResult =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.RetrievedAffordabilityResult =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.RetrievedAffordabilityResult =>
+        case j: Journey.RetrievedExtremeDates =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.ObtainedCanPayWithinSixMonthsAnswers =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.ObtainedCanPayWithinSixMonthsAnswers =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.ObtainedCanPayWithinSixMonthsAnswers =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.ObtainedCanPayWithinSixMonthsAnswers =>
+        case j: Journey.RetrievedAffordabilityResult =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.StartedPegaCase =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.StartedPegaCase =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.StartedPegaCase =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.StartedPegaCase =>
+        case j: Journey.ObtainedCanPayWithinSixMonthsAnswers =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.EnteredMonthlyPaymentAmount =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.EnteredMonthlyPaymentAmount =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.EnteredMonthlyPaymentAmount =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.EnteredMonthlyPaymentAmount =>
+        case j: Journey.StartedPegaCase =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.EnteredDayOfMonth =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.EnteredDayOfMonth =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.EnteredDayOfMonth =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.EnteredDayOfMonth =>
+        case j: Journey.EnteredMonthlyPaymentAmount =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.RetrievedStartDates =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.RetrievedStartDates =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.RetrievedStartDates =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.RetrievedStartDates =>
+        case j: Journey.EnteredDayOfMonth =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.RetrievedAffordableQuotes =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.RetrievedAffordableQuotes =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.RetrievedAffordableQuotes =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.RetrievedAffordableQuotes =>
+        case j: Journey.RetrievedStartDates =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.ChosenPaymentPlan =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.ChosenPaymentPlan =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.ChosenPaymentPlan =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.ChosenPaymentPlan =>
+        case j: Journey.RetrievedAffordableQuotes =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.CheckedPaymentPlan =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.CheckedPaymentPlan =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.CheckedPaymentPlan =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.CheckedPaymentPlan =>
+        case j: Journey.ChosenPaymentPlan =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.EnteredCanYouSetUpDirectDebit =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.EnteredCanYouSetUpDirectDebit =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.EnteredCanYouSetUpDirectDebit =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.EnteredCanYouSetUpDirectDebit =>
+        case j: Journey.CheckedPaymentPlan =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.EnteredDirectDebitDetails =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.EnteredDirectDebitDetails =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.EnteredDirectDebitDetails =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.EnteredDirectDebitDetails =>
+        case j: Journey.EnteredCanYouSetUpDirectDebit =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.ConfirmedDirectDebitDetails =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.ConfirmedDirectDebitDetails =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.ConfirmedDirectDebitDetails =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.ConfirmedDirectDebitDetails =>
+        case j: Journey.EnteredDirectDebitDetails =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.AgreedTermsAndConditions =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.AgreedTermsAndConditions =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.AgreedTermsAndConditions =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.AgreedTermsAndConditions =>
+        case j: Journey.ConfirmedDirectDebitDetails =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.SelectedEmailToBeVerified =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.SelectedEmailToBeVerified =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.SelectedEmailToBeVerified =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.SelectedEmailToBeVerified =>
+        case j: Journey.AgreedTermsAndConditions =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case j: Epaye.EmailVerificationComplete =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Vat.EmailVerificationComplete =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Sa.EmailVerificationComplete =>
-          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
-        case j: Simp.EmailVerificationComplete =>
+        case j: Journey.SelectedEmailToBeVerified =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
-        case _: Stages.SubmittedArrangement =>
+        case j: Journey.EmailVerificationComplete =>
+          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
+
+        case _: Journey.SubmittedArrangement =>
           Errors.throwBadRequestException("Cannot update WhyCannotPayInFullAnswers when journey is in completed state")
       }
 
       journeyService.upsert(newJourney)
-    }
-  }
-
-  private def deriveStage(whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers): Stage.AfterWhyCannotPayInFullAnswers =
-    whyCannotPayInFullAnswers match {
-      case WhyCannotPayInFullAnswers.AnswerNotRequired     => Stage.AfterWhyCannotPayInFullAnswers.AnswerNotRequired
-      case WhyCannotPayInFullAnswers.WhyCannotPayInFull(_) => Stage.AfterWhyCannotPayInFullAnswers.AnswerRequired
     }
 
 }

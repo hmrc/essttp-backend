@@ -16,16 +16,13 @@
 
 package essttp.rootmodel.bank
 
-import cats.Eq
 import play.api.libs.json.{Json, OFormat}
 
-final case class CanSetUpDirectDebit(isAccountHolder: Boolean)
+final case class CanSetUpDirectDebit(isAccountHolder: Boolean) derives CanEqual
 
 object CanSetUpDirectDebit {
 
-  implicit val eq: Eq[CanSetUpDirectDebit] = Eq.fromUniversalEquals
-
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  implicit val format: OFormat[CanSetUpDirectDebit] = Json.format
+  given OFormat[CanSetUpDirectDebit] = Json.format
 
 }

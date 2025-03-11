@@ -22,7 +22,7 @@ import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec with UpdateJourneyControllerSpec {
+class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
   "POST /journey/:journeyId/update-has-agreed-terms-and-conditions" - {
 
@@ -30,8 +30,13 @@ class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec with Update
       stubCommonActions()
 
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
-      val result: Throwable = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"UpdateAgreedTermsAndConditions is not possible in that state: [Started]"}""")
+      val result: Throwable = journeyConnector
+        .updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true))
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"UpdateAgreedTermsAndConditions is not possible in that state: [Started]"}"""
+      )
 
       verifyCommonActions(numberOfAuthCalls = 2)
     }
@@ -43,9 +48,9 @@ class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec with Update
           tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability,
           IsEmailAddressRequired(value = true)
         )(
-            journeyConnector.updateHasAgreedTermsAndConditions,
-            tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
-          )(this)
+          journeyConnector.updateHasAgreedTermsAndConditions,
+          tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
+        )(this)
       }
 
       "Vat" in new JourneyItTest {
@@ -53,9 +58,9 @@ class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec with Update
           tdAll.VatBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability,
           IsEmailAddressRequired(value = true)
         )(
-            journeyConnector.updateHasAgreedTermsAndConditions,
-            tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
-          )(this)
+          journeyConnector.updateHasAgreedTermsAndConditions,
+          tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
+        )(this)
       }
 
       "Sa" in new JourneyItTest {
@@ -63,9 +68,9 @@ class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec with Update
           tdAll.SaBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability,
           IsEmailAddressRequired(value = true)
         )(
-            journeyConnector.updateHasAgreedTermsAndConditions,
-            tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
-          )(this)
+          journeyConnector.updateHasAgreedTermsAndConditions,
+          tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
+        )(this)
       }
 
       "Simp" in new JourneyItTest {
@@ -73,9 +78,9 @@ class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec with Update
           tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability,
           IsEmailAddressRequired(value = true)
         )(
-            journeyConnector.updateHasAgreedTermsAndConditions,
-            tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
-          )(this)
+          journeyConnector.updateHasAgreedTermsAndConditions,
+          tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
+        )(this)
       }
     }
 
@@ -83,21 +88,26 @@ class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec with Update
 
       "Epaye when the current stage is" - {
 
-          def testEpayeBta[J <: Journey](initialJourney: J)(existingValue: J => IsEmailAddressRequired)(context: JourneyItTest): Unit = {
-            val differentValue = IsEmailAddressRequired(!existingValue(initialJourney).value)
+        def testEpayeBta[J <: Journey](
+          initialJourney: J
+        )(existingValue: J => IsEmailAddressRequired)(context: JourneyItTest): Unit = {
+          val differentValue = IsEmailAddressRequired(!existingValue(initialJourney).value)
 
-            testUpdateWithExistingValue(initialJourney)(
-              _.journeyId,
-              existingValue(initialJourney)
-            )(
-                differentValue,
-                journeyConnector.updateHasAgreedTermsAndConditions(_, _)(context.request),
-                context.tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = differentValue.value)
-              )(context)
-          }
+          testUpdateWithExistingValue(initialJourney)(
+            _.journeyId,
+            existingValue(initialJourney)
+          )(
+            differentValue,
+            journeyConnector.updateHasAgreedTermsAndConditions(_, _)(using context.request),
+            context.tdAll.EpayeBta
+              .journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = differentValue.value)
+          )(context)
+        }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = false))(_.isEmailAddressRequired)(this)
+          testEpayeBta(
+            tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = false)
+          )(_.isEmailAddressRequired)(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
@@ -105,7 +115,9 @@ class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec with Update
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
-          testEpayeBta(tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(_.isEmailAddressRequired)(this)
+          testEpayeBta(
+            tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
+          )(_.isEmailAddressRequired)(this)
         }
 
       }
@@ -115,9 +127,19 @@ class UpdateHasAgreedTermsAndConditionsControllerSpec extends ItSpec with Update
     "should throw a Bad Request when journey is in stage SubmittedArrangement" in new JourneyItTest {
       stubCommonActions()
 
-      insertJourneyForTest(TdAll.EpayeBta.journeyAfterSubmittedArrangementNoAffordability().copy(_id = tdAll.journeyId).copy(correlationId = tdAll.correlationId))
-      val result: Throwable = journeyConnector.updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true)).failed.futureValue
-      result.getMessage should include("""{"statusCode":400,"message":"Cannot update AgreedTermsAndConditions when journey is in completed state"}""")
+      insertJourneyForTest(
+        TdAll.EpayeBta
+          .journeyAfterSubmittedArrangementNoAffordability()
+          .copy(_id = tdAll.journeyId)
+          .copy(correlationId = tdAll.correlationId)
+      )
+      val result: Throwable = journeyConnector
+        .updateHasAgreedTermsAndConditions(tdAll.journeyId, IsEmailAddressRequired(value = true))
+        .failed
+        .futureValue
+      result.getMessage should include(
+        """{"statusCode":400,"message":"Cannot update AgreedTermsAndConditions when journey is in completed state"}"""
+      )
 
       verifyCommonActions(numberOfAuthCalls = 1)
     }
