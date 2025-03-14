@@ -105,6 +105,35 @@ class EligibilityCheckResultSpec extends UnitSpec {
       }
     }
 
+    "hasInterestBearingCharge when" - {
+
+      def eligibilityCheckResultWithInterestBearingCharge(isInterestBearingCharge: Option[Boolean]) =
+        TdAll.eligibleEligibilityCheckResultSa.copy(
+          chargeTypeAssessment = TdAll.eligibleEligibilityCheckResultSa.chargeTypeAssessment.map(assessment =>
+            assessment.copy(
+              charges = assessment.charges.map(charge =>
+                charge.copy(charges1 =
+                  charge.charges1.copy(
+                    isInterestBearingCharge = isInterestBearingCharge.map(IsInterestBearingCharge.apply)
+                  )
+                )
+              )
+            )
+          )
+        )
+
+      "there are no interest bearing charges" in {
+        eligibilityCheckResultWithInterestBearingCharge(None).hasInterestBearingCharge shouldBe false
+        eligibilityCheckResultWithInterestBearingCharge(Some(false)).hasInterestBearingCharge shouldBe false
+
+      }
+
+      "there is an interest bearing charge" in {
+        eligibilityCheckResultWithInterestBearingCharge(Some(true)).hasInterestBearingCharge shouldBe true
+      }
+
+    }
+
   }
 
 }

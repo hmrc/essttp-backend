@@ -56,6 +56,9 @@ object EligibilityCheckResult {
         emailAddress
       }
 
+    def hasInterestBearingCharge: Boolean =
+      e.chargeTypeAssessment.flatMap(_.charges).exists(_.charges1.isInterestBearingCharge.exists(_.value))
+
   }
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
