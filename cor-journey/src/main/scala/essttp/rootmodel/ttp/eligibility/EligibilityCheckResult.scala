@@ -57,7 +57,7 @@ object EligibilityCheckResult {
       }
 
     def hasInterestBearingCharge: Boolean =
-      e.chargeTypeAssessment.flatMap(_.charges).exists(_.charges1.isInterestBearingCharge.exists(_.value))
+      e.chargeTypeAssessment.flatMap(_.charges).exists(_.isInterestBearingCharge.exists(_.value))
 
   }
 

@@ -16,7 +16,7 @@
 
 package essttp.journey.model.ttp
 
-import essttp.rootmodel.ttp.eligibility.{EligibilityRules, EligibilityRulesPart1, EligibilityRulesPart2}
+import essttp.rootmodel.ttp.eligibility.EligibilityRules
 import play.api.libs.json.Json
 import testsupport.UnitSpec
 import testsupport.Givens.canEqualJsValue
@@ -27,65 +27,57 @@ class EligibilityRulesSpec extends UnitSpec {
 
     "all fields are populated" in {
       EligibilityRules(
-        EligibilityRulesPart1(
-          hasRlsOnAddress = false,
-          markedAsInsolvent = false,
-          isLessThanMinDebtAllowance = false,
-          isMoreThanMaxDebtAllowance = false,
-          disallowedChargeLockTypes = false,
-          existingTTP = false,
-          chargesOverMaxDebtAge = Some(false),
-          ineligibleChargeTypes = false,
-          missingFiledReturns = false,
-          hasInvalidInterestSignals = Some(false),
-          dmSpecialOfficeProcessingRequired = Some(false),
-          noDueDatesReached = false,
-          cannotFindLockReason = Some(false),
-          creditsNotAllowed = Some(false),
-          isMoreThanMaxPaymentReference = Some(false),
-          chargesBeforeMaxAccountingDate = Some(false),
-          hasInvalidInterestSignalsCESA = Some(false),
-          hasDisguisedRemuneration = Some(false),
-          hasCapacitor = Some(false),
-          dmSpecialOfficeProcessingRequiredCDCS = Some(false),
-          isAnMtdCustomer = Some(false),
-          dmSpecialOfficeProcessingRequiredCESA = Some(false)
-        ),
-        EligibilityRulesPart2(
-          noMtditsaEnrollment = Some(false)
-        )
+        hasRlsOnAddress = false,
+        markedAsInsolvent = false,
+        isLessThanMinDebtAllowance = false,
+        isMoreThanMaxDebtAllowance = false,
+        disallowedChargeLockTypes = false,
+        existingTTP = false,
+        chargesOverMaxDebtAge = Some(false),
+        ineligibleChargeTypes = false,
+        missingFiledReturns = false,
+        hasInvalidInterestSignals = Some(false),
+        dmSpecialOfficeProcessingRequired = Some(false),
+        noDueDatesReached = false,
+        cannotFindLockReason = Some(false),
+        creditsNotAllowed = Some(false),
+        isMoreThanMaxPaymentReference = Some(false),
+        chargesBeforeMaxAccountingDate = Some(false),
+        hasInvalidInterestSignalsCESA = Some(false),
+        hasDisguisedRemuneration = Some(false),
+        hasCapacitor = Some(false),
+        dmSpecialOfficeProcessingRequiredCDCS = Some(false),
+        isAnMtdCustomer = Some(false),
+        dmSpecialOfficeProcessingRequiredCESA = Some(false),
+        noMtditsaEnrollment = Some(false)
       ).isEligible shouldBe true
     }
 
     "when optional fields are not populated" in {
       EligibilityRules(
-        EligibilityRulesPart1(
-          hasRlsOnAddress = false,
-          markedAsInsolvent = false,
-          isLessThanMinDebtAllowance = false,
-          isMoreThanMaxDebtAllowance = false,
-          disallowedChargeLockTypes = false,
-          existingTTP = false,
-          chargesOverMaxDebtAge = None,
-          ineligibleChargeTypes = false,
-          missingFiledReturns = false,
-          hasInvalidInterestSignals = None,
-          dmSpecialOfficeProcessingRequired = None,
-          noDueDatesReached = false,
-          cannotFindLockReason = None,
-          creditsNotAllowed = None,
-          isMoreThanMaxPaymentReference = None,
-          chargesBeforeMaxAccountingDate = None,
-          hasInvalidInterestSignalsCESA = None,
-          hasDisguisedRemuneration = None,
-          hasCapacitor = None,
-          dmSpecialOfficeProcessingRequiredCDCS = None,
-          isAnMtdCustomer = None,
-          dmSpecialOfficeProcessingRequiredCESA = None
-        ),
-        EligibilityRulesPart2(
-          noMtditsaEnrollment = None
-        )
+        hasRlsOnAddress = false,
+        markedAsInsolvent = false,
+        isLessThanMinDebtAllowance = false,
+        isMoreThanMaxDebtAllowance = false,
+        disallowedChargeLockTypes = false,
+        existingTTP = false,
+        chargesOverMaxDebtAge = None,
+        ineligibleChargeTypes = false,
+        missingFiledReturns = false,
+        hasInvalidInterestSignals = None,
+        dmSpecialOfficeProcessingRequired = None,
+        noDueDatesReached = false,
+        cannotFindLockReason = None,
+        creditsNotAllowed = None,
+        isMoreThanMaxPaymentReference = None,
+        chargesBeforeMaxAccountingDate = None,
+        hasInvalidInterestSignalsCESA = None,
+        hasDisguisedRemuneration = None,
+        hasCapacitor = None,
+        dmSpecialOfficeProcessingRequiredCDCS = None,
+        isAnMtdCustomer = None,
+        dmSpecialOfficeProcessingRequiredCESA = None,
+        noMtditsaEnrollment = None
       ).isEligible shouldBe true
     }
 
@@ -95,33 +87,29 @@ class EligibilityRulesSpec extends UnitSpec {
 
     "should serialize and deserialize to/from a flat JSON structure correctly" in {
       val eligibilityRules = EligibilityRules(
-        EligibilityRulesPart1(
-          hasRlsOnAddress = true,
-          markedAsInsolvent = true,
-          isLessThanMinDebtAllowance = false,
-          isMoreThanMaxDebtAllowance = true,
-          disallowedChargeLockTypes = false,
-          existingTTP = false,
-          chargesOverMaxDebtAge = Some(true),
-          ineligibleChargeTypes = false,
-          missingFiledReturns = true,
-          hasInvalidInterestSignals = Some(false),
-          dmSpecialOfficeProcessingRequired = Some(true),
-          noDueDatesReached = false,
-          cannotFindLockReason = Some(false),
-          creditsNotAllowed = Some(false),
-          isMoreThanMaxPaymentReference = Some(true),
-          chargesBeforeMaxAccountingDate = Some(true),
-          hasInvalidInterestSignalsCESA = Some(false),
-          hasDisguisedRemuneration = Some(true),
-          hasCapacitor = Some(false),
-          dmSpecialOfficeProcessingRequiredCDCS = Some(true),
-          isAnMtdCustomer = Some(false),
-          dmSpecialOfficeProcessingRequiredCESA = Some(true)
-        ),
-        EligibilityRulesPart2(
-          noMtditsaEnrollment = Some(false)
-        )
+        hasRlsOnAddress = true,
+        markedAsInsolvent = true,
+        isLessThanMinDebtAllowance = false,
+        isMoreThanMaxDebtAllowance = true,
+        disallowedChargeLockTypes = false,
+        existingTTP = false,
+        chargesOverMaxDebtAge = Some(true),
+        ineligibleChargeTypes = false,
+        missingFiledReturns = true,
+        hasInvalidInterestSignals = Some(false),
+        dmSpecialOfficeProcessingRequired = Some(true),
+        noDueDatesReached = false,
+        cannotFindLockReason = Some(false),
+        creditsNotAllowed = Some(false),
+        isMoreThanMaxPaymentReference = Some(true),
+        chargesBeforeMaxAccountingDate = Some(true),
+        hasInvalidInterestSignalsCESA = Some(false),
+        hasDisguisedRemuneration = Some(true),
+        hasCapacitor = Some(false),
+        dmSpecialOfficeProcessingRequiredCDCS = Some(true),
+        isAnMtdCustomer = Some(false),
+        dmSpecialOfficeProcessingRequiredCESA = Some(true),
+        noMtditsaEnrollment = Some(false)
       )
 
       val expectedJson = Json.obj(

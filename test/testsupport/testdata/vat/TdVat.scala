@@ -92,43 +92,39 @@ trait TdVat {
           chargeReference = ChargeReference("A00000000001"),
           charges = List(
             Charges(
-              Charges1(
-                chargeType = ChargeType("InYearRTICharge-Tax"),
-                mainType = MainType("InYearRTICharge(FPS)"),
-                mainTrans = MainTrans("mainTrans"),
-                subTrans = SubTrans("subTrans"),
-                outstandingAmount = OutstandingAmount(AmountInPence(100000)),
-                dueDate = DueDate(reusableDate),
-                interestStartDate = Some(InterestStartDate(reusableDate)),
-                accruedInterest = AccruedInterest(AmountInPence(1597)),
-                ineligibleChargeType = IneligibleChargeType(value = false),
-                chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
-                locks = Some(
-                  List(
-                    Lock(
-                      lockType = LockType("Payment"),
-                      lockReason = LockReason("Risk/Fraud"),
-                      disallowedChargeLockType = DisallowedChargeLockType(value = false)
-                    )
+              chargeType = ChargeType("InYearRTICharge-Tax"),
+              mainType = MainType("InYearRTICharge(FPS)"),
+              mainTrans = MainTrans("mainTrans"),
+              subTrans = SubTrans("subTrans"),
+              outstandingAmount = OutstandingAmount(AmountInPence(100000)),
+              dueDate = DueDate(reusableDate),
+              interestStartDate = Some(InterestStartDate(reusableDate)),
+              accruedInterest = AccruedInterest(AmountInPence(1597)),
+              ineligibleChargeType = IneligibleChargeType(value = false),
+              chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
+              locks = Some(
+                List(
+                  Lock(
+                    lockType = LockType("Payment"),
+                    lockReason = LockReason("Risk/Fraud"),
+                    disallowedChargeLockType = DisallowedChargeLockType(value = false)
                   )
-                ),
-                dueDateNotReached = false,
-                isInterestBearingCharge = None
+                )
               ),
-              Charges2(
-                useChargeReference = None,
-                chargeBeforeMaxAccountingDate = None,
-                ddInProgress = Some(DdInProgress(value = false)),
-                chargeSource = None,
-                parentChargeReference = None,
-                parentMainTrans = None,
-                originalCreationDate = None,
-                tieBreaker = None,
-                originalTieBreaker = None,
-                saTaxYearEnd = None,
-                creationDate = None,
-                originalChargeType = None
-              )
+              dueDateNotReached = false,
+              isInterestBearingCharge = None,
+              useChargeReference = None,
+              chargeBeforeMaxAccountingDate = None,
+              ddInProgress = Some(DdInProgress(value = false)),
+              chargeSource = None,
+              parentChargeReference = None,
+              parentMainTrans = None,
+              originalCreationDate = None,
+              tieBreaker = None,
+              originalTieBreaker = None,
+              saTaxYearEnd = None,
+              creationDate = None,
+              originalChargeType = None
             )
           )
         )

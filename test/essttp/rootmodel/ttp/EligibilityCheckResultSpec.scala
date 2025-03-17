@@ -112,10 +112,8 @@ class EligibilityCheckResultSpec extends UnitSpec {
           chargeTypeAssessment = TdAll.eligibleEligibilityCheckResultSa.chargeTypeAssessment.map(assessment =>
             assessment.copy(
               charges = assessment.charges.map(charge =>
-                charge.copy(charges1 =
-                  charge.charges1.copy(
-                    isInterestBearingCharge = isInterestBearingCharge.map(IsInterestBearingCharge.apply)
-                  )
+                charge.copy(
+                  isInterestBearingCharge = isInterestBearingCharge.map(IsInterestBearingCharge.apply)
                 )
               )
             )

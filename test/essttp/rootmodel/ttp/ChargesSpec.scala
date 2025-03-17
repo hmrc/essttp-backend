@@ -69,44 +69,41 @@ class ChargesSpec extends UnitSpec {
   )
 
   val expectedCharges: Charges = Charges(
-    Charges1(
-      chargeType = ChargeType("VAT Return Debit Charge"),
-      mainType = MainType("VAT Return Debit Charge"),
-      mainTrans = MainTrans("4700"),
-      subTrans = SubTrans("1174"),
-      outstandingAmount = OutstandingAmount(AmountInPence(148781)),
-      dueDate = DueDate(reusableDate),
-      interestStartDate = Some(InterestStartDate(reusableDate)),
-      accruedInterest = AccruedInterest(AmountInPence(1597)),
-      ineligibleChargeType = IneligibleChargeType(value = false),
-      chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
-      locks = Some(
-        List(
-          Lock(
-            lockType = LockType("Payment"),
-            lockReason = LockReason("Risk/Fraud"),
-            disallowedChargeLockType = DisallowedChargeLockType(value = false)
-          )
+    chargeType = ChargeType("VAT Return Debit Charge"),
+    mainType = MainType("VAT Return Debit Charge"),
+    mainTrans = MainTrans("4700"),
+    subTrans = SubTrans("1174"),
+    outstandingAmount = OutstandingAmount(AmountInPence(148781)),
+    dueDate = DueDate(reusableDate),
+    interestStartDate = Some(InterestStartDate(reusableDate)),
+    accruedInterest = AccruedInterest(AmountInPence(1597)),
+    ineligibleChargeType = IneligibleChargeType(value = false),
+    chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
+    locks = Some(
+      List(
+        Lock(
+          lockType = LockType("Payment"),
+          lockReason = LockReason("Risk/Fraud"),
+          disallowedChargeLockType = DisallowedChargeLockType(value = false)
         )
-      ),
-      dueDateNotReached = false,
-      isInterestBearingCharge = Some(IsInterestBearingCharge(value = false))
+      )
     ),
-    Charges2(
-      useChargeReference = Some(UseChargeReference(value = false)),
-      chargeBeforeMaxAccountingDate = Some(ChargeBeforeMaxAccountingDate(value = false)),
-      ddInProgress = Some(DdInProgress(value = false)),
-      chargeSource = Some(ChargeSource("CESA")),
-      parentChargeReference = Some(ParentChargeReference("XW006559808862")),
-      parentMainTrans = Some(ParentMainTrans("4700")),
-      originalCreationDate = Some(OriginalCreationDate(reusableDate)),
-      tieBreaker = Some(TieBreaker("xyz")),
-      originalTieBreaker = Some(OriginalTieBreaker("xyz")),
-      saTaxYearEnd = Some(SaTaxYearEnd(reusableDate)),
-      creationDate = Some(CreationDate(reusableDate)),
-      originalChargeType = Some(OriginalChargeType("VAT Return Debit Charge"))
-    )
+    dueDateNotReached = false,
+    isInterestBearingCharge = Some(IsInterestBearingCharge(value = false)),
+    useChargeReference = Some(UseChargeReference(value = false)),
+    chargeBeforeMaxAccountingDate = Some(ChargeBeforeMaxAccountingDate(value = false)),
+    ddInProgress = Some(DdInProgress(value = false)),
+    chargeSource = Some(ChargeSource("CESA")),
+    parentChargeReference = Some(ParentChargeReference("XW006559808862")),
+    parentMainTrans = Some(ParentMainTrans("4700")),
+    originalCreationDate = Some(OriginalCreationDate(reusableDate)),
+    tieBreaker = Some(TieBreaker("xyz")),
+    originalTieBreaker = Some(OriginalTieBreaker("xyz")),
+    saTaxYearEnd = Some(SaTaxYearEnd(reusableDate)),
+    creationDate = Some(CreationDate(reusableDate)),
+    originalChargeType = Some(OriginalChargeType("VAT Return Debit Charge"))
   )
+
   "charges object should" - {
     "validate json into charges object" in {
       json.validate[Charges] shouldBe JsSuccess(expectedCharges)

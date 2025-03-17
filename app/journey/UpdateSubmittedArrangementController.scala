@@ -45,27 +45,27 @@ class UpdateSubmittedArrangementController @Inject() (
         newJourney <- journey match {
                         case j: JourneyStage.BeforeAgreedTermsAndConditions =>
                           Errors.throwBadRequestExceptionF(
-                            s"UpdateArrangement is not possible if the user hasn't agreed to the terms and conditions, state: [${j.stage.toString}]"
+                            s"UpdateArrangement is not possible if the user hasn't agreed to the terms and conditions, state: [${j.stage}]"
                           )
 
                         case j: Journey.AgreedTermsAndConditions =>
                           if (j.isEmailAddressRequired)
                             Errors.throwBadRequestExceptionF(
-                              s"UpdateArrangement is not possible if the user still requires and email address, state: [${j.stage.toString}]"
+                              s"UpdateArrangement is not possible if the user still requires and email address, state: [${j.stage}]"
                             )
                           else
                             updateJourneyWithNewValue(Left(j), request.body)
 
                         case j: Journey.SelectedEmailToBeVerified =>
                           Errors.throwBadRequestExceptionF(
-                            s"UpdateArrangement is not possible if the user has not verified their email address yet, state: [${j.stage.toString}]"
+                            s"UpdateArrangement is not possible if the user has not verified their email address yet, state: [${j.stage}]"
                           )
 
                         case j: Journey.EmailVerificationComplete =>
                           j.emailVerificationResult match {
                             case EmailVerificationResult.Locked =>
                               Errors.throwBadRequestExceptionF(
-                                s"UpdateArrangement is not possible if the user has been locked out from verifying their email address, state: [${j.stage.toString}]"
+                                s"UpdateArrangement is not possible if the user has been locked out from verifying their email address, state: [${j.stage}]"
                               )
 
                             case EmailVerificationResult.Verified =>
