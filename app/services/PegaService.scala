@@ -250,14 +250,14 @@ class PegaService @Inject() (
   private def toDebtItemCharges(chargeTypeAssessment: ChargeTypeAssessment): List[DebtItemCharge] =
     chargeTypeAssessment.charges.map { (charge: Charges) =>
       DebtItemCharge(
-        OutstandingDebtAmount(charge.charges1.outstandingAmount.value),
-        charge.charges1.mainTrans,
-        charge.charges1.subTrans,
-        charge.charges1.isInterestBearingCharge,
-        charge.charges2.useChargeReference,
+        OutstandingDebtAmount(charge.outstandingAmount.value),
+        charge.mainTrans,
+        charge.subTrans,
+        charge.isInterestBearingCharge,
+        charge.useChargeReference,
         chargeTypeAssessment.chargeReference,
-        charge.charges1.interestStartDate,
-        DebtItemOriginalDueDate(charge.charges1.dueDate.value)
+        charge.interestStartDate,
+        DebtItemOriginalDueDate(charge.dueDate.value)
       )
     }
 
@@ -265,7 +265,7 @@ class PegaService @Inject() (
     AmountInPence(
       eligibilityCheckResult.chargeTypeAssessment
         .flatMap(_.charges)
-        .map(_.charges1.accruedInterest.value.value)
+        .map(_.accruedInterest.value.value)
         .sum
     )
 

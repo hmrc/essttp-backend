@@ -8,7 +8,7 @@ addSbtPlugin("uk.gov.hmrc"       % "sbt-distributables" % "2.6.0")
 addSbtPlugin("org.playframework" % "sbt-plugin"         % "3.0.6")
 addSbtPlugin("org.scalameta"     % "sbt-scalafmt"       % "2.4.0")
 addSbtPlugin("org.scoverage"     % "sbt-scoverage"      % "2.3.1" )
-addSbtPlugin("org.wartremover"   % "sbt-wartremover"    % "3.2.5")
+addSbtPlugin("org.wartremover"   % "sbt-wartremover"    % "3.2.7")
 addSbtPlugin("com.timushev.sbt"  % "sbt-updates"        % "0.6.4")
 
 addDependencyTreePlugin

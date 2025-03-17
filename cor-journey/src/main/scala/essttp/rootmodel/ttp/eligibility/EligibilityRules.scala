@@ -16,9 +16,9 @@
 
 package essttp.rootmodel.ttp.eligibility
 
-import play.api.libs.json.{JsObject, JsResult, JsValue, Json, OFormat}
+import play.api.libs.json.{Json, OFormat}
 
-final case class EligibilityRulesPart1(
+final case class EligibilityRules(
   hasRlsOnAddress:                       Boolean,
   markedAsInsolvent:                     Boolean,
   isLessThanMinDebtAllowance:            Boolean,
@@ -40,25 +40,16 @@ final case class EligibilityRulesPart1(
   hasCapacitor:                          Option[Boolean],
   dmSpecialOfficeProcessingRequiredCDCS: Option[Boolean],
   isAnMtdCustomer:                       Option[Boolean],
-  dmSpecialOfficeProcessingRequiredCESA: Option[Boolean]
-)
-
-final case class EligibilityRulesPart2(
-  noMtditsaEnrollment: Option[Boolean]
-)
-
-// TODO after scala 3 upgrade, merge back into one case class
-final case class EligibilityRules(
-  part1: EligibilityRulesPart1,
-  part2: EligibilityRulesPart2
+  dmSpecialOfficeProcessingRequiredCESA: Option[Boolean],
+  noMtditsaEnrollment:                   Option[Boolean]
 ) derives CanEqual {
 
   private given CanEqual[Boolean, Any] = CanEqual.derived
 
   @SuppressWarnings(Array("org.wartremover.warts.Any", "org.wartremover.warts.Product"))
-  private def extractErrors(obj: Product): List[String] = {
-    val fieldNames  = obj.getClass.getDeclaredFields.map(_.getName).toList
-    val fieldValues = obj.productIterator.toList
+  private val alliIneligibleFieldNames: List[String] = {
+    val fieldNames  = this.productElementNames.toList
+    val fieldValues = this.productIterator.toList
 
     fieldNames.zip(fieldValues).collect {
       case (rule, true)       => rule
@@ -66,31 +57,15 @@ final case class EligibilityRules(
     }
   }
 
-  private val allEligibilityErrors: Seq[String] =
-    extractErrors(part1) ++ extractErrors(part2)
+  val moreThanOneReasonForIneligibility: Boolean = alliIneligibleFieldNames.sizeIs > 1
 
-  val moreThanOneReasonForIneligibility: Boolean = allEligibilityErrors.sizeIs > 1
-
-  val isEligible: Boolean = allEligibilityErrors.isEmpty // If all rules are false, then isEligible is true
+  val isEligible: Boolean = alliIneligibleFieldNames.isEmpty // If all rules are false, then isEligible is true
 
 }
 
 object EligibilityRules {
 
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  given part1Format: OFormat[EligibilityRulesPart1] = Json.format[EligibilityRulesPart1]
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  given part2Format: OFormat[EligibilityRulesPart2] = Json.format[EligibilityRulesPart2]
+  given format: OFormat[EligibilityRules] = Json.format[EligibilityRules]
 
-  given OFormat[EligibilityRules] = new OFormat[EligibilityRules] {
-
-    override def reads(json: JsValue): JsResult[EligibilityRules] =
-      for {
-        part1 <- part1Format.reads(json)
-        part2 <- part2Format.reads(json)
-      } yield EligibilityRules(part1, part2)
-
-    override def writes(rules: EligibilityRules): JsObject =
-      part1Format.writes(rules.part1).deepMerge(part2Format.writes(rules.part2))
-  }
 }
