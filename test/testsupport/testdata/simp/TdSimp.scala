@@ -44,7 +44,7 @@ trait TdSimp {
         InvalidSignals(
           signalType = "xyz",
           signalValue = "123",
-          signalDescription = "Description"
+          signalDescription = Some("Description")
         )
       )
     ),
