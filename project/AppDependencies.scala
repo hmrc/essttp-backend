@@ -47,7 +47,7 @@ object AppDependencies {
     "org.typelevel"         %% "cats-core"                       % catsVersion,
     "uk.gov.hmrc.mongo"     %% "hmrc-mongo-play-30"              % hmrcMongoVersion,
     "uk.gov.hmrc"           %% "crypto-json-play-30"             % cryptoVersion,
-    "uk.gov.hmrc"           %% "payments-email-verification-cor-play-30" % "4.2.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
+    "uk.gov.hmrc"           %% "payments-email-verification-cor-play-30" % "4.3.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
   )
 
 }
