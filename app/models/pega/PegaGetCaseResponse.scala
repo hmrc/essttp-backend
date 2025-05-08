@@ -115,7 +115,7 @@ object PegaGetCaseResponse {
     debtItemChargeId:          String,
     amountDue:                 Long,
     debtItemOriginalDueDate:   LocalDate,
-    expectedPayment:           Option[Int]
+    expectedPayment:           Option[Long]
   )
 
   object PegaInstalment {

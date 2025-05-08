@@ -16,9 +16,10 @@
 
 package essttp.rootmodel.ttp.affordablequotes
 
+import essttp.rootmodel.AmountInPence
 import play.api.libs.json.{Format, Json}
 
-final case class ExpectedPayment(value: Int) extends AnyVal
+final case class ExpectedPayment(value: AmountInPence) extends AnyVal
 
 object ExpectedPayment {
   given Format[ExpectedPayment] = Json.valueFormat[ExpectedPayment]
