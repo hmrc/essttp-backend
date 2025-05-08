@@ -16,21 +16,11 @@
 
 package essttp.rootmodel.ttp.affordablequotes
 
-import essttp.rootmodel.ttp.eligibility.ChargeReference
-import play.api.libs.json.{Json, OFormat}
+import essttp.rootmodel.AmountInPence
+import play.api.libs.json.{Format, Json}
 
-final case class Instalment(
-  instalmentNumber:          InstalmentNumber,
-  dueDate:                   DueDate,
-  instalmentInterestAccrued: InterestAccrued,
-  instalmentBalance:         InstalmentBalance,
-  debtItemChargeId:          ChargeReference,
-  amountDue:                 AmountDue,
-  debtItemOriginalDueDate:   DebtItemOriginalDueDate,
-  expectedPayment:           Option[ExpectedPayment]
-)
+final case class ExpectedPayment(value: AmountInPence) extends AnyVal
 
-object Instalment {
-  @SuppressWarnings(Array("org.wartremover.warts.Any"))
-  given OFormat[Instalment] = Json.format[Instalment]
+object ExpectedPayment {
+  given Format[ExpectedPayment] = Json.valueFormat[ExpectedPayment]
 }

@@ -160,7 +160,8 @@ trait TdBase {
         instalmentBalance = InstalmentBalance(amountInPence),
         debtItemChargeId = ChargeReference("testchargeid"),
         amountDue = amountDue,
-        debtItemOriginalDueDate = DebtItemOriginalDueDate(LocalDate.parse("2022-01-01"))
+        debtItemOriginalDueDate = DebtItemOriginalDueDate(LocalDate.parse("2022-01-01")),
+        expectedPayment = None
       )
     )
   )
