@@ -293,7 +293,8 @@ class PegaService @Inject() (
         InstalmentBalance(AmountInPence(pegaInstalment.instalmentBalance)),
         ChargeReference(pegaInstalment.debtItemChargeId),
         AmountDue(AmountInPence(pegaInstalment.amountDue)),
-        DebtItemOriginalDueDate(pegaInstalment.debtItemOriginalDueDate)
+        DebtItemOriginalDueDate(pegaInstalment.debtItemOriginalDueDate),
+        pegaInstalment.expectedPayment.map(ExpectedPayment.apply)
       )
 
     val expenditure =
