@@ -18,7 +18,7 @@ package essttp.rootmodel.ttp.arrangement
 
 import essttp.rootmodel.ttp.{IsInterestBearingCharge, UseChargeReference}
 import essttp.rootmodel.ttp.affordablequotes.{DebtItemOriginalDueDate, OutstandingDebtAmount}
-import essttp.rootmodel.ttp.eligibility.{AccruedInterest, ChargeReference, ChargeSource, ChargeType, CreationDate, MainTrans, OriginalChargeType, OriginalCreationDate, OriginalTieBreaker, ParentChargeReference, ParentMainTrans, SaTaxYearEnd, SubTrans, TieBreaker}
+import essttp.rootmodel.ttp.eligibility.{AccruedInterest, ChargeReference, ChargeSource, ChargeType, CreationDate, InterestStartDate, MainTrans, OriginalChargeType, OriginalCreationDate, OriginalTieBreaker, ParentChargeReference, ParentMainTrans, SaTaxYearEnd, SubTrans, TaxPeriodFrom, TaxPeriodTo, TieBreaker}
 import play.api.libs.json.{Format, Json}
 
 final case class DebtItemCharges(
@@ -39,7 +39,10 @@ final case class DebtItemCharges(
   originalTieBreaker:      Option[OriginalTieBreaker],
   chargeType:              Option[ChargeType],
   originalChargeType:      Option[OriginalChargeType],
-  chargeSource:            Option[ChargeSource]
+  chargeSource:            Option[ChargeSource],
+  interestStartDate:       Option[InterestStartDate],
+  taxPeriodFrom:           Option[TaxPeriodFrom],
+  taxPeriodTo:             Option[TaxPeriodTo]
 )
 
 object DebtItemCharges {
