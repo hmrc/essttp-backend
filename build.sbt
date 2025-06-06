@@ -1,7 +1,5 @@
 
 import sbt.Resolver
-import sbt.Tests.{Group, SubProcess}
-import uk.gov.hmrc.DefaultBuildSettings.scalaSettings
 import uk.gov.hmrc.ShellPrompt
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
 import wartremover.WartRemover.autoImport.wartremoverExcluded
@@ -30,8 +28,7 @@ lazy val scalaCompilerOptions = Seq(
 )
 
 lazy val projectResolvers: Seq[MavenRepository] = Seq(
-  Resolver.sonatypeOssRepos("releases"),
-  Seq(Resolver.jcenterRepo)
+  Resolver.sonatypeOssRepos("releases")
 ).flatten
 
 lazy val commonSettings = Seq(
@@ -45,8 +42,6 @@ lazy val commonSettings = Seq(
   resolvers ++= projectResolvers
 ).++(WartRemoverSettings.wartRemoverSettings)
   .++(ScoverageSettings.scoverageSettings)
-  .++(scalaSettings)
-  .++(uk.gov.hmrc.DefaultBuildSettings.defaultSettings())
   .++(SbtUpdatesSettings.sbtUpdatesSettings)
 
 lazy val microservice = Project(appName, file("."))
