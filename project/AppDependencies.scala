@@ -10,7 +10,7 @@ object AppDependencies {
   val enumeratumVersion = "1.7.3"
   val enumeratumPlayVersion = "1.8.0"
   val cryptoVersion = "8.2.0"
-  val circeVersion = "0.14.13"
+  val circeVersion = "0.14.14"
 
   /**
    * Note we pull in various libraries from corJourneyDependencies such as:
