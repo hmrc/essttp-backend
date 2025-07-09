@@ -26,7 +26,7 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents, Request, RequestH
 import services.JourneyService
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import uk.gov.hmrc.play.bootstrap.backend.http.ErrorResponse
+import uk.gov.hmrc.play.bootstrap.http.ErrorResponse
 
 import scala.concurrent.ExecutionContext
 
