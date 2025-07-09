@@ -42,7 +42,7 @@ object CustomerTypes extends Enum[CustomerType] {
   }
 
   case object ClassicSANonTransitioned extends CustomerType {
-    val value: String = "Classic SA - Non-Transitioned"
+    val value: String = "Classic SA - Non Transitioned"
   }
 
   override val values: immutable.IndexedSeq[CustomerType] = findValues
