@@ -16,7 +16,7 @@
 
 package essttp.rootmodel.ttp
 
-import enumeratum._
+import enumeratum.*
 import essttp.utils.EnumFormat
 import play.api.libs.json.Format
 
@@ -34,15 +34,18 @@ object CustomerType {
 object CustomerTypes extends Enum[CustomerType] {
 
   case object MTDITSA extends CustomerType {
-    val value: String = "MTD(ITSA)"
+    val value: String              = "MTD(ITSA)"
+    override val entryName: String = value
   }
 
   case object ClassicSATransitioned extends CustomerType {
-    val value: String = "Classic SA - Transitioned"
+    val value: String              = "Classic SA - Transitioned"
+    override val entryName: String = value
   }
 
   case object ClassicSANonTransitioned extends CustomerType {
-    val value: String = "Classic SA - Non Transitioned"
+    val value: String              = "Classic SA - Non Transitioned"
+    override val entryName: String = value
   }
 
   override val values: immutable.IndexedSeq[CustomerType] = findValues
