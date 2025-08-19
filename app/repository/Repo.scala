@@ -18,7 +18,6 @@ package repository
 
 import org.bson.codecs.Codec
 import org.mongodb.scala.model.{Filters, IndexModel, ReplaceOptions}
-import org.mongodb.scala.SingleObservableFuture
 import play.api.libs.json._
 import repository.Repo.{Id, IdExtractor}
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
