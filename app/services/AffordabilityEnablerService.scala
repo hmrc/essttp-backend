@@ -19,9 +19,7 @@ package services
 import com.google.inject.{ImplementedBy, Inject, Singleton}
 import essttp.rootmodel.TaxRegime
 import play.api.Configuration
-
-import java.time.LocalTime
-import java.time.temporal.ChronoField
+import util.PercentagePassThrough
 
 @ImplementedBy(classOf[AffordabilityEnablerServiceImpl])
 trait AffordabilityEnablerService {
@@ -59,18 +57,8 @@ class AffordabilityEnablerServiceImpl @Inject() (config: Configuration) extends 
 
   def affordabilityEnabled(taxRegime: TaxRegime): Boolean =
     if (affordabilityEnabledFor.contains(taxRegime)) {
-      val percentage = passThroughPercentages(taxRegime)
-
-      if (percentage == 0)
-        false
-      else if (percentage == 100)
-        true
-      else {
-        val timeNowMillis = LocalTime.now().get(ChronoField.MILLI_OF_SECOND)
-        // (timeNowMillis % 100) will give a number between 0 and 99. Adding 1 gives us
-        // a number between 1 and 100
-        (timeNowMillis % 100) + 1 <= percentage
-      }
+      // "pass through" == affordability enabled
+      PercentagePassThrough.shouldPassThrough(passThroughPercentages(taxRegime))
     } else
       false
 

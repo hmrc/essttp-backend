@@ -3,14 +3,14 @@ import sbt.*
 
 object AppDependencies {
 
-  val bootstrapVersion = "10.1.0"
-  val hmrcMongoVersion = "2.7.0"
+  val bootstrapVersion = "10.3.0"
+  val hmrcMongoVersion = "2.10.0"
   val chimneyVersion = "1.8.2"
   val catsVersion = "2.13.0"
   val enumeratumVersion = "1.7.3"
   val enumeratumPlayVersion = "1.8.0"
-  val cryptoVersion = "8.3.0"
-  val circeVersion = "0.14.14"
+  val cryptoVersion = "8.4.0"
+  val circeVersion = "0.14.15"
 
   /**
    * Note we pull in various libraries from corJourneyDependencies such as:
