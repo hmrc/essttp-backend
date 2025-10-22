@@ -197,6 +197,7 @@ sealed trait Journey derives CanEqual { this: JourneyStage =>
   def correlationId: CorrelationId
   def affordabilityEnabled: Option[Boolean]
   def pegaCaseId: Option[PegaCaseId]
+  def redirectToLegacySaService: Option[Boolean]
 
   /* derived stuff: */
 
@@ -239,14 +240,15 @@ object Journey {
   /** [[Journey]] after started
     */
   final case class Started(
-    override val _id:                  JourneyId,
-    override val origin:               Origin,
-    override val createdOn:            Instant,
-    override val sjRequest:            SjRequest,
-    override val sessionId:            SessionId,
-    override val correlationId:        CorrelationId,
-    override val affordabilityEnabled: Option[Boolean],
-    override val pegaCaseId:           Option[PegaCaseId]
+    override val _id:                       JourneyId,
+    override val origin:                    Origin,
+    override val createdOn:                 Instant,
+    override val sjRequest:                 SjRequest,
+    override val sessionId:                 SessionId,
+    override val correlationId:             CorrelationId,
+    override val affordabilityEnabled:      Option[Boolean],
+    override val pegaCaseId:                Option[PegaCaseId],
+    override val redirectToLegacySaService: Option[Boolean]
   ) extends Journey,
         BeforeComputedTaxId,
         BeforeEligibilityChecked,
@@ -276,15 +278,16 @@ object Journey {
   /** [[Journey]] after computed TaxIds
     */
   final case class ComputedTaxId(
-    override val _id:                  JourneyId,
-    override val origin:               Origin,
-    override val createdOn:            Instant,
-    override val sjRequest:            SjRequest,
-    override val sessionId:            SessionId,
-    override val correlationId:        CorrelationId,
-    override val affordabilityEnabled: Option[Boolean],
-    override val taxId:                TaxId,
-    override val pegaCaseId:           Option[PegaCaseId]
+    override val _id:                       JourneyId,
+    override val origin:                    Origin,
+    override val createdOn:                 Instant,
+    override val sjRequest:                 SjRequest,
+    override val sessionId:                 SessionId,
+    override val correlationId:             CorrelationId,
+    override val affordabilityEnabled:      Option[Boolean],
+    override val taxId:                     TaxId,
+    override val pegaCaseId:                Option[PegaCaseId],
+    override val redirectToLegacySaService: Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         BeforeWhyCannotPayInFullAnswers,
@@ -314,16 +317,17 @@ object Journey {
   /** [[Journey]] after EligibilityCheck
     */
   final case class EligibilityChecked(
-    override val _id:                    JourneyId,
-    override val origin:                 Origin,
-    override val createdOn:              Instant,
-    override val sjRequest:              SjRequest,
-    override val sessionId:              SessionId,
-    override val correlationId:          CorrelationId,
-    override val affordabilityEnabled:   Option[Boolean],
-    override val taxId:                  TaxId,
-    override val eligibilityCheckResult: EligibilityCheckResult,
-    override val pegaCaseId:             Option[PegaCaseId]
+    override val _id:                       JourneyId,
+    override val origin:                    Origin,
+    override val createdOn:                 Instant,
+    override val sjRequest:                 SjRequest,
+    override val sessionId:                 SessionId,
+    override val correlationId:             CorrelationId,
+    override val affordabilityEnabled:      Option[Boolean],
+    override val taxId:                     TaxId,
+    override val eligibilityCheckResult:    EligibilityCheckResult,
+    override val pegaCaseId:                Option[PegaCaseId],
+    override val redirectToLegacySaService: Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -363,7 +367,8 @@ object Journey {
     override val taxId:                     TaxId,
     override val eligibilityCheckResult:    EligibilityCheckResult,
     override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
-    override val pegaCaseId:                Option[PegaCaseId]
+    override val pegaCaseId:                Option[PegaCaseId],
+    override val redirectToLegacySaService: Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -404,7 +409,8 @@ object Journey {
     override val eligibilityCheckResult:    EligibilityCheckResult,
     override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
     override val canPayUpfront:             CanPayUpfront,
-    override val pegaCaseId:                Option[PegaCaseId]
+    override val pegaCaseId:                Option[PegaCaseId],
+    override val redirectToLegacySaService: Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -446,7 +452,8 @@ object Journey {
     override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
     override val canPayUpfront:             CanPayUpfront,
     override val upfrontPaymentAmount:      UpfrontPaymentAmount,
-    override val pegaCaseId:                Option[PegaCaseId]
+    override val pegaCaseId:                Option[PegaCaseId],
+    override val redirectToLegacySaService: Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -488,7 +495,8 @@ object Journey {
     override val whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers,
     override val upfrontPaymentAnswers:     UpfrontPaymentAnswers,
     override val extremeDatesResponse:      ExtremeDatesResponse,
-    override val pegaCaseId:                Option[PegaCaseId]
+    override val pegaCaseId:                Option[PegaCaseId],
+    override val redirectToLegacySaService: Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -528,7 +536,8 @@ object Journey {
     override val upfrontPaymentAnswers:     UpfrontPaymentAnswers,
     override val extremeDatesResponse:      ExtremeDatesResponse,
     override val instalmentAmounts:         InstalmentAmounts,
-    override val pegaCaseId:                Option[PegaCaseId]
+    override val pegaCaseId:                Option[PegaCaseId],
+    override val redirectToLegacySaService: Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -570,7 +579,8 @@ object Journey {
     override val extremeDatesResponse:         ExtremeDatesResponse,
     override val instalmentAmounts:            InstalmentAmounts,
     override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
-    override val pegaCaseId:                   Option[PegaCaseId]
+    override val pegaCaseId:                   Option[PegaCaseId],
+    override val redirectToLegacySaService:    Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -613,7 +623,8 @@ object Journey {
     override val instalmentAmounts:            InstalmentAmounts,
     override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
     override val startCaseResponse:            StartCaseResponse,
-    override val pegaCaseId:                   Option[PegaCaseId]
+    override val pegaCaseId:                   Option[PegaCaseId],
+    override val redirectToLegacySaService:    Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -651,7 +662,8 @@ object Journey {
     override val instalmentAmounts:            InstalmentAmounts,
     override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
     override val monthlyPaymentAmount:         MonthlyPaymentAmount,
-    override val pegaCaseId:                   Option[PegaCaseId]
+    override val pegaCaseId:                   Option[PegaCaseId],
+    override val redirectToLegacySaService:    Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -694,7 +706,8 @@ object Journey {
     override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
     override val monthlyPaymentAmount:         MonthlyPaymentAmount,
     override val dayOfMonth:                   DayOfMonth,
-    override val pegaCaseId:                   Option[PegaCaseId]
+    override val pegaCaseId:                   Option[PegaCaseId],
+    override val redirectToLegacySaService:    Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -738,7 +751,8 @@ object Journey {
     override val monthlyPaymentAmount:         MonthlyPaymentAmount,
     override val dayOfMonth:                   DayOfMonth,
     override val startDatesResponse:           StartDatesResponse,
-    override val pegaCaseId:                   Option[PegaCaseId]
+    override val pegaCaseId:                   Option[PegaCaseId],
+    override val redirectToLegacySaService:    Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -783,7 +797,8 @@ object Journey {
     override val dayOfMonth:                   DayOfMonth,
     override val startDatesResponse:           StartDatesResponse,
     override val affordableQuotesResponse:     AffordableQuotesResponse,
-    override val pegaCaseId:                   Option[PegaCaseId]
+    override val pegaCaseId:                   Option[PegaCaseId],
+    override val redirectToLegacySaService:    Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -829,7 +844,8 @@ object Journey {
     override val startDatesResponse:           StartDatesResponse,
     override val affordableQuotesResponse:     AffordableQuotesResponse,
     override val selectedPaymentPlan:          PaymentPlan,
-    override val pegaCaseId:                   Option[PegaCaseId]
+    override val pegaCaseId:                   Option[PegaCaseId],
+    override val redirectToLegacySaService:    Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -871,7 +887,8 @@ object Journey {
     override val instalmentAmounts:            InstalmentAmounts,
     override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
     override val paymentPlanAnswers:           PaymentPlanAnswers,
-    override val pegaCaseId:                   Option[PegaCaseId]
+    override val pegaCaseId:                   Option[PegaCaseId],
+    override val redirectToLegacySaService:    Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -909,7 +926,8 @@ object Journey {
     override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
     override val paymentPlanAnswers:           PaymentPlanAnswers,
     override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
-    override val pegaCaseId:                   Option[PegaCaseId]
+    override val pegaCaseId:                   Option[PegaCaseId],
+    override val redirectToLegacySaService:    Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -948,7 +966,8 @@ object Journey {
     override val paymentPlanAnswers:           PaymentPlanAnswers,
     override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
     override val directDebitDetails:           BankDetails,
-    override val pegaCaseId:                   Option[PegaCaseId]
+    override val pegaCaseId:                   Option[PegaCaseId],
+    override val redirectToLegacySaService:    Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -987,7 +1006,8 @@ object Journey {
     override val paymentPlanAnswers:           PaymentPlanAnswers,
     override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
     override val directDebitDetails:           BankDetails,
-    override val pegaCaseId:                   Option[PegaCaseId]
+    override val pegaCaseId:                   Option[PegaCaseId],
+    override val redirectToLegacySaService:    Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -1027,7 +1047,8 @@ object Journey {
     override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
     override val directDebitDetails:           BankDetails,
     override val isEmailAddressRequired:       IsEmailAddressRequired,
-    override val pegaCaseId:                   Option[PegaCaseId]
+    override val pegaCaseId:                   Option[PegaCaseId],
+    override val redirectToLegacySaService:    Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -1068,7 +1089,8 @@ object Journey {
     override val directDebitDetails:           BankDetails,
     override val isEmailAddressRequired:       IsEmailAddressRequired,
     override val emailToBeVerified:            Email,
-    override val pegaCaseId:                   Option[PegaCaseId]
+    override val pegaCaseId:                   Option[PegaCaseId],
+    override val redirectToLegacySaService:    Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -1111,7 +1133,8 @@ object Journey {
     override val emailToBeVerified:            Email,
     override val emailVerificationResult:      EmailVerificationResult,
     override val emailVerificationAnswers:     EmailVerificationAnswers,
-    override val pegaCaseId:                   Option[PegaCaseId]
+    override val pegaCaseId:                   Option[PegaCaseId],
+    override val redirectToLegacySaService:    Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,
@@ -1153,7 +1176,8 @@ object Journey {
     override val isEmailAddressRequired:       IsEmailAddressRequired,
     override val arrangementResponse:          ArrangementResponse,
     override val emailVerificationAnswers:     EmailVerificationAnswers,
-    override val pegaCaseId:                   Option[PegaCaseId]
+    override val pegaCaseId:                   Option[PegaCaseId],
+    override val redirectToLegacySaService:    Option[Boolean]
   ) extends Journey,
         AfterComputedTaxId,
         AfterEligibilityChecked,

@@ -24,10 +24,11 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton
 class JourneyFactory @Inject() (
-  journeyIdGenerator:          JourneyIdGenerator,
-  correlationIdGenerator:      CorrelationIdGenerator,
-  clock:                       Clock,
-  affordabilityEnablerService: AffordabilityEnablerService
+  journeyIdGenerator:               JourneyIdGenerator,
+  correlationIdGenerator:           CorrelationIdGenerator,
+  clock:                            Clock,
+  affordabilityEnablerService:      AffordabilityEnablerService,
+  redirectToLegacySaServiceService: RedirectToLegacySaServiceService
 ) {
 
   def makeJourney(
@@ -43,6 +44,9 @@ class JourneyFactory @Inject() (
       correlationId = correlationIdGenerator.nextCorrelationId(),
       affordabilityEnabled =
         Some(affordabilityEnablerService.affordabilityEnabled(originatedSjRequest.origin.taxRegime)),
-      pegaCaseId = None
+      pegaCaseId = None,
+      redirectToLegacySaService =
+        redirectToLegacySaServiceService.shouldRedirectToLegacySaService(originatedSjRequest.origin.taxRegime)
     )
+
 }

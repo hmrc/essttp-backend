@@ -21,10 +21,11 @@ import essttp.journey.JourneyConnector
 import essttp.journey.model.{CorrelationId, JourneyId, SjResponse}
 import essttp.rootmodel.{IsEmailAddressRequired, TaxRegime}
 import journey.JourneyControllerAffordabilityEnabledSpec.TestAffordabilityEnablerService
+import journey.JourneyControllerRedirectToLegacySaServiceSpec.TestRedirectToLegacySaServiceService
 import paymentsEmailVerification.models.EmailVerificationResult
 import play.api.inject.guice.GuiceableModule
 import play.api.mvc.Request
-import services.AffordabilityEnablerService
+import services.{AffordabilityEnablerService, RedirectToLegacySaServiceService}
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
@@ -3150,6 +3151,62 @@ class JourneyControllerAffordabilityEnabledSpec extends ItSpec {
     response shouldBe tdAll.SaBta.sjResponse
     journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterStarted
       .copy(affordabilityEnabled = Some(false))
+  }
+
+}
+
+object JourneyControllerRedirectToLegacySaServiceSpec extends ItSpec {
+
+  @SuppressWarnings(Array("org.wartremover.warts.Var"))
+  class TestRedirectToLegacySaServiceService extends RedirectToLegacySaServiceService {
+
+    private var shouldRedirect: Option[Boolean] = None
+
+    def setShouldRedirectToLegacySaService(b: Option[Boolean]): Unit = shouldRedirect = b
+
+    override def shouldRedirectToLegacySaService(taxRegime: TaxRegime): Option[Boolean] = shouldRedirect
+
+  }
+
+}
+
+class JourneyControllerRedirectToLegacySaServiceSpec extends ItSpec {
+
+  val testRedirectToLegacySaServiceService = new TestRedirectToLegacySaServiceService
+
+  override lazy val overrideBindings: Seq[GuiceableModule] =
+    Seq[GuiceableModule](
+      bind[RedirectToLegacySaServiceService].toInstance(testRedirectToLegacySaServiceService)
+    )
+
+  lazy val journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
+
+  "A journey must the correct value of redirectToLegacySaService based on what flag the RedirectToLegacySaServiceService returns" in {
+    Seq(
+      None,
+      Some(true),
+      Some(false)
+    ).foreach { flag =>
+      withClue(s"For flag ${flag.toString}") {
+        testRedirectToLegacySaServiceService.setShouldRedirectToLegacySaService(flag)
+
+        stubCommonActions()
+        val tdAll = new TdAll {
+          override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
+          override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
+        }
+
+        given Request[?] = tdAll.request
+
+        val response: SjResponse = journeyConnector.Sa.startJourneyBta(tdAll.SaBta.sjRequest).futureValue
+
+        /** Start journey */
+        response shouldBe tdAll.SaBta.sjResponse
+        journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterStarted
+          .copy(redirectToLegacySaService = flag)
+
+      }
+    }
   }
 
 }
