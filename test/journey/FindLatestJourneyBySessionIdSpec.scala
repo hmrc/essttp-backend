@@ -61,25 +61,35 @@ class FindLatestJourneyBySessionIdSpec extends ItSpec {
   }
 
   "find a single journey" in {
-    def startJourney(sessionId: SessionId): JourneyId = {
-      given FakeRequest[AnyContentAsEmpty.type] =
-        TdAll.request.withSession(SessionKeys.sessionId -> sessionId.value)
-      val sjRequest                             = TdAll.EpayeBta.sjRequest
-      val journeyId                             = journeyConnector.Epaye.startJourneyBta(sjRequest).futureValue.journeyId
-      journeyId
-    }
-
     stubCommonActions()
 
     val sessionId       = SessionId(s"session-${UUID.randomUUID().toString}")
     given HeaderCarrier = makeHeaderCarrier(sessionId)
 
-    val previousJourneyId = startJourney(sessionId) // there is only 1 journey in mongo with the sessionId
-    val result1           = journeyConnector.findLatestJourneyBySessionId().futureValue.value
+    // there is only 1 journey in mongo with the sessionId
+    val previousJourneyId = {
+      given FakeRequest[AnyContentAsEmpty.type] =
+        TdAll.request.withSession(SessionKeys.sessionId -> sessionId.value)
+
+      val sjRequest = TdAll.EpayeBta.sjRequest
+      val journeyId = journeyConnector.Epaye.startJourneyBta(sjRequest).futureValue.journeyId
+      journeyId
+
+    }
+    val result1 = journeyConnector.findLatestJourneyBySessionId().futureValue.value
     result1.journeyId shouldBe previousJourneyId
 
-    val latterJourneyId = startJourney(sessionId) // now there are 2 journeys with the same sessionId
-    val result2         = journeyConnector.findLatestJourneyBySessionId().futureValue.value
+    // now there are 2 journeys with the same sessionId
+    val latterJourneyId = {
+      given FakeRequest[AnyContentAsEmpty.type] =
+        TdAll.request.withSession(SessionKeys.sessionId -> sessionId.value)
+
+      val sjRequest = TdAll.VatBta.sjRequest
+      val journeyId = journeyConnector.Vat.startJourneyBta(sjRequest).futureValue.journeyId
+      journeyId
+
+    }
+    val result2 = journeyConnector.findLatestJourneyBySessionId().futureValue.value
     result2.journeyId shouldBe latterJourneyId
     result2.journeyId shouldNot be(previousJourneyId)
 
