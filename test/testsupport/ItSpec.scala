@@ -23,6 +23,7 @@ import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{CorrelationId, Journey, JourneyId}
 import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.SingleObservableFuture
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.freespec.AnyFreeSpecLike
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -47,7 +48,8 @@ import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Singleton
 import scala.util.Random
 
-trait ItSpec extends AnyFreeSpecLike, RichMatchers, GuiceOneServerPerSuite, WireMockSupport { self =>
+trait ItSpec extends AnyFreeSpecLike, RichMatchers, GuiceOneServerPerSuite, WireMockSupport, BeforeAndAfterEach {
+  self =>
 
   given testCrypto: (Encrypter & Decrypter) = new AesCrypto {
     override protected val encryptionKey: String = "P5xsJ9Nt+quxGZzB4DeLfw=="
@@ -57,6 +59,12 @@ trait ItSpec extends AnyFreeSpecLike, RichMatchers, GuiceOneServerPerSuite, Wire
     timeout = scaled(Span(20, Seconds)),
     interval = scaled(Span(300, Millis))
   )
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    app.injector.instanceOf[JourneyRepo].collection.drop().toFuture().futureValue shouldBe ()
+    ()
+  }
 
   def overrideClock: Option[Clock] = None
 

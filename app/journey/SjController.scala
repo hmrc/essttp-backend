@@ -17,14 +17,17 @@
 package journey
 
 import action.Actions
+import cats.data.OptionT
 import com.google.inject.{Inject, Singleton}
 import config.JourneyConfig
 import essttp.journey.model.Origins.{Sa, Simp}
-import essttp.journey.model._
+import essttp.journey.model.*
+import essttp.rootmodel.SessionId
 import essttp.utils.RequestSupport
 import play.api.libs.json.{Json, Reads}
 import play.api.mvc.{Action, ControllerComponents, Request, Result}
 import services.{JourneyFactory, JourneyService}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -117,19 +120,32 @@ class SjController @Inject() (
 
   private def doJourneyStart(
     originatedRequest: OriginatedSjRequest
-  )(using Request[?]): Future[Result] = {
-    val journey: Journey = journeyFactory.makeJourney(originatedRequest, RequestSupport.getSessionId())
+  )(using r: Request[?], hc: HeaderCarrier): Future[Result] =
+    OptionT
+      .fromOption[Future](hc.sessionId)
+      .flatMapF(sessionId => journeyService.findLatestJourney(SessionId(sessionId.value)))
+      // only keep an existing journey if the origin is the same
+      .filter(_.origin == originatedRequest.origin)
+      .foldF {
+        val newJourney: Journey = journeyFactory.makeJourney(originatedRequest, RequestSupport.getSessionId())
+        journeyService.upsert(newJourney).map { _ =>
+          JourneyLogger
+            .info(s"Started ${journeyDescription(originatedRequest.origin)} [journeyId:${newJourney.id.toString}]")
+          newJourney
+        }
+      } { existingJourney =>
+        JourneyLogger.info(
+          s"Using existing ${journeyDescription(originatedRequest.origin)} [journeyId:${existingJourney.id.toString}]"
+        )
+        Future.successful(existingJourney)
+      }
+      .map { journey =>
+        val nextUrl: NextUrl       =
+          NextUrl(s"${journeyConfig.nextUrlHost}/set-up-a-payment-plan${originToRelativeUrl(journey.origin)}")
+        val sjResponse: SjResponse = SjResponse(nextUrl, journey.journeyId)
 
-    journeyService.upsert(journey).map { _ =>
-      val description: String    = journeyDescription(originatedRequest.origin)
-      val nextUrl: NextUrl       =
-        NextUrl(s"${journeyConfig.nextUrlHost}/set-up-a-payment-plan${originToRelativeUrl(originatedRequest.origin)}")
-      val sjResponse: SjResponse = SjResponse(nextUrl, journey.journeyId)
-      val response: Result       = Created(Json.toJson(sjResponse))
-      JourneyLogger.info(s"Started $description [journeyId:${journey.id.toString}]")
-      response
-    }
-  }
+        Created(Json.toJson(sjResponse))
+      }
 
   private def journeyDescription(origin: Origin): String = origin match {
     case o: Origins.Epaye =>

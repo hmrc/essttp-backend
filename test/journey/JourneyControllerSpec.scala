@@ -2939,6 +2939,64 @@ class JourneyControllerSpec extends ItSpec {
     }
   }
 
+  "A new journey should not be started if one from the same origin already exists" in {
+    stubCommonActions()
+    val tdAll1 = new TdAll {
+      override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
+      override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
+    }
+
+    // start first journey
+    val response1: SjResponse =
+      journeyConnector.Vat.startJourneyBta(tdAll1.VatBta.sjRequest)(using tdAll1.request).futureValue
+    response1 shouldBe tdAll1.VatBta.sjResponse
+    journeyConnector
+      .getJourney(response1.journeyId)(using tdAll1.request)
+      .futureValue shouldBe tdAll1.VatBta.journeyAfterStarted
+
+    val tdAll2 = new TdAll {
+      override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
+      override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
+    }
+
+    // start second journey
+    val response2: SjResponse =
+      journeyConnector.Vat.startJourneyBta(tdAll2.VatBta.sjRequest)(using tdAll2.request).futureValue
+    response2 shouldBe tdAll1.VatBta.sjResponse
+    journeyConnector
+      .getJourney(response2.journeyId)(using tdAll2.request)
+      .futureValue shouldBe tdAll1.VatBta.journeyAfterStarted
+  }
+
+  "A new journey should be started if one from the same origin does not already exist" in {
+    stubCommonActions()
+    val tdAll1 = new TdAll {
+      override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
+      override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
+    }
+
+    // start first journey
+    val response1: SjResponse =
+      journeyConnector.Vat.startJourneyBta(tdAll1.VatBta.sjRequest)(using tdAll1.request).futureValue
+    response1 shouldBe tdAll1.VatBta.sjResponse
+    journeyConnector
+      .getJourney(response1.journeyId)(using tdAll1.request)
+      .futureValue shouldBe tdAll1.VatBta.journeyAfterStarted
+
+    val tdAll2 = new TdAll {
+      override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
+      override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
+    }
+
+    // start second journey
+    val response2: SjResponse =
+      journeyConnector.Vat.startJourneyGovUk(tdAll2.VatGovUk.sjRequest)(using tdAll2.request).futureValue
+    response2 shouldBe tdAll2.VatGovUk.sjResponse
+    journeyConnector
+      .getJourney(response2.journeyId)(using tdAll2.request)
+      .futureValue shouldBe tdAll2.VatGovUk.journeyAfterStarted
+  }
+
 }
 
 object JourneyControllerAffordabilityEnabledSpec {
@@ -3181,31 +3239,29 @@ class JourneyControllerRedirectToLegacySaServiceSpec extends ItSpec {
 
   lazy val journeyConnector: JourneyConnector = app.injector.instanceOf[JourneyConnector]
 
-  "A journey must the correct value of redirectToLegacySaService based on what flag the RedirectToLegacySaServiceService returns" in {
-    Seq(
-      None,
-      Some(true),
-      Some(false)
-    ).foreach { flag =>
-      withClue(s"For flag ${flag.toString}") {
-        testRedirectToLegacySaServiceService.setShouldRedirectToLegacySaService(flag)
+  Seq(
+    None,
+    Some(true),
+    Some(false)
+  ).foreach { flag =>
+    s"A journey must the correct value of redirectToLegacySaService when RedirectToLegacySaServiceService returns ${flag.toString}" in {
+      testRedirectToLegacySaServiceService.setShouldRedirectToLegacySaService(flag)
 
-        stubCommonActions()
-        val tdAll = new TdAll {
-          override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
-          override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
-        }
-
-        given Request[?] = tdAll.request
-
-        val response: SjResponse = journeyConnector.Sa.startJourneyBta(tdAll.SaBta.sjRequest).futureValue
-
-        /** Start journey */
-        response shouldBe tdAll.SaBta.sjResponse
-        journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterStarted
-          .copy(redirectToLegacySaService = flag)
-
+      stubCommonActions()
+      val tdAll = new TdAll {
+        override val journeyId: JourneyId         = journeyIdGenerator.readNextJourneyId()
+        override val correlationId: CorrelationId = correlationIdGenerator.readNextCorrelationId()
       }
+
+      given Request[?] = tdAll.request
+
+      val response: SjResponse = journeyConnector.Sa.startJourneyBta(tdAll.SaBta.sjRequest).futureValue
+
+      /** Start journey */
+      response shouldBe tdAll.SaBta.sjResponse
+      journeyConnector.getJourney(response.journeyId).futureValue shouldBe tdAll.SaBta.journeyAfterStarted
+        .copy(redirectToLegacySaService = flag)
+
     }
   }
 
