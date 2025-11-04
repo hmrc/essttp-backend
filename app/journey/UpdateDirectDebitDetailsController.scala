@@ -42,13 +42,13 @@ class UpdateDirectDebitDetailsController @Inject() (
       for {
         journey    <- journeyService.get(journeyId)
         newJourney <- journey match {
-                        case j: JourneyStage.BeforeEnteredCanYouSetUpDirectDebit =>
+                        case j: JourneyStage.BeforeChosenTypeOfBankAccount  =>
                           Errors.throwBadRequestExceptionF(
                             s"UpdateDirectDebitDetails is not possible in that state: [${j.stage}]"
                           )
-                        case j: Journey.EnteredCanYouSetUpDirectDebit            =>
+                        case j: Journey.ChosenTypeOfBankAccount             =>
                           updateJourneyWithNewValue(j, request.body)
-                        case j: JourneyStage.AfterEnteredDirectDebitDetails      =>
+                        case j: JourneyStage.AfterEnteredDirectDebitDetails =>
                           j match {
                             case _: JourneyStage.BeforeArrangementSubmitted =>
                               updateJourneyWithExistingValue(j, request.body)
@@ -62,7 +62,7 @@ class UpdateDirectDebitDetailsController @Inject() (
     }
 
   private def updateJourneyWithNewValue(
-    journey:            Journey.EnteredCanYouSetUpDirectDebit,
+    journey:            Journey.ChosenTypeOfBankAccount,
     directDebitDetails: BankDetails
   )(using Request[?]): Future[Journey] = {
     val newJourney: Journey =

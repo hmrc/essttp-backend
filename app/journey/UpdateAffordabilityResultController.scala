@@ -130,6 +130,11 @@ class UpdateAffordabilityResultController @Inject() (
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)
             .transform
 
+        case j: Journey.ChosenTypeOfBankAccount =>
+          j.into[Journey.RetrievedAffordabilityResult]
+            .withFieldConst(_.instalmentAmounts, instalmentAmounts)
+            .transform
+
         case j: Journey.EnteredDirectDebitDetails =>
           j.into[Journey.RetrievedAffordabilityResult]
             .withFieldConst(_.instalmentAmounts, instalmentAmounts)

@@ -190,7 +190,6 @@ trait TdBase {
 
   val directDebitDetails: BankDetails =
     BankDetails(
-      personalBankAccount,
       AccountName(SensitiveString("First Last")),
       SortCode(SensitiveString("123456")),
       AccountNumber(SensitiveString("12345678"))

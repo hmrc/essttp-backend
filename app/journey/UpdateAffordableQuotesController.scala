@@ -129,6 +129,14 @@ class UpdateAffordableQuotesController @Inject() (
                   .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
                   .transform
 
+              case j: Journey.ChosenTypeOfBankAccount =>
+                j.into[Journey.RetrievedAffordableQuotes]
+                  .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                  .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                  .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                  .withFieldConst(_.affordableQuotesResponse, affordableQuotesResponse)
+                  .transform
+
               case j: Journey.EnteredDirectDebitDetails =>
                 j.into[Journey.RetrievedAffordableQuotes]
                   .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)

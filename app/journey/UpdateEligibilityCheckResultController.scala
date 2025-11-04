@@ -155,6 +155,11 @@ class UpdateEligibilityCheckResultController @Inject() (
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
             .transform
 
+        case j: Journey.ChosenTypeOfBankAccount =>
+          j.into[Journey.EligibilityChecked]
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+
         case j: Journey.EnteredDirectDebitDetails =>
           j.into[Journey.EligibilityChecked]
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)

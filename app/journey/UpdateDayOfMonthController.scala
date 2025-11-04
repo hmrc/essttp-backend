@@ -133,6 +133,12 @@ class UpdateDayOfMonthController @Inject() (
                     .withFieldConst(_.dayOfMonth, dayOfMonth)
                     .transform
 
+                case j: Journey.ChosenTypeOfBankAccount =>
+                  j.into[Journey.EnteredDayOfMonth]
+                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                    .withFieldConst(_.dayOfMonth, dayOfMonth)
+                    .transform
+
                 case j: Journey.EnteredDirectDebitDetails =>
                   j.into[Journey.EnteredDayOfMonth]
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)

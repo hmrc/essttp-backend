@@ -126,6 +126,9 @@ class UpdateWhyCannotPayInFullController @Inject() (
         case j: Journey.EnteredCanYouSetUpDirectDebit =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 
+        case j: Journey.ChosenTypeOfBankAccount =>
+          j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
+
         case j: Journey.EnteredDirectDebitDetails =>
           j.copy(whyCannotPayInFullAnswers = whyCannotPayInFullAnswers)
 

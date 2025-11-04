@@ -134,6 +134,7 @@ class PegaService @Inject() (
       case j: Journey.ChosenPaymentPlan                    => j.copy(sessionId = sessionId)
       case j: Journey.CheckedPaymentPlan                   => j.copy(sessionId = sessionId)
       case j: Journey.EnteredCanYouSetUpDirectDebit        => j.copy(sessionId = sessionId)
+      case j: Journey.ChosenTypeOfBankAccount              => j.copy(sessionId = sessionId)
       case j: Journey.EnteredDirectDebitDetails            => j.copy(sessionId = sessionId)
       case j: Journey.ConfirmedDirectDebitDetails          => j.copy(sessionId = sessionId)
       case j: Journey.AgreedTermsAndConditions             => j.copy(sessionId = sessionId)

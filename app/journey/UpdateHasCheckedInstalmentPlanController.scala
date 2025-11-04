@@ -98,6 +98,11 @@ class UpdateHasCheckedInstalmentPlanController @Inject() (
             .withFieldConst(_.paymentPlanAnswers, answers)
             .transform
 
+        case j: Journey.ChosenTypeOfBankAccount =>
+          j.into[Journey.CheckedPaymentPlan]
+            .withFieldConst(_.paymentPlanAnswers, answers)
+            .transform
+
         case j: Journey.EnteredDirectDebitDetails =>
           j.into[Journey.CheckedPaymentPlan]
             .withFieldConst(_.paymentPlanAnswers, answers)

@@ -101,12 +101,19 @@ class UpdatePegaStartCaseResponseController @Inject() (
               afterCheckedPaymentPlan,
               startCaseResponse,
               afterCheckedPaymentPlan match {
-                case j: Journey.CheckedPaymentPlan            =>
+                case j: Journey.CheckedPaymentPlan =>
                   j.into[Journey.StartedPegaCase]
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
                     .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
                     .transform
+
                 case j: Journey.EnteredCanYouSetUpDirectDebit =>
+                  j.into[Journey.StartedPegaCase]
+                    .withFieldConst(_.startCaseResponse, startCaseResponse)
+                    .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
+                    .transform
+
+                case j: Journey.ChosenTypeOfBankAccount =>
                   j.into[Journey.StartedPegaCase]
                     .withFieldConst(_.startCaseResponse, startCaseResponse)
                     .withFieldConst(_.pegaCaseId, Some(startCaseResponse.caseId))
