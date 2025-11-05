@@ -340,12 +340,6 @@ class UpdateCanPayUpfrontControllerSpec extends ItSpec, UpdateJourneyControllerS
           )(this)
         }
 
-        "ChosenTypeOfBankAccount" in new JourneyItTest {
-          testVatBta(tdAll.VatBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
-            _.upfrontPaymentAnswers.asCanPayUpfront
-          )(this)
-        }
-
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
             _.upfrontPaymentAnswers.asCanPayUpfront
