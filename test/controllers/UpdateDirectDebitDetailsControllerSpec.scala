@@ -60,7 +60,9 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec, UpdateJourneyContro
           TdAll.VatBta.updateDirectDebitDetailsRequest()
         )(
           journeyConnector.updateDirectDebitDetails,
-          tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability()
+          tdAll.VatBta
+            .journeyAfterEnteredDirectDebitDetailsNoAffordability()
+            .copy(typeOfBankAccount = TypesOfBankAccount.Business)
         )(this)
       }
 

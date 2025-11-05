@@ -19,6 +19,7 @@ package journey
 import play.api.inject.bind
 import essttp.journey.JourneyConnector
 import essttp.journey.model.{CorrelationId, JourneyId, SjResponse}
+import essttp.rootmodel.bank.TypesOfBankAccount
 import essttp.rootmodel.{IsEmailAddressRequired, TaxRegime}
 import journey.JourneyControllerAffordabilityEnabledSpec.TestAffordabilityEnablerService
 import journey.JourneyControllerRedirectToLegacySaServiceSpec.TestRedirectToLegacySaServiceService
@@ -167,6 +168,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeBta.updateDirectDebitDetailsRequest())
@@ -203,7 +211,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
 
     s"[GovUk][Happy path with upfront payment]$epayeTestNameJourneyStages" in {
@@ -317,6 +325,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeGovUk.updateDirectDebitDetailsRequest()())
@@ -351,7 +366,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeGovUk
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
 
     s"[DetachedUrl][Happy path with upfront payment]$epayeTestNameJourneyStages" in {
@@ -478,6 +493,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeDetachedUrl.updateDirectDebitDetailsRequest()())
@@ -512,7 +534,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeDetachedUrl
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
 
     s"[EpayeService][Happy path with upfront payment]$epayeTestNameJourneyStages" in {
@@ -639,6 +661,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.EpayeEpayeService.updateDirectDebitDetailsRequest()())
@@ -677,7 +706,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeEpayeService
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
   }
 
@@ -805,6 +834,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.VatBta.updateDirectDebitDetailsRequest())
@@ -841,7 +877,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatBta
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
 
     s"[GovUk]$vatTestNameJourneyStages" in {
@@ -945,6 +981,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.VatGovUk.updateDirectDebitDetailsRequest())
@@ -979,7 +1022,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatGovUk
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
 
     s"[DetachedUrl]$vatTestNameJourneyStages" in {
@@ -1100,6 +1143,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.VatDetachedUrl.updateDirectDebitDetailsRequest())
@@ -1134,7 +1184,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatDetachedUrl
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
 
     s"[VatService]$vatTestNameJourneyStages" in {
@@ -1252,6 +1302,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.VatVatService.updateDirectDebitDetailsRequest())
@@ -1286,7 +1343,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatService
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
 
     s"[VatPenalties]$vatTestNameJourneyStages" in {
@@ -1411,6 +1468,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.VatVatPenalties.updateDirectDebitDetailsRequest())
@@ -1445,7 +1509,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.VatVatPenalties
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
   }
 
@@ -1565,6 +1629,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaBta.updateDirectDebitDetailsRequest())
@@ -1601,7 +1672,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
 
     s"[Pta]$saTestNameJourneyStages" in {
@@ -1699,6 +1770,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaPta.updateDirectDebitDetailsRequest())
@@ -1734,7 +1812,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaPta
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
 
     s"[Mobile]$saTestNameJourneyStages" in {
@@ -1838,6 +1916,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaMobile.updateDirectDebitDetailsRequest()())
@@ -1872,7 +1957,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaMobile
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
 
     s"[GovUk]$saTestNameJourneyStages" in {
@@ -1976,6 +2061,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaGovUk.updateDirectDebitDetailsRequest()())
@@ -2010,7 +2102,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaGovUk
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
 
     s"[DetachedUrl]$saTestNameJourneyStages" in {
@@ -2128,6 +2220,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaDetachedUrl.updateDirectDebitDetailsRequest()())
@@ -2162,7 +2261,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaDetachedUrl
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
 
     s"[ItsaViewAndChange]$saTestNameJourneyStages" in {
@@ -2293,6 +2392,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaItsaViewAndChange
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaItsaViewAndChange
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaItsaViewAndChange.updateDirectDebitDetailsRequest())
@@ -2331,7 +2437,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaItsaViewAndChange
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
   }
 
@@ -2456,6 +2562,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.SimpPta.updateDirectDebitDetailsRequest())
@@ -2490,7 +2603,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpPta
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
 
     s"[Mobile]$simpTestNameJourneyStages" in {
@@ -2602,6 +2715,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.SimpMobile.updateDirectDebitDetailsRequest()())
@@ -2636,7 +2756,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpMobile
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
 
     s"[GovUk]$simpTestNameJourneyStages" in {
@@ -2742,6 +2862,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.SimpGovUk.updateDirectDebitDetailsRequest()())
@@ -2776,7 +2903,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpGovUk
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
 
     s"[DetachedUrl]$simpTestNameJourneyStages" in {
@@ -2901,6 +3028,13 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl
         .journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true)
 
+      /** Update type of bank account */
+      journeyConnector
+        .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+        .futureValue
+      journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl
+        .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+
       /** Update Direct debit details */
       journeyConnector
         .updateDirectDebitDetails(tdAll.journeyId, tdAll.SimpDetachedUrl.updateDirectDebitDetailsRequest()())
@@ -2935,7 +3069,7 @@ class JourneyControllerSpec extends ItSpec {
       journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SimpDetachedUrl
         .journeyAfterSubmittedArrangementNoAffordability(isEmailAddressRequired = true)
 
-      verifyCommonActions(numberOfAuthCalls = 44)
+      verifyCommonActions(numberOfAuthCalls = 46)
     }
   }
 
@@ -3125,6 +3259,20 @@ class JourneyControllerAffordabilityEnabledSpec extends ItSpec {
         canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo
       )
 
+    /** Update type of bank account */
+    journeyConnector
+      .updateTypeOfBankAccount(tdAll.journeyId, TypesOfBankAccount.Personal)
+      .futureValue
+    journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.SaBta
+      .journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal)
+      .copy(
+        affordabilityEnabled = Some(true),
+        whyCannotPayInFullAnswers = tdAll.whyCannotPayInFullRequired,
+        canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo,
+        paymentPlanAnswers = tdAll.paymentPlanAnswersWithAffordability,
+        pegaCaseId = Some(tdAll.pegaCaseId)
+      )
+
     /** Update Direct debit details */
     journeyConnector
       .updateDirectDebitDetails(tdAll.journeyId, tdAll.SaBta.updateDirectDebitDetailsRequest())
@@ -3191,7 +3339,7 @@ class JourneyControllerAffordabilityEnabledSpec extends ItSpec {
         canPayWithinSixMonthsAnswers = tdAll.canPayWithinSixMonthsNo
       )
 
-    verifyCommonActions(numberOfAuthCalls = 36)
+    verifyCommonActions(numberOfAuthCalls = 38)
   }
 
   "A journey must have affordability disabled if the AffordabilityEnablerService disables it" in {

@@ -17,6 +17,7 @@
 package controllers
 
 import essttp.journey.model.{Journey, UpfrontPaymentAnswers}
+import essttp.rootmodel.bank.TypesOfBankAccount
 import essttp.rootmodel.pega.PegaCaseId
 import essttp.rootmodel.{AmountInPence, UpfrontPaymentAmount}
 import paymentsEmailVerification.models.EmailVerificationResult
@@ -182,6 +183,12 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec, UpdateJourneyCont
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
+            _.upfrontPaymentAnswers.upfrontPaymentAmount
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
             _.upfrontPaymentAnswers.upfrontPaymentAmount
@@ -298,6 +305,12 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec, UpdateJourneyCont
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.upfrontPaymentAnswers.upfrontPaymentAmount
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
             _.upfrontPaymentAnswers.upfrontPaymentAmount
           )(this)
         }
@@ -420,6 +433,12 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec, UpdateJourneyCont
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
+            _.upfrontPaymentAnswers.upfrontPaymentAmount
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
             _.upfrontPaymentAnswers.upfrontPaymentAmount
@@ -538,6 +557,12 @@ class UpdateUpfrontPaymentAmountControllerSpec extends ItSpec, UpdateJourneyCont
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.upfrontPaymentAnswers.upfrontPaymentAmount
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSimpPta(tdAll.SimpPta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
             _.upfrontPaymentAnswers.upfrontPaymentAmount
           )(this)
         }

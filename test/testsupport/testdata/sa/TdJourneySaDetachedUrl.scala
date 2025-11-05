@@ -425,7 +425,7 @@ trait TdJourneySaDetachedUrl {
         canSetUpDirectDebitAnswer = CanSetUpDirectDebit(isAccountHolder = true),
         typeOfBankAccount = typeOfBankAccount,
         pegaCaseId = None,
-        redirectToLegacySaService = None
+        redirectToLegacySaService = Some(false)
       )
 
     def updateDirectDebitDetailsRequest(): BankDetails = dependencies.directDebitDetails

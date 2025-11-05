@@ -17,6 +17,7 @@
 package controllers
 
 import essttp.journey.model.Journey
+import essttp.rootmodel.bank.TypesOfBankAccount
 import essttp.rootmodel.{AmountInPence, MonthlyPaymentAmount}
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
@@ -165,6 +166,12 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec, UpdateJourneyCont
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
             _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
@@ -241,6 +248,12 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec, UpdateJourneyCont
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
             _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
           )(this)
         }
@@ -325,6 +338,12 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec, UpdateJourneyCont
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
             _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
@@ -401,6 +420,12 @@ class UpdateMonthlyPaymentAmountControllerSpec extends ItSpec, UpdateJourneyCont
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSimpPta(tdAll.SimpPta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
             _.paymentPlanAnswers.nonAffordabilityAnswers.monthlyPaymentAmount
           )(this)
         }

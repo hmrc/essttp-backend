@@ -17,7 +17,7 @@
 package controllers
 
 import essttp.journey.model.Journey
-import essttp.rootmodel.bank.CanSetUpDirectDebit
+import essttp.rootmodel.bank.{CanSetUpDirectDebit, TypesOfBankAccount}
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
@@ -109,6 +109,12 @@ class UpdateCheckYouCanSetupDDControllerSpec extends ItSpec, UpdateJourneyContro
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
+            _.canSetUpDirectDebitAnswer
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
             _.canSetUpDirectDebitAnswer
@@ -157,6 +163,12 @@ class UpdateCheckYouCanSetupDDControllerSpec extends ItSpec, UpdateJourneyContro
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.canSetUpDirectDebitAnswer
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
             _.canSetUpDirectDebitAnswer
           )(this)
         }
@@ -213,6 +225,12 @@ class UpdateCheckYouCanSetupDDControllerSpec extends ItSpec, UpdateJourneyContro
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
+            _.canSetUpDirectDebitAnswer
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.canSetUpDirectDebitAnswer)(
             this
@@ -261,6 +279,12 @@ class UpdateCheckYouCanSetupDDControllerSpec extends ItSpec, UpdateJourneyContro
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.canSetUpDirectDebitAnswer
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSimpPta(tdAll.SimpPta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
             _.canSetUpDirectDebitAnswer
           )(this)
         }

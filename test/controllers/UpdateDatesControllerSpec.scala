@@ -17,6 +17,7 @@
 package controllers
 
 import essttp.journey.model.{Journey, UpfrontPaymentAnswers}
+import essttp.rootmodel.bank.TypesOfBankAccount
 import essttp.rootmodel.dates.InitialPaymentDate
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
@@ -218,6 +219,12 @@ class UpdateDatesControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
+            _.extremeDatesResponse
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.extremeDatesResponse)(
             this
@@ -321,6 +328,12 @@ class UpdateDatesControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
+            _.extremeDatesResponse
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.extremeDatesResponse)(this)
         }
@@ -420,6 +433,12 @@ class UpdateDatesControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
+            _.extremeDatesResponse
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.extremeDatesResponse)(this)
         }
@@ -515,6 +534,12 @@ class UpdateDatesControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.extremeDatesResponse
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSimpPta(tdAll.SimpPta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
             _.extremeDatesResponse
           )(this)
         }
@@ -730,6 +755,12 @@ class UpdateDatesControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
             _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
@@ -796,6 +827,12 @@ class UpdateDatesControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
             _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
           )(this)
         }
@@ -870,6 +907,12 @@ class UpdateDatesControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
             _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
@@ -936,6 +979,12 @@ class UpdateDatesControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSimpPta(tdAll.SimpPta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
             _.paymentPlanAnswers.nonAffordabilityAnswers.startDatesResponse
           )(this)
         }

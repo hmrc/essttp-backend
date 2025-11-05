@@ -17,6 +17,7 @@
 package controllers
 
 import essttp.journey.model.Journey
+import essttp.rootmodel.bank.TypesOfBankAccount
 import essttp.rootmodel.ttp.affordablequotes.AffordableQuotesResponse
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
@@ -156,6 +157,12 @@ class UpdateAffordableQuotesControllerSpec extends ItSpec, UpdateJourneyControll
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
             _.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse
@@ -219,6 +226,12 @@ class UpdateAffordableQuotesControllerSpec extends ItSpec, UpdateJourneyControll
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
             _.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse
           )(this)
         }
@@ -290,6 +303,12 @@ class UpdateAffordableQuotesControllerSpec extends ItSpec, UpdateJourneyControll
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
             _.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse
@@ -353,6 +372,12 @@ class UpdateAffordableQuotesControllerSpec extends ItSpec, UpdateJourneyControll
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSimpPta(tdAll.SimpPta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
             _.paymentPlanAnswers.nonAffordabilityAnswers.affordableQuotesResponse
           )(this)
         }
