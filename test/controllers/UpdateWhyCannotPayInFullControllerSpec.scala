@@ -18,6 +18,7 @@ package controllers
 
 import essttp.journey.model.{Journey, WhyCannotPayInFullAnswers}
 import essttp.rootmodel.CannotPayReason
+import essttp.rootmodel.bank.TypesOfBankAccount
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
@@ -212,6 +213,13 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec, UpdateJourneyContro
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
             _.whyCannotPayInFullAnswers,
@@ -372,6 +380,13 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec, UpdateJourneyContro
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
             _.whyCannotPayInFullAnswers,
             _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
           )(this)
@@ -538,6 +553,13 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec, UpdateJourneyContro
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
             _.whyCannotPayInFullAnswers,
@@ -694,6 +716,13 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec, UpdateJourneyContro
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.whyCannotPayInFullAnswers,
+            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSimpPta(tdAll.SimpPta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
             _.whyCannotPayInFullAnswers,
             _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
           )(this)

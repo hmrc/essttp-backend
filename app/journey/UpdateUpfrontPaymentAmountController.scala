@@ -174,6 +174,12 @@ class UpdateUpfrontPaymentAmountController @Inject() (
                   .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
                   .transform
 
+              case j: Journey.ChosenTypeOfBankAccount =>
+                j.into[Journey.EnteredUpfrontPaymentAmount]
+                  .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))
+                  .withFieldConst(_.upfrontPaymentAmount, upfrontPaymentAmount)
+                  .transform
+
               case j: Journey.EnteredDirectDebitDetails =>
                 j.into[Journey.EnteredUpfrontPaymentAmount]
                   .withFieldConst(_.canPayUpfront, CanPayUpfront(value = true))

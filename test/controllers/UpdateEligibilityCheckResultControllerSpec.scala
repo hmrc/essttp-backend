@@ -17,6 +17,7 @@
 package controllers
 
 import essttp.journey.model.Journey
+import essttp.rootmodel.bank.TypesOfBankAccount
 import essttp.rootmodel.pega.PegaCaseId
 import essttp.rootmodel.ttp.eligibility.{EligibilityCheckResult, ProcessingDateTime}
 import paymentsEmailVerification.models.EmailVerificationResult
@@ -185,6 +186,12 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec, UpdateJourneyCo
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
+            _.eligibilityCheckResult
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.eligibilityCheckResult)(
             this
@@ -308,6 +315,12 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec, UpdateJourneyCo
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.eligibilityCheckResult
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
             _.eligibilityCheckResult
           )(this)
         }
@@ -437,6 +450,12 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec, UpdateJourneyCo
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
+            _.eligibilityCheckResult
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.eligibilityCheckResult)(this)
         }
@@ -554,6 +573,12 @@ class UpdateEligibilityCheckResultControllerSpec extends ItSpec, UpdateJourneyCo
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.eligibilityCheckResult
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSimpPta(tdAll.SimpPta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
             _.eligibilityCheckResult
           )(this)
         }

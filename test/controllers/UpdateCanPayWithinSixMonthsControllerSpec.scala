@@ -33,6 +33,7 @@ package controllers
  */
 
 import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey}
+import essttp.rootmodel.bank.TypesOfBankAccount
 import essttp.rootmodel.pega.PegaCaseId
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
@@ -174,6 +175,12 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec, UpdateJourneyCon
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
+            _.canPayWithinSixMonthsAnswers
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
             _.canPayWithinSixMonthsAnswers
@@ -269,6 +276,12 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec, UpdateJourneyCon
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.canPayWithinSixMonthsAnswers
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
             _.canPayWithinSixMonthsAnswers
           )(this)
         }
@@ -372,6 +385,12 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec, UpdateJourneyCon
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
+            _.canPayWithinSixMonthsAnswers
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(_.canPayWithinSixMonthsAnswers)(
             this
@@ -469,6 +488,12 @@ class UpdateCanPayWithinSixMonthsControllerSpec extends ItSpec, UpdateJourneyCon
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.canPayWithinSixMonthsAnswers
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSimpPta(tdAll.SimpPta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
             _.canPayWithinSixMonthsAnswers
           )(this)
         }

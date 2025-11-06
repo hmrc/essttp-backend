@@ -182,6 +182,13 @@ class UpdateCanPayUpfrontController @Inject() (
                 .transform
             )
 
+          case j1: Journey.ChosenTypeOfBankAccount =>
+            upsertIfChanged(
+              j1.into[Journey.AnsweredCanPayUpfront]
+                .withFieldConst(_.canPayUpfront, canPayUpfront)
+                .transform
+            )
+
           case j1: Journey.EnteredDirectDebitDetails =>
             upsertIfChanged(
               j1.into[Journey.AnsweredCanPayUpfront]

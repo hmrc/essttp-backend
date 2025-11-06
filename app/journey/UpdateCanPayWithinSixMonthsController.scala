@@ -117,6 +117,11 @@ class UpdateCanPayWithinSixMonthsController @Inject() (
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
             .transform
 
+        case j: Journey.ChosenTypeOfBankAccount =>
+          j.into[Journey.ObtainedCanPayWithinSixMonthsAnswers]
+            .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)
+            .transform
+
         case j: Journey.EnteredDirectDebitDetails =>
           j.into[Journey.ObtainedCanPayWithinSixMonthsAnswers]
             .withFieldConst(_.canPayWithinSixMonthsAnswers, answers)

@@ -134,6 +134,11 @@ class UpdateMonthlyPaymentAmountController @Inject() (
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
                     .transform
 
+                case j: Journey.ChosenTypeOfBankAccount =>
+                  j.into[Journey.EnteredMonthlyPaymentAmount]
+                    .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)
+                    .transform
+
                 case j: Journey.EnteredDirectDebitDetails =>
                   j.into[Journey.EnteredMonthlyPaymentAmount]
                     .withFieldConst(_.monthlyPaymentAmount, monthlyPaymentAmount)

@@ -17,7 +17,7 @@
 package controllers
 
 import essttp.journey.model.Journey
-import essttp.rootmodel.bank.{AccountName, BankDetails}
+import essttp.rootmodel.bank.{AccountName, BankDetails, TypesOfBankAccount}
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
@@ -46,7 +46,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec, UpdateJourneyContro
 
       "Epaye" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true),
+          tdAll.EpayeBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal),
           TdAll.EpayeBta.updateDirectDebitDetailsRequest()
         )(
           journeyConnector.updateDirectDebitDetails,
@@ -56,17 +56,19 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec, UpdateJourneyContro
 
       "Vat" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true),
+          tdAll.VatBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business),
           TdAll.VatBta.updateDirectDebitDetailsRequest()
         )(
           journeyConnector.updateDirectDebitDetails,
-          tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability()
+          tdAll.VatBta
+            .journeyAfterEnteredDirectDebitDetailsNoAffordability()
+            .copy(typeOfBankAccount = TypesOfBankAccount.Business)
         )(this)
       }
 
       "Sa" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true),
+          tdAll.SaBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal),
           TdAll.SaBta.updateDirectDebitDetailsRequest()
         )(
           journeyConnector.updateDirectDebitDetails,
@@ -76,7 +78,7 @@ class UpdateDirectDebitDetailsControllerSpec extends ItSpec, UpdateJourneyContro
 
       "Simp" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true),
+          tdAll.SimpPta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal),
           TdAll.SimpPta.updateDirectDebitDetailsRequest()
         )(
           journeyConnector.updateDirectDebitDetails,

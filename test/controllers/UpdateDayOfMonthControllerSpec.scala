@@ -18,6 +18,7 @@ package controllers
 
 import essttp.journey.model.Journey
 import essttp.rootmodel.DayOfMonth
+import essttp.rootmodel.bank.TypesOfBankAccount
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
@@ -157,6 +158,12 @@ class UpdateDayOfMonthControllerSpec extends ItSpec, UpdateJourneyControllerSpec
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
             _.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth
@@ -221,6 +228,12 @@ class UpdateDayOfMonthControllerSpec extends ItSpec, UpdateJourneyControllerSpec
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
             _.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth
           )(this)
         }
@@ -293,6 +306,12 @@ class UpdateDayOfMonthControllerSpec extends ItSpec, UpdateJourneyControllerSpec
           )(this)
         }
 
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth
+          )(this)
+        }
+
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
             _.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth
@@ -357,6 +376,12 @@ class UpdateDayOfMonthControllerSpec extends ItSpec, UpdateJourneyControllerSpec
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
+            _.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth
+          )(this)
+        }
+
+        "ChosenTypeOfBankAccount" in new JourneyItTest {
+          testSimpPta(tdAll.SimpPta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
             _.paymentPlanAnswers.nonAffordabilityAnswers.dayOfMonth
           )(this)
         }

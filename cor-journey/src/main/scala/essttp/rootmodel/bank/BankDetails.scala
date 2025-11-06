@@ -20,10 +20,9 @@ import essttp.crypto.CryptoFormat
 import play.api.libs.json.{Json, OFormat}
 
 final case class BankDetails(
-  typeOfBankAccount: TypeOfBankAccount,
-  name:              AccountName,
-  sortCode:          SortCode,
-  accountNumber:     AccountNumber
+  name:          AccountName,
+  sortCode:      SortCode,
+  accountNumber: AccountNumber
 ) derives CanEqual
 
 object BankDetails {

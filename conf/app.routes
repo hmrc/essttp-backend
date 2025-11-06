@@ -57,6 +57,7 @@ POST        /journey/:journeyId/update-selected-plan                        jour
 POST        /journey/:journeyId/update-has-checked-plan                     journey.UpdateHasCheckedInstalmentPlanController.updateHasCheckedInstalmentPlan(journeyId: JourneyId)
 
 POST        /journey/:journeyId/update-can-set-up-direct-debit              journey.UpdateCheckYouCanSetupDDController.updateCheckYouCanSetupDD(journeyId: JourneyId)
+POST        /journey/:journeyId/update-type-of-bank-account                 journey.UpdateTypeOfBankAccountController.updateTypeOfBankAccount(journeyId: JourneyId)
 POST        /journey/:journeyId/update-direct-debit-details                 journey.UpdateDirectDebitDetailsController.updateDirectDebitDetails(journeyId: JourneyId)
 POST        /journey/:journeyId/update-has-confirmed-direct-debit-details   journey.UpdateHasConfirmedDirectDebitDetailsController.updateConfirmedDirectDebitDetails(journeyId: JourneyId)
 POST        /journey/:journeyId/update-has-agreed-terms-and-conditions      journey.UpdateHasAgreedTermsAndConditionsController.updateAgreedTermsAndConditions(journeyId: JourneyId)

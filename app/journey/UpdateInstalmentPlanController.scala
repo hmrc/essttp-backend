@@ -129,6 +129,15 @@ class UpdateInstalmentPlanController @Inject() (
                     .withFieldConst(_.selectedPaymentPlan, paymentPlan)
                     .transform
 
+                case j: Journey.ChosenTypeOfBankAccount =>
+                  j.into[Journey.ChosenPaymentPlan]
+                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                    .withFieldConst(_.startDatesResponse, p.startDatesResponse)
+                    .withFieldConst(_.affordableQuotesResponse, p.affordableQuotesResponse)
+                    .withFieldConst(_.selectedPaymentPlan, paymentPlan)
+                    .transform
+
                 case j: Journey.EnteredDirectDebitDetails =>
                   j.into[Journey.ChosenPaymentPlan]
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)

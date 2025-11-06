@@ -19,7 +19,7 @@ package essttp.journey.model
 import essttp.crypto.CryptoFormat
 import essttp.journey.model.SjRequest.{Epaye, Sa, Simp, Vat}
 import essttp.rootmodel.*
-import essttp.rootmodel.bank.{BankDetails, CanSetUpDirectDebit}
+import essttp.rootmodel.bank.{BankDetails, CanSetUpDirectDebit, TypeOfBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.pega.{PegaCaseId, StartCaseResponse}
@@ -142,6 +142,12 @@ object JourneyStage {
 
   sealed trait AfterEnteredCanYouSetUpDirectDebit extends JourneyStage {
     def canSetUpDirectDebitAnswer: CanSetUpDirectDebit
+  }
+
+  sealed trait BeforeChosenTypeOfBankAccount extends JourneyStage
+
+  sealed trait AfterChosenTypeOfBankAccount extends JourneyStage {
+    def typeOfBankAccount: TypeOfBankAccount
   }
 
   sealed trait BeforeEnteredDirectDebitDetails extends JourneyStage
@@ -267,6 +273,7 @@ object Journey {
         BeforeSelectedPaymentPlan,
         BeforeCheckedPaymentPlan,
         BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeChosenTypeOfBankAccount,
         BeforeEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -306,6 +313,7 @@ object Journey {
         BeforeSelectedPaymentPlan,
         BeforeCheckedPaymentPlan,
         BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeChosenTypeOfBankAccount,
         BeforeEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -346,6 +354,7 @@ object Journey {
         BeforeSelectedPaymentPlan,
         BeforeCheckedPaymentPlan,
         BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeChosenTypeOfBankAccount,
         BeforeEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -387,6 +396,7 @@ object Journey {
         BeforeSelectedPaymentPlan,
         BeforeCheckedPaymentPlan,
         BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeChosenTypeOfBankAccount,
         BeforeEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -429,6 +439,7 @@ object Journey {
         BeforeSelectedPaymentPlan,
         BeforeCheckedPaymentPlan,
         BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeChosenTypeOfBankAccount,
         BeforeEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -472,6 +483,7 @@ object Journey {
         BeforeSelectedPaymentPlan,
         BeforeCheckedPaymentPlan,
         BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeChosenTypeOfBankAccount,
         BeforeEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -512,6 +524,7 @@ object Journey {
         BeforeSelectedPaymentPlan,
         BeforeCheckedPaymentPlan,
         BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeChosenTypeOfBankAccount,
         BeforeEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -554,6 +567,7 @@ object Journey {
         BeforeSelectedPaymentPlan,
         BeforeCheckedPaymentPlan,
         BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeChosenTypeOfBankAccount,
         BeforeEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -597,6 +611,7 @@ object Journey {
         BeforeSelectedPaymentPlan,
         BeforeCheckedPaymentPlan,
         BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeChosenTypeOfBankAccount,
         BeforeEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -636,6 +651,7 @@ object Journey {
         AfterStartedPegaCase,
         BeforeCheckedPaymentPlan,
         BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeChosenTypeOfBankAccount,
         BeforeEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -679,6 +695,7 @@ object Journey {
         BeforeSelectedPaymentPlan,
         BeforeCheckedPaymentPlan,
         BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeChosenTypeOfBankAccount,
         BeforeEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -723,6 +740,7 @@ object Journey {
         BeforeSelectedPaymentPlan,
         BeforeCheckedPaymentPlan,
         BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeChosenTypeOfBankAccount,
         BeforeEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -768,6 +786,7 @@ object Journey {
         BeforeSelectedPaymentPlan,
         BeforeCheckedPaymentPlan,
         BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeChosenTypeOfBankAccount,
         BeforeEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -814,6 +833,7 @@ object Journey {
         BeforeSelectedPaymentPlan,
         BeforeCheckedPaymentPlan,
         BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeChosenTypeOfBankAccount,
         BeforeEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -861,6 +881,7 @@ object Journey {
         AfterSelectedPaymentPlan,
         BeforeCheckedPaymentPlan,
         BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeChosenTypeOfBankAccount,
         BeforeEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -899,6 +920,7 @@ object Journey {
         AfterCanPayWithinSixMonthsAnswers,
         AfterCheckedPaymentPlan,
         BeforeEnteredCanYouSetUpDirectDebit,
+        BeforeChosenTypeOfBankAccount,
         BeforeEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -938,6 +960,48 @@ object Journey {
         AfterCanPayWithinSixMonthsAnswers,
         AfterCheckedPaymentPlan,
         AfterEnteredCanYouSetUpDirectDebit,
+        BeforeChosenTypeOfBankAccount,
+        BeforeEnteredDirectDebitDetails,
+        BeforeConfirmedDirectDebitDetails,
+        BeforeAgreedTermsAndConditions,
+        BeforeEmailAddressSelectedToBeVerified,
+        BeforeEmailAddressVerificationResult,
+        BeforeEmailVerificationPhase,
+        BeforeArrangementSubmitted
+
+  /** [[Journey]] after type of bank account has been chosen
+    */
+  final case class ChosenTypeOfBankAccount(
+    override val _id:                          JourneyId,
+    override val origin:                       Origin,
+    override val createdOn:                    Instant,
+    override val sjRequest:                    SjRequest,
+    override val sessionId:                    SessionId,
+    override val correlationId:                CorrelationId,
+    override val affordabilityEnabled:         Option[Boolean],
+    override val taxId:                        TaxId,
+    override val eligibilityCheckResult:       EligibilityCheckResult,
+    override val whyCannotPayInFullAnswers:    WhyCannotPayInFullAnswers,
+    override val upfrontPaymentAnswers:        UpfrontPaymentAnswers,
+    override val extremeDatesResponse:         ExtremeDatesResponse,
+    override val instalmentAmounts:            InstalmentAmounts,
+    override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
+    override val paymentPlanAnswers:           PaymentPlanAnswers,
+    override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
+    override val typeOfBankAccount:            TypeOfBankAccount,
+    override val pegaCaseId:                   Option[PegaCaseId],
+    override val redirectToLegacySaService:    Option[Boolean]
+  ) extends Journey,
+        AfterComputedTaxId,
+        AfterEligibilityChecked,
+        AfterWhyCannotPayInFullAnswers,
+        AfterUpfrontPaymentAnswers,
+        AfterExtremeDatesResponse,
+        AfterRetrievedAffordabilityResult,
+        AfterCanPayWithinSixMonthsAnswers,
+        AfterCheckedPaymentPlan,
+        AfterEnteredCanYouSetUpDirectDebit,
+        AfterChosenTypeOfBankAccount,
         BeforeEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -965,6 +1029,7 @@ object Journey {
     override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
     override val paymentPlanAnswers:           PaymentPlanAnswers,
     override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
+    override val typeOfBankAccount:            TypeOfBankAccount,
     override val directDebitDetails:           BankDetails,
     override val pegaCaseId:                   Option[PegaCaseId],
     override val redirectToLegacySaService:    Option[Boolean]
@@ -978,6 +1043,7 @@ object Journey {
         AfterCanPayWithinSixMonthsAnswers,
         AfterCheckedPaymentPlan,
         AfterEnteredCanYouSetUpDirectDebit,
+        AfterChosenTypeOfBankAccount,
         AfterEnteredDirectDebitDetails,
         BeforeConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -1005,6 +1071,7 @@ object Journey {
     override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
     override val paymentPlanAnswers:           PaymentPlanAnswers,
     override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
+    override val typeOfBankAccount:            TypeOfBankAccount,
     override val directDebitDetails:           BankDetails,
     override val pegaCaseId:                   Option[PegaCaseId],
     override val redirectToLegacySaService:    Option[Boolean]
@@ -1018,6 +1085,7 @@ object Journey {
         AfterCanPayWithinSixMonthsAnswers,
         AfterCheckedPaymentPlan,
         AfterEnteredCanYouSetUpDirectDebit,
+        AfterChosenTypeOfBankAccount,
         AfterEnteredDirectDebitDetails,
         AfterConfirmedDirectDebitDetails,
         BeforeAgreedTermsAndConditions,
@@ -1045,6 +1113,7 @@ object Journey {
     override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
     override val paymentPlanAnswers:           PaymentPlanAnswers,
     override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
+    override val typeOfBankAccount:            TypeOfBankAccount,
     override val directDebitDetails:           BankDetails,
     override val isEmailAddressRequired:       IsEmailAddressRequired,
     override val pegaCaseId:                   Option[PegaCaseId],
@@ -1059,6 +1128,7 @@ object Journey {
         AfterCanPayWithinSixMonthsAnswers,
         AfterCheckedPaymentPlan,
         AfterEnteredCanYouSetUpDirectDebit,
+        AfterChosenTypeOfBankAccount,
         AfterEnteredDirectDebitDetails,
         AfterConfirmedDirectDebitDetails,
         AfterAgreedTermsAndConditions,
@@ -1086,6 +1156,7 @@ object Journey {
     override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
     override val paymentPlanAnswers:           PaymentPlanAnswers,
     override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
+    override val typeOfBankAccount:            TypeOfBankAccount,
     override val directDebitDetails:           BankDetails,
     override val isEmailAddressRequired:       IsEmailAddressRequired,
     override val emailToBeVerified:            Email,
@@ -1101,6 +1172,7 @@ object Journey {
         AfterCanPayWithinSixMonthsAnswers,
         AfterCheckedPaymentPlan,
         AfterEnteredCanYouSetUpDirectDebit,
+        AfterChosenTypeOfBankAccount,
         AfterEnteredDirectDebitDetails,
         AfterConfirmedDirectDebitDetails,
         AfterAgreedTermsAndConditions,
@@ -1128,6 +1200,7 @@ object Journey {
     override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
     override val paymentPlanAnswers:           PaymentPlanAnswers,
     override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
+    override val typeOfBankAccount:            TypeOfBankAccount,
     override val directDebitDetails:           BankDetails,
     override val isEmailAddressRequired:       IsEmailAddressRequired,
     override val emailToBeVerified:            Email,
@@ -1145,6 +1218,7 @@ object Journey {
         AfterCanPayWithinSixMonthsAnswers,
         AfterCheckedPaymentPlan,
         AfterEnteredCanYouSetUpDirectDebit,
+        AfterChosenTypeOfBankAccount,
         AfterEnteredDirectDebitDetails,
         AfterConfirmedDirectDebitDetails,
         AfterAgreedTermsAndConditions,
@@ -1172,6 +1246,7 @@ object Journey {
     override val canPayWithinSixMonthsAnswers: CanPayWithinSixMonthsAnswers,
     override val paymentPlanAnswers:           PaymentPlanAnswers,
     override val canSetUpDirectDebitAnswer:    CanSetUpDirectDebit,
+    override val typeOfBankAccount:            TypeOfBankAccount,
     override val directDebitDetails:           BankDetails,
     override val isEmailAddressRequired:       IsEmailAddressRequired,
     override val arrangementResponse:          ArrangementResponse,
@@ -1190,6 +1265,7 @@ object Journey {
         AfterEnteredCanYouSetUpDirectDebit,
         AfterEnteredDirectDebitDetails,
         AfterConfirmedDirectDebitDetails,
+        AfterChosenTypeOfBankAccount,
         AfterAgreedTermsAndConditions,
         AfterEmailVerificationPhase,
         AfterArrangementSubmitted

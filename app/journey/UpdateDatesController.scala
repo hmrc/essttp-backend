@@ -145,6 +145,11 @@ class UpdateDatesController @Inject() (
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
             .transform
 
+        case j: Journey.ChosenTypeOfBankAccount =>
+          j.into[Journey.RetrievedExtremeDates]
+            .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
+            .transform
+
         case j: Journey.EnteredDirectDebitDetails =>
           j.into[Journey.RetrievedExtremeDates]
             .withFieldConst(_.extremeDatesResponse, extremeDatesResponse)
@@ -265,6 +270,13 @@ class UpdateDatesController @Inject() (
                     .transform
 
                 case j: Journey.EnteredCanYouSetUpDirectDebit =>
+                  j.into[Journey.RetrievedStartDates]
+                    .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
+                    .withFieldConst(_.dayOfMonth, p.dayOfMonth)
+                    .withFieldConst(_.startDatesResponse, startDatesResponse)
+                    .transform
+
+                case j: Journey.ChosenTypeOfBankAccount =>
                   j.into[Journey.RetrievedStartDates]
                     .withFieldConst(_.monthlyPaymentAmount, p.monthlyPaymentAmount)
                     .withFieldConst(_.dayOfMonth, p.dayOfMonth)

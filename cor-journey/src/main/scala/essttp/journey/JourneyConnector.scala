@@ -18,7 +18,7 @@ package essttp.journey
 
 import essttp.crypto.CryptoFormat.OperationalCryptoFormat
 import essttp.journey.model.{CanPayWithinSixMonthsAnswers, Journey, JourneyId, PaymentPlanAnswers, SjRequest, SjResponse, WhyCannotPayInFullAnswers}
-import essttp.rootmodel.bank.{BankDetails, CanSetUpDirectDebit}
+import essttp.rootmodel.bank.{BankDetails, CanSetUpDirectDebit, TypeOfBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.pega.StartCaseResponse
@@ -36,7 +36,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import essttp.utils.RequestSupport.hc
 import paymentsEmailVerification.models.EmailVerificationResult
-import uk.gov.hmrc.http.HttpReads.Implicits.{readUnit => _, _}
+import uk.gov.hmrc.http.HttpReads.Implicits.{readUnit as _, *}
 import play.api.libs.json.{JsNull, Json}
 import uk.gov.hmrc.http.client.HttpClientV2
 
@@ -175,6 +175,14 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-can-set-up-direct-debit")
       .withBody(Json.toJson(canSetUpDirectDebit))
+      .execute[Journey]
+
+  def updateTypeOfBankAccount(journeyId: JourneyId, typeofBankAccount: TypeOfBankAccount)(using
+    RequestHeader
+  ): Future[Journey] =
+    httpClient
+      .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-type-of-bank-account")
+      .withBody(Json.toJson(typeofBankAccount))
       .execute[Journey]
 
   def updateDirectDebitDetails(journeyId: JourneyId, directDebitDetails: BankDetails)(using

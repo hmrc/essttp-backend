@@ -17,9 +17,10 @@
 package testsupport.testdata.sa
 
 import essttp.journey.model.SjRequest.Sa
-import essttp.journey.model._
-import essttp.rootmodel._
-import essttp.rootmodel.bank.{BankDetails, CanSetUpDirectDebit}
+import essttp.journey.model.*
+import essttp.journey.model.Journey.ChosenTypeOfBankAccount
+import essttp.rootmodel.*
+import essttp.rootmodel.bank.{BankDetails, CanSetUpDirectDebit, TypeOfBankAccount}
 import essttp.rootmodel.dates.extremedates.ExtremeDatesResponse
 import essttp.rootmodel.dates.startdates.StartDatesResponse
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
@@ -479,6 +480,29 @@ trait TdJourneySaItsaViewAndChange {
         pegaCaseId = Some(dependencies.pegaCaseId)
       )
 
+    def journeyAfterChosenTypeOfBankAccount(typeOfBankAccount: TypeOfBankAccount): ChosenTypeOfBankAccount =
+      Journey.ChosenTypeOfBankAccount(
+        _id = dependencies.journeyId,
+        origin = Origins.Sa.ItsaViewAndChange,
+        createdOn = dependencies.createdOn,
+        sjRequest = sjRequest,
+        sessionId = dependencies.sessionId,
+        affordabilityEnabled = Some(false),
+        correlationId = dependencies.correlationId,
+        taxId = saUtr,
+        eligibilityCheckResult = eligibleEligibilityCheckResultSa,
+        whyCannotPayInFullAnswers = WhyCannotPayInFullAnswers.AnswerNotRequired,
+        upfrontPaymentAnswers = dependencies.upfrontPaymentAnswersDeclared,
+        extremeDatesResponse = dependencies.extremeDatesWithUpfrontPayment,
+        instalmentAmounts = dependencies.instalmentAmounts,
+        canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
+        paymentPlanAnswers = dependencies.paymentPlanAnswersNoAffordability,
+        canSetUpDirectDebitAnswer = CanSetUpDirectDebit(isAccountHolder = true),
+        typeOfBankAccount = typeOfBankAccount,
+        pegaCaseId = None,
+        redirectToLegacySaService = Some(false)
+      )
+
     def updateDirectDebitDetailsRequest(): BankDetails = dependencies.directDebitDetails
 
     def journeyAfterEnteredDirectDebitDetailsNoAffordability(): Journey.EnteredDirectDebitDetails =
@@ -499,6 +523,7 @@ trait TdJourneySaItsaViewAndChange {
         canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
         paymentPlanAnswers = dependencies.paymentPlanAnswersNoAffordability,
         canSetUpDirectDebitAnswer = CanSetUpDirectDebit(isAccountHolder = true),
+        typeOfBankAccount = personalBankAccount,
         directDebitDetails = directDebitDetails,
         pegaCaseId = None,
         redirectToLegacySaService = Some(false)
@@ -530,6 +555,7 @@ trait TdJourneySaItsaViewAndChange {
         canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
         paymentPlanAnswers = dependencies.paymentPlanAnswersNoAffordability,
         canSetUpDirectDebitAnswer = CanSetUpDirectDebit(isAccountHolder = true),
+        typeOfBankAccount = personalBankAccount,
         directDebitDetails = directDebitDetails,
         pegaCaseId = None,
         redirectToLegacySaService = Some(false)
@@ -564,6 +590,7 @@ trait TdJourneySaItsaViewAndChange {
         canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
         paymentPlanAnswers = dependencies.paymentPlanAnswersNoAffordability,
         canSetUpDirectDebitAnswer = CanSetUpDirectDebit(isAccountHolder = true),
+        typeOfBankAccount = personalBankAccount,
         directDebitDetails = directDebitDetails,
         isEmailAddressRequired = IsEmailAddressRequired(isEmailAddressRequired),
         pegaCaseId = None,
@@ -598,6 +625,7 @@ trait TdJourneySaItsaViewAndChange {
         canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
         paymentPlanAnswers = dependencies.paymentPlanAnswersNoAffordability,
         canSetUpDirectDebitAnswer = CanSetUpDirectDebit(isAccountHolder = true),
+        typeOfBankAccount = personalBankAccount,
         directDebitDetails = directDebitDetails,
         isEmailAddressRequired = IsEmailAddressRequired(value = true),
         emailToBeVerified = dependencies.email,
@@ -630,6 +658,7 @@ trait TdJourneySaItsaViewAndChange {
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers = dependencies.paymentPlanAnswersNoAffordability,
       canSetUpDirectDebitAnswer = CanSetUpDirectDebit(isAccountHolder = true),
+      typeOfBankAccount = personalBankAccount,
       directDebitDetails = directDebitDetails,
       isEmailAddressRequired = IsEmailAddressRequired(value = true),
       emailToBeVerified = dependencies.email,
@@ -668,6 +697,7 @@ trait TdJourneySaItsaViewAndChange {
       canPayWithinSixMonthsAnswers = dependencies.canPayWithinSixMonthsNotRequired,
       paymentPlanAnswers = dependencies.paymentPlanAnswersNoAffordability,
       canSetUpDirectDebitAnswer = CanSetUpDirectDebit(isAccountHolder = true),
+      typeOfBankAccount = personalBankAccount,
       directDebitDetails = directDebitDetails,
       isEmailAddressRequired = IsEmailAddressRequired(isEmailAddressRequired),
       emailVerificationAnswers = if (isEmailAddressRequired) {

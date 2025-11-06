@@ -86,6 +86,11 @@ class UpdateCheckYouCanSetupDDController @Inject() (
         case j: Journey.EnteredCanYouSetUpDirectDebit =>
           j.copy(canSetUpDirectDebitAnswer = canSetUpDirectDebit)
 
+        case j: Journey.ChosenTypeOfBankAccount =>
+          j.into[Journey.EnteredCanYouSetUpDirectDebit]
+            .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
+            .transform
+
         case j: Journey.EnteredDirectDebitDetails =>
           j.into[Journey.EnteredCanYouSetUpDirectDebit]
             .withFieldConst(_.canSetUpDirectDebitAnswer, canSetUpDirectDebit)
