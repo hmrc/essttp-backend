@@ -4,7 +4,7 @@ import sbt.*
 object AppDependencies {
 
   val bootstrapVersion = "10.4.0"
-  val hmrcMongoVersion = "2.10.0"
+  val hmrcMongoVersion = "2.11.0"
   val chimneyVersion = "1.8.2"
   val catsVersion = "2.13.0"
   val enumeratumVersion = "1.7.3"

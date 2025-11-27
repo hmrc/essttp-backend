@@ -41,11 +41,22 @@ class PegaConnector @Inject() (
 )(using ExecutionContext)
     extends Logging {
 
-  private val startCaseUrl: URL = url"${config.baseUrl("pega")}/prweb/api/payments/v1/aa/createorupdatecase"
+  private val pegaBaseurl: String = config.baseUrl("pega")
 
-  private val getCaseUrl: URL = url"${config.baseUrl("pega")}/prweb/api/payments/v1/cases"
+  private val startCaseUrl: URL = {
+    val url = s"$pegaBaseurl${config.getString("pega.urls.start-case")}"
+    url"$url"
+  }
 
-  private val oauthUrl: URL = url"${config.baseUrl("pega")}/prweb/PRRestService/oauth2/v1/token"
+  private val getCaseUrl: URL = {
+    val url = s"$pegaBaseurl${config.getString("pega.urls.get-case")}"
+    url"$url"
+  }
+
+  private val oauthUrl: URL = {
+    val url = s"$pegaBaseurl${config.getString("pega.urls.token")}"
+    url"$url"
+  }
 
   private val oauthAuthorizationHeaderValue: String = {
     val oauthUserName: String = config.getString("pega.oauth.username")
