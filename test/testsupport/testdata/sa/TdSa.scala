@@ -54,10 +54,12 @@ trait TdSa {
         postcodeDate = PostcodeDate(LocalDate.of(2020, 1, 1))
       )
     ),
-    customerDetails = List(
-      CustomerDetail(
-        emailAddress = None,
-        emailSource = None
+    customerDetails = Some(
+      List(
+        CustomerDetail(
+          emailAddress = None,
+          emailSource = None
+        )
       )
     ),
     individualDetails = None,

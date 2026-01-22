@@ -50,7 +50,7 @@ trait TdSimp {
     ),
     customerPostcodes =
       List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate(LocalDate.of(2020, 1, 1)))),
-    customerDetails = List(CustomerDetail(None, None)),
+    customerDetails = Some(List(CustomerDetail(None, None))),
     individualDetails = None,
     addresses = List(
       Address(

@@ -51,10 +51,12 @@ trait TdEpaye {
     invalidSignals = None,
     customerPostcodes =
       List(CustomerPostcode(Postcode(SensitiveString("AA11AA")), PostcodeDate(LocalDate.of(2020, 1, 1)))),
-    customerDetails = List(
-      CustomerDetail(
-        emailAddress = None,
-        emailSource = None
+    customerDetails = Some(
+      List(
+        CustomerDetail(
+          emailAddress = None,
+          emailSource = None
+        )
       )
     ),
     individualDetails = None,
