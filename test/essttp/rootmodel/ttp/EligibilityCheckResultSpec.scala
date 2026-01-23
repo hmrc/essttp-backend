@@ -81,24 +81,27 @@ class EligibilityCheckResultSpec extends UnitSpec {
 
       "there are no emails" in {
         TdAll.eligibleEligibilityCheckResultSa
-          .copy(customerDetails = List(CustomerDetail(None, None)), addresses = addressesWithNoEmail)
+          .copy(customerDetails = Some(List(CustomerDetail(None, None))), addresses = addressesWithNoEmail)
           .email shouldBe None
         TdAll.eligibleEligibilityCheckResultSa
-          .copy(customerDetails = List(CustomerDetail(None, None)), addresses = addressesWithNoContactDetails)
+          .copy(customerDetails = Some(List(CustomerDetail(None, None))), addresses = addressesWithNoContactDetails)
           .email shouldBe None
       }
 
       "there are emails in addresses" in {
         val expectedEmail = Email(SensitiveString("abc@email.com"))
         TdAll.eligibleEligibilityCheckResultSa
-          .copy(customerDetails = List(CustomerDetail(None, None)), addresses = addressesWithEmailInContactDetails)
+          .copy(
+            customerDetails = Some(List(CustomerDetail(None, None))),
+            addresses = addressesWithEmailInContactDetails
+          )
           .email shouldBe Some(expectedEmail)
       }
 
       "there are no emails in addresses, but there are emails in customerDetails" in {
         TdAll.eligibleEligibilityCheckResultSa
           .copy(
-            customerDetails = List(CustomerDetail(Some(Email(SensitiveString("abc@email.com"))), None)),
+            customerDetails = Some(List(CustomerDetail(Some(Email(SensitiveString("abc@email.com"))), None))),
             addresses = addressesWithNoContactDetails
           )
           .email shouldBe None

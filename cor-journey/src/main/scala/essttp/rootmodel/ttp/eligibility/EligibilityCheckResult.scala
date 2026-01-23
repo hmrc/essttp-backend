@@ -29,7 +29,7 @@ final case class EligibilityCheckResult(
   identification:                  List[Identification],
   invalidSignals:                  Option[List[InvalidSignals]],
   customerPostcodes:               List[CustomerPostcode],
-  customerDetails:                 List[CustomerDetail],
+  customerDetails:                 Option[List[CustomerDetail]],
   individualDetails:               Option[IndividualDetails],
   addresses:                       List[Address],
   regimeDigitalCorrespondence:     RegimeDigitalCorrespondence,
