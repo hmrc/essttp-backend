@@ -3,12 +3,12 @@ import sbt.*
 
 object AppDependencies {
 
-  val bootstrapVersion = "10.5.0"
+  val bootstrapVersion = "10.7.0"
   val hmrcMongoVersion = "2.12.0"
-  val chimneyVersion = "1.8.2"
+  val chimneyVersion = "1.9.0"
   val catsVersion = "2.13.0"
-  val enumeratumVersion = "1.7.3"
-  val enumeratumPlayVersion = "1.8.0"
+  val enumeratumVersion = "1.9.6"
+  val enumeratumPlayVersion = "1.9.6"
   val cryptoVersion = "8.4.0"
   val circeVersion = "0.14.15"
 
@@ -40,14 +40,14 @@ object AppDependencies {
     "io.circe"              %% "circe-core"                      % circeVersion,
     "io.circe"              %% "circe-generic"                   % circeVersion,
     "io.circe"              %% "circe-parser"                    % circeVersion,
-    "com.github.pureconfig" %% "pureconfig-core"                 % "0.17.9",
+    "com.github.pureconfig" %% "pureconfig-core"                 % "0.17.10",
     "com.beachape"          %% "enumeratum-play"                 % enumeratumPlayVersion,
     "org.playframework"     %% "play"                            % play.core.PlayVersion.current % Provided,
     "io.scalaland"          %% "chimney"                         % chimneyVersion,
     "org.typelevel"         %% "cats-core"                       % catsVersion,
     "uk.gov.hmrc.mongo"     %% "hmrc-mongo-play-30"              % hmrcMongoVersion,
     "uk.gov.hmrc"           %% "crypto-json-play-30"             % cryptoVersion,
-    "uk.gov.hmrc"           %% "payments-email-verification-cor-play-30" % "4.7.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
+    "uk.gov.hmrc"           %% "payments-email-verification-cor-play-30" % "4.8.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
   )
 
 }
