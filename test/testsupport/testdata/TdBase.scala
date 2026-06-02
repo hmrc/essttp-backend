@@ -79,7 +79,9 @@ trait TdBase {
     dmSpecialOfficeProcessingRequiredCDCS = None,
     isAnMtdCustomer = None,
     dmSpecialOfficeProcessingRequiredCESA = None,
-    noMtditsaEnrollment = None
+    noMtditsaEnrollment = None,
+    allChargeTypeAssessmentsFailed = None,
+    noValidPlanAfterAssessments = None
   )
 
   def ineligibleEligibilityCheckResult(eligibleEligibilityCheckResult: EligibilityCheckResult): EligibilityCheckResult =

@@ -42,7 +42,7 @@ lazy val commonSettings = Seq(
   resolvers ++= projectResolvers
 ).++(WartRemoverSettings.wartRemoverSettings)
   .++(ScoverageSettings.scoverageSettings)
-  .++(SbtUpdatesSettings.sbtUpdatesSettings)
+//  .++(SbtUpdatesSettings.sbtUpdatesSettings)
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)

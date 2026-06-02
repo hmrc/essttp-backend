@@ -41,7 +41,9 @@ final case class EligibilityRules(
   dmSpecialOfficeProcessingRequiredCDCS: Option[Boolean],
   isAnMtdCustomer:                       Option[Boolean],
   dmSpecialOfficeProcessingRequiredCESA: Option[Boolean],
-  noMtditsaEnrollment:                   Option[Boolean]
+  noMtditsaEnrollment:                   Option[Boolean],
+  allChargeTypeAssessmentsFailed:        Option[Boolean],
+  noValidPlanAfterAssessments:           Option[Boolean]
 ) derives CanEqual {
 
   private given CanEqual[Boolean, Any] = CanEqual.derived
