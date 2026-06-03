@@ -39,15 +39,12 @@ class BarsVerifyStatusControllerSpec extends ItSpec {
 
     def assertBarsVerifyStatusResponse(): Unit = {
       val result = connector.status(EmpRef(empRef)).futureValue
-      if (numberUpdates < 3) {
-        result shouldBe BarsVerifyStatusResponse(
-          attempts = NumberOfBarsVerifyAttempts(numberUpdates),
-          lockoutExpiryDateTime = None
-        )
-      } else {
-        result.attempts shouldBe NumberOfBarsVerifyAttempts(numberUpdates)
-        result.lockoutExpiryDateTime shouldBe Some(expectedExpiry)
-      }
+
+      result shouldBe BarsVerifyStatusResponse(
+        attempts = NumberOfBarsVerifyAttempts(numberUpdates),
+        lockoutExpiryDateTime = if (numberUpdates < 3) None else Some(expectedExpiry),
+        maxNumberOfAttempts = NumberOfBarsVerifyAttempts(3)
+      )
 
       verifyCommonActions(numberOfAuthCalls = numberUpdates + 1)
     }

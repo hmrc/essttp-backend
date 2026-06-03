@@ -22,13 +22,18 @@ import java.time.Instant
 
 final case class BarsVerifyStatusResponse(
   attempts:              NumberOfBarsVerifyAttempts,
-  lockoutExpiryDateTime: Option[Instant]
+  lockoutExpiryDateTime: Option[Instant],
+  maxNumberOfAttempts:   NumberOfBarsVerifyAttempts
 ) derives CanEqual
 
 object BarsVerifyStatusResponse {
   @SuppressWarnings(Array("org.wartremover.warts.Any"))
   given OFormat[BarsVerifyStatusResponse] = Json.format
 
-  def apply(status: BarsVerifyStatus): BarsVerifyStatusResponse =
-    BarsVerifyStatusResponse(status.verifyCalls, status.lockoutExpiryDateTime)
+  def apply(status: BarsVerifyStatus, maxNumberOfAttempts: Int): BarsVerifyStatusResponse =
+    BarsVerifyStatusResponse(
+      status.verifyCalls,
+      status.lockoutExpiryDateTime,
+      NumberOfBarsVerifyAttempts(maxNumberOfAttempts)
+    )
 }
