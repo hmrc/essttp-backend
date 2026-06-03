@@ -136,19 +136,21 @@ trait TdVat {
       regimeDigitalCorrespondence = RegimeDigitalCorrespondence(value = true),
       futureChargeLiabilitiesExcluded = false,
       chargeTypesExcluded = None,
-      chargeTypeAssessments = ChargeTypeAssessments(
-        chargeTypeAssessmentVat,
-        assessmentEligibilityRules = AssessmentEligibilityRules(
-          isLessThanMinDebtAllowance = false,
-          isMoreThanMaxDebtAllowance = false,
-          disallowedChargeLockTypes = false,
-          chargesOverMaxDebtAge = false,
-          ineligibleChargeTypes = false,
-          noDueDatesReached = false,
-          chargesBeforeMaxAccountingDate = false
-        ),
-        assessmentEligibilityStatus = true,
-        AssessmentCategory.Standard
+      chargeTypeAssessments = Some(
+        ChargeTypeAssessments(
+          chargeTypeAssessmentVat,
+          assessmentEligibilityRules = AssessmentEligibilityRules(
+            isLessThanMinDebtAllowance = false,
+            isMoreThanMaxDebtAllowance = false,
+            disallowedChargeLockTypes = false,
+            chargesOverMaxDebtAge = Some(false),
+            ineligibleChargeTypes = false,
+            noDueDatesReached = false,
+            chargesBeforeMaxAccountingDate = Some(false)
+          ),
+          assessmentEligibilityStatus = true,
+          AssessmentCategory.Standard
+        )
       )
     )
 

@@ -22,10 +22,10 @@ final case class AssessmentEligibilityRules(
   isLessThanMinDebtAllowance:     Boolean,
   isMoreThanMaxDebtAllowance:     Boolean,
   disallowedChargeLockTypes:      Boolean,
-  chargesOverMaxDebtAge:          Boolean,
+  chargesOverMaxDebtAge:          Option[Boolean],
   ineligibleChargeTypes:          Boolean,
   noDueDatesReached:              Boolean,
-  chargesBeforeMaxAccountingDate: Boolean
+  chargesBeforeMaxAccountingDate: Option[Boolean]
 ) derives CanEqual {
 
   private given CanEqual[Boolean, Any] = CanEqual.derived
