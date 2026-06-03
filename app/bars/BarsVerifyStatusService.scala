@@ -38,11 +38,12 @@ class BarsVerifyStatusService @Inject() (
    */
   def status(taxId: TaxId): Future[BarsVerifyStatusResponse] =
     find(taxId).map {
-      case Some(barsStatus) => BarsVerifyStatusResponse(barsStatus)
+      case Some(barsStatus) => BarsVerifyStatusResponse(barsStatus, appConfig.barsVerifyMaxAttempts)
       case None             =>
         BarsVerifyStatusResponse(
           attempts = NumberOfBarsVerifyAttempts.zero,
-          lockoutExpiryDateTime = None
+          lockoutExpiryDateTime = None,
+          maxNumberOfAttempts = NumberOfBarsVerifyAttempts(appConfig.barsVerifyMaxAttempts)
         )
     }
 
@@ -65,7 +66,7 @@ class BarsVerifyStatusService @Inject() (
           lockoutExpiryDateTime = expiry
         )
       }
-      .flatMap(status => upsert(status).map(_ => BarsVerifyStatusResponse(status)))
+      .flatMap(status => upsert(status).map(_ => BarsVerifyStatusResponse(status, appConfig.barsVerifyMaxAttempts)))
 
   private def find(taxId: TaxId): Future[Option[BarsVerifyStatus]] =
     barsRepo.findById(TaxIdIndex(taxId))
