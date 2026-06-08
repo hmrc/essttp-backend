@@ -17,18 +17,15 @@
 package essttp.rootmodel.ttp.eligibility
 
 import enumeratum.{Enum, EnumEntry}
+import enumeratum.EnumEntry.Lowercase
 import essttp.utils.EnumFormat
 import play.api.libs.json.Format
 
-sealed trait AssessmentCategory extends EnumEntry derives CanEqual {
-  val value: String
-}
+sealed trait AssessmentCategory extends EnumEntry with Lowercase derives CanEqual
 
 object AssessmentCategory extends Enum[AssessmentCategory] {
 
-  case object Standard extends AssessmentCategory {
-    val value: String = "standard"
-  }
+  case object Standard extends AssessmentCategory
 
   val values: IndexedSeq[AssessmentCategory] = findValues
 
