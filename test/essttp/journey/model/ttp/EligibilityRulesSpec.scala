@@ -49,7 +49,9 @@ class EligibilityRulesSpec extends UnitSpec {
         dmSpecialOfficeProcessingRequiredCDCS = Some(false),
         isAnMtdCustomer = Some(false),
         dmSpecialOfficeProcessingRequiredCESA = Some(false),
-        noMtditsaEnrollment = Some(false)
+        noMtditsaEnrollment = Some(false),
+        allChargeTypeAssessmentsFailed = Some(false),
+        noValidPlanAfterAssessments = Some(false)
       ).isEligible shouldBe true
     }
 
@@ -77,7 +79,9 @@ class EligibilityRulesSpec extends UnitSpec {
         dmSpecialOfficeProcessingRequiredCDCS = None,
         isAnMtdCustomer = None,
         dmSpecialOfficeProcessingRequiredCESA = None,
-        noMtditsaEnrollment = None
+        noMtditsaEnrollment = None,
+        allChargeTypeAssessmentsFailed = None,
+        noValidPlanAfterAssessments = None
       ).isEligible shouldBe true
     }
 
@@ -109,7 +113,9 @@ class EligibilityRulesSpec extends UnitSpec {
         dmSpecialOfficeProcessingRequiredCDCS = Some(true),
         isAnMtdCustomer = Some(false),
         dmSpecialOfficeProcessingRequiredCESA = Some(true),
-        noMtditsaEnrollment = Some(false)
+        noMtditsaEnrollment = Some(false),
+        allChargeTypeAssessmentsFailed = Some(false),
+        noValidPlanAfterAssessments = Some(false)
       )
 
       val expectedJson = Json.obj(
@@ -135,7 +141,9 @@ class EligibilityRulesSpec extends UnitSpec {
         "dmSpecialOfficeProcessingRequiredCDCS" -> true,
         "isAnMtdCustomer"                       -> false,
         "dmSpecialOfficeProcessingRequiredCESA" -> true,
-        "noMtditsaEnrollment"                   -> false
+        "noMtditsaEnrollment"                   -> false,
+        "allChargeTypeAssessmentsFailed"        -> false,
+        "noValidPlanAfterAssessments"           -> false
       )
 
       val json = Json.toJson(eligibilityRules)

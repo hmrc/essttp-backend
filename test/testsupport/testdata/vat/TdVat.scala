@@ -31,6 +31,52 @@ trait TdVat {
 
   val vrn: Vrn = Vrn("101747001")
 
+  val chargeTypeAssessmentVat: List[ChargeTypeAssessment] = List(
+    ChargeTypeAssessment(
+      taxPeriodFrom = TaxPeriodFrom("2020-08-13"),
+      taxPeriodTo = TaxPeriodTo("2020-08-14"),
+      debtTotalAmount = DebtTotalAmount(AmountInPence(300000)),
+      chargeReference = ChargeReference("A00000000001"),
+      charges = List(
+        Charges(
+          chargeType = ChargeType("InYearRTICharge-Tax"),
+          mainType = MainType("InYearRTICharge(FPS)"),
+          mainTrans = MainTrans("mainTrans"),
+          subTrans = SubTrans("subTrans"),
+          outstandingAmount = OutstandingAmount(AmountInPence(100000)),
+          dueDate = DueDate(reusableDate),
+          interestStartDate = Some(InterestStartDate(reusableDate)),
+          accruedInterest = AccruedInterest(AmountInPence(1597)),
+          ineligibleChargeType = IneligibleChargeType(value = false),
+          chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
+          locks = Some(
+            List(
+              Lock(
+                lockType = LockType("Payment"),
+                lockReason = LockReason("Risk/Fraud"),
+                disallowedChargeLockType = DisallowedChargeLockType(value = false)
+              )
+            )
+          ),
+          dueDateNotReached = false,
+          isInterestBearingCharge = None,
+          useChargeReference = None,
+          chargeBeforeMaxAccountingDate = None,
+          ddInProgress = Some(DdInProgress(value = false)),
+          chargeSource = None,
+          parentChargeReference = None,
+          parentMainTrans = None,
+          originalCreationDate = None,
+          tieBreaker = None,
+          originalTieBreaker = None,
+          saTaxYearEnd = None,
+          creationDate = None,
+          originalChargeType = None
+        )
+      )
+    )
+  )
+
   def eligibleEligibilityCheckResultVat(taxId: TaxId = vrn): EligibilityCheckResult =
     eligibility.EligibilityCheckResult(
       processingDateTime = ProcessingDateTime(reusableDateAsString),
@@ -86,54 +132,26 @@ trait TdVat {
       paymentPlanMaxLength = PaymentPlanMaxLength(6),
       eligibilityStatus = EligibilityStatus(EligibilityPass(value = true)),
       eligibilityRules = eligibleEligibilityRules,
-      chargeTypeAssessment = List(
-        ChargeTypeAssessment(
-          taxPeriodFrom = TaxPeriodFrom("2020-08-13"),
-          taxPeriodTo = TaxPeriodTo("2020-08-14"),
-          debtTotalAmount = DebtTotalAmount(AmountInPence(300000)),
-          chargeReference = ChargeReference("A00000000001"),
-          charges = List(
-            Charges(
-              chargeType = ChargeType("InYearRTICharge-Tax"),
-              mainType = MainType("InYearRTICharge(FPS)"),
-              mainTrans = MainTrans("mainTrans"),
-              subTrans = SubTrans("subTrans"),
-              outstandingAmount = OutstandingAmount(AmountInPence(100000)),
-              dueDate = DueDate(reusableDate),
-              interestStartDate = Some(InterestStartDate(reusableDate)),
-              accruedInterest = AccruedInterest(AmountInPence(1597)),
-              ineligibleChargeType = IneligibleChargeType(value = false),
-              chargeOverMaxDebtAge = Some(ChargeOverMaxDebtAge(value = false)),
-              locks = Some(
-                List(
-                  Lock(
-                    lockType = LockType("Payment"),
-                    lockReason = LockReason("Risk/Fraud"),
-                    disallowedChargeLockType = DisallowedChargeLockType(value = false)
-                  )
-                )
-              ),
-              dueDateNotReached = false,
-              isInterestBearingCharge = None,
-              useChargeReference = None,
-              chargeBeforeMaxAccountingDate = None,
-              ddInProgress = Some(DdInProgress(value = false)),
-              chargeSource = None,
-              parentChargeReference = None,
-              parentMainTrans = None,
-              originalCreationDate = None,
-              tieBreaker = None,
-              originalTieBreaker = None,
-              saTaxYearEnd = None,
-              creationDate = None,
-              originalChargeType = None
-            )
-          )
-        )
-      ),
+      chargeTypeAssessment = chargeTypeAssessmentVat,
       regimeDigitalCorrespondence = RegimeDigitalCorrespondence(value = true),
       futureChargeLiabilitiesExcluded = false,
-      chargeTypesExcluded = None
+      chargeTypesExcluded = None,
+      chargeTypeAssessments = Some(
+        ChargeTypeAssessments(
+          chargeTypeAssessmentVat,
+          assessmentEligibilityRules = AssessmentEligibilityRules(
+            isLessThanMinDebtAllowance = false,
+            isMoreThanMaxDebtAllowance = false,
+            disallowedChargeLockTypes = false,
+            chargesOverMaxDebtAge = Some(false),
+            ineligibleChargeTypes = false,
+            noDueDatesReached = false,
+            chargesBeforeMaxAccountingDate = Some(false)
+          ),
+          assessmentEligibilityStatus = true,
+          AssessmentCategory.Standard
+        )
+      )
     )
 
   val arrangementResponseVat: ArrangementResponse =
