@@ -137,19 +137,21 @@ trait TdVat {
       futureChargeLiabilitiesExcluded = false,
       chargeTypesExcluded = None,
       chargeTypeAssessments = Some(
-        ChargeTypeAssessments(
-          chargeTypeAssessmentVat,
-          assessmentEligibilityRules = AssessmentEligibilityRules(
-            isLessThanMinDebtAllowance = false,
-            isMoreThanMaxDebtAllowance = false,
-            disallowedChargeLockTypes = false,
-            chargesOverMaxDebtAge = Some(false),
-            ineligibleChargeTypes = false,
-            noDueDatesReached = false,
-            chargesBeforeMaxAccountingDate = Some(false)
-          ),
-          assessmentEligibilityStatus = true,
-          AssessmentCategory.Standard
+        List(
+          ChargeTypeAssessments(
+            chargeTypeAssessmentVat,
+            assessmentEligibilityRules = AssessmentEligibilityRules(
+              isLessThanMinDebtAllowance = false,
+              isMoreThanMaxDebtAllowance = false,
+              disallowedChargeLockTypes = false,
+              chargesOverMaxDebtAge = Some(false),
+              ineligibleChargeTypes = false,
+              noDueDatesReached = false,
+              chargesBeforeMaxAccountingDate = Some(false)
+            ),
+            assessmentEligibilityStatus = true,
+            AssessmentCategory.Standard
+          )
         )
       )
     )

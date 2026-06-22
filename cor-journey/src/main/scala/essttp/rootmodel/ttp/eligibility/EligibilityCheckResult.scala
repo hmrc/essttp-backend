@@ -42,7 +42,7 @@ final case class EligibilityCheckResult(
   futureChargeLiabilitiesExcluded: Boolean,
   chargeTypesExcluded:             Option[Boolean],
   chargeTypeAssessment:            List[ChargeTypeAssessment],
-  chargeTypeAssessments:           Option[ChargeTypeAssessments]
+  chargeTypeAssessments:           Option[List[ChargeTypeAssessments]]
 ) derives CanEqual
 
 object EligibilityCheckResult {
