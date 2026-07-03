@@ -41,8 +41,7 @@ final case class EligibilityCheckResult(
   eligibilityRules:                EligibilityRules,
   futureChargeLiabilitiesExcluded: Boolean,
   chargeTypesExcluded:             Option[Boolean],
-  chargeTypeAssessment:            List[ChargeTypeAssessment],
-  chargeTypeAssessments:           Option[List[ChargeTypeAssessments]]
+  chargeTypeAssessments:           List[ChargeTypeAssessments]
 ) derives CanEqual
 
 object EligibilityCheckResult {
@@ -57,8 +56,12 @@ object EligibilityCheckResult {
         emailAddress
       }
 
-    def hasInterestBearingCharge: Boolean =
-      e.chargeTypeAssessment.flatMap(_.charges).exists(_.isInterestBearingCharge.exists(_.value))
+    def hasInterestBearingCharge(chargeTypeAssessments: ChargeTypeAssessments): Boolean =
+      chargeTypeAssessments.chargeTypeAssessment.flatMap(_.charges).exists(_.isInterestBearingCharge.exists(_.value))
+
+    def standardChargeTypeAssessments: ChargeTypeAssessments = e.chargeTypeAssessments
+      .find(_.assessmentCategory == AssessmentCategory.Standard)
+      .getOrElse(throw new RuntimeException("could not find chargeTypeAssessment with category standard"))
 
   }
 

@@ -21,20 +21,13 @@ import play.api.libs.json.{Json, OFormat}
 final case class EligibilityRules(
   hasRlsOnAddress:                       Boolean,
   markedAsInsolvent:                     Boolean,
-  isLessThanMinDebtAllowance:            Boolean,
-  isMoreThanMaxDebtAllowance:            Boolean,
-  disallowedChargeLockTypes:             Boolean,
   existingTTP:                           Boolean,
-  chargesOverMaxDebtAge:                 Option[Boolean],
-  ineligibleChargeTypes:                 Boolean,
   missingFiledReturns:                   Boolean,
   hasInvalidInterestSignals:             Option[Boolean],
   dmSpecialOfficeProcessingRequired:     Option[Boolean],
-  noDueDatesReached:                     Boolean,
   cannotFindLockReason:                  Option[Boolean],
   creditsNotAllowed:                     Option[Boolean],
   isMoreThanMaxPaymentReference:         Option[Boolean],
-  chargesBeforeMaxAccountingDate:        Option[Boolean],
   hasInvalidInterestSignalsCESA:         Option[Boolean],
   hasDisguisedRemuneration:              Option[Boolean],
   hasCapacitor:                          Option[Boolean],
@@ -60,6 +53,8 @@ final case class EligibilityRules(
   }
 
   val moreThanOneReasonForIneligibility: Boolean = alliIneligibleFieldNames.sizeIs > 1
+
+  val atLeastOneReasonForIneligibility: Boolean = alliIneligibleFieldNames.sizeIs >= 1
 
   val isEligible: Boolean = alliIneligibleFieldNames.isEmpty // If all rules are false, then isEligible is true
 

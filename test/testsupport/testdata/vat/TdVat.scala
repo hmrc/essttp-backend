@@ -77,6 +77,23 @@ trait TdVat {
     )
   )
 
+  val chargeTypeAssessmentsStandardVat: List[ChargeTypeAssessments] = List(
+    ChargeTypeAssessments(
+      chargeTypeAssessmentVat,
+      assessmentEligibilityRules = AssessmentEligibilityRules(
+        isLessThanMinDebtAllowance = false,
+        isMoreThanMaxDebtAllowance = false,
+        disallowedChargeLockTypes = false,
+        chargesOverMaxDebtAge = Some(false),
+        ineligibleChargeTypes = false,
+        noDueDatesReached = false,
+        chargesBeforeMaxAccountingDate = Some(false)
+      ),
+      assessmentEligibilityStatus = true,
+      AssessmentCategory.Standard
+    )
+  )
+
   def eligibleEligibilityCheckResultVat(taxId: TaxId = vrn): EligibilityCheckResult =
     eligibility.EligibilityCheckResult(
       processingDateTime = ProcessingDateTime(reusableDateAsString),
@@ -132,28 +149,10 @@ trait TdVat {
       paymentPlanMaxLength = PaymentPlanMaxLength(6),
       eligibilityStatus = EligibilityStatus(EligibilityPass(value = true)),
       eligibilityRules = eligibleEligibilityRules,
-      chargeTypeAssessment = chargeTypeAssessmentVat,
       regimeDigitalCorrespondence = RegimeDigitalCorrespondence(value = true),
       futureChargeLiabilitiesExcluded = false,
       chargeTypesExcluded = None,
-      chargeTypeAssessments = Some(
-        List(
-          ChargeTypeAssessments(
-            chargeTypeAssessmentVat,
-            assessmentEligibilityRules = AssessmentEligibilityRules(
-              isLessThanMinDebtAllowance = false,
-              isMoreThanMaxDebtAllowance = false,
-              disallowedChargeLockTypes = false,
-              chargesOverMaxDebtAge = Some(false),
-              ineligibleChargeTypes = false,
-              noDueDatesReached = false,
-              chargesBeforeMaxAccountingDate = Some(false)
-            ),
-            assessmentEligibilityStatus = true,
-            AssessmentCategory.Standard
-          )
-        )
-      )
+      chargeTypeAssessments = chargeTypeAssessmentsStandardVat
     )
 
   val arrangementResponseVat: ArrangementResponse =

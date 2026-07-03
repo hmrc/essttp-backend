@@ -77,6 +77,23 @@ trait TdSa {
     )
   )
 
+  val chargeTypeAssessmentsStandardSa: List[ChargeTypeAssessments] = List(
+    ChargeTypeAssessments(
+      chargeTypeAssessmentSa,
+      assessmentEligibilityRules = AssessmentEligibilityRules(
+        isLessThanMinDebtAllowance = false,
+        isMoreThanMaxDebtAllowance = false,
+        disallowedChargeLockTypes = false,
+        chargesOverMaxDebtAge = Some(false),
+        ineligibleChargeTypes = false,
+        noDueDatesReached = false,
+        chargesBeforeMaxAccountingDate = Some(false)
+      ),
+      assessmentEligibilityStatus = true,
+      AssessmentCategory.Standard
+    )
+  )
+
   val eligibleEligibilityCheckResultSa: EligibilityCheckResult = eligibility.EligibilityCheckResult(
     processingDateTime = ProcessingDateTime(reusableDateAsString),
     identification = List(
@@ -143,28 +160,10 @@ trait TdSa {
     paymentPlanMaxLength = PaymentPlanMaxLength(6),
     eligibilityStatus = EligibilityStatus(EligibilityPass(value = true)),
     eligibilityRules = eligibleEligibilityRules,
-    chargeTypeAssessment = chargeTypeAssessmentSa,
     regimeDigitalCorrespondence = RegimeDigitalCorrespondence(value = true),
     futureChargeLiabilitiesExcluded = false,
     chargeTypesExcluded = None,
-    chargeTypeAssessments = Some(
-      List(
-        ChargeTypeAssessments(
-          chargeTypeAssessmentSa,
-          assessmentEligibilityRules = AssessmentEligibilityRules(
-            isLessThanMinDebtAllowance = false,
-            isMoreThanMaxDebtAllowance = false,
-            disallowedChargeLockTypes = false,
-            chargesOverMaxDebtAge = Some(false),
-            ineligibleChargeTypes = false,
-            noDueDatesReached = false,
-            chargesBeforeMaxAccountingDate = Some(false)
-          ),
-          assessmentEligibilityStatus = true,
-          AssessmentCategory.Standard
-        )
-      )
-    )
+    chargeTypeAssessments = chargeTypeAssessmentsStandardSa
   )
 
   def ineligibleEligibilityCheckResultSa: EligibilityCheckResult = eligibleEligibilityCheckResultSa.copy(

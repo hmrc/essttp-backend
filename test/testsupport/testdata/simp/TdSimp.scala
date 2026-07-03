@@ -132,26 +132,23 @@ trait TdSimp {
     paymentPlanMaxLength = PaymentPlanMaxLength(6),
     eligibilityStatus = EligibilityStatus(EligibilityPass(value = true)),
     eligibilityRules = eligibleEligibilityRules,
-    chargeTypeAssessment = chargeTypeAssessmentSimp,
     regimeDigitalCorrespondence = RegimeDigitalCorrespondence(value = true),
     futureChargeLiabilitiesExcluded = false,
     chargeTypesExcluded = None,
-    chargeTypeAssessments = Some(
-      List(
-        ChargeTypeAssessments(
-          chargeTypeAssessmentSimp,
-          assessmentEligibilityRules = AssessmentEligibilityRules(
-            isLessThanMinDebtAllowance = false,
-            isMoreThanMaxDebtAllowance = false,
-            disallowedChargeLockTypes = false,
-            chargesOverMaxDebtAge = Some(false),
-            ineligibleChargeTypes = false,
-            noDueDatesReached = false,
-            chargesBeforeMaxAccountingDate = Some(false)
-          ),
-          assessmentEligibilityStatus = true,
-          AssessmentCategory.Standard
-        )
+    chargeTypeAssessments = List(
+      ChargeTypeAssessments(
+        chargeTypeAssessmentSimp,
+        assessmentEligibilityRules = AssessmentEligibilityRules(
+          isLessThanMinDebtAllowance = false,
+          isMoreThanMaxDebtAllowance = false,
+          disallowedChargeLockTypes = false,
+          chargesOverMaxDebtAge = Some(false),
+          ineligibleChargeTypes = false,
+          noDueDatesReached = false,
+          chargesBeforeMaxAccountingDate = Some(false)
+        ),
+        assessmentEligibilityStatus = true,
+        AssessmentCategory.Standard
       )
     )
   )

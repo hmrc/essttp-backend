@@ -43,6 +43,8 @@ final case class AssessmentEligibilityRules(
 
   val moreThanOneReasonForIneligibility: Boolean = alliIneligibleFieldNames.sizeIs > 1
 
+  val atLeastOneReasonForIneligibility: Boolean = alliIneligibleFieldNames.sizeIs >= 1
+
   val isEligible: Boolean = alliIneligibleFieldNames.isEmpty // If all rules are false, then isEligible is true
 
 }

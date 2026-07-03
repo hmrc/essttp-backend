@@ -110,27 +110,40 @@ class EligibilityCheckResultSpec extends UnitSpec {
 
     "hasInterestBearingCharge when" - {
 
-      def eligibilityCheckResultWithInterestBearingCharge(isInterestBearingCharge: Option[Boolean]) =
+      def eligibilityCheckResultWithInterestBearingCharge(
+        isInterestBearingCharge: Option[Boolean]
+      ): EligibilityCheckResult =
         TdAll.eligibleEligibilityCheckResultSa.copy(
-          chargeTypeAssessment = TdAll.eligibleEligibilityCheckResultSa.chargeTypeAssessment.map(assessment =>
-            assessment.copy(
-              charges = assessment.charges.map(charge =>
-                charge.copy(
-                  isInterestBearingCharge = isInterestBearingCharge.map(IsInterestBearingCharge.apply)
+          chargeTypeAssessments = TdAll.eligibleEligibilityCheckResultSa.chargeTypeAssessments.map(assessments =>
+            assessments.copy(
+              chargeTypeAssessment = assessments.chargeTypeAssessment.map(assessment =>
+                assessment.copy(
+                  charges = assessment.charges.map(charge =>
+                    charge.copy(
+                      isInterestBearingCharge = isInterestBearingCharge.map(IsInterestBearingCharge.apply)
+                    )
+                  )
                 )
               )
             )
           )
         )
 
-      "there are no interest bearing charges" in {
-        eligibilityCheckResultWithInterestBearingCharge(None).hasInterestBearingCharge shouldBe false
-        eligibilityCheckResultWithInterestBearingCharge(Some(false)).hasInterestBearingCharge shouldBe false
+      "there are no interest bearing charges" - {
+        "when isInterestCharge is None" in {
+          val checkResult = eligibilityCheckResultWithInterestBearingCharge(None)
+          checkResult.hasInterestBearingCharge(checkResult.standardChargeTypeAssessments) shouldBe false
+        }
+        "when isInterestCharge is false" in {
+          val checkResult = eligibilityCheckResultWithInterestBearingCharge(Some(false))
+          checkResult.hasInterestBearingCharge(checkResult.standardChargeTypeAssessments) shouldBe false
+        }
 
       }
 
       "there is an interest bearing charge" in {
-        eligibilityCheckResultWithInterestBearingCharge(Some(true)).hasInterestBearingCharge shouldBe true
+        val checkResult = eligibilityCheckResultWithInterestBearingCharge(Some(true))
+        checkResult.hasInterestBearingCharge(checkResult.standardChargeTypeAssessments) shouldBe true
       }
 
     }

@@ -201,13 +201,15 @@ class PegaService @Inject() (
       case _                                         => sys.error("Could not find extreme dates result")
     }
 
-    val totalDebt = AmountInPence(eligibilityCheckResult.chargeTypeAssessment.map(_.debtTotalAmount.value.value).sum)
+    val totalDebt = AmountInPence(
+      eligibilityCheckResult.standardChargeTypeAssessments.chargeTypeAssessment.map(_.debtTotalAmount.value.value).sum
+    )
 
     val mapping = MDTPropertyMapping(
       eligibilityCheckResult.customerPostcodes,
       extremeDatesResponse.initialPaymentDate,
       ChannelIdentifiers.eSSTTP,
-      eligibilityCheckResult.chargeTypeAssessment.flatMap(toDebtItemCharges),
+      eligibilityCheckResult.standardChargeTypeAssessments.chargeTypeAssessment.flatMap(toDebtItemCharges),
       AccruedDebtInterest(calculateCumulativeInterest(eligibilityCheckResult)),
       upfrontPaymentAmount,
       PaymentPlanFrequencies.Monthly
@@ -264,7 +266,7 @@ class PegaService @Inject() (
 
   private def calculateCumulativeInterest(eligibilityCheckResult: EligibilityCheckResult): AmountInPence =
     AmountInPence(
-      eligibilityCheckResult.chargeTypeAssessment
+      eligibilityCheckResult.standardChargeTypeAssessments.chargeTypeAssessment
         .flatMap(_.charges)
         .map(_.accruedInterest.value.value)
         .sum
