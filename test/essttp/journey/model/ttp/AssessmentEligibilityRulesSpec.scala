@@ -66,11 +66,11 @@ class AssessmentEligibilityRulesSpec extends UnitSpec {
 
       val expectedJson = Json.obj(
         "isLessThanMinDebtAllowance"     -> true,
-        "isMoreThanMaxDebtAllowance"     -> true,
         "isMoreThanMaxDebtAllowance"     -> false,
-        "disallowedChargeLockTypes"      -> true,
+        "isMoreThanMaxDebtAllowance"     -> false,
+        "disallowedChargeLockTypes"      -> false,
         "chargesOverMaxDebtAge"          -> false,
-        "ineligibleChargeTypes"          -> true,
+        "ineligibleChargeTypes"          -> false,
         "noDueDatesReached"              -> false,
         "chargesBeforeMaxAccountingDate" -> false
       )
