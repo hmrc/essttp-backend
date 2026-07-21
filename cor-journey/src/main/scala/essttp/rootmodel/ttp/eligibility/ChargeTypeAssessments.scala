@@ -23,7 +23,7 @@ final case class ChargeTypeAssessments(
   assessmentEligibilityRules:  AssessmentEligibilityRules,
   assessmentEligibilityStatus: Boolean,
   assessmentCategory:          AssessmentCategory
-)
+) derives CanEqual
 
 object ChargeTypeAssessments {
 

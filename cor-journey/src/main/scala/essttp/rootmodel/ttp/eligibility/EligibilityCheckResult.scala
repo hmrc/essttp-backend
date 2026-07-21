@@ -56,12 +56,34 @@ object EligibilityCheckResult {
         emailAddress
       }
 
-    def hasInterestBearingCharge(chargeTypeAssessments: ChargeTypeAssessments): Boolean =
-      chargeTypeAssessments.chargeTypeAssessment.flatMap(_.charges).exists(_.isInterestBearingCharge.exists(_.value))
+    def hasInterestBearingCharge: Boolean =
+      relevantChargeTypeAssessments.chargeTypeAssessment
+        .flatMap(_.charges)
+        .exists(_.isInterestBearingCharge.exists(_.value))
 
-    def standardChargeTypeAssessments: ChargeTypeAssessments = e.chargeTypeAssessments
-      .find(_.assessmentCategory == AssessmentCategory.Standard)
-      .getOrElse(throw new RuntimeException("could not find chargeTypeAssessment with category standard"))
+    // see what combo of assessment categories we have in chargeTypeAssesments and call the appropriate function,
+    // throw if a combo of assessment categories is not supported
+    def foldOnAssessmentCategory[A](
+      onStandardOnly:    ChargeTypeAssessments => A,
+      onDebtsOnly:       ChargeTypeAssessments => A,
+      onLiabilitiesOnly: ChargeTypeAssessments => A
+    ): A =
+      e.chargeTypeAssessments.map(c => c.assessmentCategory -> c) match {
+        case (AssessmentCategory.Standard, c) :: Nil    => onStandardOnly(c)
+        case (AssessmentCategory.Debts, c) :: Nil       => onDebtsOnly(c)
+        case (AssessmentCategory.Liabilities, c) :: Nil => onLiabilitiesOnly(c)
+        case other                                      =>
+          throw new NotImplementedError(
+            s"unsupported combination of assessment categories: (${other.map(_._1.toString).mkString(", ")})"
+          )
+      }
+
+    def relevantChargeTypeAssessments: ChargeTypeAssessments =
+      foldOnAssessmentCategory(
+        onStandardOnly = identity,
+        onDebtsOnly = identity,
+        onLiabilitiesOnly = identity
+      )
 
   }
 

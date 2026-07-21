@@ -202,14 +202,14 @@ class PegaService @Inject() (
     }
 
     val totalDebt = AmountInPence(
-      eligibilityCheckResult.standardChargeTypeAssessments.chargeTypeAssessment.map(_.debtTotalAmount.value.value).sum
+      eligibilityCheckResult.relevantChargeTypeAssessments.chargeTypeAssessment.map(_.debtTotalAmount.value.value).sum
     )
 
     val mapping = MDTPropertyMapping(
       eligibilityCheckResult.customerPostcodes,
       extremeDatesResponse.initialPaymentDate,
       ChannelIdentifiers.eSSTTP,
-      eligibilityCheckResult.standardChargeTypeAssessments.chargeTypeAssessment.flatMap(toDebtItemCharges),
+      eligibilityCheckResult.relevantChargeTypeAssessments.chargeTypeAssessment.flatMap(toDebtItemCharges),
       AccruedDebtInterest(calculateCumulativeInterest(eligibilityCheckResult)),
       upfrontPaymentAmount,
       PaymentPlanFrequencies.Monthly
@@ -266,7 +266,7 @@ class PegaService @Inject() (
 
   private def calculateCumulativeInterest(eligibilityCheckResult: EligibilityCheckResult): AmountInPence =
     AmountInPence(
-      eligibilityCheckResult.standardChargeTypeAssessments.chargeTypeAssessment
+      eligibilityCheckResult.relevantChargeTypeAssessments.chargeTypeAssessment
         .flatMap(_.charges)
         .map(_.accruedInterest.value.value)
         .sum

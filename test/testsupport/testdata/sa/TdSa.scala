@@ -77,7 +77,7 @@ trait TdSa {
     )
   )
 
-  val chargeTypeAssessmentsStandardSa: List[ChargeTypeAssessments] = List(
+  val chargeTypeAssessmentsStandardSa: ChargeTypeAssessments =
     ChargeTypeAssessments(
       chargeTypeAssessmentSa,
       assessmentEligibilityRules = AssessmentEligibilityRules(
@@ -92,7 +92,6 @@ trait TdSa {
       assessmentEligibilityStatus = true,
       AssessmentCategory.Standard
     )
-  )
 
   val eligibleEligibilityCheckResultSa: EligibilityCheckResult = eligibility.EligibilityCheckResult(
     processingDateTime = ProcessingDateTime(reusableDateAsString),
@@ -163,7 +162,7 @@ trait TdSa {
     regimeDigitalCorrespondence = RegimeDigitalCorrespondence(value = true),
     futureChargeLiabilitiesExcluded = false,
     chargeTypesExcluded = None,
-    chargeTypeAssessments = chargeTypeAssessmentsStandardSa
+    chargeTypeAssessments = List(chargeTypeAssessmentsStandardSa)
   )
 
   def ineligibleEligibilityCheckResultSa: EligibilityCheckResult = eligibleEligibilityCheckResultSa.copy(

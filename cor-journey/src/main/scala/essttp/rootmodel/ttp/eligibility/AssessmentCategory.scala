@@ -25,7 +25,9 @@ sealed trait AssessmentCategory extends EnumEntry with Lowercase derives CanEqua
 
 object AssessmentCategory extends Enum[AssessmentCategory] {
 
-  case object Standard extends AssessmentCategory
+  case object Standard    extends AssessmentCategory
+  case object Liabilities extends AssessmentCategory
+  case object Debts       extends AssessmentCategory
 
   val values: IndexedSeq[AssessmentCategory] = findValues
 
