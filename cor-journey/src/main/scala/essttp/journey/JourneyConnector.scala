@@ -25,7 +25,7 @@ import essttp.rootmodel.pega.StartCaseResponse
 import essttp.rootmodel.ttp.affordability.InstalmentAmounts
 import essttp.rootmodel.ttp.affordablequotes.{AffordableQuotesResponse, PaymentPlan}
 import essttp.rootmodel.ttp.arrangement.ArrangementResponse
-import essttp.rootmodel.ttp.eligibility.EligibilityCheckResult
+import essttp.rootmodel.ttp.eligibility.{AssessmentCategory, EligibilityCheckResult}
 import essttp.rootmodel.{CanPayUpfront, DayOfMonth, Email, IsEmailAddressRequired, MonthlyPaymentAmount, TaxId, UpfrontPaymentAmount}
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.{HeaderCarrier, StringContextOps}
@@ -69,6 +69,14 @@ class JourneyConnector(httpClient: HttpClientV2, baseUrl: String)(implicit
     httpClient
       .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-eligibility-result")
       .withBody(Json.toJson(eligibilityCheckResult))
+      .execute[Journey]
+
+  def updateAssessmentCategory(journeyId: JourneyId, assessmentCategory: AssessmentCategory)(using
+    RequestHeader
+  ): Future[Journey] =
+    httpClient
+      .post(url"$baseUrl/essttp-backend/journey/${journeyId.value}/update-assessment-category")
+      .withBody(Json.toJson(assessmentCategory))
       .execute[Journey]
 
   def updateWhyCannotPayInFullAnswers(journeyId: JourneyId, answers: WhyCannotPayInFullAnswers)(using

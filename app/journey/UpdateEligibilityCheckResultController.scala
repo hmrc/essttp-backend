@@ -85,6 +85,11 @@ class UpdateEligibilityCheckResultController @Inject() (
         case j: Journey.EligibilityChecked =>
           j.copy(eligibilityCheckResult = eligibilityCheckResult)
 
+        case j: Journey.AssessmentCategoryDetermined =>
+          j.into[Journey.EligibilityChecked]
+            .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)
+            .transform
+
         case j: Journey.ObtainedWhyCannotPayInFullAnswers =>
           j.into[Journey.EligibilityChecked]
             .withFieldConst(_.eligibilityCheckResult, eligibilityCheckResult)

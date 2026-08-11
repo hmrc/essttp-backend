@@ -16,8 +16,9 @@
 
 package essttp.rootmodel.ttp
 
+import essttp.journey.model.Journey
 import essttp.rootmodel.Email
-import essttp.rootmodel.ttp.eligibility._
+import essttp.rootmodel.ttp.eligibility.*
 import testsupport.UnitSpec
 import testsupport.testdata.TdAll
 import uk.gov.hmrc.crypto.Sensitive.SensitiveString
@@ -38,6 +39,9 @@ class EligibilityCheckResultSpec extends UnitSpec {
           )
         )
       )
+
+    def journeyWithAssessmentCategory(assessmentCategory: AssessmentCategory): Journey =
+      TdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(assessmentCategory)
 
     "isEligible" in {
       TdAll.eligibleEligibilityCheckResultSa.isEligible shouldBe true
@@ -143,53 +147,99 @@ class EligibilityCheckResultSpec extends UnitSpec {
       "there are no interest bearing charges" - {
         "when isInterestCharge is None" in {
           val checkResult = eligibilityCheckResultWithInterestBearingCharge(None)
-          checkResult.hasInterestBearingCharge shouldBe false
+          checkResult.hasInterestBearingCharge(
+            journeyWithAssessmentCategory(AssessmentCategory.Standard)
+          ) shouldBe false
         }
         "when isInterestCharge is false" in {
           val checkResult = eligibilityCheckResultWithInterestBearingCharge(Some(false))
-          checkResult.hasInterestBearingCharge shouldBe false
+          checkResult.hasInterestBearingCharge(
+            journeyWithAssessmentCategory(AssessmentCategory.Standard)
+          ) shouldBe false
         }
 
       }
 
       "there is an interest bearing charge" in {
         val checkResult = eligibilityCheckResultWithInterestBearingCharge(Some(true))
-        checkResult.hasInterestBearingCharge shouldBe true
+        checkResult.hasInterestBearingCharge(journeyWithAssessmentCategory(AssessmentCategory.Standard)) shouldBe true
       }
 
     }
 
     "foldOnAssessmentCategory when given a valid set of assessment categories" in {
-      Seq(
-        (Seq(AssessmentCategory.Standard), 1),
-        (Seq(AssessmentCategory.Debts), 2),
-        (Seq(AssessmentCategory.Liabilities), 3)
+
+      (
+        Seq(
+          (Seq(AssessmentCategory.Standard), 1),
+          (Seq(AssessmentCategory.Debts), 2),
+          (Seq(AssessmentCategory.Liabilities), 3)
+        ) ++
+          Seq(
+            AssessmentCategory.Debts,
+            AssessmentCategory.Liabilities,
+            AssessmentCategory.DebtsAndLiabilities
+          ).permutations.toSeq.map(_ -> 4)
       ).foreach { (assessmentCategories, expectedResult) =>
-        eligibilityCheckResultWithAssessmentCategory(assessmentCategories)
-          .foldOnAssessmentCategory(
-            onStandardOnly = _ => 1,
-            onDebtsOnly = _ => 2,
-            onLiabilitiesOnly = _ => 3
-          ) shouldBe expectedResult
+        withClue(s"for assessment categories: ${assessmentCategories.map(_.toString).mkString(", ")}: ") {
+          eligibilityCheckResultWithAssessmentCategory(assessmentCategories)
+            .foldOnAssessmentCategory(
+              onStandardOnly = { c =>
+                c.assessmentCategory shouldBe AssessmentCategory.Standard
+                1
+              },
+              onDebtsOnly = { c =>
+                c.assessmentCategory shouldBe AssessmentCategory.Debts
+                2
+              },
+              onLiabilitiesOnly = { c =>
+                c.assessmentCategory shouldBe AssessmentCategory.Liabilities
+                3
+              },
+              onDebtsAndLiabilities = { (c1, c2, c3) =>
+                c1.assessmentCategory shouldBe AssessmentCategory.Debts
+                c2.assessmentCategory shouldBe AssessmentCategory.Liabilities
+                c3.assessmentCategory shouldBe AssessmentCategory.DebtsAndLiabilities
+                4
+              }
+            ) shouldBe expectedResult
+        }
       }
 
     }
 
     "foldOnAssessmentCategory when given an invalid set of assessment categories" in {
+      def forEachUnsupportedAssessmentCategories[A](f: Seq[AssessmentCategory] => A): Unit = {
+        val supportedAssessmentCategories = Seq(
+          Set(AssessmentCategory.Standard),
+          Set(AssessmentCategory.Debts),
+          Set(AssessmentCategory.Liabilities),
+          Set(AssessmentCategory.Debts, AssessmentCategory.Liabilities, AssessmentCategory.DebtsAndLiabilities)
+        )
+
+        for {
+          i                    <- 1 to AssessmentCategory.values.size
+          assessmentCategories <- AssessmentCategory.values.combinations(i)
+          if !supportedAssessmentCategories.contains(assessmentCategories.toSet)
+        } f(assessmentCategories)
+      }
+
       forEachUnsupportedAssessmentCategories { assessmentCategories =>
         val error = intercept[NotImplementedError](
           eligibilityCheckResultWithAssessmentCategory(assessmentCategories)
             .foldOnAssessmentCategory(
               onStandardOnly = _ => 1,
               onDebtsOnly = _ => 2,
-              onLiabilitiesOnly = _ => 3
+              onLiabilitiesOnly = _ => 3,
+              onDebtsAndLiabilities = (_, _, _) => 4
             )
         )
-        error.getMessage shouldBe s"unsupported combination of assessment categories: (${assessmentCategories.map(_.toString).mkString(", ")})"
+        error.getMessage should startWith("unsupported combination of assessment categories")
       }
     }
 
     "relevanChargeTypeAssessments when" - {
+
       "given valid assessment categories" in {
         def eligibilityCheckResultWithAssessmentCategory(
           assessmentCategories: Seq[AssessmentCategory]
@@ -202,44 +252,46 @@ class EligibilityCheckResultSpec extends UnitSpec {
             )
           )
 
-        Seq(
+        (Seq(
           (Seq(AssessmentCategory.Standard), AssessmentCategory.Standard),
           (Seq(AssessmentCategory.Debts), AssessmentCategory.Debts),
           (Seq(AssessmentCategory.Liabilities), AssessmentCategory.Liabilities)
-        ).foreach { (assessmentCategories, expectedAssessmentCategory) =>
-          eligibilityCheckResultWithAssessmentCategory(
-            assessmentCategories
-          ).relevantChargeTypeAssessments shouldBe TdAll.chargeTypeAssessmentsStandardSa.copy(
+        ) ++ (for {
+          combo                      <- Seq(
+                                          AssessmentCategory.Debts,
+                                          AssessmentCategory.Liabilities,
+                                          AssessmentCategory.DebtsAndLiabilities
+                                        ).permutations.toSeq
+          expectedAssessmentCategory <-
+            Seq(AssessmentCategory.Debts, AssessmentCategory.Liabilities, AssessmentCategory.DebtsAndLiabilities)
+        } yield combo -> expectedAssessmentCategory)).foreach { (assessmentCategories, expectedAssessmentCategory) =>
+          eligibilityCheckResultWithAssessmentCategory(assessmentCategories)
+            .relevantChargeTypeAssessments(
+              journeyWithAssessmentCategory(expectedAssessmentCategory)
+            ) shouldBe TdAll.chargeTypeAssessmentsStandardSa.copy(
             assessmentCategory = expectedAssessmentCategory
           )
         }
 
       }
 
-      "given invalid assessment categories" in {
-        forEachUnsupportedAssessmentCategories { assessmentCategories =>
-          val error = intercept[NotImplementedError](
-            eligibilityCheckResultWithAssessmentCategory(assessmentCategories).relevantChargeTypeAssessments
-          )
-          error.getMessage shouldBe s"unsupported combination of assessment categories: (${assessmentCategories.map(_.toString).mkString(", ")})"
-        }
+      "a ChargeTypeAssessments cannot be found with the assessment category in the journey " in {
+        val error = intercept[Exception](
+          eligibilityCheckResultWithAssessmentCategory(Seq(AssessmentCategory.Standard))
+            .relevantChargeTypeAssessments(journeyWithAssessmentCategory(AssessmentCategory.Debts))
+        )
+        error.getMessage shouldBe "Cannot find relevant charge type assessments for assessment category Debts in eligibility check result"
+      }
+
+      "the journey doesn't have an assessment category yet" in {
+        val error = intercept[Exception](
+          eligibilityCheckResultWithAssessmentCategory(Seq(AssessmentCategory.Standard))
+            .relevantChargeTypeAssessments(TdAll.EpayeBta.journeyAfterEligibilityCheckEligible)
+        )
+        error.getMessage shouldBe "Cannot determine relevant charge type assessments before assessment category in journey stage EligibilityChecked"
       }
 
     }
-  }
-
-  def forEachUnsupportedAssessmentCategories[A](f: Seq[AssessmentCategory] => A): Unit = {
-    val supportedAssessmentCategories = Seq(
-      Set(AssessmentCategory.Standard),
-      Set(AssessmentCategory.Debts),
-      Set(AssessmentCategory.Liabilities)
-    )
-
-    for {
-      i                    <- 1 to AssessmentCategory.values.size
-      assessmentCategories <- AssessmentCategory.values.combinations(i)
-      if !supportedAssessmentCategories.contains(assessmentCategories.toSet)
-    } f(assessmentCategories)
   }
 
 }

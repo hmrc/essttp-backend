@@ -120,6 +120,7 @@ class PegaService @Inject() (
       case j: Journey.Started                              => j.copy(sessionId = sessionId)
       case j: Journey.ComputedTaxId                        => j.copy(sessionId = sessionId)
       case j: Journey.EligibilityChecked                   => j.copy(sessionId = sessionId)
+      case j: Journey.AssessmentCategoryDetermined         => j.copy(sessionId = sessionId)
       case j: Journey.ObtainedWhyCannotPayInFullAnswers    => j.copy(sessionId = sessionId)
       case j: Journey.AnsweredCanPayUpfront                => j.copy(sessionId = sessionId)
       case j: Journey.EnteredUpfrontPaymentAmount          => j.copy(sessionId = sessionId)
@@ -202,15 +203,19 @@ class PegaService @Inject() (
     }
 
     val totalDebt = AmountInPence(
-      eligibilityCheckResult.relevantChargeTypeAssessments.chargeTypeAssessment.map(_.debtTotalAmount.value.value).sum
+      eligibilityCheckResult
+        .relevantChargeTypeAssessments(journey)
+        .chargeTypeAssessment
+        .map(_.debtTotalAmount.value.value)
+        .sum
     )
 
     val mapping = MDTPropertyMapping(
       eligibilityCheckResult.customerPostcodes,
       extremeDatesResponse.initialPaymentDate,
       ChannelIdentifiers.eSSTTP,
-      eligibilityCheckResult.relevantChargeTypeAssessments.chargeTypeAssessment.flatMap(toDebtItemCharges),
-      AccruedDebtInterest(calculateCumulativeInterest(eligibilityCheckResult)),
+      eligibilityCheckResult.relevantChargeTypeAssessments(journey).chargeTypeAssessment.flatMap(toDebtItemCharges),
+      AccruedDebtInterest(calculateCumulativeInterest(journey, eligibilityCheckResult)),
       upfrontPaymentAmount,
       PaymentPlanFrequencies.Monthly
     )
@@ -264,9 +269,14 @@ class PegaService @Inject() (
       )
     }
 
-  private def calculateCumulativeInterest(eligibilityCheckResult: EligibilityCheckResult): AmountInPence =
+  private def calculateCumulativeInterest(
+    journey:                Journey,
+    eligibilityCheckResult: EligibilityCheckResult
+  ): AmountInPence =
     AmountInPence(
-      eligibilityCheckResult.relevantChargeTypeAssessments.chargeTypeAssessment
+      eligibilityCheckResult
+        .relevantChargeTypeAssessments(journey)
+        .chargeTypeAssessment
         .flatMap(_.charges)
         .map(_.accruedInterest.value.value)
         .sum

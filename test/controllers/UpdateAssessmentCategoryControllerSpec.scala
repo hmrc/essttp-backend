@@ -16,76 +16,74 @@
 
 package controllers
 
+import essttp.journey.model.Journey.AssessmentCategoryDetermined
 import essttp.journey.model.{Journey, WhyCannotPayInFullAnswers}
-import essttp.rootmodel.CannotPayReason
 import essttp.rootmodel.bank.TypesOfBankAccount
+import essttp.rootmodel.ttp.eligibility.AssessmentCategory
 import paymentsEmailVerification.models.EmailVerificationResult
 import testsupport.ItSpec
 import testsupport.testdata.TdAll
 
-class UpdateWhyCannotPayInFullControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
+class UpdateAssessmentCategoryControllerSpec extends ItSpec, UpdateJourneyControllerSpec {
 
-  "POST /journey/:journeyId/update-why-cannot-pay-in-full" - {
+  "POST /journey/:journeyId/update-assessment-category" - {
 
-    "should throw Bad Request when Journey is in a stage [BeforeAssessmentCategoryDetermined]" in new JourneyItTest {
+    "should throw Bad Request when Journey is in a stage [BeforeEligibilityChecked]" in new JourneyItTest {
       stubCommonActions()
 
       journeyConnector.Epaye.startJourneyBta(TdAll.EpayeBta.sjRequest).futureValue
       journeyConnector.updateTaxId(tdAll.journeyId, TdAll.empRef).futureValue
-      journeyConnector
-        .updateEligibilityCheckResult(tdAll.journeyId, TdAll.eligibleEligibilityCheckResultEpaye)
-        .futureValue
 
       val result: Throwable = journeyConnector
-        .updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired)
+        .updateAssessmentCategory(tdAll.journeyId, AssessmentCategory.Standard)
         .failed
         .futureValue
       result.getMessage should include(
-        """{"statusCode":400,"message":"WhyCannotPayInFullAnswers update is not possible in that state."}"""
+        """{"statusCode":400,"message":"AssessmentCategory update is not possible in that state."}"""
       )
 
-      verifyCommonActions(numberOfAuthCalls = 4)
+      verifyCommonActions(numberOfAuthCalls = 3)
     }
 
     "should update the journey when an existing value didn't exist before for" - {
 
       "Epaye" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(),
-          TdAll.whyCannotPayInFullNotRequired
+          tdAll.EpayeBta.journeyAfterEligibilityCheckEligible,
+          AssessmentCategory.Standard
         )(
-          journeyConnector.updateWhyCannotPayInFullAnswers,
-          tdAll.EpayeBta.journeyAfterWhyCannotPayInFullNotRequired
+          journeyConnector.updateAssessmentCategory,
+          tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined()
         )(this)
       }
 
       "Vat" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(),
-          TdAll.whyCannotPayInFullNotRequired
+          tdAll.VatBta.journeyAfterEligibilityCheckEligible,
+          AssessmentCategory.Standard
         )(
-          journeyConnector.updateWhyCannotPayInFullAnswers,
-          tdAll.VatBta.journeyAfterWhyCannotPayInFullNotRequired
+          journeyConnector.updateAssessmentCategory,
+          tdAll.VatBta.journeyAfterAssessmentCategoryDetermined()
         )(this)
       }
 
       "Sa" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(),
-          TdAll.whyCannotPayInFullRequired
+          tdAll.SaBta.journeyAfterEligibilityCheckEligible,
+          AssessmentCategory.Standard
         )(
-          journeyConnector.updateWhyCannotPayInFullAnswers,
-          tdAll.SaBta.journeyAfterWhyCannotPayInFullRequired
+          journeyConnector.updateAssessmentCategory,
+          tdAll.SaBta.journeyAfterAssessmentCategoryDetermined()
         )(this)
       }
 
       "Simp" in new JourneyItTest {
         testUpdateWithoutExistingValue(
-          tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(),
-          TdAll.whyCannotPayInFullRequired
+          tdAll.SimpPta.journeyAfterEligibilityCheckEligible,
+          AssessmentCategory.Standard
         )(
-          journeyConnector.updateWhyCannotPayInFullAnswers,
-          tdAll.SimpPta.journeyAfterWhyCannotPayInFullRequired
+          journeyConnector.updateAssessmentCategory,
+          tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined()
         )(this)
       }
     }
@@ -94,146 +92,146 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec, UpdateJourneyContro
 
       "Epaye when the current stage is" - {
 
-        val differentWhyCannotPayInFullReasons =
-          WhyCannotPayInFullAnswers.WhyCannotPayInFull(
-            Set(
-              CannotPayReason.NoMoneySetAside,
-              CannotPayReason.LostOrReducedAbilityToEarnOrTrade,
-              CannotPayReason.NationalOrLocalDisaster
-            )
-          )
+        val differentAssessmentCategory = AssessmentCategory.DebtsAndLiabilities
 
         def testEpayeBta[J <: Journey](initialJourney: J)(
-          existingValue:                              J => WhyCannotPayInFullAnswers,
-          expectedUpdateInitialJourneyTransformation: J => J
+          existingValue:          J => AssessmentCategory,
+          expectedUpdatedJourney: AssessmentCategoryDetermined
         )(context: JourneyItTest): Unit =
           testUpdateWithExistingValue(initialJourney)(
             _.journeyId,
             existingValue(initialJourney)
           )(
-            differentWhyCannotPayInFullReasons,
-            journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(using context.request),
-            expectedUpdateInitialJourneyTransformation(initialJourney)
+            differentAssessmentCategory,
+            journeyConnector.updateAssessmentCategory(_, _)(using context.request),
+            expectedUpdatedJourney
           )(context)
+
+        "AssessmentCategoryDetermined" in new JourneyItTest {
+          testEpayeBta(tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined())(
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
+          )(this)
+        }
 
         "ObtainedWhyCannotPayInFullAnswers" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterWhyCannotPayInFullNotRequired)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(
-              whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons
-            )
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "AnsweredCanPayUpfront" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayUpfrontNo)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EnteredUpfrontPaymentAmount" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "RetrievedExtremeDates" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterExtremeDates)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "RetrievedAffordabilityResult" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterInstalmentAmounts)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterCanPayWithinSixMonthsNotRequired)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "StartedPegaCase" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterStartedPegaCase)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta
+              .journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
+              .copy(pegaCaseId = Some(tdAll.pegaCaseId))
           )(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterMonthlyPaymentAmount)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EnteredDayOfMonth" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterDayOfMonth)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "RetrievedStartDates" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterStartDatesResponse)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "RetrievedAffordableQuotes" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterAffordableQuotesResponse)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "ChosenPaymentPlan" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedPaymentPlan)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterCheckedPaymentPlanNonAffordability)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "ChosenTypeOfBankAccount" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
@@ -241,15 +239,15 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec, UpdateJourneyContro
           testEpayeBta(
             tdAll.EpayeBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true)
           )(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
           testEpayeBta(tdAll.EpayeBta.journeyAfterSelectedEmailNoAffordability)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
@@ -257,8 +255,8 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec, UpdateJourneyContro
           testEpayeBta(
             tdAll.EpayeBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified)
           )(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.EpayeBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
@@ -266,167 +264,167 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec, UpdateJourneyContro
 
       "Vat when the current stage is" - {
 
-        val differentWhyCannotPayInFullReasons =
-          WhyCannotPayInFullAnswers.WhyCannotPayInFull(
-            Set(
-              CannotPayReason.NoMoneySetAside,
-              CannotPayReason.LostOrReducedAbilityToEarnOrTrade,
-              CannotPayReason.NationalOrLocalDisaster
-            )
-          )
+        val differentAssessmentCategory = AssessmentCategory.Debts
 
         def testVatBta[J <: Journey](initialJourney: J)(
-          existingValue:                              J => WhyCannotPayInFullAnswers,
-          expectedUpdateInitialJourneyTransformation: J => J
+          existingValue:          J => AssessmentCategory,
+          expectedUpdatedJourney: AssessmentCategoryDetermined
         )(context: JourneyItTest): Unit =
           testUpdateWithExistingValue(initialJourney)(
             _.journeyId,
             existingValue(initialJourney)
           )(
-            differentWhyCannotPayInFullReasons,
-            journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(using context.request),
-            expectedUpdateInitialJourneyTransformation(initialJourney)
+            differentAssessmentCategory,
+            journeyConnector.updateAssessmentCategory(_, _)(using context.request),
+            expectedUpdatedJourney
           )(context)
+
+        "AssessmentCategoryDetermined" in new JourneyItTest {
+          testVatBta(tdAll.VatBta.journeyAfterAssessmentCategoryDetermined())(
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
+          )(this)
+        }
 
         "ObtainedWhyCannotPayInFullAnswers" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterWhyCannotPayInFullNotRequired)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(
-              whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons
-            )
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "AnsweredCanPayUpfront" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterCanPayUpfrontNo)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EnteredUpfrontPaymentAmount" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterUpfrontPaymentAmount)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "RetrievedExtremeDates" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterExtremeDates)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "RetrievedAffordabilityResult" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterInstalmentAmounts)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterCanPayWithinSixMonthsNotRequired)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "StartedPegaCase" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterStartedPegaCase)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta
+              .journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
+              .copy(pegaCaseId = Some(tdAll.pegaCaseId))
           )(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterMonthlyPaymentAmount)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EnteredDayOfMonth" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterDayOfMonth)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "RetrievedStartDates" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterStartDatesResponse)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "RetrievedAffordableQuotes" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterAffordableQuotesResponse)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "ChosenPaymentPlan" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterSelectedPaymentPlan)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterCheckedPaymentPlanNonAffordability)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "ChosenTypeOfBankAccount" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterSelectedEmailNoAffordability)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
           testVatBta(tdAll.VatBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.VatBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
@@ -434,167 +432,167 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec, UpdateJourneyContro
 
       "Sa when the current stage is" - {
 
-        val differentWhyCannotPayInFullReasons =
-          WhyCannotPayInFullAnswers.WhyCannotPayInFull(
-            Set(
-              CannotPayReason.NoMoneySetAside,
-              CannotPayReason.LostOrReducedAbilityToEarnOrTrade,
-              CannotPayReason.NationalOrLocalDisaster
-            )
-          )
+        val differentAssessmentCategory = AssessmentCategory.Liabilities
 
         def testSaBta[J <: Journey](initialJourney: J)(
-          existingValue:                              J => WhyCannotPayInFullAnswers,
-          expectedUpdateInitialJourneyTransformation: J => J
+          existingValue:          J => AssessmentCategory,
+          expectedUpdatedJourney: AssessmentCategoryDetermined
         )(context: JourneyItTest): Unit =
           testUpdateWithExistingValue(initialJourney)(
             _.journeyId,
             existingValue(initialJourney)
           )(
-            differentWhyCannotPayInFullReasons,
-            journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(using context.request),
-            expectedUpdateInitialJourneyTransformation(initialJourney)
+            differentAssessmentCategory,
+            journeyConnector.updateAssessmentCategory(_, _)(using context.request),
+            expectedUpdatedJourney
           )(context)
+
+        "AssessmentCategoryDetermined" in new JourneyItTest {
+          testSaBta(tdAll.SaBta.journeyAfterAssessmentCategoryDetermined())(
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
+          )(this)
+        }
 
         "ObtainedWhyCannotPayInFullAnswers" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterWhyCannotPayInFullNotRequired)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(
-              whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons
-            )
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "AnsweredCanPayUpfront" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterCanPayUpfrontNo)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EnteredUpfrontPaymentAmount" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterUpfrontPaymentAmount)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "RetrievedExtremeDates" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterExtremeDates)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "RetrievedAffordabilityResult" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterInstalmentAmounts)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterCanPayWithinSixMonths)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "StartedPegaCase" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterStartedPegaCase)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta
+              .journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
+              .copy(pegaCaseId = Some(tdAll.pegaCaseId))
           )(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterMonthlyPaymentAmount)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EnteredDayOfMonth" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterDayOfMonth)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "RetrievedStartDates" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterStartDatesResponse)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "RetrievedAffordableQuotes" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterAffordableQuotesResponse)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "ChosenPaymentPlan" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterSelectedPaymentPlan)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterCheckedPaymentPlanNonAffordability)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "ChosenTypeOfBankAccount" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Business))(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterSelectedEmailNoAffordability)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
           testSaBta(tdAll.SaBta.journeyAfterEmailVerificationResultNoAffordability(EmailVerificationResult.Verified))(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SaBta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
@@ -602,167 +600,167 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec, UpdateJourneyContro
 
       "Simp when the current stage is" - {
 
-        val differentWhyCannotPayInFullReasons =
-          WhyCannotPayInFullAnswers.WhyCannotPayInFull(
-            Set(
-              CannotPayReason.NoMoneySetAside,
-              CannotPayReason.LostOrReducedAbilityToEarnOrTrade,
-              CannotPayReason.NationalOrLocalDisaster
-            )
-          )
+        val differentAssessmentCategory = AssessmentCategory.DebtsAndLiabilities
 
         def testSimpPta[J <: Journey](initialJourney: J)(
-          existingValue:                              J => WhyCannotPayInFullAnswers,
-          expectedUpdateInitialJourneyTransformation: J => J
+          existingValue:          J => AssessmentCategory,
+          expectedUpdatedJourney: AssessmentCategoryDetermined
         )(context: JourneyItTest): Unit =
           testUpdateWithExistingValue(initialJourney)(
             _.journeyId,
             existingValue(initialJourney)
           )(
-            differentWhyCannotPayInFullReasons,
-            journeyConnector.updateWhyCannotPayInFullAnswers(_, _)(using context.request),
-            expectedUpdateInitialJourneyTransformation(initialJourney)
+            differentAssessmentCategory,
+            journeyConnector.updateAssessmentCategory(_, _)(using context.request),
+            expectedUpdatedJourney
           )(context)
 
+        "AssessmentCategoryDetermined" in new JourneyItTest {
+          testSimpPta(tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined())(
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
+          )(this)
+        }
+
         "ObtainedWhyCannotPayInFullAnswers" in new JourneyItTest {
-          testSimpPta(tdAll.SimpPta.journeyAfterWhyCannotPayInFullNotRequired)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(
-              whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons
-            )
+          testSimpPta(tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined())(
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "AnsweredCanPayUpfront" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterCanPayUpfrontNo)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EnteredUpfrontPaymentAmount" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterUpfrontPaymentAmount)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "RetrievedExtremeDates" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterExtremeDates)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "RetrievedAffordabilityResult" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterInstalmentAmounts)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "ObtainedCanPayWithinSixMonthsAnswers" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterCanPayWithinSixMonths)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "StartedPegaCase" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterStartedPegaCase)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta
+              .journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
+              .copy(pegaCaseId = Some(tdAll.pegaCaseId))
           )(this)
         }
 
         "EnteredMonthlyPaymentAmount" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterMonthlyPaymentAmount)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EnteredDayOfMonth" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterDayOfMonth)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "RetrievedStartDates" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterStartDatesResponse)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "RetrievedAffordableQuotes" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterAffordableQuotesResponse)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "ChosenPaymentPlan" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterSelectedPaymentPlan)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "CheckedPaymentPlan" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterCheckedPaymentPlanNonAffordability)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EnteredCanYouSetUpDirectDebit" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterEnteredCanYouSetUpDirectDebitNoAffordability(isAccountHolder = true))(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "ChosenTypeOfBankAccount" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterChosenTypeOfBankAccount(TypesOfBankAccount.Personal))(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EnteredDirectDebitDetails" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterEnteredDirectDebitDetailsNoAffordability())(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "ConfirmedDirectDebitDetails" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterConfirmedDirectDebitDetailsNoAffordability)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "AgreedTermsAndConditions" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterAgreedTermsAndConditionsNoAffordability(isEmailAddressRequired = true))(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "SelectedEmailToBeVerified" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterSelectedEmail)(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
         "EmailVerificationComplete" in new JourneyItTest {
           testSimpPta(tdAll.SimpPta.journeyAfterEmailVerificationResult(EmailVerificationResult.Verified))(
-            _.whyCannotPayInFullAnswers,
-            _.copy(whyCannotPayInFullAnswers = differentWhyCannotPayInFullReasons)
+            _.assessmentCategory,
+            tdAll.SimpPta.journeyAfterAssessmentCategoryDetermined(differentAssessmentCategory)
           )(this)
         }
 
@@ -780,11 +778,11 @@ class UpdateWhyCannotPayInFullControllerSpec extends ItSpec, UpdateJourneyContro
           .copy(correlationId = tdAll.correlationId)
       )
       val result: Throwable = journeyConnector
-        .updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullRequired)
+        .updateAssessmentCategory(tdAll.journeyId, AssessmentCategory.Standard)
         .failed
         .futureValue
       result.getMessage should include(
-        """{"statusCode":400,"message":"Cannot update WhyCannotPayInFullAnswers when journey is in completed state"}"""
+        """{"statusCode":400,"message":"Cannot update AssessmentCategory when journey is in completed state"}"""
       )
 
       verifyCommonActions(numberOfAuthCalls = 1)

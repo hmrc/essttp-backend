@@ -17,8 +17,9 @@
 package essttp.rootmodel.ttp.eligibility
 
 import essttp.crypto.CryptoFormat
+import essttp.journey.model.{Journey, JourneyStage}
 import essttp.rootmodel.Email
-import essttp.rootmodel.ttp._
+import essttp.rootmodel.ttp.*
 import play.api.libs.json.{Json, OFormat}
 
 /** This represents response from the Eligibylity API
@@ -46,6 +47,13 @@ final case class EligibilityCheckResult(
 
 object EligibilityCheckResult {
 
+  private given assessmentCategoryOrder: Ordering[AssessmentCategory] = Ordering.by {
+    case AssessmentCategory.Standard            => 1
+    case AssessmentCategory.Debts               => 2
+    case AssessmentCategory.Liabilities         => 3
+    case AssessmentCategory.DebtsAndLiabilities => 4
+  }
+
   extension (e: EligibilityCheckResult) {
 
     def isEligible: Boolean = e.eligibilityStatus.eligibilityPass.value
@@ -56,34 +64,52 @@ object EligibilityCheckResult {
         emailAddress
       }
 
-    def hasInterestBearingCharge: Boolean =
-      relevantChargeTypeAssessments.chargeTypeAssessment
+    def hasInterestBearingCharge(journey: Journey): Boolean =
+      relevantChargeTypeAssessments(journey).chargeTypeAssessment
         .flatMap(_.charges)
         .exists(_.isInterestBearingCharge.exists(_.value))
 
     // see what combo of assessment categories we have in chargeTypeAssesments and call the appropriate function,
     // throw if a combo of assessment categories is not supported
+    // onDebtsAndLiabilities is called with the ChargeTypeAssessments for Debts, Liabilities and DebtsAndLiabilities in that order
     def foldOnAssessmentCategory[A](
-      onStandardOnly:    ChargeTypeAssessments => A,
-      onDebtsOnly:       ChargeTypeAssessments => A,
-      onLiabilitiesOnly: ChargeTypeAssessments => A
+      onStandardOnly:        ChargeTypeAssessments => A,
+      onDebtsOnly:           ChargeTypeAssessments => A,
+      onLiabilitiesOnly:     ChargeTypeAssessments => A,
+      onDebtsAndLiabilities: (ChargeTypeAssessments, ChargeTypeAssessments, ChargeTypeAssessments) => A
     ): A =
-      e.chargeTypeAssessments.map(c => c.assessmentCategory -> c) match {
+      e.chargeTypeAssessments.map(c => c.assessmentCategory -> c).sortBy(_._1) match {
         case (AssessmentCategory.Standard, c) :: Nil    => onStandardOnly(c)
         case (AssessmentCategory.Debts, c) :: Nil       => onDebtsOnly(c)
         case (AssessmentCategory.Liabilities, c) :: Nil => onLiabilitiesOnly(c)
+        case (AssessmentCategory.Debts, c1) :: (AssessmentCategory.Liabilities, c2) :: (
+              AssessmentCategory.DebtsAndLiabilities,
+              c3
+            ) :: Nil =>
+          onDebtsAndLiabilities(c1, c2, c3)
         case other                                      =>
           throw new NotImplementedError(
             s"unsupported combination of assessment categories: (${other.map(_._1.toString).mkString(", ")})"
           )
       }
 
-    def relevantChargeTypeAssessments: ChargeTypeAssessments =
-      foldOnAssessmentCategory(
-        onStandardOnly = identity,
-        onDebtsOnly = identity,
-        onLiabilitiesOnly = identity
-      )
+    // return the ChargeTypeAssessments that is relevant to the current journey stage - the journey must be in a state where
+    // the assessment category has been determined otherwise this throws an exception
+    def relevantChargeTypeAssessments(journey: Journey): ChargeTypeAssessments =
+      journey match {
+        case j: JourneyStage.BeforeAssessmentCategoryDetermined =>
+          throw new Exception(
+            s"Cannot determine relevant charge type assessments before assessment category in journey stage ${journey.stage}"
+          )
+        case j: JourneyStage.AfterAssessmentCategoryDetermined  =>
+          e.chargeTypeAssessments
+            .find(_.assessmentCategory == j.assessmentCategory)
+            .getOrElse(
+              throw new Exception(
+                s"Cannot find relevant charge type assessments for assessment category ${j.assessmentCategory.toString} in eligibility check result"
+              )
+            )
+      }
 
   }
 

@@ -41,12 +41,12 @@ class UpdateWhyCannotPayInFullController @Inject() (
       for {
         journey    <- journeyService.get(journeyId)
         newJourney <- journey match {
-                        case _: JourneyStage.BeforeEligibilityChecked =>
+                        case _: JourneyStage.BeforeAssessmentCategoryDetermined =>
                           Errors.throwBadRequestExceptionF(
                             "WhyCannotPayInFullAnswers update is not possible in that state."
                           )
 
-                        case j: Journey.EligibilityChecked =>
+                        case j: Journey.AssessmentCategoryDetermined =>
                           updateJourneyWithNewValue(j, request.body)
 
                         case j: JourneyStage.AfterWhyCannotPayInFullAnswers =>
@@ -63,7 +63,7 @@ class UpdateWhyCannotPayInFullController @Inject() (
     }
 
   private def updateJourneyWithNewValue(
-    journey:                   Journey.EligibilityChecked,
+    journey:                   Journey.AssessmentCategoryDetermined,
     whyCannotPayInFullAnswers: WhyCannotPayInFullAnswers
   )(using Request[?]): Future[Journey] = {
     val newJourney: Journey =
