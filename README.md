@@ -31,6 +31,7 @@ Acronyms used in a codebase. To speed up writing and reading.
 | Epaye  | Employers' Pay as you earn - tax type |
 | Vat    | Value-added tax - tax type            |
 | Sa     | Self Assessment - tax type            |
+| Simp   | Simple Assessment - tax type          |
 
 ---
 
@@ -41,7 +42,8 @@ graph TD;
     ComputedTaxId --> EligibilityCheck;
     EligibilityCheck --> EligibilityCheck.Eligible;
     EligibilityCheck --> EligibilityCheck.Ineligible;
-    EligibilityCheck.Eligible --> ObtainedWhyCannotPayInFullAnswers;
+    EligibilityCheck.Eligible --> AssessmentCategoryDetermined;
+    AssessmentCategoryDetermined --> ObtainedWhyCannotPayInFullAnswers;
     ObtainedWhyCannotPayInFullAnswers --> AnsweredCanPayUpfront.Yes;
     ObtainedWhyCannotPayInFullAnswers --> AnsweredCanPayUpfront.No;
     AnsweredCanPayUpfront.No --> RetrievedExtremeDates;
