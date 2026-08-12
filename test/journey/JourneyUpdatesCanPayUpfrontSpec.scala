@@ -18,6 +18,7 @@ package journey
 
 import essttp.journey.JourneyConnector
 import essttp.journey.model.{CorrelationId, JourneyId, SjResponse}
+import essttp.rootmodel.ttp.eligibility.AssessmentCategory
 import essttp.rootmodel.{AmountInPence, UpfrontPaymentAmount}
 import play.api.mvc.Request
 import testsupport.ItSpec
@@ -31,6 +32,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
     journeyConnector
       .updateEligibilityCheckResult(tdAll.journeyId, tdAll.EpayeBta.updateEligibilityCheckRequest())
       .futureValue
+    journeyConnector.updateAssessmentCategory(tdAll.journeyId, AssessmentCategory.Standard).futureValue
     journeyConnector.updateWhyCannotPayInFullAnswers(tdAll.journeyId, tdAll.whyCannotPayInFullNotRequired).futureValue
     ()
   }
@@ -60,7 +62,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
     journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontYesRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontYes
 
-    verifyCommonActions(numberOfAuthCalls = 10)
+    verifyCommonActions(numberOfAuthCalls = 11)
   }
 
   "[Epaye.Bta][CanPayUpfront.Yes, Update UpfrontPaymentAmount with value, then change to CanPayFrontNo]" in {
@@ -90,7 +92,7 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
     journeyConnector.updateCanPayUpfront(tdAll.journeyId, tdAll.EpayeBta.updateCanPayUpfrontNoRequest()).futureValue
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterCanPayUpfrontNo
 
-    verifyCommonActions(numberOfAuthCalls = 10)
+    verifyCommonActions(numberOfAuthCalls = 11)
   }
 
   "[Epaye.Bta][Update UpfrontPaymentAmount with new isAccountHolder]" in {
@@ -122,6 +124,6 @@ class JourneyUpdatesCanPayUpfrontSpec extends ItSpec {
     journeyConnector.getJourney(tdAll.journeyId).futureValue shouldBe tdAll.EpayeBta.journeyAfterUpfrontPaymentAmount
       .copy(upfrontPaymentAmount = UpfrontPaymentAmount(AmountInPence(1001)))
 
-    verifyCommonActions(numberOfAuthCalls = 10)
+    verifyCommonActions(numberOfAuthCalls = 11)
   }
 }
