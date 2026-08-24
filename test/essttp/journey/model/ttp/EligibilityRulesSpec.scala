@@ -23,29 +23,32 @@ import testsupport.Givens.canEqualJsValue
 
 class EligibilityRulesSpec extends UnitSpec {
 
+  val eligibleEligibilityRules =
+    EligibilityRules(
+      hasRlsOnAddress = false,
+      markedAsInsolvent = false,
+      existingTTP = false,
+      missingFiledReturns = false,
+      hasInvalidInterestSignals = Some(false),
+      dmSpecialOfficeProcessingRequired = Some(false),
+      cannotFindLockReason = Some(false),
+      creditsNotAllowed = Some(false),
+      isMoreThanMaxPaymentReference = Some(false),
+      hasInvalidInterestSignalsCESA = Some(false),
+      hasDisguisedRemuneration = Some(false),
+      hasCapacitor = Some(false),
+      dmSpecialOfficeProcessingRequiredCDCS = Some(false),
+      isAnMtdCustomer = Some(false),
+      dmSpecialOfficeProcessingRequiredCESA = Some(false),
+      noMtditsaEnrollment = Some(false),
+      allChargeTypeAssessmentsFailed = Some(false),
+      noValidPlanAfterAssessments = Some(false)
+    )
+
   "isEligible should work when" - {
 
     "all fields are populated" in {
-      EligibilityRules(
-        hasRlsOnAddress = false,
-        markedAsInsolvent = false,
-        existingTTP = false,
-        missingFiledReturns = false,
-        hasInvalidInterestSignals = Some(false),
-        dmSpecialOfficeProcessingRequired = Some(false),
-        cannotFindLockReason = Some(false),
-        creditsNotAllowed = Some(false),
-        isMoreThanMaxPaymentReference = Some(false),
-        hasInvalidInterestSignalsCESA = Some(false),
-        hasDisguisedRemuneration = Some(false),
-        hasCapacitor = Some(false),
-        dmSpecialOfficeProcessingRequiredCDCS = Some(false),
-        isAnMtdCustomer = Some(false),
-        dmSpecialOfficeProcessingRequiredCESA = Some(false),
-        noMtditsaEnrollment = Some(false),
-        allChargeTypeAssessmentsFailed = Some(false),
-        noValidPlanAfterAssessments = Some(false)
-      ).isEligible shouldBe true
+      eligibleEligibilityRules.isEligible shouldBe true
     }
 
     "when optional fields are not populated" in {
@@ -69,6 +72,54 @@ class EligibilityRulesSpec extends UnitSpec {
         allChargeTypeAssessmentsFailed = None,
         noValidPlanAfterAssessments = None
       ).isEligible shouldBe true
+    }
+
+  }
+
+  "moreThanOneReasonForIneligibility should work when" - {
+
+    "there are no ineligibility reasons" in {
+      eligibleEligibilityRules.moreThanOneReasonForIneligibility shouldBe false
+    }
+
+    "there is one ineligibility reason" in {
+      eligibleEligibilityRules.copy(hasRlsOnAddress = true).moreThanOneReasonForIneligibility shouldBe false
+    }
+
+    "there is more than one ineligibility reason" in {
+      eligibleEligibilityRules
+        .copy(hasRlsOnAddress = true, markedAsInsolvent = true)
+        .moreThanOneReasonForIneligibility shouldBe true
+    }
+
+    "there is one ineligibility reason alongside 'allChargeTypeAssessmentsFailed'" in {
+      eligibleEligibilityRules
+        .copy(hasRlsOnAddress = true, allChargeTypeAssessmentsFailed = Some(true))
+        .moreThanOneReasonForIneligibility shouldBe false
+    }
+
+  }
+
+  "atLeastOneReasonForIneligibility should work when" - {
+
+    "there are no ineligibility reasons" in {
+      eligibleEligibilityRules.atLeastOneReasonForIneligibility shouldBe false
+    }
+
+    "there is one ineligibility reason" in {
+      eligibleEligibilityRules.copy(hasRlsOnAddress = true).atLeastOneReasonForIneligibility shouldBe true
+    }
+
+    "there is more than one ineligibility reason" in {
+      eligibleEligibilityRules
+        .copy(hasRlsOnAddress = true, markedAsInsolvent = true)
+        .atLeastOneReasonForIneligibility shouldBe true
+    }
+
+    "the only ineligibility reason is 'allChargeTypeAssessmentsFailed'" in {
+      eligibleEligibilityRules
+        .copy(allChargeTypeAssessmentsFailed = Some(true))
+        .atLeastOneReasonForIneligibility shouldBe false
     }
 
   }

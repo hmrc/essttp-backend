@@ -52,9 +52,11 @@ final case class EligibilityRules(
     }
   }
 
-  val moreThanOneReasonForIneligibility: Boolean = alliIneligibleFieldNames.sizeIs > 1
+  val moreThanOneReasonForIneligibility: Boolean =
+    alliIneligibleFieldNames.filterNot(_ == "allChargeTypeAssessmentsFailed").sizeIs > 1
 
-  val atLeastOneReasonForIneligibility: Boolean = alliIneligibleFieldNames.sizeIs >= 1
+  val atLeastOneReasonForIneligibility: Boolean =
+    alliIneligibleFieldNames.filterNot(_ == "allChargeTypeAssessmentsFailed").sizeIs >= 1
 
   val isEligible: Boolean = alliIneligibleFieldNames.isEmpty // If all rules are false, then isEligible is true
 
