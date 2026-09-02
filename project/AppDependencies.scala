@@ -8,7 +8,7 @@ object AppDependencies {
   val chimneyVersion = "1.11.0"
   val catsVersion = "2.13.0"
   val enumeratumVersion = "1.9.6"
-  val enumeratumPlayVersion = "1.9.6"
+  val enumeratumPlayVersion = "1.9.8"
   val cryptoVersion = "8.4.0"
   val circeVersion = "0.14.16"
 
@@ -27,7 +27,7 @@ object AppDependencies {
 
     val test: Seq[ModuleID] = Seq(
       "uk.gov.hmrc"             %% "bootstrap-test-play-30"     % bootstrapVersion,
-      "org.scalatestplus.play"  %% "scalatestplus-play"         % "7.0.1" ,
+      "org.scalatestplus.play"  %% "scalatestplus-play"         % "7.0.2" ,
       "org.playframework"       %% "play-test"                  % PlayVersion.current,
       "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-30"    % hmrcMongoVersion
     ).map(_ % Test)
@@ -47,7 +47,7 @@ object AppDependencies {
     "org.typelevel"         %% "cats-core"                       % catsVersion,
     "uk.gov.hmrc.mongo"     %% "hmrc-mongo-play-30"              % hmrcMongoVersion,
     "uk.gov.hmrc"           %% "crypto-json-play-30"             % cryptoVersion,
-    "uk.gov.hmrc"           %% "payments-email-verification-cor-play-30" % "4.9.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
+    "uk.gov.hmrc"           %% "payments-email-verification-cor-play-30" % "4.10.0" excludeAll (ExclusionRule(organization = "uk.gov.hmrc"), ExclusionRule(organization = "uk.gov.hmrc.mongo"))
   )
 
 }
