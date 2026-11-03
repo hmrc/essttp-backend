@@ -4,13 +4,13 @@ import sbt.*
 object AppDependencies {
 
   val bootstrapVersion = "10.8.0"
-  val hmrcMongoVersion = "2.13.0"
-  val chimneyVersion = "1.11.0"
+  val hmrcMongoVersion = "2.14.0"
+  val chimneyVersion = "2.1.0"
   val catsVersion = "2.13.0"
   val enumeratumVersion = "1.9.6"
   val enumeratumPlayVersion = "1.9.8"
   val cryptoVersion = "8.4.0"
-  val circeVersion = "0.14.16"
+  val circeVersion = "0.14.17"
 
   /**
    * Note we pull in various libraries from corJourneyDependencies such as:
@@ -40,7 +40,7 @@ object AppDependencies {
     "io.circe"              %% "circe-core"                      % circeVersion,
     "io.circe"              %% "circe-generic"                   % circeVersion,
     "io.circe"              %% "circe-parser"                    % circeVersion,
-    "com.github.pureconfig" %% "pureconfig-core"                 % "0.17.10",
+    "com.github.pureconfig" %% "pureconfig-core"                 % "0.17.11",
     "com.beachape"          %% "enumeratum-play"                 % enumeratumPlayVersion,
     "org.playframework"     %% "play"                            % play.core.PlayVersion.current % Provided,
     "io.scalaland"          %% "chimney"                         % chimneyVersion,
