@@ -5,7 +5,7 @@ object AppDependencies {
 
   val bootstrapVersion = "10.8.0"
   val hmrcMongoVersion = "2.14.0"
-  val chimneyVersion = "2.1.0"
+  val chimneyVersion = "1.11.0"
   val catsVersion = "2.13.0"
   val enumeratumVersion = "1.9.6"
   val enumeratumPlayVersion = "1.9.8"
